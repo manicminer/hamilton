@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/manicminer/hamilton/auth"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/manicminer/hamilton/auth"
 )
 
 const (

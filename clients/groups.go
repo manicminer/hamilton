@@ -4,12 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/base"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 
+	"github.com/manicminer/hamilton/auth"
+	"github.com/manicminer/hamilton/base"
 	"github.com/manicminer/hamilton/models"
 )
 
