@@ -15,7 +15,7 @@ type User struct {
 	ExternalUserState            *string   `json:"externalUserState,omitempty"`
 	FaxNumber                    *string   `json:"faxNumber,omitempty"`
 	GivenName                    *string   `json:"givenName,omitempty"`
-	ImAddresses                  *bool     `json:"imAddresses,omitempty"`
+	ImAddresses                  *[]string `json:"imAddresses,omitempty"`
 	Interests                    *[]string `json:"interests,omitempty"`
 	JobTitle                     *string   `json:"jobTitle,omitempty"`
 	Mail                         *string   `json:"mail,omitempty"`
@@ -48,4 +48,12 @@ type User struct {
 	UsageLocation                *string   `json:"usageLocation,omitempty"`
 	UserPrincipalName            *string   `json:"userPrincipalName,omitempty"`
 	UserType                     *string   `json:"userType,omitempty"`
+
+	PasswordProfile *UserPasswordProfile `json:"passwordProfile,omitempty"`
+}
+
+type UserPasswordProfile struct {
+	ForceChangePasswordNextSignIn        *bool   `json:"forceChangePasswordNextSignIn,omitempty"`
+	ForceChangePasswordNextSignInWithMfa *bool   `json:"forceChangePasswordNextSignInWithMfa,omitempty"`
+	Password                             *string `json:"password,omitempty"`
 }

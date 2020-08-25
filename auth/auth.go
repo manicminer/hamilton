@@ -1,4 +1,4 @@
-package hamilton
+package auth
 
 import (
 	"context"

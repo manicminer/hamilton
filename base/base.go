@@ -1,9 +1,10 @@
-package hamilton
+package base
 
 import (
 	"bytes"
 	"context"
 	"fmt"
+	"github.com/manicminer/hamilton/auth"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -22,11 +23,11 @@ type BaseClient struct {
 	Endpoint   string
 	TenantId   string
 
-	authorizer Authorizer
+	authorizer auth.Authorizer
 	httpClient GraphClient
 }
 
-func NewBaseClient(authorizer Authorizer, endpoint, tenantId, version string) BaseClient {
+func NewBaseClient(authorizer auth.Authorizer, endpoint, tenantId, version string) BaseClient {
 	return BaseClient{
 		authorizer: authorizer,
 		httpClient: http.DefaultClient,
