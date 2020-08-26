@@ -23,17 +23,17 @@ func NewGroupsClient(authorizer auth.Authorizer, tenantId string) *GroupsClient 
 	}
 }
 
-func (c *GroupsClient) List(ctx context.Context, filter string) (*[]models.Group, error) {
+func (c *GroupsClient) List(ctx context.Context, filter string) (*[]models.Group, int, error) {
 	params := url.Values{}
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri:              fmt.Sprintf("/groups?%s", params.Encode()),
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
@@ -41,84 +41,86 @@ func (c *GroupsClient) List(ctx context.Context, filter string) (*[]models.Group
 		Groups []models.Group `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return &data.Groups, nil
+	return &data.Groups, status, nil
 }
 
-func (c *GroupsClient) Create(ctx context.Context, group models.Group) (*models.Group, error) {
+func (c *GroupsClient) Create(ctx context.Context, group models.Group) (*models.Group, int, error) {
+	var status int
 	body, err := json.Marshal(group)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	resp, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri:              "/groups",
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
 	var newGroup models.Group
 	if err := json.Unmarshal(respBody, &newGroup); err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return &newGroup, nil
+	return &newGroup, status, nil
 }
 
-func (c *GroupsClient) Get(ctx context.Context, id string) (*models.Group, error) {
-	resp, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+func (c *GroupsClient) Get(ctx context.Context, id string) (*models.Group, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri:              fmt.Sprintf("/groups/%s", id),
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
 	var group models.Group
 	if err := json.Unmarshal(respBody, &group); err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return &group, nil
+	return &group, status, nil
 }
 
-func (c *GroupsClient) Update(ctx context.Context, group models.Group) error {
+func (c *GroupsClient) Update(ctx context.Context, group models.Group) (int, error) {
+	var status int
 	body, err := json.Marshal(group)
 	if err != nil {
-		return err
+		return status, err
 	}
-	_, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri:              fmt.Sprintf("/groups/%s", *group.ID),
 	})
 	if err != nil {
-		return err
+		return status, err
 	}
-	return nil
+	return status, nil
 }
 
-func (c *GroupsClient) Delete(ctx context.Context, id string) error {
-	_, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
+	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri:              fmt.Sprintf("/groups/%s", id),
 	})
 	if err != nil {
-		return err
+		return status, err
 	}
-	return nil
+	return status, nil
 }
 
-func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, error) {
-	resp, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri:              fmt.Sprintf("/groups/%s/members?$select=id", id),
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
@@ -129,22 +131,22 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, e
 		} `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	ret := make([]string, len(data.Members))
 	for i, v := range data.Members {
 		ret[i] = v.Id
 	}
-	return &ret, nil
+	return &ret, status, nil
 }
 
-func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) (*string, error) {
-	resp, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) (*string, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri:              fmt.Sprintf("/groups/%s/members/%s/$ref?$select=id,url", groupId, memberId),
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
@@ -155,12 +157,13 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 		Url     string `json:"url"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return &data.Id, nil
+	return &data.Id, status, nil
 }
 
-func (c *GroupsClient) AddMembers(ctx context.Context, group *models.Group) error {
+func (c *GroupsClient) AddMembers(ctx context.Context, group *models.Group) (int, error) {
+	var status int
 	// Patching group members support up to 20 members per request
 	var memberChunks [][]string
 	members := *group.Members
@@ -181,44 +184,48 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *models.Group) erro
 		}
 		body, err := json.Marshal(data)
 		if err != nil {
-			return err
+			return status, err
 		}
-		_, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+		_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri:              fmt.Sprintf("/groups/%s", *group.ID),
 		})
 		if err != nil {
-			return err
+			return status, err
 		}
 	}
-	return nil
+	return status, nil
 }
 
-func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *[]string) error {
+func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *[]string) (int, error) {
+	var status int
 	for _, memberId := range *memberIds {
 		// check for membership before attempting deletion
-		if _, err := c.GetMember(ctx, id, memberId); err != nil {
-			continue
+		if _, status, err := c.GetMember(ctx, id, memberId); err != nil {
+			if status == http.StatusNotFound {
+				continue
+			}
+			return status, err
 		}
-		_, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri:              fmt.Sprintf("/groups/%s/members/%s/$ref", id, memberId),
 		})
 		if err != nil {
-			return err
+			return status, err
 		}
 	}
-	return nil
+	return status, nil
 }
 
-func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, error) {
-	resp, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri:              fmt.Sprintf("/groups/%s/owners?$select=id", id),
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
@@ -229,22 +236,22 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, er
 		} `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	ret := make([]string, len(data.Owners))
 	for i, v := range data.Owners {
 		ret[i] = v.Id
 	}
-	return &ret, nil
+	return &ret, status, nil
 }
 
-func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*string, error) {
-	resp, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*string, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri:              fmt.Sprintf("/groups/%s/owners/%s/$ref?$select=id,url", groupId, ownerId),
 	})
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
@@ -255,12 +262,13 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 		Url     string `json:"url"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return &data.Id, nil
+	return &data.Id, status, nil
 }
 
-func (c *GroupsClient) AddOwners(ctx context.Context, group *models.Group) error {
+func (c *GroupsClient) AddOwners(ctx context.Context, group *models.Group) (int, error) {
+	var status int
 	for _, owner := range *group.Owners {
 		data := struct {
 			Owner string `json:"@odata.id"`
@@ -269,33 +277,37 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *models.Group) error
 		}
 		body, err := json.Marshal(data)
 		if err != nil {
-			return err
+			return status, err
 		}
-		_, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri:              fmt.Sprintf("/groups/%s/owners/$ref", *group.ID),
 		})
 		if err != nil {
-			return err
+			return status, err
 		}
 	}
-	return nil
+	return status, nil
 }
 
-func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) error {
+func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
+	var status int
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
-		if _, err := c.GetMember(ctx, id, ownerId); err != nil {
-			continue
+		if _, status, err := c.GetMember(ctx, id, ownerId); err != nil {
+			if status == http.StatusNotFound {
+				continue
+			}
+			return status, err
 		}
-		_, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri:              fmt.Sprintf("/groups/%s/owners/%s/$ref", id, ownerId),
 		})
 		if err != nil {
-			return err
+			return status, err
 		}
 	}
-	return nil
+	return status, nil
 }

@@ -43,17 +43,18 @@ type DeleteHttpRequestInput struct {
 	Uri              string
 }
 
-func (c BaseClient) Delete(ctx context.Context, input DeleteHttpRequestInput) (*http.Response, error) {
+func (c BaseClient) Delete(ctx context.Context, input DeleteHttpRequestInput) (*http.Response, int, error) {
+	var status int
 	url := c.buildUri(input.Uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	resp, err := c.performRequest(ctx, req, input.ValidStatusCodes)
+	resp, status, err := c.performRequest(ctx, req, input.ValidStatusCodes)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return resp, nil
+	return resp, status, nil
 }
 
 type GetHttpRequestInput struct {
@@ -61,17 +62,18 @@ type GetHttpRequestInput struct {
 	Uri              string
 }
 
-func (c BaseClient) Get(ctx context.Context, input GetHttpRequestInput) (*http.Response, error) {
+func (c BaseClient) Get(ctx context.Context, input GetHttpRequestInput) (*http.Response, int, error) {
+	var status int
 	url := c.buildUri(input.Uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	resp, err := c.performRequest(ctx, req, input.ValidStatusCodes)
+	resp, status, err := c.performRequest(ctx, req, input.ValidStatusCodes)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return resp, nil
+	return resp, status, nil
 }
 
 type PostHttpRequestInput struct {
@@ -80,17 +82,32 @@ type PostHttpRequestInput struct {
 	Uri              string
 }
 
-func (c BaseClient) Post(ctx context.Context, input PostHttpRequestInput) (*http.Response, error) {
+func (c BaseClient) Patch(ctx context.Context, input PatchHttpRequestInput) (*http.Response, int, error) {
+	var status int
+	url := c.buildUri(input.Uri)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(input.Body))
+	if err != nil {
+		return nil, status, err
+	}
+	resp, status, err := c.performRequest(ctx, req, input.ValidStatusCodes)
+	if err != nil {
+		return nil, status, err
+	}
+	return resp, status, nil
+}
+
+func (c BaseClient) Post(ctx context.Context, input PostHttpRequestInput) (*http.Response, int, error) {
+	var status int
 	url := c.buildUri(input.Uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(input.Body))
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	resp, err := c.performRequest(ctx, req, input.ValidStatusCodes)
+	resp, status, err := c.performRequest(ctx, req, input.ValidStatusCodes)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return resp, nil
+	return resp, status, nil
 }
 
 type PutHttpRequestInput struct {
@@ -99,17 +116,18 @@ type PutHttpRequestInput struct {
 	Uri              string
 }
 
-func (c BaseClient) Put(ctx context.Context, input PutHttpRequestInput) (*http.Response, error) {
+func (c BaseClient) Put(ctx context.Context, input PutHttpRequestInput) (*http.Response, int, error) {
+	var status int
 	url := c.buildUri(input.Uri)
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(input.Body))
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	resp, err := c.performRequest(ctx, req, input.ValidStatusCodes)
+	resp, status, err := c.performRequest(ctx, req, input.ValidStatusCodes)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	return resp, nil
+	return resp, status, nil
 }
 
 type PatchHttpRequestInput struct {
@@ -118,27 +136,15 @@ type PatchHttpRequestInput struct {
 	Uri              string
 }
 
-func (c BaseClient) Patch(ctx context.Context, input PatchHttpRequestInput) (*http.Response, error) {
-	url := c.buildUri(input.Uri)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(input.Body))
-	if err != nil {
-		return nil, err
-	}
-	resp, err := c.performRequest(ctx, req, input.ValidStatusCodes)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c BaseClient) buildUri(uri string) string {
 	return fmt.Sprintf("%s/%s/%s/%s", c.Endpoint, c.ApiVersion, c.TenantId, strings.TrimLeft(uri, "/"))
 }
 
-func (c BaseClient) performRequest(_ context.Context, req *http.Request, validStatusCodes []int) (*http.Response, error) {
+func (c BaseClient) performRequest(_ context.Context, req *http.Request, validStatusCodes []int) (*http.Response, int, error) {
+	var status int
 	token, err := c.authorizer.Token()
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
 	token.SetAuthHeader(req)
 	req.Header.Add("Accept", "application/json")
@@ -146,14 +152,15 @@ func (c BaseClient) performRequest(_ context.Context, req *http.Request, validSt
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, status, err
 	}
-	if !containsStatusCode(validStatusCodes, resp.StatusCode) {
+	status = resp.StatusCode
+	if !containsStatusCode(validStatusCodes, status) {
 		defer resp.Body.Close()
 		respBody, _ := ioutil.ReadAll(resp.Body)
-		return nil, fmt.Errorf("unexpected status %d with response: %s", resp.StatusCode, string(respBody))
+		return nil, status, fmt.Errorf("unexpected status %d with response: %s", resp.StatusCode, string(respBody))
 	}
-	return resp, nil
+	return resp, status, nil
 }
 
 func containsStatusCode(expected []int, actual int) bool {
