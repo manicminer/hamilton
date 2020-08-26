@@ -18,7 +18,7 @@ type DomainsClient struct {
 
 func NewDomainsClient(authorizer auth.Authorizer, tenantId string) *DomainsClient {
 	return &DomainsClient{
-		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.Version10),
 	}
 }
 
