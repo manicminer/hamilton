@@ -1,0 +1,208 @@
+package clients
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+
+	"github.com/manicminer/hamilton/auth"
+	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/models"
+)
+
+type ApplicationsClient struct {
+	BaseClient base.BaseClient
+}
+
+func NewApplicationsClient(authorizer auth.Authorizer, tenantId string) *ApplicationsClient {
+	return &ApplicationsClient{
+		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+	}
+}
+
+func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]models.Application, int, error) {
+	params := url.Values{}
+	if filter != "" {
+		params.Add("$filter", filter)
+	}
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri:              fmt.Sprintf("/applications?%s", params.Encode()),
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		Applications []models.Application `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	return &data.Applications, status, nil
+}
+
+func (c *ApplicationsClient) Create(ctx context.Context, application models.Application) (*models.Application, int, error) {
+	var status int
+	body, err := json.Marshal(application)
+	if err != nil {
+		return nil, status, err
+	}
+	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri:              "/applications",
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var newApplication models.Application
+	if err := json.Unmarshal(respBody, &newApplication); err != nil {
+		return nil, status, err
+	}
+	return &newApplication, status, nil
+}
+
+func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Application, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri:              fmt.Sprintf("/applications/%s", id),
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var application models.Application
+	if err := json.Unmarshal(respBody, &application); err != nil {
+		return nil, status, err
+	}
+	return &application, status, nil
+}
+
+func (c *ApplicationsClient) Update(ctx context.Context, application models.Application) (int, error) {
+	var status int
+	body, err := json.Marshal(application)
+	if err != nil {
+		return status, err
+	}
+	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri:              fmt.Sprintf("/applications/%s", *application.ID),
+	})
+	if err != nil {
+		return status, err
+	}
+	return status, nil
+}
+
+func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error) {
+	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri:              fmt.Sprintf("/applications/%s", id),
+	})
+	if err != nil {
+		return status, err
+	}
+	return status, nil
+}
+
+func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri:              fmt.Sprintf("/applications/%s/owners?$select=id", id),
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		Owners []struct {
+			Type string `json:"@odata.type"`
+			Id   string `json:"id"`
+		} `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	ret := make([]string, len(data.Owners))
+	for i, v := range data.Owners {
+		ret[i] = v.Id
+	}
+	return &ret, status, nil
+}
+
+func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerId string) (*string, int, error) {
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri:              fmt.Sprintf("/applications/%s/owners/%s/$ref?$select=id,url", applicationId, ownerId),
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		Context string `json:"@odata.context"`
+		Type    string `json:"@odata.type"`
+		Id      string `json:"id"`
+		Url     string `json:"url"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	return &data.Id, status, nil
+}
+
+func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.Application) (int, error) {
+	var status int
+	for _, owner := range *application.Owners {
+		data := struct {
+			Owner string `json:"@odata.id"`
+		}{
+			Owner: owner,
+		}
+		body, err := json.Marshal(data)
+		if err != nil {
+			return status, err
+		}
+		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+			Body:             body,
+			ValidStatusCodes: []int{http.StatusNoContent},
+			Uri:              fmt.Sprintf("/applications/%s/owners/$ref", *application.ID),
+		})
+		if err != nil {
+			return status, err
+		}
+	}
+	return status, nil
+}
+
+func (c *ApplicationsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
+	var status int
+	for _, ownerId := range *ownerIds {
+		// check for ownership before attempting deletion
+		if _, status, err := c.GetOwner(ctx, id, ownerId); err != nil {
+			if status == http.StatusNotFound {
+				continue
+			}
+			return status, err
+		}
+		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+			ValidStatusCodes: []int{http.StatusNoContent},
+			Uri:              fmt.Sprintf("/applications/%s/owners/%s/$ref", id, ownerId),
+		})
+		if err != nil {
+			return status, err
+		}
+	}
+	return status, nil
+}

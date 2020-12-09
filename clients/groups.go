@@ -295,7 +295,7 @@ func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]
 	var status int
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
-		if _, status, err := c.GetMember(ctx, id, ownerId); err != nil {
+		if _, status, err := c.GetOwner(ctx, id, ownerId); err != nil {
 			if status == http.StatusNotFound {
 				continue
 			}
