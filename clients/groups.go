@@ -14,12 +14,12 @@ import (
 )
 
 type GroupsClient struct {
-	BaseClient base.BaseClient
+	BaseClient base.Client
 }
 
 func NewGroupsClient(authorizer auth.Authorizer, tenantId string) *GroupsClient {
 	return &GroupsClient{
-		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 

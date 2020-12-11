@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
@@ -14,12 +15,12 @@ import (
 )
 
 type ApplicationsClient struct {
-	BaseClient base.BaseClient
+	BaseClient base.Client
 }
 
 func NewApplicationsClient(authorizer auth.Authorizer, tenantId string) *ApplicationsClient {
 	return &ApplicationsClient{
-		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
@@ -196,8 +197,27 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, id string, ownerI
 			}
 			return status, err
 		}
+
+		// despite the above check, sometimes owners are just gone
+		checkOwnerGone := func(resp *http.Response) bool {
+			if resp.StatusCode == http.StatusBadRequest {
+				defer resp.Body.Close()
+				respBody, _ := ioutil.ReadAll(resp.Body)
+				var apiError models.Error
+				if err := json.Unmarshal(respBody, &apiError); err != nil {
+					return false
+				}
+				re := regexp.MustCompile("One or more removed object references do not exist")
+				if re.MatchString(apiError.Error.Message) {
+					return true
+				}
+			}
+			return false
+		}
+
 		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
+			ValidStatusFunc:  checkOwnerGone,
 			Uri:              fmt.Sprintf("/applications/%s/owners/%s/$ref", id, ownerId),
 		})
 		if err != nil {

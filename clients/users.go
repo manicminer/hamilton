@@ -14,12 +14,12 @@ import (
 )
 
 type UsersClient struct {
-	BaseClient base.BaseClient
+	BaseClient base.Client
 }
 
 func NewUsersClient(authorizer auth.Authorizer, tenantId string) *UsersClient {
 	return &UsersClient{
-		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 

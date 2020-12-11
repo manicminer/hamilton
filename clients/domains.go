@@ -13,12 +13,12 @@ import (
 )
 
 type DomainsClient struct {
-	BaseClient base.BaseClient
+	BaseClient base.Client
 }
 
 func NewDomainsClient(authorizer auth.Authorizer, tenantId string) *DomainsClient {
 	return &DomainsClient{
-		BaseClient: base.NewBaseClient(authorizer, base.DefaultEndpoint, tenantId, base.Version10),
+		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.Version10),
 	}
 }
 
