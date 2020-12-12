@@ -1,8 +1,11 @@
 package models
 
 import (
+	goerrors "errors"
 	"fmt"
 	"time"
+
+	"github.com/manicminer/hamilton/errors"
 )
 
 type Application struct {
@@ -43,6 +46,75 @@ func (a *Application) AppendOwner(endpoint string, apiVersion string, id string)
 	}
 	owners = append(owners, val)
 	a.Owners = &owners
+}
+
+func (a *Application) AppendAppRole(role ApplicationAppRole) error {
+	if role.ID == nil {
+		return goerrors.New("ID of new role is nil")
+	}
+
+	cap := 1
+	if a.AppRoles != nil {
+		cap += len(*a.AppRoles)
+	}
+
+	newRoles := make([]ApplicationAppRole, 1, cap)
+	newRoles[0] = role
+
+	for _, v := range *a.AppRoles {
+		if v.ID != nil && *v.ID == *role.ID {
+			return &errors.AlreadyExistsError{"App Role", *role.ID}
+		}
+		newRoles = append(newRoles, v)
+	}
+
+	a.AppRoles = &newRoles
+	return nil
+}
+
+func (a *Application) RemoveAppRole(role ApplicationAppRole) error {
+	if role.ID == nil {
+		return goerrors.New("ID of role is nil")
+	}
+
+	if a.AppRoles == nil {
+		return goerrors.New("no roles to remove")
+	}
+
+	appRoles := make([]ApplicationAppRole, 0, len(*a.AppRoles))
+	for _, v := range *a.AppRoles {
+		if v.ID == nil || *v.ID != *role.ID {
+			appRoles = append(appRoles, v)
+		}
+	}
+
+	if len(appRoles) == len(*a.AppRoles) {
+		return goerrors.New("could not find role to remove")
+	}
+
+	a.AppRoles = &appRoles
+	return nil
+}
+
+func (a *Application) UpdateAppRole(role ApplicationAppRole) error {
+	if role.ID == nil {
+		return goerrors.New("ID of role is nil")
+	}
+
+	if a.AppRoles == nil {
+		return goerrors.New("no roles to update")
+	}
+
+	appRoles := *a.AppRoles
+	for i, v := range appRoles {
+		if v.ID != nil && *v.ID == *role.ID {
+			appRoles[i] = role
+			break
+		}
+	}
+
+	a.AppRoles = &appRoles
+	return nil
 }
 
 type ApplicationAddIn struct {
