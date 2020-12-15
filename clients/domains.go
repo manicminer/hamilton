@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
 	"github.com/manicminer/hamilton/models"
-	"io/ioutil"
-	"net/http"
 )
 
 type DomainsClient struct {
