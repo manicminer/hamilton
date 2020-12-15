@@ -2,13 +2,14 @@ package base
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
 type GetHttpRequestInput struct {
 	ValidStatusCodes []int
 	ValidStatusFunc  ValidStatusFunc
-	Uri              string
+	Uri              Uri
 }
 
 func (i GetHttpRequestInput) GetValidStatusCodes() []int {
@@ -21,7 +22,10 @@ func (i GetHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 
 func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Response, int, error) {
 	var status int
-	url := c.buildUri(input.Uri)
+	url, err := c.buildUri(input.Uri)
+	if err != nil {
+		return nil, status, fmt.Errorf("unable to make request: %v", err)
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return nil, status, err

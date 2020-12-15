@@ -17,7 +17,7 @@ type MeClient struct {
 
 func NewMeClient(authorizer auth.Authorizer, tenantId string) *MeClient {
 	return &MeClient{
-		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.Version10),
+		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
@@ -25,7 +25,31 @@ func (c *MeClient) Get(ctx context.Context) (*models.Me, int, error) {
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              "/me",
+		Uri: base.Uri{
+			Entity:      "/me",
+			HasTenantId: false,
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var me models.Me
+	if err := json.Unmarshal(respBody, &me); err != nil {
+		return nil, status, err
+	}
+	return &me, status, nil
+}
+
+func (c *MeClient) GetProfile(ctx context.Context) (*models.Me, int, error) {
+	var status int
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: base.Uri{
+			Entity:      "/me/profile",
+			HasTenantId: false,
+		},
 	})
 	if err != nil {
 		return nil, status, err

@@ -2,13 +2,14 @@ package base
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 )
 
 type DeleteHttpRequestInput struct {
 	ValidStatusCodes []int
 	ValidStatusFunc  ValidStatusFunc
-	Uri              string
+	Uri              Uri
 }
 
 func (i DeleteHttpRequestInput) GetValidStatusCodes() []int {
@@ -21,7 +22,10 @@ func (i DeleteHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 
 func (c Client) Delete(ctx context.Context, input DeleteHttpRequestInput) (*http.Response, int, error) {
 	var status int
-	url := c.buildUri(input.Uri)
+	url, err := c.buildUri(input.Uri)
+	if err != nil {
+		return nil, status, fmt.Errorf("unable to make request: %v", err)
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
 	if err != nil {
 		return nil, status, err

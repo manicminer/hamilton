@@ -3,6 +3,7 @@ package clients
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -31,7 +32,11 @@ func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]models
 	}
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/applications?%s", params.Encode()),
+		Uri: base.Uri{
+			Entity:      "/applications",
+			Params:      params,
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
@@ -56,7 +61,10 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
-		Uri:              "/applications",
+		Uri: base.Uri{
+			Entity:      "/applications",
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
@@ -73,7 +81,10 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Application, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/applications/%s", id),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/applications/%s", id),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
@@ -89,6 +100,9 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Applic
 
 func (c *ApplicationsClient) Update(ctx context.Context, application models.Application) (int, error) {
 	var status int
+	if application.ID == nil {
+		return status, errors.New("cannot update application with nil ID")
+	}
 	body, err := json.Marshal(application)
 	if err != nil {
 		return status, err
@@ -96,7 +110,10 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri:              fmt.Sprintf("/applications/%s", *application.ID),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/applications/%s", *application.ID),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return status, err
@@ -107,7 +124,10 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri:              fmt.Sprintf("/applications/%s", id),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/applications/%s", id),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return status, err
@@ -118,7 +138,11 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/applications/%s/owners?$select=id", id),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/applications/%s/owners?$select=id", id),
+			HasTenantId: true,
+		},
+
 	})
 	if err != nil {
 		return nil, status, err
@@ -144,7 +168,11 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerId string) (*string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/applications/%s/owners/%s/$ref?$select=id,url", applicationId, ownerId),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref?$select=id,url", applicationId, ownerId),
+			HasTenantId: true,
+		},
+
 	})
 	if err != nil {
 		return nil, status, err
@@ -165,6 +193,12 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 
 func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.Application) (int, error) {
 	var status int
+	if application.ID == nil {
+		return status, errors.New("cannot update application with nil ID")
+	}
+	if application.Owners == nil {
+		return status, errors.New("cannot update application with nil Owners")
+	}
 	for _, owner := range *application.Owners {
 		data := struct {
 			Owner string `json:"@odata.id"`
@@ -178,7 +212,10 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
-			Uri:              fmt.Sprintf("/applications/%s/owners/$ref", *application.ID),
+			Uri: base.Uri{
+				Entity:      fmt.Sprintf("/applications/%s/owners/$ref", *application.ID),
+				HasTenantId: true,
+			},
 		})
 		if err != nil {
 			return status, err
@@ -189,6 +226,9 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 
 func (c *ApplicationsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
 	var status int
+	if ownerIds == nil {
+		return status, errors.New("cannot remove, nil ownerIds")
+	}
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
 		if _, status, err := c.GetOwner(ctx, id, ownerId); err != nil {
@@ -218,7 +258,10 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, id string, ownerI
 		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			ValidStatusFunc:  checkOwnerGone,
-			Uri:              fmt.Sprintf("/applications/%s/owners/%s/$ref", id, ownerId),
+			Uri: base.Uri{
+				Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", id, ownerId),
+				HasTenantId: true,
+			},
 		})
 		if err != nil {
 			return status, err

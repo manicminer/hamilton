@@ -30,7 +30,11 @@ func (c *UsersClient) List(ctx context.Context, filter string) (*[]models.User, 
 	}
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/users?%s", params.Encode()),
+		Uri: base.Uri{
+			Entity:      "/users",
+			Params:      params,
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
@@ -55,7 +59,10 @@ func (c *UsersClient) Create(ctx context.Context, user models.User) (*models.Use
 	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
-		Uri:              "/users",
+		Uri: base.Uri{
+			Entity:      "/users",
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
@@ -72,7 +79,10 @@ func (c *UsersClient) Create(ctx context.Context, user models.User) (*models.Use
 func (c *UsersClient) Get(ctx context.Context, id string) (*models.User, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/users/%s", id),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/users/%s", id),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
@@ -95,7 +105,10 @@ func (c *UsersClient) Update(ctx context.Context, user models.User) (int, error)
 	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri:              fmt.Sprintf("/users/%s", *user.ID),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/users/%s", *user.ID),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return status, err
@@ -106,7 +119,10 @@ func (c *UsersClient) Update(ctx context.Context, user models.User) (int, error)
 func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri:              fmt.Sprintf("/users/%s", id),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/users/%s", id),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return status, err

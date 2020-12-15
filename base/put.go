@@ -3,6 +3,7 @@ package base
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -10,7 +11,7 @@ type PutHttpRequestInput struct {
 	Body             []byte
 	ValidStatusCodes []int
 	ValidStatusFunc  ValidStatusFunc
-	Uri              string
+	Uri              Uri
 }
 
 func (i PutHttpRequestInput) GetValidStatusCodes() []int {
@@ -23,7 +24,10 @@ func (i PutHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 
 func (c Client) Put(ctx context.Context, input PutHttpRequestInput) (*http.Response, int, error) {
 	var status int
-	url := c.buildUri(input.Uri)
+	url, err := c.buildUri(input.Uri)
+	if err != nil {
+		return nil, status, fmt.Errorf("unable to make request: %v", err)
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(input.Body))
 	if err != nil {
 		return nil, status, err

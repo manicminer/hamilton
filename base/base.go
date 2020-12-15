@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 
 	"github.com/manicminer/hamilton/auth"
@@ -21,6 +22,12 @@ type ValidStatusFunc func(response *http.Response) bool
 type HttpRequestInput interface {
 	GetValidStatusCodes() []int
 	GetValidStatusFunc() ValidStatusFunc
+}
+
+type Uri struct {
+	Entity      string
+	Params      url.Values
+	HasTenantId bool
 }
 
 type GraphClient = *http.Client
@@ -44,8 +51,20 @@ func NewClient(authorizer auth.Authorizer, endpoint, tenantId, version string) C
 	}
 }
 
-func (c Client) buildUri(uri string) string {
-	return fmt.Sprintf("%s/%s/%s/%s", c.Endpoint, c.ApiVersion, c.TenantId, strings.TrimLeft(uri, "/"))
+func (c Client) buildUri(uri Uri) (string, error) {
+	url, err := url.Parse(c.Endpoint)
+	if err != nil {
+		return "", err
+	}
+	url.Path = "/" + c.ApiVersion
+	if uri.HasTenantId {
+		url.Path = fmt.Sprintf("%s/%s", url.Path, c.TenantId)
+	}
+	url.Path = fmt.Sprintf("%s/%s", url.Path, strings.TrimLeft(uri.Entity, "/"))
+	if uri.Params != nil {
+		url.RawQuery = uri.Params.Encode()
+	}
+	return url.String(), nil
 }
 
 func (c Client) performRequest(_ context.Context, req *http.Request, input HttpRequestInput) (*http.Response, int, error) {

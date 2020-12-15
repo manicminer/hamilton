@@ -26,7 +26,10 @@ func (c *DomainsClient) List(ctx context.Context) (*[]models.Domain, int, error)
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              "/domains",
+		Uri: base.Uri{
+			Entity:      "/domains",
+			HasTenantId: true,
+		},
 	})
 
 	if err != nil {
@@ -51,7 +54,10 @@ func (c *DomainsClient) Get(ctx context.Context, id string) (*models.Domain, int
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri:              fmt.Sprintf("/domains/%s", id),
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/domains/%s", id),
+			HasTenantId: true,
+		},
 	})
 	if err != nil {
 		return nil, status, err
