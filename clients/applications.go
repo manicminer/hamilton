@@ -135,11 +135,38 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 	return status, nil
 }
 
+func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, keyCredential models.KeyCredential) (*models.KeyCredential, int, error) {
+	var status int
+	body, err := json.Marshal(keyCredential)
+	if err != nil {
+		return nil, status, err
+	}
+	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/applications/%s/addKey", applicationId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var newKeyCredential models.KeyCredential
+	if err := json.Unmarshal(respBody, &newKeyCredential); err != nil {
+		return nil, status, err
+	}
+	return &newKeyCredential, status, nil
+}
+
 func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
-			Entity:      fmt.Sprintf("/applications/%s/owners?$select=id", id),
+			Entity:      fmt.Sprintf("/applications/%s/owners", id),
+			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
 
@@ -169,7 +196,8 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
-			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref?$select=id,url", applicationId, ownerId),
+			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
+			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
 
@@ -224,14 +252,14 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 	return status, nil
 }
 
-func (c *ApplicationsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
+func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId string, ownerIds *[]string) (int, error) {
 	var status int
 	if ownerIds == nil {
 		return status, errors.New("cannot remove, nil ownerIds")
 	}
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
-		if _, status, err := c.GetOwner(ctx, id, ownerId); err != nil {
+		if _, status, err := c.GetOwner(ctx, applicationId, ownerId); err != nil {
 			if status == http.StatusNotFound {
 				continue
 			}
@@ -259,7 +287,7 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, id string, ownerI
 			ValidStatusCodes: []int{http.StatusNoContent},
 			ValidStatusFunc:  checkOwnerGone,
 			Uri: base.Uri{
-				Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", id, ownerId),
+				Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
 				HasTenantId: true,
 			},
 		})

@@ -134,7 +134,8 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
-			Entity:      fmt.Sprintf("/groups/%s/members?$select=id", id),
+			Entity:      fmt.Sprintf("/groups/%s/members", id),
+			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
 	})
@@ -163,7 +164,8 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
-			Entity:      fmt.Sprintf("/groups/%s/members/%s/$ref?$select=id,url", groupId, memberId),
+			Entity:      fmt.Sprintf("/groups/%s/members/%s/$ref", groupId, memberId),
+			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
 	})
@@ -251,7 +253,8 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, in
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
-			Entity:      fmt.Sprintf("/groups/%s/owners?$select=id", id),
+			Entity:      fmt.Sprintf("/groups/%s/owners", id),
+			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
 	})
@@ -280,7 +283,8 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
-			Entity:      fmt.Sprintf("/groups/%s/owners/%s/$ref?$select=id,url", groupId, ownerId),
+			Entity:      fmt.Sprintf("/groups/%s/owners/%s/$ref", groupId, ownerId),
+			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
 	})
