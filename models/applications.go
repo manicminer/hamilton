@@ -10,7 +10,7 @@ import (
 
 type Application struct {
 	ID                         *string                              `json:"id,omitempty,readonly"`
-	AddIns                     *[]ApplicationAddIn                  `json:"addIns,omitempty"`
+	AddIns                     *[]AddIn                             `json:"addIns,omitempty"`
 	Api                        *ApplicationApi                      `json:"api,omitempty"`
 	AppId                      *string                              `json:"appId,omitempty"`
 	AppRoles                   *[]ApplicationAppRole                `json:"appRoles,omitempty"`
@@ -19,7 +19,7 @@ type Application struct {
 	DisplayName                *string                              `json:"displayName,omitempty"`
 	GroupMembershipClaims      *string                              `json:"groupMembershipClaims,omitempty"`
 	IdentifierUris             *[]string                            `json:"identifierUris,omitempty"`
-	Info                       *ApplicationInformationalUrl         `json:"info,omitempty"`
+	Info                       *InformationalUrl                    `json:"info,omitempty"`
 	IsFallbackPublicClient     *bool                                `json:"isFallbackPublicCLient,omitempty"`
 	KeyCredentials             *[]KeyCredential                     `json:"keyCredentials,omitempty"`
 	Oauth2RequiredPostResponse *bool                                `json:"oauth2RequiredPostResponse,omitempty"`
@@ -30,7 +30,7 @@ type Application struct {
 	PublicClient               *ApplicationPublicClient             `json:"publicClient,omitempty"`
 	PublisherDomain            *string                              `json:"publisherDomain,omitempty"`
 	RequiredResourceAccess     *[]ApplicationRequiredResourceAccess `json:"requiredResourceAccess,omitempty"`
-	SignInAudience             ApplicationSignInAudience            `json:"signInAudience,omitempty"`
+	SignInAudience             SignInAudience                       `json:"signInAudience,omitempty"`
 	Tags                       *[]string                            `json:"tags,omitempty"`
 	TokenEncryptionKeyId       *string                              `json:"tokenEncryptionKeyId,omitempty"`
 	Web                        *ApplicationWeb                      `json:"web,omitempty"`
@@ -117,34 +117,12 @@ func (a *Application) UpdateAppRole(role ApplicationAppRole) error {
 	return nil
 }
 
-type ApplicationAddIn struct {
-	ID         *string          `json:"id,omitempty"`
-	Properties *[]AddInKeyValue `json:"properties,omitempty"`
-	Type       *string          `json:"type,omitempty"`
-}
-
-type AddInKeyValue struct {
-	Key   *string `json:"key,omitempty"`
-	Value *string `json:"value,omitempty"`
-}
-
 type ApplicationApi struct {
 	AcceptMappedClaims          *bool                                     `json:"acceptMappedClaims,omitempty"`
 	KnownClientApplications     *[]string                                 `json:"knownClientApplications,omitempty"`
-	OAuth2PermissionScopes      *[]ApplicationApiPermissionScope          `json:"oauth2PermissionScopes,omitempty"`
+	OAuth2PermissionScopes      *[]PermissionScope                        `json:"oauth2PermissionScopes,omitempty"`
 	PreAuthorizedApplications   *[]ApplicationApiPreAuthorizedApplication `json:"preAuthorizedApplications,omitempty"`
 	RequestedAccessTokenVersion *int32                                    `json:"requestedAccessTokenVersion,omitempty"`
-}
-
-type ApplicationApiPermissionScope struct {
-	ID                      *string `json:"id,omitempty"`
-	AdminConsentDescription *string `json:"adminConsentDescription,omitempty"`
-	AdminConsentDisplayName *string `json:"adminConsentDisplayName,omitempty"`
-	IsEnabled               *bool   `json:"isEnabled,omitempty"`
-	Type                    *string `json:"type,omitempty"`
-	UserConsentDescription  *string `json:"userConsentDescription,omitempty"`
-	UserConsentDisplayName  *string `json:"userConsentDisplayName,omitempty"`
-	Value                   *string `json:"value,omitempty"`
 }
 
 type ApplicationApiPreAuthorizedApplication struct {
@@ -165,14 +143,6 @@ type ApplicationAppRole struct {
 type ApplicationImplicitGrantSettings struct {
 	EnableAccessTokenIssuance *bool `json:"enableAccessTokenIssuance,omitempty"`
 	EnableIdTokenIssuance     *bool `json:"enableIdTokenIssuance,omitempty"`
-}
-
-type ApplicationInformationalUrl struct {
-	LogoUrl             *string `json:"logoUrl,omitempty`
-	MarketingUrl        *string `json:"marketingUrl"`
-	PrivacyStatementUrl *string `json:"privacyStatementUrl"`
-	SupportUrl          *string `json:"supportUrl"`
-	TermsOfServiceUrl   *string `json:"termsOfServiceUrl"`
 }
 
 type ApplicationKerberosSignOnSettings struct {
@@ -239,14 +209,6 @@ type ApplicationResourceAccess struct {
 	ID   *string `json:"id,omitempty"`
 	Type *string `json:"type,omitempty"`
 }
-
-type ApplicationSignInAudience string
-
-const (
-	SignInAudienceAzureADMyOrg                       ApplicationSignInAudience = "AzureADMyOrg"
-	SignInAudienceAzureADMultipleOrgs                ApplicationSignInAudience = "AzureADMultipleOrgs"
-	SignInAudienceAzureADandPersonalMicrosoftAccount ApplicationSignInAudience = "AzureADandPersonalMicrosoftAccount"
-)
 
 type ApplicationWeb struct {
 	HomePageUrl           *string                           `json:"homePageUrl"`
