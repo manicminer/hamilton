@@ -30,7 +30,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.performRequest(ctx, req, input)
+	resp, status, err := c.performRequest(req, input)
 	if err != nil {
 		return nil, status, err
 	}

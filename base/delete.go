@@ -30,7 +30,7 @@ func (c Client) Delete(ctx context.Context, input DeleteHttpRequestInput) (*http
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.performRequest(ctx, req, input)
+	resp, status, err := c.performRequest(req, input)
 	if err != nil {
 		return nil, status, err
 	}

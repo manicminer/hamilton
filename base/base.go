@@ -1,7 +1,6 @@
 package base
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -67,7 +66,7 @@ func (c Client) buildUri(uri Uri) (string, error) {
 	return url.String(), nil
 }
 
-func (c Client) performRequest(_ context.Context, req *http.Request, input HttpRequestInput) (*http.Response, int, error) {
+func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http.Response, int, error) {
 	var status int
 
 	if c.Authorizer != nil {
