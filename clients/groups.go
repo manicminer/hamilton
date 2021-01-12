@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
 	"github.com/manicminer/hamilton/models"
 )
@@ -17,9 +16,9 @@ type GroupsClient struct {
 	BaseClient base.Client
 }
 
-func NewGroupsClient(authorizer auth.Authorizer, tenantId string) *GroupsClient {
+func NewGroupsClient(tenantId string) *GroupsClient {
 	return &GroupsClient{
-		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 

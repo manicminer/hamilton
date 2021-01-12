@@ -10,7 +10,6 @@ import (
 	"net/url"
 	"regexp"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
 	"github.com/manicminer/hamilton/models"
 )
@@ -19,9 +18,9 @@ type ApplicationsClient struct {
 	BaseClient base.Client
 }
 
-func NewApplicationsClient(authorizer auth.Authorizer, tenantId string) *ApplicationsClient {
+func NewApplicationsClient(tenantId string) *ApplicationsClient {
 	return &ApplicationsClient{
-		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 

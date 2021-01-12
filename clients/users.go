@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
 	"github.com/manicminer/hamilton/models"
 )
@@ -17,9 +16,9 @@ type UsersClient struct {
 	BaseClient base.Client
 }
 
-func NewUsersClient(authorizer auth.Authorizer, tenantId string) *UsersClient {
+func NewUsersClient(tenantId string) *UsersClient {
 	return &UsersClient{
-		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 

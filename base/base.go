@@ -36,14 +36,14 @@ type Client struct {
 	ApiVersion string
 	Endpoint   string
 	TenantId   string
+	UserAgent  string
 
-	authorizer auth.Authorizer
+	Authorizer auth.Authorizer
 	httpClient GraphClient
 }
 
-func NewClient(authorizer auth.Authorizer, endpoint, tenantId, version string) Client {
+func NewClient(endpoint, tenantId, version string) Client {
 	return Client{
-		authorizer: authorizer,
 		httpClient: http.DefaultClient,
 		Endpoint:   endpoint,
 		TenantId:   tenantId,
@@ -70,14 +70,20 @@ func (c Client) buildUri(uri Uri) (string, error) {
 func (c Client) performRequest(_ context.Context, req *http.Request, input HttpRequestInput) (*http.Response, int, error) {
 	var status int
 
-	token, err := c.authorizer.Token()
-	if err != nil {
-		return nil, status, err
+	if c.Authorizer != nil {
+		token, err := c.Authorizer.Token()
+		if err != nil {
+			return nil, status, err
+		}
+		token.SetAuthHeader(req)
 	}
 
-	token.SetAuthHeader(req)
 	req.Header.Add("Accept", "application/json")
 	req.Header.Add("Content-Type", "application/json; charset=utf-8")
+
+	if c.UserAgent != "" {
+		req.Header.Add("User-Agent", c.UserAgent)
+	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {

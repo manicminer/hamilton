@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/base"
 	"github.com/manicminer/hamilton/models"
 )
@@ -16,9 +15,9 @@ type DomainsClient struct {
 	BaseClient base.Client
 }
 
-func NewDomainsClient(authorizer auth.Authorizer, tenantId string) *DomainsClient {
+func NewDomainsClient(tenantId string) *DomainsClient {
 	return &DomainsClient{
-		BaseClient: base.NewClient(authorizer, base.DefaultEndpoint, tenantId, base.Version10),
+		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.Version10),
 	}
 }
 
