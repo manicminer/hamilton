@@ -14,16 +14,19 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+// ApplicationsCLient performs operations on Applications.
 type ApplicationsClient struct {
 	BaseClient base.Client
 }
 
+// NewApplicationsClient returns a new ApplicationsClient
 func NewApplicationsClient(tenantId string) *ApplicationsClient {
 	return &ApplicationsClient{
 		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
+// List returns a list of Applications, optionally filtered using OData.
 func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]models.Application, int, error) {
 	params := url.Values{}
 	if filter != "" {
@@ -51,6 +54,7 @@ func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]models
 	return &data.Applications, status, nil
 }
 
+// Create creates a new Application.
 func (c *ApplicationsClient) Create(ctx context.Context, application models.Application) (*models.Application, int, error) {
 	var status int
 	body, err := json.Marshal(application)
@@ -77,6 +81,7 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 	return &newApplication, status, nil
 }
 
+// Get retrieves an Application manifest.
 func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Application, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -97,6 +102,7 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Applic
 	return &application, status, nil
 }
 
+// Update amends the manifest of an existing Application.
 func (c *ApplicationsClient) Update(ctx context.Context, application models.Application) (int, error) {
 	var status int
 	if application.ID == nil {
@@ -120,6 +126,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 	return status, nil
 }
 
+// Delete removes an Application.
 func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
@@ -134,6 +141,7 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 	return status, nil
 }
 
+// AddKey appends a new key credential to an Application.
 func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, keyCredential models.KeyCredential) (*models.KeyCredential, int, error) {
 	var status int
 	body, err := json.Marshal(keyCredential)
@@ -160,6 +168,8 @@ func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, k
 	return &newKeyCredential, status, nil
 }
 
+// ListOwners retrieves the owners of the specified Application.
+// id is the object ID of the application.
 func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -191,6 +201,9 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 	return &ret, status, nil
 }
 
+// GetOwner retrieves a single owner for the specified Application.
+// applicationId is the object ID of the application.
+// ownerId is the object ID of the owning object.
 func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerId string) (*string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -218,6 +231,8 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 	return &data.Id, status, nil
 }
 
+// AddOwners adds a new owner to an Application.
+// First populate the Owners field of the Application using the AppendOwner method of the model, then call this method.
 func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.Application) (int, error) {
 	var status int
 	if application.ID == nil {
@@ -251,6 +266,9 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 	return status, nil
 }
 
+// RemoveOwners removes owners from an Application.
+// applicationId is the object ID of the application.
+// ownerIds is a *[]string containing object IDs of owners to remove.
 func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId string, ownerIds *[]string) (int, error) {
 	var status int
 	if ownerIds == nil {

@@ -1,5 +1,6 @@
 package models
 
+// User describes a User object.
 type User struct {
 	ID                           *string   `json:"id,omitempty,readonly"`
 	AboutMe                      *string   `json:"aboutMe,omitempty"`

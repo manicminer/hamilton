@@ -7,6 +7,7 @@ import (
 	"strings"
 )
 
+// Claims is used to unmarshall the claims from a JWT issued by the Microsoft Identity Platform.
 type Claims struct {
 	Audience          string   `json:"aud"`
 	Issuer            string   `json:"iss"`
@@ -23,6 +24,7 @@ type Claims struct {
 	IdType         string `json:"idtyp,omitempty"`
 }
 
+// ParseClaims retrieves and parses the claims from a JWT issued by the Microsoft Identity Platform.
 func ParseClaims(token *oauth2.Token) (claims Claims, err error) {
 	if token == nil {
 		return

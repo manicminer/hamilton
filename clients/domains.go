@@ -11,16 +11,19 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+// DomainsClient performs operations on Domains.
 type DomainsClient struct {
 	BaseClient base.Client
 }
 
+// NewDomainsClient returns a new DomainsClient.
 func NewDomainsClient(tenantId string) *DomainsClient {
 	return &DomainsClient{
 		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.Version10),
 	}
 }
 
+// List returns a list of Domains.
 func (c *DomainsClient) List(ctx context.Context) (*[]models.Domain, int, error) {
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
@@ -49,6 +52,7 @@ func (c *DomainsClient) List(ctx context.Context) (*[]models.Domain, int, error)
 	return &data.Domains, status, nil
 }
 
+// Get retrieves a Domain.
 func (c *DomainsClient) Get(ctx context.Context, id string) (*models.Domain, int, error) {
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{

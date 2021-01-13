@@ -12,13 +12,16 @@ import (
 	"time"
 )
 
+// AzureCliAuthorizer is an Authorizer which supports the Azure CLI.
 type AzureCliAuthorizer struct {
+	// TenantID is optional and forces selection of the specified tenant. Must be a valid UUID.
 	TenantID string
 
 	ctx  context.Context
 	conf *AzureCliConfig
 }
 
+// Token returns an access token using the Azure CLI as an authentication mechanism.
 func (a AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 	// We don't need to handle token caching and refreshing since az-cli does that for us
 	var token struct {
@@ -40,10 +43,12 @@ func (a AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 	}, nil
 }
 
+// AzureCliConfig configures an AzureCliAuthorizer.
 type AzureCliConfig struct {
 	TenantID string
 }
 
+// NewAzureCliConfig validates the supplied tenant ID and returns a new AzureCliConfig.
 func NewAzureCliConfig(tenantId string) (*AzureCliConfig, error) {
 	// check az-cli version
 
@@ -69,6 +74,7 @@ func NewAzureCliConfig(tenantId string) (*AzureCliConfig, error) {
 	return &AzureCliConfig{TenantID: tenantId}, nil
 }
 
+// TokenSource provides a source for obtaining access tokens using AzureCliAuthorizer.
 func (c *AzureCliConfig) TokenSource(ctx context.Context) Authorizer {
 	return &AzureCliAuthorizer{
 		TenantID: c.TenantID,
@@ -77,6 +83,7 @@ func (c *AzureCliConfig) TokenSource(ctx context.Context) Authorizer {
 	}
 }
 
+// jsonUnmarshalAzCmd executes an Azure CLI command and unmarshals the JSON output.
 func jsonUnmarshalAzCmd(i interface{}, arg ...string) error {
 	var stderr bytes.Buffer
 	var stdout bytes.Buffer

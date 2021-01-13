@@ -12,16 +12,19 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+// GroupsClient performs operations on Groups.
 type GroupsClient struct {
 	BaseClient base.Client
 }
 
+// NewGroupsClient returns a new GroupsClient.
 func NewGroupsClient(tenantId string) *GroupsClient {
 	return &GroupsClient{
 		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
+// List returns a list of Groups, optionally filtered using OData.
 func (c *GroupsClient) List(ctx context.Context, filter string) (*[]models.Group, int, error) {
 	params := url.Values{}
 	if filter != "" {
@@ -49,6 +52,7 @@ func (c *GroupsClient) List(ctx context.Context, filter string) (*[]models.Group
 	return &data.Groups, status, nil
 }
 
+// Create creates a new Group.
 func (c *GroupsClient) Create(ctx context.Context, group models.Group) (*models.Group, int, error) {
 	var status int
 	body, err := json.Marshal(group)
@@ -75,6 +79,7 @@ func (c *GroupsClient) Create(ctx context.Context, group models.Group) (*models.
 	return &newGroup, status, nil
 }
 
+// Get retrieves a Group.
 func (c *GroupsClient) Get(ctx context.Context, id string) (*models.Group, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -95,6 +100,7 @@ func (c *GroupsClient) Get(ctx context.Context, id string) (*models.Group, int, 
 	return &group, status, nil
 }
 
+// Update amends an existing Group.
 func (c *GroupsClient) Update(ctx context.Context, group models.Group) (int, error) {
 	var status int
 	body, err := json.Marshal(group)
@@ -115,6 +121,7 @@ func (c *GroupsClient) Update(ctx context.Context, group models.Group) (int, err
 	return status, nil
 }
 
+// Delete removes a Group.
 func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
@@ -129,6 +136,8 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 	return status, nil
 }
 
+// ListMembers retrieves the members of the specified Group.
+// id is the object ID of the group.
 func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -159,6 +168,9 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 	return &ret, status, nil
 }
 
+// GetMember retrieves a single member of the specified Group.
+// groupId is the object ID of the group.
+// memberId is the object ID of the member object.
 func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) (*string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -185,6 +197,8 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 	return &data.Id, status, nil
 }
 
+// AddMembers adds a new member to a Group.
+// First populate the Members field of the Group using the AppendMember method of the model, then call this method.
 func (c *GroupsClient) AddMembers(ctx context.Context, group *models.Group) (int, error) {
 	var status int
 	// Patching group members support up to 20 members per request
@@ -224,6 +238,9 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *models.Group) (int
 	return status, nil
 }
 
+// RemoveMembers removes members from a Group.
+// groupId is the object ID of the group.
+// memberIds is a *[]string containing object IDs of members to remove.
 func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *[]string) (int, error) {
 	var status int
 	for _, memberId := range *memberIds {
@@ -248,6 +265,8 @@ func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *
 	return status, nil
 }
 
+// ListOwners retrieves the owners of the specified Group.
+// id is the object ID of the group.
 func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -278,6 +297,9 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, in
 	return &ret, status, nil
 }
 
+// GetOwner retrieves a single owner for the specified Group.
+// groupId is the object ID of the group.
+// ownerId is the object ID of the owning object.
 func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -304,6 +326,8 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 	return &data.Id, status, nil
 }
 
+// AddOwners adds a new owner to a Group.
+// First populate the Owners field of the Group using the AppendOwner method of the model, then call this method.
 func (c *GroupsClient) AddOwners(ctx context.Context, group *models.Group) (int, error) {
 	var status int
 	for _, owner := range *group.Owners {
@@ -331,6 +355,9 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *models.Group) (int,
 	return status, nil
 }
 
+// RemoveOwners removes owners from a Group.
+// groupId is the object ID of the group.
+// ownerIds is a *[]string containing object IDs of owners to remove.
 func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
 	var status int
 	for _, ownerId := range *ownerIds {

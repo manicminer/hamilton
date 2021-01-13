@@ -10,16 +10,19 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+// MeClient performs operations on the authenticated user.
 type MeClient struct {
 	BaseClient base.Client
 }
 
+// NewMeClient returns a new MeClient.
 func NewMeClient(tenantId string) *MeClient {
 	return &MeClient{
 		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
+// Get retrieves information about the authenticated user.
 func (c *MeClient) Get(ctx context.Context) (*models.Me, int, error) {
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
@@ -41,6 +44,7 @@ func (c *MeClient) Get(ctx context.Context) (*models.Me, int, error) {
 	return &me, status, nil
 }
 
+// GetProfile retrieves the profile of the authenticated user.
 func (c *MeClient) GetProfile(ctx context.Context) (*models.Me, int, error) {
 	var status int
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{

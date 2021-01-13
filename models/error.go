@@ -1,5 +1,6 @@
 package models
 
+// Error is used to unmarshal an error response from Microsoft Graph.
 type Error struct {
 	Error struct {
 		Code       string `json:"code,readonly"`

@@ -12,16 +12,19 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+// UsersClient performs operations on Users.
 type UsersClient struct {
 	BaseClient base.Client
 }
 
+// NewUsersClient returns a new UsersClient.
 func NewUsersClient(tenantId string) *UsersClient {
 	return &UsersClient{
 		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
+// List returns a list of Users, optionally filtered using OData.
 func (c *UsersClient) List(ctx context.Context, filter string) (*[]models.User, int, error) {
 	params := url.Values{}
 	if filter != "" {
@@ -49,6 +52,7 @@ func (c *UsersClient) List(ctx context.Context, filter string) (*[]models.User, 
 	return &data.Users, status, nil
 }
 
+// Create creates a new User.
 func (c *UsersClient) Create(ctx context.Context, user models.User) (*models.User, int, error) {
 	var status int
 	body, err := json.Marshal(user)
@@ -75,6 +79,7 @@ func (c *UsersClient) Create(ctx context.Context, user models.User) (*models.Use
 	return &newUser, status, nil
 }
 
+// Get retrieves a User.
 func (c *UsersClient) Get(ctx context.Context, id string) (*models.User, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -95,6 +100,7 @@ func (c *UsersClient) Get(ctx context.Context, id string) (*models.User, int, er
 	return &user, status, nil
 }
 
+// Update amends an existing User.
 func (c *UsersClient) Update(ctx context.Context, user models.User) (int, error) {
 	var status int
 	body, err := json.Marshal(user)
@@ -115,6 +121,7 @@ func (c *UsersClient) Update(ctx context.Context, user models.User) (int, error)
 	return status, nil
 }
 
+// Delete removes a User.
 func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},

@@ -14,16 +14,19 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+// ServicePrincipalsClient performs operations on Service Principals.
 type ServicePrincipalsClient struct {
 	BaseClient base.Client
 }
 
+// NewServicePrincipalsClient returns a new ServicePrincipalsClient.
 func NewServicePrincipalsClient(tenantId string) *ServicePrincipalsClient {
 	return &ServicePrincipalsClient{
 		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
 	}
 }
 
+// List returns a list of Service Principals, optionally filtered using OData.
 func (c *ServicePrincipalsClient) List(ctx context.Context, filter string) (*[]models.ServicePrincipal, int, error) {
 	params := url.Values{}
 	if filter != "" {
@@ -51,6 +54,7 @@ func (c *ServicePrincipalsClient) List(ctx context.Context, filter string) (*[]m
 	return &data.ServicePrincipals, status, nil
 }
 
+// Create creates a new Service Principal.
 func (c *ServicePrincipalsClient) Create(ctx context.Context, servicePrincipal models.ServicePrincipal) (*models.ServicePrincipal, int, error) {
 	var status int
 	body, err := json.Marshal(servicePrincipal)
@@ -77,6 +81,7 @@ func (c *ServicePrincipalsClient) Create(ctx context.Context, servicePrincipal m
 	return &newServicePrincipal, status, nil
 }
 
+// Get retrieves a Service Principal.
 func (c *ServicePrincipalsClient) Get(ctx context.Context, id string) (*models.ServicePrincipal, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -97,6 +102,7 @@ func (c *ServicePrincipalsClient) Get(ctx context.Context, id string) (*models.S
 	return &servicePrincipal, status, nil
 }
 
+// Update amends an existing Service Principal.
 func (c *ServicePrincipalsClient) Update(ctx context.Context, servicePrincipal models.ServicePrincipal) (int, error) {
 	var status int
 	if servicePrincipal.ID == nil {
@@ -120,6 +126,7 @@ func (c *ServicePrincipalsClient) Update(ctx context.Context, servicePrincipal m
 	return status, nil
 }
 
+// Delete removes a Service Principal.
 func (c *ServicePrincipalsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
@@ -134,6 +141,8 @@ func (c *ServicePrincipalsClient) Delete(ctx context.Context, id string) (int, e
 	return status, nil
 }
 
+// ListOwners retrieves the owners of the specified Service Principal.
+// id is the object ID of the service principal.
 func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -165,6 +174,9 @@ func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[
 	return &ret, status, nil
 }
 
+// GetOwner retrieves a single owner for the specified Service Principal.
+// servicePrincipalId is the object ID of the service principal.
+// ownerId is the object ID of the owning object.
 func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipalId, ownerId string) (*string, int, error) {
 	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -192,6 +204,8 @@ func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipal
 	return &data.Id, status, nil
 }
 
+// AddOwners adds a new owner to a Service Principal.
+// First populate the Owners field of the ServicePrincipal using the AppendOwner method of the model, then call this method.
 func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipal *models.ServicePrincipal) (int, error) {
 	var status int
 	if servicePrincipal.ID == nil {
@@ -225,6 +239,9 @@ func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipa
 	return status, nil
 }
 
+// RemoveOwners removes owners from a Service Principal.
+// servicePrincipalId is the object ID of the service principal.
+// ownerIds is a *[]string containing object IDs of owners to remove.
 func (c *ServicePrincipalsClient) RemoveOwners(ctx context.Context, servicePrincipalId string, ownerIds *[]string) (int, error) {
 	var status int
 	if ownerIds == nil {

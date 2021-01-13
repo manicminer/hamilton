@@ -2,6 +2,7 @@ package models
 
 import "time"
 
+// KeyCredential describes a key (certificate) credential for an object.
 type KeyCredential struct {
 	CustomKeyIdentifier *string    `json:"customKeyIdentifier,omitempty"`
 	DisplayName         *string    `json:"displayName,omitempty"`
@@ -13,6 +14,7 @@ type KeyCredential struct {
 	Key                 *string    `json:"key,omitempty"`
 }
 
+// PasswordCredential describes a password credential for an object.
 type PasswordCredential struct {
 	CustomKeyIdentifier *string    `json:"customKeyIdentifier,omitempty"`
 	DisplayName         *string    `json:"displayName,omitempty"`

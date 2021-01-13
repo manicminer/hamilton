@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// Domain describes a Domain object.
 type Domain struct {
 	ID                               *string   `json:"id,omitempty,readonly"`
 	AuthenticationType               *string   `json:"authenticationType,omitempty,readonly"`

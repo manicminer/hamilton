@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/errors"
 )
 
+// Application describes an Application object.
 type Application struct {
 	ID                         *string                              `json:"id,omitempty,readonly"`
 	AddIns                     *[]AddIn                             `json:"addIns,omitempty"`
@@ -38,6 +39,7 @@ type Application struct {
 	Owners *[]string `json:"owners@odata.bind,omitempty"`
 }
 
+// AppendOwner appends a new owner object URI to the Owners slice.
 func (a *Application) AppendOwner(endpoint string, apiVersion string, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string
@@ -48,6 +50,7 @@ func (a *Application) AppendOwner(endpoint string, apiVersion string, id string)
 	a.Owners = &owners
 }
 
+// AppendAppRole adds a new ApplicationAppRole to an Application, checking to see if it already exists.
 func (a *Application) AppendAppRole(role ApplicationAppRole) error {
 	if role.ID == nil {
 		return goerrors.New("ID of new role is nil")
@@ -72,6 +75,7 @@ func (a *Application) AppendAppRole(role ApplicationAppRole) error {
 	return nil
 }
 
+// RemoveAppRole removes an ApplicationAppRole from an Application.
 func (a *Application) RemoveAppRole(role ApplicationAppRole) error {
 	if role.ID == nil {
 		return goerrors.New("ID of role is nil")
@@ -96,6 +100,7 @@ func (a *Application) RemoveAppRole(role ApplicationAppRole) error {
 	return nil
 }
 
+// UpdateAppRole amends an existing ApplicationAppRole defined in an Application.
 func (a *Application) UpdateAppRole(role ApplicationAppRole) error {
 	if role.ID == nil {
 		return goerrors.New("ID of role is nil")

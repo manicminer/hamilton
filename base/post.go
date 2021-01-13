@@ -7,6 +7,7 @@ import (
 	"net/http"
 )
 
+// PostHttpRequestInput configures a POST request.
 type PostHttpRequestInput struct {
 	Body             []byte
 	ValidStatusCodes []int
@@ -14,14 +15,17 @@ type PostHttpRequestInput struct {
 	Uri              Uri
 }
 
+// GetValidStatusCodes returns a []int of status codes considered valid for a POST request.
 func (i PostHttpRequestInput) GetValidStatusCodes() []int {
 	return i.ValidStatusCodes
 }
 
+// GetValidStatusFunc returns a function used to evaluate whether the response to a POST request is considered valid.
 func (i PostHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 	return i.ValidStatusFunc
 }
 
+// Post performs a POST request.
 func (c Client) Post(ctx context.Context, input PostHttpRequestInput) (*http.Response, int, error) {
 	var status int
 	url, err := c.buildUri(input.Uri)

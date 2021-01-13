@@ -13,37 +13,59 @@ import (
 	"io/ioutil"
 	"strings"
 
-	microsoft2 "github.com/manicminer/hamilton/auth/microsoft"
+	microsoft2 "github.com/manicminer/hamilton/auth/internal/microsoft"
 )
 
 type Config struct {
-	//Environment    string
+	// Azure Active Directory tenant to connect to, should be a valid UUID
 	TenantID string
+
+	// Client ID for the application used to authenticate the connection
 	ClientID string
 
-	// Azure CLI Tokens Auth
+	// Enables authentication using Azure CLI
 	EnableAzureCliToken bool
 
-	// Managed Service Identity Auth
+	// Enables authentication using managed service identity. Not yet supported.
 	// TODO: NOT YET SUPPORTED
 	EnableMsiAuth bool
-	MsiEndpoint   string
 
-	// Service Principal (Client Cert) Auth
+	// Specifies a custom MSI endpoint to connect to
+	MsiEndpoint string
+
+	// Enables client certificate authentication using client assertions
 	EnableClientCertAuth bool
-	ClientCertPath       string
-	ClientCertPassword   string
 
-	// Service Principal (Client Secret) Auth
+	// Specifies the path to a client certificate bundle in PFX format
+	ClientCertPath string
+
+	// Specifies the encryption password to unlock a client certificate
+	ClientCertPassword string
+
+	// Enables client secret authentication using client credentials
 	EnableClientSecretAuth bool
-	ClientSecret           string
-	ClientSecretDocsLink   string
+
+	// Specifies the password to authenticate with using client secret authentication
+	ClientSecret string
 }
 
+// Authorizer is anything that can return an access token for authorizing API connections
 type Authorizer interface {
 	Token() (*oauth2.Token, error)
 }
 
+// NewAuthorizer returns a suitable Authorizer depending on what is defined in the Config
+// Authorizers are selected for authentication methods in the following preferential order:
+// - Client certificate authentication
+// - Client secret authentication
+// - Azure CLI authentication
+//
+// Whether one of these is returned depends on whether it is enabled in the Config, and whether sufficient
+// configuration fields are set to enable that authentication method.
+//
+// For client certificate authentication, specify TenantID, ClientID and ClientCertPath.
+// For client secret authentication, specify TenantID, ClientID and ClientSecret.
+// Azure CLI authentication (if enabled) is used as a fallback mechanism.
 func (c *Config) NewAuthorizer(ctx context.Context) (Authorizer, error) {
 	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && strings.TrimSpace(c.ClientCertPath) != "" {
 		a, err := NewClientCertificateAuthorizer(ctx, c.TenantID, c.ClientID, c.ClientCertPath, c.ClientCertPassword)
@@ -78,6 +100,7 @@ func (c *Config) NewAuthorizer(ctx context.Context) (Authorizer, error) {
 	return nil, fmt.Errorf("no Authorizer could be configured, please check your configuration")
 }
 
+// NewAzureCliAuthorizer returns an Authorizer which authenticates using the Azure CLI.
 func NewAzureCliAuthorizer(ctx context.Context, tenantId string) (Authorizer, error) {
 	conf, err := NewAzureCliConfig(tenantId)
 	if err != nil {
@@ -86,6 +109,7 @@ func NewAzureCliAuthorizer(ctx context.Context, tenantId string) (Authorizer, er
 	return conf.TokenSource(ctx), nil
 }
 
+// NewClientCertificateAuthorizer returns an authorizer which uses client certificate authentication.
 func NewClientCertificateAuthorizer(ctx context.Context, tenantId, clientId, pfxPath, pfxPass string) (Authorizer, error) {
 	pfx, err := ioutil.ReadFile(pfxPath)
 	if err != nil {
@@ -112,6 +136,7 @@ func NewClientCertificateAuthorizer(ctx context.Context, tenantId, clientId, pfx
 	return conf.TokenSource(ctx), nil
 }
 
+// NewClientSecretAuthorizer returns an authorizer which uses client secret authentication.
 func NewClientSecretAuthorizer(ctx context.Context, tenantId, clientId, clientSecret string) (Authorizer, error) {
 	conf := clientcredentials.Config{
 		AuthStyle:    oauth2.AuthStyleInParams,

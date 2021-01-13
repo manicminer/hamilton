@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Group describes a Group object.
 type Group struct {
 	ID                            *string                             `json:"id,omitempty,readonly"`
 	AllowExternalSenders          *string                             `json:"allowExternalSenders,omitempty"`
@@ -49,6 +50,7 @@ type Group struct {
 	Owners  *[]string `json:"owners@odata.bind,omitempty"`
 }
 
+// AppendMember appends a new member object URI to the Members slice.
 func (g *Group) AppendMember(endpoint string, apiVersion string, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var members []string
@@ -59,6 +61,7 @@ func (g *Group) AppendMember(endpoint string, apiVersion string, id string) {
 	g.Members = &members
 }
 
+// AppendOwner appends a new owner object URI to the Owners slice.
 func (g *Group) AppendOwner(endpoint string, apiVersion string, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string

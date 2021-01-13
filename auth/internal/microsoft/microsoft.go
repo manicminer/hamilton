@@ -17,7 +17,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/manicminer/hamilton/auth/microsoft/internal"
+	"github.com/manicminer/hamilton/auth/internal/microsoft/internal"
 )
 
 // Config is the configuration for using client credentials flow with a client assertion.

@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// ServicePrincipal describes a Service Principal object.
 type ServicePrincipal struct {
 	ID                                  *string                       `json:"id,omitempty,readonly"`
 	AccountEnabled                      *bool                         `json:"accountEnabled,omitempty"`
@@ -41,6 +42,7 @@ type ServicePrincipal struct {
 	Owners *[]string `json:"owners@odata.bind,omitempty"`
 }
 
+// AppendOwner appends a new owner object URI to the Owners slice.
 func (a *ServicePrincipal) AppendOwner(endpoint string, apiVersion string, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string
