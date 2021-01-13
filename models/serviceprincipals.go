@@ -21,12 +21,12 @@ type ServicePrincipal struct {
 	Homepage                            *string                       `json:"homepage,omitempty"`
 	Info                                *InformationalUrl             `json:"info,omitempty"`
 	KeyCredentials                      *[]KeyCredential              `json:"keyCredentials,omitempty"`
-	LoginUrl                            *string                       `json:"loginUrl,omitempty`
-	LogoutUrl                           *string                       `json:"logoutUrl,omitempty`
+	LoginUrl                            *string                       `json:"loginUrl,omitempty"`
+	LogoutUrl                           *string                       `json:"logoutUrl,omitempty"`
 	NotificationEmailAddresses          *[]string                     `json:"notificationEmailAddresses,omitempty"`
 	PasswordCredentials                 *[]PasswordCredential         `json:"passwordCredentials,omitempty"`
 	PasswordSingleSignOnSettings        *PasswordSingleSignOnSettings `json:"passwordSingleSignOnSettings,omitempty"`
-	PreferredSingleSignOnMode           *string                       `json:"preferredSingleSignOnMode,omitempty`
+	PreferredSingleSignOnMode           *string                       `json:"preferredSingleSignOnMode,omitempty"`
 	PreferredTokenSigningKeyEndDateTime *time.Time                    `json:"preferredTokenSigningKeyEndDateTime,omitempty"`
 	PublishedPermissionScopes           *[]PermissionScope            `json:"publishedPermissionScopes,omitempty"`
 	ReplyUrls                           *[]string                     `json:"replyUrls,omitempty"`
