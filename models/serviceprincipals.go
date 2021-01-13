@@ -30,7 +30,7 @@ type ServicePrincipal struct {
 	PreferredTokenSigningKeyEndDateTime *time.Time                    `json:"preferredTokenSigningKeyEndDateTime,omitempty"`
 	PublishedPermissionScopes           *[]PermissionScope            `json:"publishedPermissionScopes,omitempty"`
 	ReplyUrls                           *[]string                     `json:"replyUrls,omitempty"`
-	SamlSingleSignOnSettings            SamlSingleSignOnSettings      `json:"samlSingleSignOnSettings,omitempty"`
+	SamlSingleSignOnSettings            *SamlSingleSignOnSettings     `json:"samlSingleSignOnSettings,omitempty"`
 	ServicePrincipalNames               *[]string                     `json:"servicePrincipalNames,omitempty"`
 	ServicePrincipalType                *string                       `json:"servicePrincipalType,omitempty,readonly"`
 	SignInAudience                      SignInAudience                `json:"signInAudience,omitempty,readonly"`
