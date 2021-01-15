@@ -22,7 +22,7 @@ type ApplicationsClient struct {
 // NewApplicationsClient returns a new ApplicationsClient
 func NewApplicationsClient(tenantId string) *ApplicationsClient {
 	return &ApplicationsClient{
-		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.VersionBeta, tenantId),
 	}
 }
 

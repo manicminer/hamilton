@@ -2,6 +2,8 @@ package models
 
 import (
 	"fmt"
+	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/environments"
 	"time"
 )
 
@@ -51,7 +53,7 @@ type Group struct {
 }
 
 // AppendMember appends a new member object URI to the Members slice.
-func (g *Group) AppendMember(endpoint string, apiVersion string, id string) {
+func (g *Group) AppendMember(endpoint environments.MsGraphEndpoint, apiVersion base.ApiVersion, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var members []string
 	if g.Members != nil {
@@ -62,7 +64,7 @@ func (g *Group) AppendMember(endpoint string, apiVersion string, id string) {
 }
 
 // AppendOwner appends a new owner object URI to the Owners slice.
-func (g *Group) AppendOwner(endpoint string, apiVersion string, id string) {
+func (g *Group) AppendOwner(endpoint environments.MsGraphEndpoint, apiVersion base.ApiVersion, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string
 	if g.Owners != nil {

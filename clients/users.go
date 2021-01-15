@@ -20,7 +20,7 @@ type UsersClient struct {
 // NewUsersClient returns a new UsersClient.
 func NewUsersClient(tenantId string) *UsersClient {
 	return &UsersClient{
-		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.VersionBeta, tenantId),
 	}
 }
 

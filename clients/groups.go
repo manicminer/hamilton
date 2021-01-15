@@ -20,7 +20,7 @@ type GroupsClient struct {
 // NewGroupsClient returns a new GroupsClient.
 func NewGroupsClient(tenantId string) *GroupsClient {
 	return &GroupsClient{
-		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.VersionBeta, tenantId),
 	}
 }
 

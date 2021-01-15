@@ -22,7 +22,7 @@ type ServicePrincipalsClient struct {
 // NewServicePrincipalsClient returns a new ServicePrincipalsClient.
 func NewServicePrincipalsClient(tenantId string) *ServicePrincipalsClient {
 	return &ServicePrincipalsClient{
-		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.VersionBeta, tenantId),
 	}
 }
 

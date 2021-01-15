@@ -18,7 +18,7 @@ type MeClient struct {
 // NewMeClient returns a new MeClient.
 func NewMeClient(tenantId string) *MeClient {
 	return &MeClient{
-		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.VersionBeta),
+		BaseClient: base.NewClient(base.VersionBeta, tenantId),
 	}
 }
 

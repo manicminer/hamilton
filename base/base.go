@@ -2,6 +2,7 @@ package base
 
 import (
 	"fmt"
+	"github.com/manicminer/hamilton/environments"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -10,10 +11,11 @@ import (
 	"github.com/manicminer/hamilton/auth"
 )
 
+type ApiVersion string
+
 const (
-	DefaultEndpoint = "https://graph.microsoft.com"
-	Version10       = "v1.0"
-	VersionBeta     = "beta"
+	Version10   ApiVersion = "v1.0"
+	VersionBeta ApiVersion = "beta"
 )
 
 // ValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
@@ -38,11 +40,11 @@ type GraphClient = *http.Client
 // Client is a base client to be used by clients for specific entities.
 // It can send GET, POST, PUT, PATCH and DELETE requests to Microsoft Graph and is API version and tenant aware.
 type Client struct {
-	// ApiVersion is the Microsoft Graph API version to use.
-	ApiVersion string
-
 	// Endpoint is the base endpoint for Microsoft Graph, usually "https://graph.microsoft.com".
-	Endpoint string
+	Endpoint environments.MsGraphEndpoint
+
+	// ApiVersion is the Microsoft Graph API version to use.
+	ApiVersion ApiVersion
 
 	// TenantId is the tenant ID to use in requests.
 	TenantId string
@@ -56,23 +58,23 @@ type Client struct {
 	httpClient GraphClient
 }
 
-// NewClient returns a new Client configured with the specified endpoint, tenant ID and API version.
-func NewClient(endpoint, tenantId, apiVersion string) Client {
+// NewClient returns a new Client configured with the specified API version and tenant ID.
+func NewClient(apiVersion ApiVersion, tenantId string) Client {
 	return Client{
-		httpClient: http.DefaultClient,
-		Endpoint:   endpoint,
-		TenantId:   tenantId,
+		Endpoint:   environments.MsGraphGlobal,
 		ApiVersion: apiVersion,
+		TenantId:   tenantId,
+		httpClient: http.DefaultClient,
 	}
 }
 
 // buildUri is used by the package to build a complete URI string for API requests.
 func (c Client) buildUri(uri Uri) (string, error) {
-	url, err := url.Parse(c.Endpoint)
+	url, err := url.Parse(string(c.Endpoint))
 	if err != nil {
 		return "", err
 	}
-	url.Path = "/" + c.ApiVersion
+	url.Path = "/" + string(c.ApiVersion)
 	if uri.HasTenantId {
 		url.Path = fmt.Sprintf("%s/%s", url.Path, c.TenantId)
 	}

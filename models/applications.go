@@ -3,6 +3,8 @@ package models
 import (
 	goerrors "errors"
 	"fmt"
+	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/environments"
 	"time"
 
 	"github.com/manicminer/hamilton/errors"
@@ -40,7 +42,7 @@ type Application struct {
 }
 
 // AppendOwner appends a new owner object URI to the Owners slice.
-func (a *Application) AppendOwner(endpoint string, apiVersion string, id string) {
+func (a *Application) AppendOwner(endpoint environments.MsGraphEndpoint, apiVersion base.ApiVersion, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string
 	if a.Owners != nil {

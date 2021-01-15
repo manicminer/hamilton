@@ -5,7 +5,7 @@ This is a working Go client for the [Microsoft Graph API][ms-graph-docs]. It is 
 ## Example Usage
 
 ```go
-package example
+package main
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
+	"github.com/manicminer/hamilton/environments"
 )
 
 const (
@@ -26,6 +27,7 @@ func main() {
 	ctx := context.Background()
 
 	authConfig := &auth.Config{
+		Environment:            environments.Global,
 		TenantID:               tenantId,
 		ClientID:               clientId,
 		ClientSecret:           clientSecret,

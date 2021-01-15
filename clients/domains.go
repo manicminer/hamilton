@@ -19,7 +19,7 @@ type DomainsClient struct {
 // NewDomainsClient returns a new DomainsClient.
 func NewDomainsClient(tenantId string) *DomainsClient {
 	return &DomainsClient{
-		BaseClient: base.NewClient(base.DefaultEndpoint, tenantId, base.Version10),
+		BaseClient: base.NewClient(base.Version10, tenantId),
 	}
 }
 

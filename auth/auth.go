@@ -5,18 +5,21 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"fmt"
-	"golang.org/x/crypto/pkcs12"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/clientcredentials"
-	"golang.org/x/oauth2/endpoints"
-	"golang.org/x/oauth2/microsoft"
 	"io/ioutil"
 	"strings"
 
+	"golang.org/x/crypto/pkcs12"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/clientcredentials"
+
 	microsoft2 "github.com/manicminer/hamilton/auth/internal/microsoft"
+	"github.com/manicminer/hamilton/environments"
 )
 
 type Config struct {
+	// Specifies the national cloud environment to use
+	Environment environments.Environment
+
 	// Azure Active Directory tenant to connect to, should be a valid UUID
 	TenantID string
 
@@ -68,7 +71,7 @@ type Authorizer interface {
 // Azure CLI authentication (if enabled) is used as a fallback mechanism.
 func (c *Config) NewAuthorizer(ctx context.Context) (Authorizer, error) {
 	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && strings.TrimSpace(c.ClientCertPath) != "" {
-		a, err := NewClientCertificateAuthorizer(ctx, c.TenantID, c.ClientID, c.ClientCertPath, c.ClientCertPassword)
+		a, err := NewClientCertificateAuthorizer(ctx, c.Environment, c.TenantID, c.ClientID, c.ClientCertPath, c.ClientCertPassword)
 		if err != nil {
 			return nil, fmt.Errorf("could not configure ClientCertificate Authorizer: %s", err)
 		}
@@ -78,7 +81,7 @@ func (c *Config) NewAuthorizer(ctx context.Context) (Authorizer, error) {
 	}
 
 	if c.EnableClientSecretAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && strings.TrimSpace(c.ClientSecret) != "" {
-		a, err := NewClientSecretAuthorizer(ctx, c.TenantID, c.ClientID, c.ClientSecret)
+		a, err := NewClientSecretAuthorizer(ctx, c.Environment, c.TenantID, c.ClientID, c.ClientSecret)
 		if err != nil {
 			return nil, fmt.Errorf("could not configure ClientCertificate Authorizer: %s", err)
 		}
@@ -110,7 +113,7 @@ func NewAzureCliAuthorizer(ctx context.Context, tenantId string) (Authorizer, er
 }
 
 // NewClientCertificateAuthorizer returns an authorizer which uses client certificate authentication.
-func NewClientCertificateAuthorizer(ctx context.Context, tenantId, clientId, pfxPath, pfxPass string) (Authorizer, error) {
+func NewClientCertificateAuthorizer(ctx context.Context, environment environments.Environment, tenantId, clientId, pfxPath, pfxPass string) (Authorizer, error) {
 	pfx, err := ioutil.ReadFile(pfxPath)
 	if err != nil {
 		return nil, fmt.Errorf("could not read pkcs12 store at %q: %s", pfxPath, err)
@@ -130,20 +133,20 @@ func NewClientCertificateAuthorizer(ctx context.Context, tenantId, clientId, pfx
 		ClientID:    clientId,
 		PrivateKey:  x509.MarshalPKCS1PrivateKey(priv),
 		Certificate: cert.Raw,
-		Scopes:      []string{"https://graph.microsoft.com/.default"},
-		TokenURL:    microsoft.AzureADEndpoint(tenantId).TokenURL,
+		Scopes:      []string{fmt.Sprintf("%s/.default", environment.MsGraphEndpoint)},
+		TokenURL:    environments.AzureAD(environment.AzureADEndpoint, tenantId).TokenURL,
 	}
 	return conf.TokenSource(ctx), nil
 }
 
 // NewClientSecretAuthorizer returns an authorizer which uses client secret authentication.
-func NewClientSecretAuthorizer(ctx context.Context, tenantId, clientId, clientSecret string) (Authorizer, error) {
+func NewClientSecretAuthorizer(ctx context.Context, environment environments.Environment, tenantId, clientId, clientSecret string) (Authorizer, error) {
 	conf := clientcredentials.Config{
 		AuthStyle:    oauth2.AuthStyleInParams,
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
-		Scopes:       []string{"https://graph.microsoft.com/.default"},
-		TokenURL:     endpoints.AzureAD(tenantId).TokenURL,
+		Scopes:       []string{fmt.Sprintf("%s/.default", environment.MsGraphEndpoint)},
+		TokenURL:     environments.AzureAD(environment.AzureADEndpoint, tenantId).TokenURL,
 	}
 	return conf.TokenSource(ctx), nil
 }
