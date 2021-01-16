@@ -109,7 +109,7 @@ func jsonUnmarshalAzCmd(i interface{}, arg ...string) error {
 		return err
 	}
 
-	if err := json.Unmarshal([]byte(stdout.String()), &i); err != nil {
+	if err := json.Unmarshal(stdout.Bytes(), &i); err != nil {
 		return fmt.Errorf("unmarshaling the output of Azure CLI: %v", err)
 	}
 

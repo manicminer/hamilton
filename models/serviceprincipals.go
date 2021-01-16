@@ -7,17 +7,17 @@ import (
 
 // ServicePrincipal describes a Service Principal object.
 type ServicePrincipal struct {
-	ID                                  *string                       `json:"id,omitempty,readonly"`
+	ID                                  *string                       `json:"id,omitempty"`
 	AccountEnabled                      *bool                         `json:"accountEnabled,omitempty"`
 	AddIns                              *[]AddIn                      `json:"addIns,omitempty"`
 	AlternativeNames                    *[]string                     `json:"alternativeNames,omitempty"`
-	AppDisplayName                      *string                       `json:"appDisplayName,omitempty,readonly"`
+	AppDisplayName                      *string                       `json:"appDisplayName,omitempty"`
 	AppId                               *string                       `json:"appId,omitempty"`
-	ApplicationTemplateId               *string                       `json:"applicationTemplateId,omitempty,readonly"`
+	ApplicationTemplateId               *string                       `json:"applicationTemplateId,omitempty"`
 	AppOwnerOrganizationId              *string                       `json:"appOwnerOrganizationId,omitempty"`
 	AppRoleAssignmentRequired           *bool                         `json:"appRoleAssignmentRequired,omitempty"`
-	AppRoles                            *[]ApplicationAppRole         `json:"appRoles,omitempty,readonly"`
-	DeletedDateTime                     *time.Time                    `json:"deletedDateTime,omitempty,readonly"`
+	AppRoles                            *[]ApplicationAppRole         `json:"appRoles,omitempty"`
+	DeletedDateTime                     *time.Time                    `json:"deletedDateTime,omitempty"`
 	DisplayName                         *string                       `json:"displayName,omitempty"`
 	Homepage                            *string                       `json:"homepage,omitempty"`
 	Info                                *InformationalUrl             `json:"info,omitempty"`
@@ -33,11 +33,11 @@ type ServicePrincipal struct {
 	ReplyUrls                           *[]string                     `json:"replyUrls,omitempty"`
 	SamlSingleSignOnSettings            *SamlSingleSignOnSettings     `json:"samlSingleSignOnSettings,omitempty"`
 	ServicePrincipalNames               *[]string                     `json:"servicePrincipalNames,omitempty"`
-	ServicePrincipalType                *string                       `json:"servicePrincipalType,omitempty,readonly"`
-	SignInAudience                      SignInAudience                `json:"signInAudience,omitempty,readonly"`
+	ServicePrincipalType                *string                       `json:"servicePrincipalType,omitempty"`
+	SignInAudience                      SignInAudience                `json:"signInAudience,omitempty"`
 	Tags                                *[]string                     `json:"tags,omitempty"`
 	TokenEncryptionKeyId                *string                       `json:"tokenEncryptionKeyId,omitempty"`
-	VerifiedPublisher                   *VerifiedPublisher            `json:"verifiedPublisher,omitempty,readonly"`
+	VerifiedPublisher                   *VerifiedPublisher            `json:"verifiedPublisher,omitempty"`
 
 	Owners *[]string `json:"owners@odata.bind,omitempty"`
 }
@@ -69,7 +69,7 @@ type SingleSignOnField struct {
 }
 
 type VerifiedPublisher struct {
-	AddedDateTime       *time.Time `json:"addedDateTime,omitempty,readonly"`
-	DisplayName         *string    `json:"displayName,omitempty,readonly"`
-	VerifiedPublisherId *string    `json:"verifiedPublisherId,omitempty,readonly"`
+	AddedDateTime       *time.Time `json:"addedDateTime,omitempty"`
+	DisplayName         *string    `json:"displayName,omitempty"`
+	VerifiedPublisherId *string    `json:"verifiedPublisherId,omitempty"`
 }

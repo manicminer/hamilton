@@ -9,7 +9,7 @@ import (
 	"encoding/pem"
 	"fmt"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/jws"
+	"golang.org/x/oauth2/jws" //nolint:staticcheck
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -87,7 +87,7 @@ func (a assertionSource) Token() (*oauth2.Token, error) {
 	}
 	cert, err := x509.ParseCertificate(crt)
 	if err != nil {
-		return nil, fmt.Errorf("oauth2: cannot parse certificate", err)
+		return nil, fmt.Errorf("oauth2: cannot parse certificate: %v", err)
 	}
 	s := sha1.Sum(cert.Raw)
 	fp := base64.URLEncoding.EncodeToString(s[:])

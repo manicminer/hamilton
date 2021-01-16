@@ -2,7 +2,7 @@ package models
 
 // User describes a User object.
 type User struct {
-	ID                           *string   `json:"id,omitempty,readonly"`
+	ID                           *string   `json:"id,omitempty"`
 	AboutMe                      *string   `json:"aboutMe,omitempty"`
 	AccountEnabled               *bool     `json:"accountEnabled,omitempty"`
 	BusinessPhones               *[]string `json:"businessPhones,omitempty"`

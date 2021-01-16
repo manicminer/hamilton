@@ -12,7 +12,7 @@ type AddInKeyValue struct {
 }
 
 type InformationalUrl struct {
-	LogoUrl             *string `json:"logoUrl,omitempty`
+	LogoUrl             *string `json:"logoUrl,omitempty"`
 	MarketingUrl        *string `json:"marketingUrl"`
 	PrivacyStatementUrl *string `json:"privacyStatementUrl"`
 	SupportUrl          *string `json:"supportUrl"`

@@ -12,13 +12,13 @@ import (
 
 // Application describes an Application object.
 type Application struct {
-	ID                         *string                              `json:"id,omitempty,readonly"`
+	ID                         *string                              `json:"id,omitempty"`
 	AddIns                     *[]AddIn                             `json:"addIns,omitempty"`
 	Api                        *ApplicationApi                      `json:"api,omitempty"`
 	AppId                      *string                              `json:"appId,omitempty"`
 	AppRoles                   *[]ApplicationAppRole                `json:"appRoles,omitempty"`
-	CreatedDateTime            *time.Time                           `json:"createdDateTime,omitempty,readonly"`
-	DeletedDateTime            *time.Time                           `json:"deletedDateTime,omitempty,readonly"`
+	CreatedDateTime            *time.Time                           `json:"createdDateTime,omitempty"`
+	DeletedDateTime            *time.Time                           `json:"deletedDateTime,omitempty"`
 	DisplayName                *string                              `json:"displayName,omitempty"`
 	GroupMembershipClaims      *string                              `json:"groupMembershipClaims,omitempty"`
 	IdentifierUris             *[]string                            `json:"identifierUris,omitempty"`
@@ -68,7 +68,7 @@ func (a *Application) AppendAppRole(role ApplicationAppRole) error {
 
 	for _, v := range *a.AppRoles {
 		if v.ID != nil && *v.ID == *role.ID {
-			return &errors.AlreadyExistsError{"App Role", *role.ID}
+			return &errors.AlreadyExistsError{Obj: "App Role", Id: *role.ID}
 		}
 		newRoles = append(newRoles, v)
 	}
@@ -183,8 +183,8 @@ type ApplicationOnPremisesPublishingSingleSignOn struct {
 }
 
 type ApplicationOnPremisesPublishingVerifiedCustomDomainCertificatesMetadata struct {
-	ExpiryDate  *time.Time `json:"expiryDate,omitempty,readonly"`
-	IssueDate   *time.Time `json:"issueDate,omitempty,readonly"`
+	ExpiryDate  *time.Time `json:"expiryDate,omitempty"`
+	IssueDate   *time.Time `json:"issueDate,omitempty"`
 	IssuerName  *string    `json:"issuerName,omitempty"`
 	SubjectName *string    `json:"subjectName,omitempty"`
 	Thumbprint  *string    `json:"thumbprint,omitempty"`
