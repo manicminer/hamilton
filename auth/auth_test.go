@@ -10,15 +10,16 @@ import (
 )
 
 var (
-	tenantId          = os.Getenv("TENANT_ID")
-	clientId          = os.Getenv("CLIENT_ID")
-	clientCertificate = os.Getenv("CLIENT_CERTIFICATE")
-	clientSecret      = os.Getenv("CLIENT_SECRET")
+	tenantId           = os.Getenv("TENANT_ID")
+	clientId           = os.Getenv("CLIENT_ID")
+	clientCertificate  = os.Getenv("CLIENT_CERTIFICATE")
+	clientCertPassword = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
+	clientSecret       = os.Getenv("CLIENT_SECRET")
 )
 
 func TestClientCertificateAuthorizer(t *testing.T) {
 	ctx := context.Background()
-	auth, err := auth.NewClientCertificateAuthorizer(ctx, environments.Global, tenantId, clientId, clientCertificate, "")
+	auth, err := auth.NewClientCertificateAuthorizer(ctx, environments.Global, tenantId, clientId, clientCertificate, clientCertPassword)
 	if err != nil {
 		t.Errorf("NewClientCertificateAuthorizer(): %v", err)
 	}

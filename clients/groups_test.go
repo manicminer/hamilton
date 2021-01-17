@@ -79,6 +79,7 @@ func TestGroupsClient(t *testing.T) {
 
 	testGroupsClient_List(t, c)
 	testGroupsClient_Delete(t, c, *group.ID)
+	testUsersClient_Delete(t, u, *user.ID)
 }
 
 func testGroupsClient_Create(t *testing.T, c GroupsClientTest, g models.Group) (group *models.Group) {

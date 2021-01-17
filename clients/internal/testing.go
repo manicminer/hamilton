@@ -10,11 +10,12 @@ import (
 )
 
 var (
-	tenantId          = os.Getenv("TENANT_ID")
-	tenantDomain      = os.Getenv("TENANT_DOMAIN")
-	clientId          = os.Getenv("CLIENT_ID")
-	//clientCertificate = os.Getenv("CLIENT_CERTIFICATE")
-	clientSecret      = os.Getenv("CLIENT_SECRET")
+	tenantId           = os.Getenv("TENANT_ID")
+	tenantDomain       = os.Getenv("TENANT_DOMAIN")
+	clientId           = os.Getenv("CLIENT_ID")
+	clientCertificate  = os.Getenv("CLIENT_CERTIFICATE")
+	clientCertPassword = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
+	clientSecret       = os.Getenv("CLIENT_SECRET")
 )
 
 type Connection struct {
@@ -30,6 +31,8 @@ func NewConnection() *Connection {
 			Environment:            environments.Global,
 			TenantID:               tenantId,
 			ClientID:               clientId,
+			ClientCertPath:         clientCertificate,
+			ClientCertPassword:     clientCertPassword,
 			ClientSecret:           clientSecret,
 			EnableClientCertAuth:   true,
 			EnableClientSecretAuth: true,
