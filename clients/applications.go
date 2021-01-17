@@ -300,7 +300,8 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 			return false
 		}
 
-		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		var err error
+		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			ValidStatusFunc:  checkOwnerGone,
 			Uri: base.Uri{
