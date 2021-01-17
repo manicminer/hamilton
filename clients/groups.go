@@ -251,7 +251,8 @@ func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *
 			}
 			return status, err
 		}
-		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		var err error
+		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
 				Entity:      fmt.Sprintf("/groups/%s/members/%s/$ref", id, memberId),
@@ -368,7 +369,8 @@ func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]
 			}
 			return status, err
 		}
-		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		var err error
+		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
 				Entity:      fmt.Sprintf("/groups/%s/owners/%s/$ref", id, ownerId),
