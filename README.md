@@ -1,6 +1,7 @@
 # Hamilton is a Go SDK for Microsoft Graph
 
-This is a working Go client for the [Microsoft Graph API][ms-graph-docs]. It is actively maintained and has growing support for services and objects in Azure Active Directory.
+This is a working Go client for the [Microsoft Graph API][ms-graph-docs]. It is actively maintained and has growing
+support for services and objects in Azure Active Directory.
 
 ## Example Usage
 
@@ -54,6 +55,27 @@ func main() {
 		fmt.Printf("%s: %s <%s>\n", *user.ID, *user.DisplayName, *user.Mail)
 	}
 }
+```
+
+## Contributing
+
+Contributions are welcomed! Please note that clients must have tests that cover all methods where feasible.
+
+Please raise a pull request on GitHub to submit contributions. Bug reports and feature requests are happily received.
+
+## Testing
+
+Testing requires an Azure AD tenant and real credentials. You can authenticate with any supported method for the client
+tests, and the auth tests are split by authentication method.
+
+Note that each client generally has a single test that exercises all methods. This is to help ensure that test objects
+are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up manually.
+
+It's recommended to use an isolated tenant for testing and _not_ a production tenant.
+
+To run all the tests:
+```shell
+$ make test
 ```
 
 [ms-graph-docs]: https://docs.microsoft.com/en-us/graph/overview
