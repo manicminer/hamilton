@@ -145,7 +145,7 @@ func testUsersClient_GetMemberGroups(t *testing.T, c UsersClientTest, id string)
 	}
 
 	if len(*groups) != 2 {
-		t.Fatalf("UsersClient.GetMemberGroups(): expected groups length 1. was: %d", len(*groups))
+		t.Fatalf("UsersClient.GetMemberGroups(): expected groups length 2. was: %d", len(*groups))
 	}
 
 	return
