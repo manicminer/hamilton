@@ -68,7 +68,7 @@ func (a *Application) AppendAppRole(role ApplicationAppRole) error {
 
 	for _, v := range *a.AppRoles {
 		if v.ID != nil && *v.ID == *role.ID {
-			return &errors.AlreadyExistsError{Obj: "App Role", Id: *role.ID}
+			return &errors.AlreadyExistsError{Obj: "AppRole", Id: *role.ID}
 		}
 		newRoles = append(newRoles, v)
 	}
@@ -130,6 +130,78 @@ type ApplicationApi struct {
 	OAuth2PermissionScopes      *[]PermissionScope                        `json:"oauth2PermissionScopes,omitempty"`
 	PreAuthorizedApplications   *[]ApplicationApiPreAuthorizedApplication `json:"preAuthorizedApplications,omitempty"`
 	RequestedAccessTokenVersion *int32                                    `json:"requestedAccessTokenVersion,omitempty"`
+}
+
+// AppendOAuth2PermissionScope adds a new ApplicationOAuth2PermissionScope to an ApplicationApi, checking to see if it already exists.
+func (a *ApplicationApi) AppendOAuth2PermissionScope(scope PermissionScope) error {
+	if scope.ID == nil {
+		return goerrors.New("ID of new scope is nil")
+	}
+
+	cap := 1
+	if a.OAuth2PermissionScopes != nil {
+		cap += len(*a.OAuth2PermissionScopes)
+	}
+
+	newScopes := make([]PermissionScope, 1, cap)
+	newScopes[0] = scope
+
+	for _, v := range *a.OAuth2PermissionScopes {
+		if v.ID != nil && *v.ID == *scope.ID {
+			return &errors.AlreadyExistsError{Obj: "OAuth2PermissionScope", Id: *scope.ID}
+		}
+		newScopes = append(newScopes, v)
+	}
+
+	a.OAuth2PermissionScopes = &newScopes
+	return nil
+}
+
+// RemoveOAuth2PermissionScope removes an ApplicationOAuth2PermissionScope from an ApplicationApi.
+func (a *ApplicationApi) RemoveOAuth2PermissionScope(scope PermissionScope) error {
+	if scope.ID == nil {
+		return goerrors.New("ID of scope is nil")
+	}
+
+	if a.OAuth2PermissionScopes == nil {
+		return goerrors.New("no scopes to remove")
+	}
+
+	apiScopes := make([]PermissionScope, 0, len(*a.OAuth2PermissionScopes))
+	for _, v := range *a.OAuth2PermissionScopes {
+		if v.ID == nil || *v.ID != *scope.ID {
+			apiScopes = append(apiScopes, v)
+		}
+	}
+
+	if len(apiScopes) == len(*a.OAuth2PermissionScopes) {
+		return goerrors.New("could not find scope to remove")
+	}
+
+	a.OAuth2PermissionScopes = &apiScopes
+	return nil
+}
+
+// UpdateOAuth2PermissionScope amends an existing ApplicationOAuth2PermissionScope defined in an ApplicationApi.
+func (a *ApplicationApi) UpdateOAuth2PermissionScope(scope PermissionScope) error {
+	if scope.ID == nil {
+		return goerrors.New("ID of scope is nil")
+	}
+
+	if a.OAuth2PermissionScopes == nil {
+		return goerrors.New("no scopes to update")
+	}
+
+	apiScopes := *a.OAuth2PermissionScopes
+	for i, v := range apiScopes {
+		if v.ID != nil && *v.ID == *scope.ID {
+			apiScopes[i] = scope
+			break
+		}
+	}
+
+	a.OAuth2PermissionScopes = &apiScopes
+	return nil
 }
 
 type ApplicationApiPreAuthorizedApplication struct {
