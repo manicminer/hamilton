@@ -30,7 +30,7 @@ func ParseClaims(token *oauth2.Token) (claims Claims, err error) {
 		return
 	}
 	jwt := strings.Split(token.AccessToken, ".")
-	payload, err := base64.StdEncoding.DecodeString(jwt[1])
+	payload, err := base64.RawStdEncoding.DecodeString(jwt[1])
 	if err != nil {
 		return
 	}
