@@ -1,3 +1,8 @@
+## 0.3.0 (January 18, 2021)
+
+- Methods on `models.ApplcationApi` to manage `Oauth2PermissionScopes`.
+- Tests for `auth` and `clients` packages.
+
 ## 0.2.0 (January 15, 2021)
 
 Add support for all national clouds:
