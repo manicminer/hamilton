@@ -1,4 +1,4 @@
-## 0.4.0 (January 19, 2021)
+## 0.4.0 (Unreleased)
 
 - Adds the `UsersCLient.ListGroupMemberships()` method.
 - Pagination handling: multiple pages of results with OData metadata are now automatically retrieved and merged together in the BaseClient for GET requests.
