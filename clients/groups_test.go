@@ -123,10 +123,10 @@ func testGroupsClient_List(t *testing.T, c GroupsClientTest) (groups *[]models.G
 func testGroupsClient_Get(t *testing.T, c GroupsClientTest, id string) (group *models.Group) {
 	group, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
-		t.Fatalf("GroupsClient.Delete(): %v", err)
+		t.Fatalf("GroupsClient.Get(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("GroupsClient.Delete(): invalid status: %d", status)
+		t.Fatalf("GroupsClient.Get(): invalid status: %d", status)
 	}
 	if group == nil {
 		t.Fatal("GroupsClient.Get(): group was nil")
