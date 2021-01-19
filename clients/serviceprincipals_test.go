@@ -90,10 +90,10 @@ func testServicePrincipalsClient_List(t *testing.T, c ServicePrincipalsClientTes
 func testServicePrincipalsClient_Get(t *testing.T, c ServicePrincipalsClientTest, id string) (servicePrincipal *models.ServicePrincipal) {
 	servicePrincipal, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.Delete(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.Get(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ServicePrincipalsClient.Delete(): invalid status: %d", status)
+		t.Fatalf("ServicePrincipalsClient.Get(): invalid status: %d", status)
 	}
 	if servicePrincipal == nil {
 		t.Fatal("ServicePrincipalsClient.Get(): servicePrincipal was nil")

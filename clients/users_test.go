@@ -80,10 +80,10 @@ func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]models.User
 func testUsersClient_Get(t *testing.T, c UsersClientTest, id string) (user *models.User) {
 	user, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
-		t.Fatalf("UsersClient.Delete(): %v", err)
+		t.Fatalf("UsersClient.Get(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("UsersClient.Delete(): invalid status: %d", status)
+		t.Fatalf("UsersClient.Get(): invalid status: %d", status)
 	}
 	if user == nil {
 		t.Fatal("UsersClient.Get(): user was nil")

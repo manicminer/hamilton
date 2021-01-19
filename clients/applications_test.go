@@ -79,10 +79,10 @@ func testApplicationsClient_List(t *testing.T, c ApplicationsClientTest) (applic
 func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id string) (application *models.Application) {
 	application, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
-		t.Fatalf("ApplicationsClient.Delete(): %v", err)
+		t.Fatalf("ApplicationsClient.Get(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ApplicationsClient.Delete(): invalid status: %d", status)
+		t.Fatalf("ApplicationsClient.Get(): invalid status: %d", status)
 	}
 	if application == nil {
 		t.Fatal("ApplicationsClient.Get(): application was nil")
