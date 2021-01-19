@@ -3,8 +3,9 @@ package auth
 import (
 	"encoding/base64"
 	"encoding/json"
-	"golang.org/x/oauth2"
 	"strings"
+
+	"golang.org/x/oauth2"
 )
 
 // Claims is used to unmarshall the claims from a JWT issued by the Microsoft Identity Platform.
@@ -30,7 +31,7 @@ func ParseClaims(token *oauth2.Token) (claims Claims, err error) {
 		return
 	}
 	jwt := strings.Split(token.AccessToken, ".")
-	payload, err := base64.StdEncoding.DecodeString(jwt[1])
+	payload, err := base64.RawStdEncoding.DecodeString(jwt[1])
 	if err != nil {
 		return
 	}

@@ -16,9 +16,10 @@ type UsersClientTest struct {
 }
 
 func TestUsersClient(t *testing.T) {
+	rs := internal.RandomString()
 	c := UsersClientTest{
 		connection:   internal.NewConnection(),
-		randomString: internal.RandomString(),
+		randomString: rs,
 	}
 	c.client = clients.NewUsersClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
@@ -36,6 +37,38 @@ func TestUsersClient(t *testing.T) {
 	user.DisplayName = internal.String(fmt.Sprintf("test-updated-user-%s", c.randomString))
 	testUsersClient_Update(t, c, *user)
 	testUsersClient_List(t, c)
+
+	g := GroupsClientTest{
+		connection:   internal.NewConnection(),
+		randomString: rs,
+	}
+	g.client = clients.NewGroupsClient(g.connection.AuthConfig.TenantID)
+	g.client.BaseClient.Authorizer = g.connection.Authorizer
+
+	newGroupParent := models.Group{
+		DisplayName:     internal.String("Test Group Parent"),
+		MailEnabled:     internal.Bool(false),
+		MailNickname:    internal.String(fmt.Sprintf("test-group-parent-%s", c.randomString)),
+		SecurityEnabled: internal.Bool(true),
+	}
+	newGroupChild := models.Group{
+		DisplayName:     internal.String("Test Group Child"),
+		MailEnabled:     internal.Bool(false),
+		MailNickname:    internal.String(fmt.Sprintf("test-group-child-%s", c.randomString)),
+		SecurityEnabled: internal.Bool(true),
+	}
+
+	groupParent := testGroupsClient_Create(t, g, newGroupParent)
+	groupChild := testGroupsClient_Create(t, g, newGroupChild)
+	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	testGroupsClient_AddMembers(t, g, groupParent)
+	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *user.ID)
+	testGroupsClient_AddMembers(t, g, groupChild)
+
+	testUsersClient_ListGroupMemberships(t, c, *user.ID)
+	testGroupsClient_Delete(t, g, *groupParent.ID)
+	testGroupsClient_Delete(t, g, *groupChild.ID)
+
 	testUsersClient_Delete(t, c, *user.ID)
 }
 
@@ -99,4 +132,21 @@ func testUsersClient_Delete(t *testing.T, c UsersClientTest, id string) {
 	if status < 200 || status >= 300 {
 		t.Fatalf("UsersClient.Delete(): invalid status: %d", status)
 	}
+}
+
+func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id string) (groups *[]models.Group) {
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
+	if err != nil {
+		t.Fatalf("UsersClient.ListGroupMemberships(): %v", err)
+	}
+
+	if groups == nil {
+		t.Fatal("UsersClient.ListGroupMemberships(): groups was nil")
+	}
+
+	if len(*groups) != 2 {
+		t.Fatalf("UsersClient.ListGroupMemberships(): expected groups length 2. was: %d", len(*groups))
+	}
+
+	return
 }
