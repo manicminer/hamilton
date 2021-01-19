@@ -1,4 +1,4 @@
-## 0.4.0 (Unreleased)
+## 0.4.0 (January 19, 2021)
 
 - Adds the `ServicePrincipalsClient.ListGroupMemberships()` method.
 - Adds the `UsersClient.ListGroupMemberships()` method.
