@@ -65,7 +65,7 @@ func TestUsersClient(t *testing.T) {
 	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *user.ID)
 	testGroupsClient_AddMembers(t, g, groupChild)
 
-	testUsersClient_GetMemberGroups(t, c, *user.ID)
+	testUsersClient_ListGroupMemberships(t, c, *user.ID)
 	testGroupsClient_Delete(t, g, *groupParent.ID)
 	testGroupsClient_Delete(t, g, *groupChild.ID)
 
@@ -134,18 +134,18 @@ func testUsersClient_Delete(t *testing.T, c UsersClientTest, id string) {
 	}
 }
 
-func testUsersClient_GetMemberGroups(t *testing.T, c UsersClientTest, id string) (groups *[]models.Group) {
-	groups, _, err := c.client.GetMemberGroups(c.connection.Context, id, "")
+func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id string) (groups *[]models.Group) {
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
 	if err != nil {
-		t.Fatalf("UsersClient.GetMemberGroups(): %v", err)
+		t.Fatalf("UsersClient.ListGroupMemberships(): %v", err)
 	}
 
 	if groups == nil {
-		t.Fatal("UsersClient.GetMemberGroups(): groups was nil")
+		t.Fatal("UsersClient.ListGroupMemberships(): groups was nil")
 	}
 
 	if len(*groups) != 2 {
-		t.Fatalf("UsersClient.GetMemberGroups(): expected groups length 2. was: %d", len(*groups))
+		t.Fatalf("UsersClient.ListGroupMemberships(): expected groups length 2. was: %d", len(*groups))
 	}
 
 	return
