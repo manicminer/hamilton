@@ -18,7 +18,7 @@ type ServicePrincipalsClientTest struct {
 func TestServicePrincipalsClient(t *testing.T) {
 	rs := internal.RandomString()
 	c := ServicePrincipalsClientTest{
-		connection: internal.NewConnection(),
+		connection:   internal.NewConnection(),
 		randomString: rs,
 	}
 	c.client = clients.NewServicePrincipalsClient(c.connection.AuthConfig.TenantID)
@@ -37,12 +37,44 @@ func TestServicePrincipalsClient(t *testing.T) {
 	sp := testServicePrincipalsClient_Create(t, c, models.ServicePrincipal{
 		AccountEnabled: internal.Bool(true),
 		AppId:          app.AppId,
-		DisplayName: internal.String(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    internal.String(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
 	})
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
 	testServicePrincipalsClient_Update(t, c, *sp)
 	testServicePrincipalsClient_List(t, c)
+
+	g := GroupsClientTest{
+		connection:   internal.NewConnection(),
+		randomString: rs,
+	}
+	g.client = clients.NewGroupsClient(g.connection.AuthConfig.TenantID)
+	g.client.BaseClient.Authorizer = g.connection.Authorizer
+
+	newGroupParent := models.Group{
+		DisplayName:     internal.String("Test Group Parent"),
+		MailEnabled:     internal.Bool(false),
+		MailNickname:    internal.String(fmt.Sprintf("test-group-parent-%s", c.randomString)),
+		SecurityEnabled: internal.Bool(true),
+	}
+	newGroupChild := models.Group{
+		DisplayName:     internal.String("Test Group Child"),
+		MailEnabled:     internal.Bool(false),
+		MailNickname:    internal.String(fmt.Sprintf("test-group-child-%s", c.randomString)),
+		SecurityEnabled: internal.Bool(true),
+	}
+
+	groupParent := testGroupsClient_Create(t, g, newGroupParent)
+	groupChild := testGroupsClient_Create(t, g, newGroupChild)
+	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	testGroupsClient_AddMembers(t, g, groupParent)
+	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *sp.ID)
+	testGroupsClient_AddMembers(t, g, groupChild)
+
+	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
+	testGroupsClient_Delete(t, g, *groupParent.ID)
+	testGroupsClient_Delete(t, g, *groupChild.ID)
+
 	testServicePrincipalsClient_Delete(t, c, *sp.ID)
 
 	testApplicationsClient_Delete(t, a, *app.ID)
@@ -109,4 +141,21 @@ func testServicePrincipalsClient_Delete(t *testing.T, c ServicePrincipalsClientT
 	if status < 200 || status >= 300 {
 		t.Fatalf("ServicePrincipalsClient.Delete(): invalid status: %d", status)
 	}
+}
+
+func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePrincipalsClientTest, id string) (groups *[]models.Group) {
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.ListGroupMemberships(): %v", err)
+	}
+
+	if groups == nil {
+		t.Fatal("ServicePrincipalsClient.ListGroupMemberships(): groups was nil")
+	}
+
+	if len(*groups) != 2 {
+		t.Fatalf("ServicePrincipalsClient.ListGroupMemberships(): expected groups length 2. was: %d", len(*groups))
+	}
+
+	return
 }

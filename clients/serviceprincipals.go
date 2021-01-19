@@ -151,7 +151,6 @@ func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[
 			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -185,7 +184,6 @@ func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipal
 			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -286,4 +284,32 @@ func (c *ServicePrincipalsClient) RemoveOwners(ctx context.Context, servicePrinc
 		}
 	}
 	return status, nil
+}
+
+// ListGroupMemberships returns a list of Groups the Service Principal is member of, optionally filtered using OData.
+func (c *ServicePrincipalsClient) ListGroupMemberships(ctx context.Context, id string, filter string) (*[]models.Group, int, error) {
+	params := url.Values{}
+	if filter != "" {
+		params.Add("$filter", filter)
+	}
+	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: base.Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/transitiveMemberOf", id),
+			Params:      params,
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		Groups []models.Group `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	return &data.Groups, status, nil
 }
