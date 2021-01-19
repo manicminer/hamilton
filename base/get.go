@@ -1,9 +1,13 @@
 package base
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // GetHttpRequestInput configures a GET request.
@@ -11,6 +15,7 @@ type GetHttpRequestInput struct {
 	ValidStatusCodes []int
 	ValidStatusFunc  ValidStatusFunc
 	Uri              Uri
+	rawUri           string
 }
 
 // GetValidStatusCodes returns a []int of status codes considered valid for a GET request.
@@ -26,17 +31,81 @@ func (i GetHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 // Get performs a GET request.
 func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Response, int, error) {
 	var status int
-	url, err := c.buildUri(input.Uri)
-	if err != nil {
-		return nil, status, fmt.Errorf("unable to make request: %v", err)
+
+	// Check for a raw uri, else build one from the Uri field
+	url := input.rawUri
+	if url == "" {
+		var err error
+		url, err = c.buildUri(input.Uri)
+		if err != nil {
+			return nil, status, fmt.Errorf("unable to make request: %v", err)
+		}
 	}
+
+	// Build a new request
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
 		return nil, status, err
 	}
+
+	// Perform the request
 	resp, status, err := c.performRequest(req, input)
 	if err != nil {
 		return nil, status, err
 	}
+
+	// Check for json content before handling pagination
+	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
+	if strings.HasPrefix(contentType, "application/json") {
+		// Read the response body and close it
+		respBody, _ := ioutil.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		// Unmarshall odata
+		var odata OData
+		if err := json.Unmarshal(respBody, &odata); err != nil {
+			return nil, status, err
+		}
+
+		if odata.NextLink == nil || odata.Value == nil {
+			// No more pages, reassign response body and return
+			resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
+			return resp, status, nil
+		}
+
+		// Get the next page, recursively
+		nextInput := input
+		nextInput.rawUri = *odata.NextLink
+		nextResp, status, err := c.Get(ctx, nextInput)
+		if err != nil {
+			return resp, status, err
+		}
+
+		// Read the next page response body and close it
+		nextRespBody, _ := ioutil.ReadAll(nextResp.Body)
+		nextResp.Body.Close()
+
+		// Unmarshall odata from the next page
+		var nextOdata OData
+		if err := json.Unmarshal(nextRespBody, &nextOdata); err != nil {
+			return resp, status, err
+		}
+
+		if nextOdata.Value != nil {
+			// Next page has results, append to current page
+			value := append(*odata.Value, *nextOdata.Value...)
+			nextOdata.Value = &value
+		}
+
+		// Marshal the entire result, along with fields from the final page
+		newJson, err := json.Marshal(nextOdata)
+		if err != nil {
+			return resp, status, err
+		}
+
+		// Reassign the response body
+		resp.Body = ioutil.NopCloser(bytes.NewBuffer(newJson))
+	}
+
 	return resp, status, nil
 }
