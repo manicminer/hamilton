@@ -18,7 +18,7 @@ type ServicePrincipalsClientTest struct {
 func TestServicePrincipalsClient(t *testing.T) {
 	rs := internal.RandomString()
 	c := ServicePrincipalsClientTest{
-		connection: internal.NewConnection(),
+		connection:   internal.NewConnection(),
 		randomString: rs,
 	}
 	c.client = clients.NewServicePrincipalsClient(c.connection.AuthConfig.TenantID)
@@ -37,7 +37,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 	sp := testServicePrincipalsClient_Create(t, c, models.ServicePrincipal{
 		AccountEnabled: internal.Bool(true),
 		AppId:          app.AppId,
-		DisplayName: internal.String(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    internal.String(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
 	})
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})

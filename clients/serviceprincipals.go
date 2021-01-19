@@ -151,7 +151,6 @@ func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[
 			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -185,7 +184,6 @@ func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipal
 			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
