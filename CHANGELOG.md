@@ -1,6 +1,7 @@
 ## 0.4.0 (Unreleased)
 
-- Adds the `UsersCLient.ListGroupMemberships()` method.
+- Adds the `ServicePrincipalsClient.ListGroupMemberships()` method.
+- Adds the `UsersClient.ListGroupMemberships()` method.
 - Pagination handling: multiple pages of results with OData metadata are now automatically retrieved and merged together in the BaseClient for GET requests.
 
 ## 0.3.0 (January 18, 2021)
