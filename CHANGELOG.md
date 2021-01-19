@@ -1,3 +1,8 @@
+## 0.4.0 (January 19, 2021)
+
+- Adds the `UsersCLient.ListGroupMemberships()` method.
+- Pagination handling: multiple pages of results with OData metadata are now automatically retrieved and merged together in the BaseClient for GET requests.
+
 ## 0.3.0 (January 18, 2021)
 
 - Methods on `models.ApplcationApi` to manage `Oauth2PermissionScopes`.
