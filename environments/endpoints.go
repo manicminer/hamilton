@@ -5,6 +5,15 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type AADGraphEndpoint string
+
+const (
+	AADGraphGlobal  AADGraphEndpoint = "https://graph.windows.net"
+	AADGraphUSGov   AADGraphEndpoint = "https://graph.microsoftazure.us"
+	AADGraphGermany AADGraphEndpoint = "https://graph.cloudapi.de"
+	AADGraphChina   AADGraphEndpoint = "https://graph.chinacloudapi.cn"
+)
+
 type AzureADEndpoint string
 
 const (
@@ -32,4 +41,5 @@ const (
 	MsGraphUSGovL5 MsGraphEndpoint = "https://dod-graph.microsoft.us"
 	MsGraphGermany MsGraphEndpoint = "https://graph.microsoft.de"
 	MsGraphChina   MsGraphEndpoint = "https://microsoftgraph.chinacloudapi.cn"
+	MsGraphCanary  MsGraphEndpoint = "https://canary.graph.microsoft.com"
 )
