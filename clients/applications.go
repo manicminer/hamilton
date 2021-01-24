@@ -11,10 +11,11 @@ import (
 	"regexp"
 
 	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/base/odata"
 	"github.com/manicminer/hamilton/models"
 )
 
-// ApplicationsCLient performs operations on Applications.
+// ApplicationsClient performs operations on Applications.
 type ApplicationsClient struct {
 	BaseClient base.Client
 }
@@ -178,7 +179,6 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -212,7 +212,6 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -284,17 +283,13 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 		}
 
 		// despite the above check, sometimes owners are just gone
-		checkOwnerGone := func(resp *http.Response) bool {
+		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
-				defer resp.Body.Close()
-				respBody, _ := ioutil.ReadAll(resp.Body)
-				var apiError models.Error
-				if err := json.Unmarshal(respBody, &apiError); err != nil {
-					return false
-				}
-				re := regexp.MustCompile("One or more removed object references do not exist")
-				if re.MatchString(apiError.Error.Message) {
-					return true
+				if o.Error != nil {
+					re := regexp.MustCompile("One or more removed object references do not exist")
+					if re.MatchString(o.Error.String()) {
+						return true
+					}
 				}
 			}
 			return false

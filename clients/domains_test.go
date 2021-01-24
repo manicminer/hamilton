@@ -3,6 +3,7 @@ package clients_test
 import (
 	"testing"
 
+	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
 	"github.com/manicminer/hamilton/models"
@@ -16,7 +17,7 @@ type DomainsClientTest struct {
 
 func TestDomainsClient(t *testing.T) {
 	c := DomainsClientTest{
-		connection:   internal.NewConnection(),
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: internal.RandomString(),
 	}
 	c.client = clients.NewDomainsClient(c.connection.AuthConfig.TenantID)

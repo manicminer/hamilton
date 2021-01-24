@@ -19,7 +19,7 @@ type GroupsClientTest struct {
 func TestGroupsClient(t *testing.T) {
 	rs := internal.RandomString()
 	c := GroupsClientTest{
-		connection:   internal.NewConnection(),
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
 	c.client = clients.NewGroupsClient(c.connection.AuthConfig.TenantID)
@@ -35,7 +35,7 @@ func TestGroupsClient(t *testing.T) {
 	}
 
 	u := UsersClientTest{
-		connection:   internal.NewConnection(),
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
 	u.client = clients.NewUsersClient(c.connection.AuthConfig.TenantID)

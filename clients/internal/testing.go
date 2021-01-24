@@ -25,10 +25,11 @@ type Connection struct {
 	DomainName string
 }
 
-func NewConnection() *Connection {
+func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
 	t := Connection{
 		AuthConfig: &auth.Config{
 			Environment:            environments.Global,
+			Version:                tokenVersion,
 			TenantID:               tenantId,
 			ClientID:               clientId,
 			ClientCertPath:         clientCertificate,
@@ -43,7 +44,7 @@ func NewConnection() *Connection {
 	}
 
 	var err error
-	t.Authorizer, err = t.AuthConfig.NewAuthorizer(t.Context)
+	t.Authorizer, err = t.AuthConfig.NewAuthorizer(t.Context, api)
 	if err != nil {
 		log.Fatal(err)
 	}

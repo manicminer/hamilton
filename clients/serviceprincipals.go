@@ -11,6 +11,7 @@ import (
 	"regexp"
 
 	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/base/odata"
 	"github.com/manicminer/hamilton/models"
 )
 
@@ -255,17 +256,13 @@ func (c *ServicePrincipalsClient) RemoveOwners(ctx context.Context, servicePrinc
 		}
 
 		// despite the above check, sometimes owners are just gone
-		checkOwnerGone := func(resp *http.Response) bool {
+		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
-				defer resp.Body.Close()
-				respBody, _ := ioutil.ReadAll(resp.Body)
-				var apiError models.Error
-				if err := json.Unmarshal(respBody, &apiError); err != nil {
-					return false
-				}
-				re := regexp.MustCompile("One or more removed object references do not exist")
-				if re.MatchString(apiError.Error.Message) {
-					return true
+				if o.Error != nil {
+					re := regexp.MustCompile("One or more removed object references do not exist")
+					if re.MatchString(o.Error.String()) {
+						return true
+					}
 				}
 			}
 			return false

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
 	"github.com/manicminer/hamilton/models"
@@ -18,7 +19,7 @@ type UsersClientTest struct {
 func TestUsersClient(t *testing.T) {
 	rs := internal.RandomString()
 	c := UsersClientTest{
-		connection:   internal.NewConnection(),
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
 	c.client = clients.NewUsersClient(c.connection.AuthConfig.TenantID)
@@ -39,7 +40,7 @@ func TestUsersClient(t *testing.T) {
 	testUsersClient_List(t, c)
 
 	g := GroupsClientTest{
-		connection:   internal.NewConnection(),
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
 	g.client = clients.NewGroupsClient(g.connection.AuthConfig.TenantID)
