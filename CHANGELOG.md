@@ -1,3 +1,26 @@
+## 0.5.0 (January 24, 2021)
+
+- All responses from Microsoft Graph and Azure Active Directory Graph are now parsed for OData metadata. Calls to `base.Client.Delete()`, `base.Client.Get()`, `base.Client.Patch()`, `base.Client.Post()` and `base.client.Put()` each now return OData metadata in addition to the complete response.
+- Support for v1 and v2 access tokens from Microsoft Identity Platform. Defaults to v2 tokens.
+- Support for acquiring access tokens for Microsoft Graph or Azure Active Directory graph. Since the MSID platform only supports scopes from a single API per token, these must be requested separately if using both APIs.
+- Token claims parsed now includes scopes (`scp` claim)
+- Export app IDs for several published APIs from Microsoft. These can be reliably consumed as `environments.PublishedApis`.
+- Support for querying Azure Active Directory Graph API
+    - This is intended as a stopgap solution for when it's not possible to perform an action using Microsoft Graph.
+    - A number of endpoints do not yet have equivalents in MS Graph, notably those used by the Azure Portal.
+    - There is only a base client at present.
+
+⚠️ BREAKING CHANGES:
+
+- Method signature for `auth.Config.NewAuthorizer()` has changed to include the API to request tokens for.
+- Corresponding function signatures for `auth.NewAzureCliAuthorizer()`, `auth.NewClientCertificateAuthorizer()` and `auth.NewClientSecretAuthorizer()` also now include an `api` argument.
+- The `auth.NewAzureCliConfig()` function also now includes an `api` argument.
+- Functions implementing `base.ValidStatusFunc` must now accept a second argument as the pointer to a `base.odata.OData` struct.
+- The `environments.MsGraphEndpoint` type has been removed in favor of `environments.ApiEndpoint`.
+- The `endpoint` argument for `models.Application.AppendOwner()`, `models.Group.AppendMember()` and `models.Group.AppendOwner()` methods should now be an `environments.ApiEndpoint`.
+- The environments package now exports `Api` structs for each national cloud and API combination, e.g. `environments.MsGraphGermany`.
+- The `Environment` structs exports in the environments package have been changed to reference `Api`s and no longer include `MsGraphEndpoint`.
+
 ## 0.4.0 (January 19, 2021)
 
 - Adds the `ServicePrincipalsClient.ListGroupMemberships()` method.
