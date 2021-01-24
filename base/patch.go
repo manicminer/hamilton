@@ -36,7 +36,7 @@ func (c Client) Patch(ctx context.Context, input PatchHttpRequestInput) (*http.R
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.performRequest(req, input)
+	resp, status, _, err := c.performRequest(req, input)
 	if err != nil {
 		return nil, status, err
 	}

@@ -36,7 +36,7 @@ func (c Client) Post(ctx context.Context, input PostHttpRequestInput) (*http.Res
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.performRequest(req, input)
+	resp, status, _, err := c.performRequest(req, input)
 	if err != nil {
 		return nil, status, err
 	}

@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/manicminer/hamilton/base/odata"
 )
 
 // GetHttpRequestInput configures a GET request.
@@ -49,7 +51,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 	}
 
 	// Perform the request
-	resp, status, err := c.performRequest(req, input)
+	resp, status, _, err := c.performRequest(req, input)
 	if err != nil {
 		return nil, status, err
 	}
@@ -61,13 +63,13 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		respBody, _ := ioutil.ReadAll(resp.Body)
 		resp.Body.Close()
 
-		// Unmarshall odata
-		var odata OData
-		if err := json.Unmarshal(respBody, &odata); err != nil {
+		// Unmarshall firstOdata
+		var firstOdata odata.OData
+		if err := json.Unmarshal(respBody, &firstOdata); err != nil {
 			return nil, status, err
 		}
 
-		if odata.NextLink == nil || odata.Value == nil {
+		if firstOdata.NextLink == nil || firstOdata.Value == nil {
 			// No more pages, reassign response body and return
 			resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
 			return resp, status, nil
@@ -75,7 +77,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 
 		// Get the next page, recursively
 		nextInput := input
-		nextInput.rawUri = *odata.NextLink
+		nextInput.rawUri = *firstOdata.NextLink
 		nextResp, status, err := c.Get(ctx, nextInput)
 		if err != nil {
 			return resp, status, err
@@ -85,15 +87,15 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		nextRespBody, _ := ioutil.ReadAll(nextResp.Body)
 		nextResp.Body.Close()
 
-		// Unmarshall odata from the next page
-		var nextOdata OData
+		// Unmarshall firstOdata from the next page
+		var nextOdata odata.OData
 		if err := json.Unmarshal(nextRespBody, &nextOdata); err != nil {
 			return resp, status, err
 		}
 
 		if nextOdata.Value != nil {
 			// Next page has results, append to current page
-			value := append(*odata.Value, *nextOdata.Value...)
+			value := append(*firstOdata.Value, *nextOdata.Value...)
 			nextOdata.Value = &value
 		}
 
