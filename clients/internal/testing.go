@@ -51,11 +51,3 @@ func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
 
 	return &t
 }
-
-func Bool(b bool) *bool {
-	return &b
-}
-
-func String(s string) *string {
-	return &s
-}

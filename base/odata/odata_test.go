@@ -2,10 +2,56 @@ package odata_test
 
 import (
 	"encoding/json"
+	"reflect"
 	"testing"
 
 	"github.com/manicminer/hamilton/base/odata"
+	"github.com/manicminer/hamilton/internal/utils"
 )
+
+func TestOData(t *testing.T) {
+	type testCase struct {
+		response string
+		expected odata.OData
+	}
+	testCases := []testCase{
+		{
+			response: `{
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#servicePrincipals",
+  "@odata.nextLink": "https://graph.microsoft.com/beta/26e25406-6564-4a26-98ee-c71ba03235ad/servicePrincipals?$skiptoken=X%274453707402000100000035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D34336331643937353963313035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D3433633164393735396331300000000000000000000000%27",
+  "value": [
+    {
+      "id": "00000000-0000-0000-0000-000000000000",
+      "deletedDateTime": null,
+      "accountEnabled": true,
+      "createdDateTime": "2020-07-08T01:22:29Z"
+    }
+  ]
+}`,
+			expected: odata.OData{
+				Context:  utils.StringPtr("https://graph.microsoft.com/beta/$metadata#servicePrincipals"),
+				NextLink: utils.StringPtr("https://graph.microsoft.com/beta/26e25406-6564-4a26-98ee-c71ba03235ad/servicePrincipals?$skiptoken=X%274453707402000100000035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D34336331643937353963313035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D3433633164393735396331300000000000000000000000%27"),
+				Value: &[]json.RawMessage{[]byte(`{
+      "id": "00000000-0000-0000-0000-000000000000",
+      "deletedDateTime": null,
+      "accountEnabled": true,
+      "createdDateTime": "2020-07-08T01:22:29Z"
+    }`)},
+			},
+		},
+	}
+	for n, c := range testCases {
+		var o odata.OData
+		err := json.Unmarshal([]byte(c.response), &o)
+		if err != nil {
+			t.Errorf("test case %d: JSON unmarshalling failed: %v", n, err)
+			continue
+		}
+		if !reflect.DeepEqual(o, c.expected) {
+			t.Errorf("test case %d: expected %#v, got %#v", n, c.expected, o)
+		}
+	}
+}
 
 func TestError(t *testing.T) {
 	type testCase struct {
@@ -55,7 +101,7 @@ func TestError(t *testing.T) {
 			continue
 		}
 		if s := o.Error.String(); s != c.expected {
-			t.Errorf("test case %d: expected %q, got %q", n, s, c.expected)
+			t.Errorf("test case %d: expected %q, got %q", n, c.expected, s)
 		}
 	}
 }

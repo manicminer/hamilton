@@ -7,6 +7,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
+	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
 )
 
@@ -32,13 +33,13 @@ func TestServicePrincipalsClient(t *testing.T) {
 	a.client = clients.NewApplicationsClient(c.connection.AuthConfig.TenantID)
 	a.client.BaseClient.Authorizer = c.connection.Authorizer
 	app := testApplicationsClient_Create(t, a, models.Application{
-		DisplayName: internal.String(fmt.Sprintf("test-serviceprincipal-%s", a.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", a.randomString)),
 	})
 
 	sp := testServicePrincipalsClient_Create(t, c, models.ServicePrincipal{
-		AccountEnabled: internal.Bool(true),
+		AccountEnabled: utils.BoolPtr(true),
 		AppId:          app.AppId,
-		DisplayName:    internal.String(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
 	})
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
@@ -53,16 +54,16 @@ func TestServicePrincipalsClient(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := models.Group{
-		DisplayName:     internal.String("Test Group Parent"),
-		MailEnabled:     internal.Bool(false),
-		MailNickname:    internal.String(fmt.Sprintf("test-group-parent-%s", c.randomString)),
-		SecurityEnabled: internal.Bool(true),
+		DisplayName:     utils.StringPtr("Test Group Parent"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := models.Group{
-		DisplayName:     internal.String("Test Group Child"),
-		MailEnabled:     internal.Bool(false),
-		MailNickname:    internal.String(fmt.Sprintf("test-group-child-%s", c.randomString)),
-		SecurityEnabled: internal.Bool(true),
+		DisplayName:     utils.StringPtr("Test Group Child"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
 	}
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)

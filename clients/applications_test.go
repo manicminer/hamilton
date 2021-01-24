@@ -7,6 +7,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
+	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
 )
 
@@ -25,10 +26,10 @@ func TestApplicationsClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	app := testApplicationsClient_Create(t, c, models.Application{
-		DisplayName: internal.String(fmt.Sprintf("test-application-%s", c.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
 	})
 	testApplicationsClient_Get(t, c, *app.ID)
-	app.DisplayName = internal.String(fmt.Sprintf("test-app-updated-%s", c.randomString))
+	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.randomString))
 	testApplicationsClient_Update(t, c, *app)
 	owners := testApplicationsClient_ListOwners(t, c, *app.ID)
 	testApplicationsClient_GetOwner(t, c, *app.ID, (*owners)[0])
