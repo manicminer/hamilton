@@ -1,4 +1,4 @@
-package base
+package aadgraph
 
 import (
 	"context"

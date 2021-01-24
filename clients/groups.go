@@ -30,7 +30,7 @@ func (c *GroupsClient) List(ctx context.Context, filter string) (*[]models.Group
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/groups",
@@ -59,7 +59,7 @@ func (c *GroupsClient) Create(ctx context.Context, group models.Group) (*models.
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: base.Uri{
@@ -81,7 +81,7 @@ func (c *GroupsClient) Create(ctx context.Context, group models.Group) (*models.
 
 // Get retrieves a Group.
 func (c *GroupsClient) Get(ctx context.Context, id string) (*models.Group, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/groups/%s", id),
@@ -107,7 +107,7 @@ func (c *GroupsClient) Update(ctx context.Context, group models.Group) (int, err
 	if err != nil {
 		return status, err
 	}
-	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
@@ -123,7 +123,7 @@ func (c *GroupsClient) Update(ctx context.Context, group models.Group) (int, err
 
 // Delete removes a Group.
 func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/groups/%s", id),
@@ -139,7 +139,7 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 // ListMembers retrieves the members of the specified Group.
 // id is the object ID of the group.
 func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/groups/%s/members", id),
@@ -172,7 +172,7 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 // groupId is the object ID of the group.
 // memberId is the object ID of the member object.
 func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) (*string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/groups/%s/members/%s/$ref", groupId, memberId),
@@ -223,7 +223,7 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *models.Group) (int
 		if err != nil {
 			return status, err
 		}
-		_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+		_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
@@ -252,7 +252,7 @@ func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *
 			return status, err
 		}
 		var err error
-		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, _, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
 				Entity:      fmt.Sprintf("/groups/%s/members/%s/$ref", id, memberId),
@@ -269,7 +269,7 @@ func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *
 // ListOwners retrieves the owners of the specified Group.
 // id is the object ID of the group.
 func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/groups/%s/owners", id),
@@ -302,7 +302,7 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, in
 // groupId is the object ID of the group.
 // ownerId is the object ID of the owning object.
 func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/groups/%s/owners/%s/$ref", groupId, ownerId),
@@ -341,7 +341,7 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *models.Group) (int,
 		if err != nil {
 			return status, err
 		}
-		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		_, status, _, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
@@ -370,7 +370,7 @@ func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]
 			return status, err
 		}
 		var err error
-		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, _, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
 				Entity:      fmt.Sprintf("/groups/%s/owners/%s/$ref", id, ownerId),

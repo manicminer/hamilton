@@ -16,7 +16,7 @@ type ServicePrincipal struct {
 	ApplicationTemplateId               *string                       `json:"applicationTemplateId,omitempty"`
 	AppOwnerOrganizationId              *string                       `json:"appOwnerOrganizationId,omitempty"`
 	AppRoleAssignmentRequired           *bool                         `json:"appRoleAssignmentRequired,omitempty"`
-	AppRoles                            *[]ApplicationAppRole         `json:"appRoles,omitempty"`
+	AppRoles                            *[]AppRole                    `json:"appRoles,omitempty"`
 	DeletedDateTime                     *time.Time                    `json:"deletedDateTime,omitempty"`
 	DisplayName                         *string                       `json:"displayName,omitempty"`
 	Homepage                            *string                       `json:"homepage,omitempty"`

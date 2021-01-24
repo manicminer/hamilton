@@ -11,6 +11,7 @@ import (
 	"regexp"
 
 	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/base/odata"
 	"github.com/manicminer/hamilton/models"
 )
 
@@ -32,7 +33,7 @@ func (c *ServicePrincipalsClient) List(ctx context.Context, filter string) (*[]m
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/servicePrincipals",
@@ -61,7 +62,7 @@ func (c *ServicePrincipalsClient) Create(ctx context.Context, servicePrincipal m
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: base.Uri{
@@ -83,7 +84,7 @@ func (c *ServicePrincipalsClient) Create(ctx context.Context, servicePrincipal m
 
 // Get retrieves a Service Principal.
 func (c *ServicePrincipalsClient) Get(ctx context.Context, id string) (*models.ServicePrincipal, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s", id),
@@ -112,7 +113,7 @@ func (c *ServicePrincipalsClient) Update(ctx context.Context, servicePrincipal m
 	if err != nil {
 		return status, err
 	}
-	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
@@ -128,7 +129,7 @@ func (c *ServicePrincipalsClient) Update(ctx context.Context, servicePrincipal m
 
 // Delete removes a Service Principal.
 func (c *ServicePrincipalsClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s", id),
@@ -144,7 +145,7 @@ func (c *ServicePrincipalsClient) Delete(ctx context.Context, id string) (int, e
 // ListOwners retrieves the owners of the specified Service Principal.
 // id is the object ID of the service principal.
 func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/owners", id),
@@ -177,7 +178,7 @@ func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[
 // servicePrincipalId is the object ID of the service principal.
 // ownerId is the object ID of the owning object.
 func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipalId, ownerId string) (*string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/owners/%s/$ref", servicePrincipalId, ownerId),
@@ -222,7 +223,7 @@ func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipa
 		if err != nil {
 			return status, err
 		}
-		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		_, status, _, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
@@ -255,23 +256,19 @@ func (c *ServicePrincipalsClient) RemoveOwners(ctx context.Context, servicePrinc
 		}
 
 		// despite the above check, sometimes owners are just gone
-		checkOwnerGone := func(resp *http.Response) bool {
+		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
-				defer resp.Body.Close()
-				respBody, _ := ioutil.ReadAll(resp.Body)
-				var apiError models.Error
-				if err := json.Unmarshal(respBody, &apiError); err != nil {
-					return false
-				}
-				re := regexp.MustCompile("One or more removed object references do not exist")
-				if re.MatchString(apiError.Error.Message) {
-					return true
+				if o.Error != nil {
+					re := regexp.MustCompile("One or more removed object references do not exist")
+					if re.MatchString(o.Error.String()) {
+						return true
+					}
 				}
 			}
 			return false
 		}
 
-		_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			ValidStatusFunc:  checkOwnerGone,
 			Uri: base.Uri{
@@ -292,7 +289,7 @@ func (c *ServicePrincipalsClient) ListGroupMemberships(ctx context.Context, id s
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/transitiveMemberOf", id),

@@ -30,7 +30,7 @@ func (c *UsersClient) List(ctx context.Context, filter string) (*[]models.User, 
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/users",
@@ -59,7 +59,7 @@ func (c *UsersClient) Create(ctx context.Context, user models.User) (*models.Use
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: base.Uri{
@@ -81,7 +81,7 @@ func (c *UsersClient) Create(ctx context.Context, user models.User) (*models.Use
 
 // Get retrieves a User.
 func (c *UsersClient) Get(ctx context.Context, id string) (*models.User, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/users/%s", id),
@@ -107,7 +107,7 @@ func (c *UsersClient) Update(ctx context.Context, user models.User) (int, error)
 	if err != nil {
 		return status, err
 	}
-	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
@@ -123,7 +123,7 @@ func (c *UsersClient) Update(ctx context.Context, user models.User) (int, error)
 
 // Delete removes a User.
 func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/users/%s", id),
@@ -142,7 +142,7 @@ func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, filte
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/users/%s/transitiveMemberOf", id),

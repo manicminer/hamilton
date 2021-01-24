@@ -11,10 +11,11 @@ import (
 	"regexp"
 
 	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/base/odata"
 	"github.com/manicminer/hamilton/models"
 )
 
-// ApplicationsCLient performs operations on Applications.
+// ApplicationsClient performs operations on Applications.
 type ApplicationsClient struct {
 	BaseClient base.Client
 }
@@ -32,7 +33,7 @@ func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]models
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/applications",
@@ -61,7 +62,7 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: base.Uri{
@@ -83,7 +84,7 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 
 // Get retrieves an Application manifest.
 func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Application, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s", id),
@@ -112,7 +113,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 	if err != nil {
 		return status, err
 	}
-	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
@@ -128,7 +129,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 
 // Delete removes an Application.
 func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s", id),
@@ -148,7 +149,7 @@ func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, k
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
 		Uri: base.Uri{
@@ -171,14 +172,13 @@ func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, k
 // ListOwners retrieves the owners of the specified Application.
 // id is the object ID of the application.
 func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners", id),
 			Params:      url.Values{"$select": []string{"id"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -205,14 +205,13 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 // applicationId is the object ID of the application.
 // ownerId is the object ID of the owning object.
 func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerId string) (*string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
 			Params:      url.Values{"$select": []string{"id,url"}},
 			HasTenantId: true,
 		},
-
 	})
 	if err != nil {
 		return nil, status, err
@@ -242,6 +241,19 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 		return status, errors.New("cannot update application with nil Owners")
 	}
 	for _, owner := range *application.Owners {
+		// don't fail if an owner already exists
+		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
+			if resp.StatusCode == http.StatusBadRequest {
+				if o.Error != nil {
+					re := regexp.MustCompile("One or more added object references already exist")
+					if re.MatchString(o.Error.String()) {
+						return true
+					}
+				}
+			}
+			return false
+		}
+
 		data := struct {
 			Owner string `json:"@odata.id"`
 		}{
@@ -251,9 +263,10 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 		if err != nil {
 			return status, err
 		}
-		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		_, status, _, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
+			ValidStatusFunc:  checkOwnerAlreadyExists,
 			Uri: base.Uri{
 				Entity:      fmt.Sprintf("/applications/%s/owners/$ref", *application.ID),
 				HasTenantId: true,
@@ -284,24 +297,20 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 		}
 
 		// despite the above check, sometimes owners are just gone
-		checkOwnerGone := func(resp *http.Response) bool {
+		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
-				defer resp.Body.Close()
-				respBody, _ := ioutil.ReadAll(resp.Body)
-				var apiError models.Error
-				if err := json.Unmarshal(respBody, &apiError); err != nil {
-					return false
-				}
-				re := regexp.MustCompile("One or more removed object references do not exist")
-				if re.MatchString(apiError.Error.Message) {
-					return true
+				if o.Error != nil {
+					re := regexp.MustCompile("One or more removed object references do not exist")
+					if re.MatchString(o.Error.String()) {
+						return true
+					}
 				}
 			}
 			return false
 		}
 
 		var err error
-		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, _, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			ValidStatusFunc:  checkOwnerGone,
 			Uri: base.Uri{

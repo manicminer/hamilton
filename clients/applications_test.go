@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
 	"github.com/manicminer/hamilton/models"
@@ -17,7 +18,7 @@ type ApplicationsClientTest struct {
 
 func TestApplicationsClient(t *testing.T) {
 	c := ApplicationsClientTest{
-		connection:   internal.NewConnection(),
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: internal.RandomString(),
 	}
 	c.client = clients.NewApplicationsClient(c.connection.AuthConfig.TenantID)

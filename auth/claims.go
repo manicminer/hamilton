@@ -15,6 +15,7 @@ type Claims struct {
 	IdentityProvider  string   `json:"idp"`
 	ObjectId          string   `json:"oid"`
 	Roles             []string `json:"roles"`
+	Scopes            string   `json:"scp"`
 	Subject           string   `json:"sub"`
 	TenantRegionScope string   `json:"tenant_region_scope"`
 	TenantId          string   `json:"tid"`

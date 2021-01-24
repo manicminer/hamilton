@@ -1,4 +1,4 @@
-package base
+package aadgraph
 
 import (
 	"bytes"
@@ -17,8 +17,8 @@ import (
 type ApiVersion string
 
 const (
-	Version10   ApiVersion = "v1.0"
-	VersionBeta ApiVersion = "beta"
+	Version16 ApiVersion = "1.6"
+	Version20 ApiVersion = "2.0"
 )
 
 // ValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
@@ -30,23 +30,22 @@ type HttpRequestInput interface {
 	GetValidStatusFunc() ValidStatusFunc
 }
 
-// Uri represents a Microsoft Graph endpoint.
+// Uri represents an Azure Active Directory Graph endpoint.
 type Uri struct {
 	Entity      string
 	Params      url.Values
-	HasTenantId bool
 }
 
 // GraphClient is any suitable HTTP client.
 type GraphClient = *http.Client
 
 // Client is a base client to be used by clients for specific entities.
-// It can send GET, POST, PUT, PATCH and DELETE requests to Microsoft Graph and is API version and tenant aware.
+// It can send GET, POST, PUT, PATCH and DELETE requests to Azure Active Directory Graph and is API version and tenant aware.
 type Client struct {
-	// Endpoint is the base endpoint for Microsoft Graph, usually "https://graph.microsoft.com".
+	// Endpoint is the base endpoint for Azure Active Directory Graph, usually "https://graph.windows.net".
 	Endpoint environments.ApiEndpoint
 
-	// ApiVersion is the Microsoft Graph API version to use.
+	// ApiVersion is the Azure Active Directory Graph API version to use.
 	ApiVersion ApiVersion
 
 	// TenantId is the tenant ID to use in requests.
@@ -64,7 +63,7 @@ type Client struct {
 // NewClient returns a new Client configured with the specified API version and tenant ID.
 func NewClient(apiVersion ApiVersion, tenantId string) Client {
 	return Client{
-		Endpoint:   environments.MsGraphGlobal.Endpoint,
+		Endpoint:   environments.AadGraphGlobal.Endpoint,
 		ApiVersion: apiVersion,
 		TenantId:   tenantId,
 		httpClient: http.DefaultClient,
@@ -77,14 +76,12 @@ func (c Client) buildUri(uri Uri) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	newUrl.Path = "/" + string(c.ApiVersion)
-	if uri.HasTenantId {
-		newUrl.Path = fmt.Sprintf("%s/%s", newUrl.Path, c.TenantId)
+	newUrl.Path = fmt.Sprintf("%s/%s/%s", newUrl.Path, c.TenantId, strings.TrimLeft(uri.Entity, "/"))
+	if uri.Params == nil {
+		uri.Params = url.Values{}
 	}
-	newUrl.Path = fmt.Sprintf("%s/%s", newUrl.Path, strings.TrimLeft(uri.Entity, "/"))
-	if uri.Params != nil {
-		newUrl.RawQuery = uri.Params.Encode()
-	}
+	uri.Params["api-version"] = []string{string(c.ApiVersion)}
+	newUrl.RawQuery = uri.Params.Encode()
 	return newUrl.String(), nil
 }
 
