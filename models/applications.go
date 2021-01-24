@@ -3,46 +3,46 @@ package models
 import (
 	goerrors "errors"
 	"fmt"
-	"github.com/manicminer/hamilton/base"
-	"github.com/manicminer/hamilton/environments"
 	"time"
 
+	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/errors"
 )
 
 // Application describes an Application object.
 type Application struct {
-	ID                         *string                              `json:"id,omitempty"`
-	AddIns                     *[]AddIn                             `json:"addIns,omitempty"`
-	Api                        *ApplicationApi                      `json:"api,omitempty"`
-	AppId                      *string                              `json:"appId,omitempty"`
-	AppRoles                   *[]ApplicationAppRole                `json:"appRoles,omitempty"`
-	CreatedDateTime            *time.Time                           `json:"createdDateTime,omitempty"`
-	DeletedDateTime            *time.Time                           `json:"deletedDateTime,omitempty"`
-	DisplayName                *string                              `json:"displayName,omitempty"`
-	GroupMembershipClaims      *string                              `json:"groupMembershipClaims,omitempty"`
-	IdentifierUris             *[]string                            `json:"identifierUris,omitempty"`
-	Info                       *InformationalUrl                    `json:"info,omitempty"`
-	IsFallbackPublicClient     *bool                                `json:"isFallbackPublicCLient,omitempty"`
-	KeyCredentials             *[]KeyCredential                     `json:"keyCredentials,omitempty"`
-	Oauth2RequiredPostResponse *bool                                `json:"oauth2RequiredPostResponse,omitempty"`
-	OnPremisesPublishing       *ApplicationOnPremisesPublishing     `json:"onPremisePublishing,omitempty"`
-	OptionalClaims             *ApplicationOptionalClaims           `json:"optionalClaims,omitempty"`
-	ParentalControlSettings    *ParentalControlSettings             `json:"parentalControlSettings,omitempty"`
-	PasswordCredentials        *[]PasswordCredential                `json:"passwordCredentials,omitempty"`
-	PublicClient               *ApplicationPublicClient             `json:"publicClient,omitempty"`
-	PublisherDomain            *string                              `json:"publisherDomain,omitempty"`
-	RequiredResourceAccess     *[]ApplicationRequiredResourceAccess `json:"requiredResourceAccess,omitempty"`
-	SignInAudience             SignInAudience                       `json:"signInAudience,omitempty"`
-	Tags                       *[]string                            `json:"tags,omitempty"`
-	TokenEncryptionKeyId       *string                              `json:"tokenEncryptionKeyId,omitempty"`
-	Web                        *ApplicationWeb                      `json:"web,omitempty"`
+	ID                         *string                   `json:"id,omitempty"`
+	AddIns                     *[]AddIn                  `json:"addIns,omitempty"`
+	Api                        *ApplicationApi           `json:"api,omitempty"`
+	AppId                      *string                   `json:"appId,omitempty"`
+	AppRoles                   *[]AppRole                `json:"appRoles,omitempty"`
+	CreatedDateTime            *time.Time                `json:"createdDateTime,omitempty"`
+	DeletedDateTime            *time.Time                `json:"deletedDateTime,omitempty"`
+	DisplayName                *string                   `json:"displayName,omitempty"`
+	GroupMembershipClaims      *string                   `json:"groupMembershipClaims,omitempty"`
+	IdentifierUris             *[]string                 `json:"identifierUris,omitempty"`
+	Info                       *InformationalUrl         `json:"info,omitempty"`
+	IsFallbackPublicClient     *bool                     `json:"isFallbackPublicCLient,omitempty"`
+	KeyCredentials             *[]KeyCredential          `json:"keyCredentials,omitempty"`
+	Oauth2RequiredPostResponse *bool                     `json:"oauth2RequiredPostResponse,omitempty"`
+	OnPremisesPublishing       *OnPremisesPublishing     `json:"onPremisePublishing,omitempty"`
+	OptionalClaims             *OptionalClaims           `json:"optionalClaims,omitempty"`
+	ParentalControlSettings    *ParentalControlSettings  `json:"parentalControlSettings,omitempty"`
+	PasswordCredentials        *[]PasswordCredential     `json:"passwordCredentials,omitempty"`
+	PublicClient               *PublicClient             `json:"publicClient,omitempty"`
+	PublisherDomain            *string                   `json:"publisherDomain,omitempty"`
+	RequiredResourceAccess     *[]RequiredResourceAccess `json:"requiredResourceAccess,omitempty"`
+	SignInAudience             SignInAudience            `json:"signInAudience,omitempty"`
+	Tags                       *[]string                 `json:"tags,omitempty"`
+	TokenEncryptionKeyId       *string                   `json:"tokenEncryptionKeyId,omitempty"`
+	Web                        *ApplicationWeb           `json:"web,omitempty"`
 
 	Owners *[]string `json:"owners@odata.bind,omitempty"`
 }
 
 // AppendOwner appends a new owner object URI to the Owners slice.
-func (a *Application) AppendOwner(endpoint environments.MsGraphEndpoint, apiVersion base.ApiVersion, id string) {
+func (a *Application) AppendOwner(endpoint environments.ApiEndpoint, apiVersion base.ApiVersion, id string) {
 	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
 	var owners []string
 	if a.Owners != nil {
@@ -52,8 +52,8 @@ func (a *Application) AppendOwner(endpoint environments.MsGraphEndpoint, apiVers
 	a.Owners = &owners
 }
 
-// AppendAppRole adds a new ApplicationAppRole to an Application, checking to see if it already exists.
-func (a *Application) AppendAppRole(role ApplicationAppRole) error {
+// AppendAppRole adds a new AppRole to an Application, checking to see if it already exists.
+func (a *Application) AppendAppRole(role AppRole) error {
 	if role.ID == nil {
 		return goerrors.New("ID of new role is nil")
 	}
@@ -63,7 +63,7 @@ func (a *Application) AppendAppRole(role ApplicationAppRole) error {
 		cap += len(*a.AppRoles)
 	}
 
-	newRoles := make([]ApplicationAppRole, 1, cap)
+	newRoles := make([]AppRole, 1, cap)
 	newRoles[0] = role
 
 	for _, v := range *a.AppRoles {
@@ -77,8 +77,8 @@ func (a *Application) AppendAppRole(role ApplicationAppRole) error {
 	return nil
 }
 
-// RemoveAppRole removes an ApplicationAppRole from an Application.
-func (a *Application) RemoveAppRole(role ApplicationAppRole) error {
+// RemoveAppRole removes an AppRole from an Application.
+func (a *Application) RemoveAppRole(role AppRole) error {
 	if role.ID == nil {
 		return goerrors.New("ID of role is nil")
 	}
@@ -87,7 +87,7 @@ func (a *Application) RemoveAppRole(role ApplicationAppRole) error {
 		return goerrors.New("no roles to remove")
 	}
 
-	appRoles := make([]ApplicationAppRole, 0, len(*a.AppRoles))
+	appRoles := make([]AppRole, 0, len(*a.AppRoles))
 	for _, v := range *a.AppRoles {
 		if v.ID == nil || *v.ID != *role.ID {
 			appRoles = append(appRoles, v)
@@ -102,8 +102,8 @@ func (a *Application) RemoveAppRole(role ApplicationAppRole) error {
 	return nil
 }
 
-// UpdateAppRole amends an existing ApplicationAppRole defined in an Application.
-func (a *Application) UpdateAppRole(role ApplicationAppRole) error {
+// UpdateAppRole amends an existing AppRole defined in an Application.
+func (a *Application) UpdateAppRole(role AppRole) error {
 	if role.ID == nil {
 		return goerrors.New("ID of role is nil")
 	}
@@ -125,11 +125,18 @@ func (a *Application) UpdateAppRole(role ApplicationAppRole) error {
 }
 
 type ApplicationApi struct {
-	AcceptMappedClaims          *bool                                     `json:"acceptMappedClaims,omitempty"`
-	KnownClientApplications     *[]string                                 `json:"knownClientApplications,omitempty"`
-	OAuth2PermissionScopes      *[]PermissionScope                        `json:"oauth2PermissionScopes,omitempty"`
-	PreAuthorizedApplications   *[]ApplicationApiPreAuthorizedApplication `json:"preAuthorizedApplications,omitempty"`
-	RequestedAccessTokenVersion *int32                                    `json:"requestedAccessTokenVersion,omitempty"`
+	AcceptMappedClaims          *bool                          `json:"acceptMappedClaims,omitempty"`
+	KnownClientApplications     *[]string                      `json:"knownClientApplications,omitempty"`
+	OAuth2PermissionScopes      *[]PermissionScope             `json:"oauth2PermissionScopes,omitempty"`
+	PreAuthorizedApplications   *[]ApiPreAuthorizedApplication `json:"preAuthorizedApplications,omitempty"`
+	RequestedAccessTokenVersion *int32                         `json:"requestedAccessTokenVersion,omitempty"`
+}
+
+type ApplicationWeb struct {
+	HomePageUrl           *string                `json:"homePageUrl"`
+	ImplicitGrantSettings *ImplicitGrantSettings `json:"implicitGrantSettings,omitempty"`
+	LogoutUrl             *string                `json:"logoutUrl"`
+	RedirectUris          *[]string              `json:"redirectUris,omitempty"`
 }
 
 // AppendOAuth2PermissionScope adds a new ApplicationOAuth2PermissionScope to an ApplicationApi, checking to see if it already exists.
@@ -204,12 +211,12 @@ func (a *ApplicationApi) UpdateOAuth2PermissionScope(scope PermissionScope) erro
 	return nil
 }
 
-type ApplicationApiPreAuthorizedApplication struct {
+type ApiPreAuthorizedApplication struct {
 	AppId         *string   `json:"appId,omitempty"`
 	PermissionIds *[]string `json:"permissionIds,omitempty"`
 }
 
-type ApplicationAppRole struct {
+type AppRole struct {
 	ID                 *string   `json:"id,omitempty"`
 	AllowedMemberTypes *[]string `json:"allowedMemberTypes,omitempty"`
 	Description        *string   `json:"description,omitempty"`
@@ -219,17 +226,17 @@ type ApplicationAppRole struct {
 	Value              *string   `json:"value,omitempty"`
 }
 
-type ApplicationImplicitGrantSettings struct {
+type ImplicitGrantSettings struct {
 	EnableAccessTokenIssuance *bool `json:"enableAccessTokenIssuance,omitempty"`
 	EnableIdTokenIssuance     *bool `json:"enableIdTokenIssuance,omitempty"`
 }
 
-type ApplicationKerberosSignOnSettings struct {
+type KerberosSignOnSettings struct {
 	ServicePrincipalName       *string `json:"kerberosServicePrincipalName,omitempty"`
 	SignOnMappingAttributeType *string `jsonL:"kerberosSignOnMappingAttributeType,omitempty"`
 }
 
-type ApplicationOnPremisesPublishing struct {
+type OnPremisesPublishing struct {
 	AlternateUrl                  *string `json:"alternateUrl,omitempty"`
 	ApplicationServerTimeout      *string `json:"applicationServerTimeout,omitempty"`
 	ApplicationType               *string `json:"applicationType,omitempty"`
@@ -243,18 +250,18 @@ type ApplicationOnPremisesPublishing struct {
 	IsTranslateHostHeaderEnabled  *bool   `json:"isTranslateHostHeaderEnabled,omitempty"`
 	IsTranslateLinksInBodyEnabled *bool   `json:"isTranslateLinksInBodyEnabled,omitempty"`
 
-	SingleSignOnSettings                     *ApplicationOnPremisesPublishingSingleSignOn                             `json:"singleSignOnSettings,omitempty"`
-	VerifiedCustomDomainCertificatesMetadata *ApplicationOnPremisesPublishingVerifiedCustomDomainCertificatesMetadata `json:"verifiedCustomDomainCertificatesMetadata,omitempty"`
-	VerifiedCustomDomainKeyCredential        *KeyCredential                                                           `json:"verifiedCustomDomainKeyCredential,omitempty"`
-	VerifiedCustomDomainPasswordCredential   *PasswordCredential                                                      `json:"verifiedCustomDomainPasswordCredential,omitempty"`
+	SingleSignOnSettings                     *OnPremisesPublishingSingleSignOn                             `json:"singleSignOnSettings,omitempty"`
+	VerifiedCustomDomainCertificatesMetadata *OnPremisesPublishingVerifiedCustomDomainCertificatesMetadata `json:"verifiedCustomDomainCertificatesMetadata,omitempty"`
+	VerifiedCustomDomainKeyCredential        *KeyCredential                                                `json:"verifiedCustomDomainKeyCredential,omitempty"`
+	VerifiedCustomDomainPasswordCredential   *PasswordCredential                                           `json:"verifiedCustomDomainPasswordCredential,omitempty"`
 }
 
-type ApplicationOnPremisesPublishingSingleSignOn struct {
-	KerberosSignOnSettings *ApplicationKerberosSignOnSettings `json:"kerberosSignOnSettings,omitempty"`
-	SingleSignOnMode       *string                            `json:"singleSignOnMode,omitempty"`
+type OnPremisesPublishingSingleSignOn struct {
+	KerberosSignOnSettings *KerberosSignOnSettings `json:"kerberosSignOnSettings,omitempty"`
+	SingleSignOnMode       *string                 `json:"singleSignOnMode,omitempty"`
 }
 
-type ApplicationOnPremisesPublishingVerifiedCustomDomainCertificatesMetadata struct {
+type OnPremisesPublishingVerifiedCustomDomainCertificatesMetadata struct {
 	ExpiryDate  *time.Time `json:"expiryDate,omitempty"`
 	IssueDate   *time.Time `json:"issueDate,omitempty"`
 	IssuerName  *string    `json:"issuerName,omitempty"`
@@ -262,38 +269,31 @@ type ApplicationOnPremisesPublishingVerifiedCustomDomainCertificatesMetadata str
 	Thumbprint  *string    `json:"thumbprint,omitempty"`
 }
 
-type ApplicationOptionalClaim struct {
+type OptionalClaim struct {
 	AdditionalProperties *[]string `json:"additionalProperties,omitempty"`
 	Essential            *bool     `json:"essential,omitempty"`
 	Name                 *string   `json:"name,omitempty"`
 	Source               *string   `json:"source,omitempty"`
 }
 
-type ApplicationOptionalClaims struct {
-	AccessToken *[]ApplicationOptionalClaim `json:"accessToken,omitempty"`
-	IdToken     *[]ApplicationOptionalClaim `json:"idToken,omitempty"`
-	Saml2Token  *[]ApplicationOptionalClaim `json:"saml2Token,omitempty"`
+type OptionalClaims struct {
+	AccessToken *[]OptionalClaim `json:"accessToken,omitempty"`
+	IdToken     *[]OptionalClaim `json:"idToken,omitempty"`
+	Saml2Token  *[]OptionalClaim `json:"saml2Token,omitempty"`
 }
 
-type ApplicationPublicClient struct {
+type PublicClient struct {
 	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
 
-type ApplicationRequiredResourceAccess struct {
-	ResourceAccess *[]ApplicationResourceAccess `json:"resourceAccess,omitempty"`
-	ResourceAppId  *string                      `json:"resourceAppId,omitempty"`
+type RequiredResourceAccess struct {
+	ResourceAccess *[]ResourceAccess `json:"resourceAccess,omitempty"`
+	ResourceAppId  *string           `json:"resourceAppId,omitempty"`
 }
 
-type ApplicationResourceAccess struct {
+type ResourceAccess struct {
 	ID   *string `json:"id,omitempty"`
 	Type *string `json:"type,omitempty"`
-}
-
-type ApplicationWeb struct {
-	HomePageUrl           *string                           `json:"homePageUrl"`
-	ImplicitGrantSettings *ApplicationImplicitGrantSettings `json:"implicitGrantSettings,omitempty"`
-	LogoutUrl             *string                           `json:"logoutUrl"`
-	RedirectUris          *[]string                         `json:"redirectUris,omitempty"`
 }
 
 type ParentalControlSettings struct {
