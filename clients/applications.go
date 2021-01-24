@@ -241,6 +241,19 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 		return status, errors.New("cannot update application with nil Owners")
 	}
 	for _, owner := range *application.Owners {
+		// don't fail if an owner already exists
+		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
+			if resp.StatusCode == http.StatusBadRequest {
+				if o.Error != nil {
+					re := regexp.MustCompile("One or more added object references already exist")
+					if re.MatchString(o.Error.String()) {
+						return true
+					}
+				}
+			}
+			return false
+		}
+
 		data := struct {
 			Owner string `json:"@odata.id"`
 		}{
@@ -253,6 +266,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 		_, status, _, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
+			ValidStatusFunc:  checkOwnerAlreadyExists,
 			Uri: base.Uri{
 				Entity:      fmt.Sprintf("/applications/%s/owners/$ref", *application.ID),
 				HasTenantId: true,
