@@ -1,44 +1,44 @@
 package environments
 
 type Environment struct {
-	AADGraphEndpoint AADGraphEndpoint
-	AzureADEndpoint  AzureADEndpoint
-	MsGraphEndpoint  MsGraphEndpoint
+	AzureADEndpoint AzureADEndpoint
+	MsGraph         Api
+	AadGraph        Api
 }
 
 var (
 	Global = Environment{
-		AADGraphEndpoint: AADGraphGlobal,
-		AzureADEndpoint:  AzureADGlobal,
-		MsGraphEndpoint:  MsGraphGlobal,
-	}
-
-	USGovernmentL4 = Environment{
-		AADGraphEndpoint: AADGraphUSGov,
-		AzureADEndpoint:  AzureADUSGov,
-		MsGraphEndpoint:  MsGraphUSGovL4,
-	}
-
-	USGovernmentL5 = Environment{
-		AADGraphEndpoint: AADGraphUSGov,
-		AzureADEndpoint:  AzureADUSGov,
-		MsGraphEndpoint:  MsGraphUSGovL5,
+		AzureADEndpoint: AzureADGlobal,
+		MsGraph:         MsGraphGlobal,
+		AadGraph:        AadGraphGlobal,
 	}
 
 	Germany = Environment{
-		AADGraphEndpoint: AADGraphGermany,
-		AzureADEndpoint:  AzureADGermany,
-		MsGraphEndpoint:  MsGraphGermany,
+		AzureADEndpoint: AzureADGermany,
+		MsGraph:         MsGraphGermany,
+		AadGraph:        AadGraphGermany,
 	}
 
 	China = Environment{
-		AADGraphEndpoint: AADGraphChina,
-		AzureADEndpoint:  AzureADChina,
-		MsGraphEndpoint:  MsGraphChina,
+		AzureADEndpoint: AzureADChina,
+		MsGraph:         MsGraphChina,
+		AadGraph:        AadGraphChina,
+	}
+
+	USGovernmentL4 = Environment{
+		AzureADEndpoint: AzureADUSGov,
+		MsGraph:         MsGraphUSGovL4,
+		AadGraph:        AadGraphUSGov,
+	}
+
+	USGovernmentL5 = Environment{
+		AzureADEndpoint: AzureADUSGov,
+		MsGraph:         MsGraphUSGovL5,
+		AadGraph:        AadGraphUSGov,
 	}
 
 	Canary = Environment{
 		AzureADEndpoint: AzureADGlobal,
-		MsGraphEndpoint: MsGraphCanary,
+		MsGraph:         MsGraphCanary,
 	}
 )

@@ -67,9 +67,10 @@ const (
 	MileIqDashboard                   ApiAppId = "f7069a8d-9edc-4300-b365-ae53c9627fc4"
 	MileIqRestService                 ApiAppId = "b692184e-b47f-4706-b352-84b288d2d9ee"
 	MixedReality                      ApiAppId = "c7ddd9b4-5172-4e28-bd29-1e0792947d18"
-	Ms365DataAtRestEncryption         ApiAppId = "c066d759-24ae-40e7-a56f-027002b5d3e4"
-	MsGraph                           ApiAppId = "00000003-0000-0000-c000-000000000000"
-	MsInvoicing                       ApiAppId = "b6b84568-6c01-4981-a80f-09da9a20bbed"
+	MicrosoftAzureCli                 ApiAppId = "04b07795-8ddb-461a-bbee-02f9e1bf7b46"
+	Microsoft365DataAtRestEncryption  ApiAppId = "c066d759-24ae-40e7-a56f-027002b5d3e4"
+	MicrosoftGraph                    ApiAppId = "00000003-0000-0000-c000-000000000000"
+	MicrosoftInvoicing                ApiAppId = "b6b84568-6c01-4981-a80f-09da9a20bbed"
 	Office365Connectors               ApiAppId = "48af08dc-f6d2-435f-b2a7-069abd99c086"
 	Office365Demeter                  ApiAppId = "982bda36-4632-4165-a46a-9863b1bbcf7d"
 	Office365DwEngineV2               ApiAppId = "441509e5-a165-4363-8ee7-bcf0b7d26739"
@@ -98,4 +99,94 @@ const (
 	WindowsDefenderAtp                ApiAppId = "fc780465-2017-40d4-a0c5-307022471b92"
 	WindowsVirtualDesktop             ApiAppId = "9cdead84-a844-4324-93f2-b2e6bb768d07"
 	Yammer                            ApiAppId = "00000005-0000-0ff1-ce00-000000000000"
+)
+
+type ApiEndpoint string
+
+const (
+	AadGraphGlobalEndpoint  ApiEndpoint = "https://graph.windows.net"
+	AadGraphGermanyEndpoint ApiEndpoint = "https://graph.cloudapi.de"
+	AadGraphChinaEndpoint   ApiEndpoint = "https://graph.chinacloudapi.cn"
+	AadGraphUSGovEndpoint   ApiEndpoint = "https://graph.microsoftazure.us"
+	MsGraphGlobalEndpoint   ApiEndpoint = "https://graph.microsoft.com"
+	MsGraphGermanyEndpoint  ApiEndpoint = "https://graph.microsoft.de"
+	MsGraphChinaEndpoint    ApiEndpoint = "https://microsoftgraph.chinacloudapi.cn"
+	MsGraphUSGovL4Endpoint  ApiEndpoint = "https://graph.microsoft.us"
+	MsGraphUSGovL5Endpoint  ApiEndpoint = "https://dod-graph.microsoft.us"
+	MsGraphCanaryEndpoint   ApiEndpoint = "https://canary.graph.microsoft.com"
+)
+
+type ApiCliName string
+
+const (
+	AadGraphCliName ApiCliName = "aad-graph"
+	MsGraphCliName  ApiCliName = "ms-graph"
+)
+
+type Api struct {
+	AppId    ApiAppId
+	CliName  ApiCliName
+	Endpoint ApiEndpoint
+}
+
+var (
+	MsGraphGlobal = Api{
+		AppId:    MicrosoftGraph,
+		CliName:  MsGraphCliName,
+		Endpoint: MsGraphGlobalEndpoint,
+	}
+
+	MsGraphGermany = Api{
+		AppId:    MicrosoftGraph,
+		CliName:  MsGraphCliName,
+		Endpoint: MsGraphGermanyEndpoint,
+	}
+
+	MsGraphChina = Api{
+		AppId:    MicrosoftGraph,
+		CliName:  MsGraphCliName,
+		Endpoint: MsGraphChinaEndpoint,
+	}
+
+	MsGraphUSGovL4 = Api{
+		AppId:    MicrosoftGraph,
+		CliName:  MsGraphCliName,
+		Endpoint: MsGraphUSGovL4Endpoint,
+	}
+
+	MsGraphUSGovL5 = Api{
+		AppId:    MicrosoftGraph,
+		CliName:  MsGraphCliName,
+		Endpoint: MsGraphUSGovL5Endpoint,
+	}
+
+	MsGraphCanary = Api{
+		AppId:    MicrosoftGraph,
+		CliName:  MsGraphCliName,
+		Endpoint: MsGraphCanaryEndpoint,
+	}
+
+	AadGraphGlobal = Api{
+		AppId:    AzureActiveDirectoryGraph,
+		CliName:  AadGraphCliName,
+		Endpoint: AadGraphGlobalEndpoint,
+	}
+
+	AadGraphGermany = Api{
+		AppId:    AzureActiveDirectoryGraph,
+		CliName:  AadGraphCliName,
+		Endpoint: AadGraphGermanyEndpoint,
+	}
+
+	AadGraphChina = Api{
+		AppId:    AzureActiveDirectoryGraph,
+		CliName:  AadGraphCliName,
+		Endpoint: AadGraphChinaEndpoint,
+	}
+
+	AadGraphUSGov = Api{
+		AppId:    AzureActiveDirectoryGraph,
+		CliName:  AadGraphCliName,
+		Endpoint: AadGraphUSGovEndpoint,
+	}
 )
