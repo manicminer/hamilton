@@ -51,7 +51,7 @@ func TestError(t *testing.T) {
 			continue
 		}
 		if o.Error == nil {
-			t.Errorf("test case %d: Error was nil", n)
+			t.Errorf("test case %d: Error field was nil", n)
 			continue
 		}
 		if s := o.Error.String(); s != c.expected {
