@@ -30,7 +30,14 @@ func (a AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 		Tenant      string `json:"tenant"`
 		TokenType   string `json:"tokenType"`
 	}
-	cmd := []string{"account", "get-access-token", "--resource-type=ms-graph", "--tenant", a.conf.TenantID, "-o=json"}
+	var resourceType string
+	switch a.conf.Api {
+	case MsGraph:
+		resourceType = "ms-graph"
+	case AadGraph:
+		resourceType = "aad-graph"
+	}
+	cmd := []string{"account", "get-access-token", fmt.Sprintf("--resource-type=%s", resourceType), "--tenant", a.conf.TenantID, "-o=json"}
 	err := jsonUnmarshalAzCmd(&token, cmd...)
 	if err != nil {
 		return nil, err
@@ -45,11 +52,12 @@ func (a AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 
 // AzureCliConfig configures an AzureCliAuthorizer.
 type AzureCliConfig struct {
+	Api      Api
 	TenantID string
 }
 
 // NewAzureCliConfig validates the supplied tenant ID and returns a new AzureCliConfig.
-func NewAzureCliConfig(tenantId string) (*AzureCliConfig, error) {
+func NewAzureCliConfig(api Api, tenantId string) (*AzureCliConfig, error) {
 	// check az-cli version
 
 	// check tenant id
@@ -71,7 +79,7 @@ func NewAzureCliConfig(tenantId string) (*AzureCliConfig, error) {
 		tenantId = account.TenantID
 	}
 
-	return &AzureCliConfig{TenantID: tenantId}, nil
+	return &AzureCliConfig{Api: api, TenantID: tenantId}, nil
 }
 
 // TokenSource provides a source for obtaining access tokens using AzureCliAuthorizer.
