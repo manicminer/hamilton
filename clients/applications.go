@@ -33,7 +33,7 @@ func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]models
 	if filter != "" {
 		params.Add("$filter", filter)
 	}
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/applications",
@@ -62,7 +62,7 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: base.Uri{
@@ -84,7 +84,7 @@ func (c *ApplicationsClient) Create(ctx context.Context, application models.Appl
 
 // Get retrieves an Application manifest.
 func (c *ApplicationsClient) Get(ctx context.Context, id string) (*models.Application, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s", id),
@@ -113,7 +113,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 	if err != nil {
 		return status, err
 	}
-	_, status, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
@@ -129,7 +129,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application models.Appl
 
 // Delete removes an Application.
 func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s", id),
@@ -149,7 +149,7 @@ func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, k
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
 		Uri: base.Uri{
@@ -172,7 +172,7 @@ func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, k
 // ListOwners retrieves the owners of the specified Application.
 // id is the object ID of the application.
 func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners", id),
@@ -205,7 +205,7 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 // applicationId is the object ID of the application.
 // ownerId is the object ID of the owning object.
 func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerId string) (*string, int, error) {
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
@@ -250,7 +250,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *models.
 		if err != nil {
 			return status, err
 		}
-		_, status, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+		_, status, _, err = c.BaseClient.Post(ctx, base.PostHttpRequestInput{
 			Body:             body,
 			ValidStatusCodes: []int{http.StatusNoContent},
 			Uri: base.Uri{
@@ -296,7 +296,7 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 		}
 
 		var err error
-		_, status, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+		_, status, _, err = c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
 			ValidStatusCodes: []int{http.StatusNoContent},
 			ValidStatusFunc:  checkOwnerGone,
 			Uri: base.Uri{

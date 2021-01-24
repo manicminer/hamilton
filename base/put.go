@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"github.com/manicminer/hamilton/base/odata"
 )
 
 // PutHttpRequestInput configures a PUT request.
@@ -26,19 +28,19 @@ func (i PutHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 }
 
 // Put performs a PUT request.
-func (c Client) Put(ctx context.Context, input PutHttpRequestInput) (*http.Response, int, error) {
+func (c Client) Put(ctx context.Context, input PutHttpRequestInput) (*http.Response, int, *odata.OData, error) {
 	var status int
 	url, err := c.buildUri(input.Uri)
 	if err != nil {
-		return nil, status, fmt.Errorf("unable to make request: %v", err)
+		return nil, status, nil, fmt.Errorf("unable to make request: %v", err)
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, url, bytes.NewBuffer(input.Body))
 	if err != nil {
-		return nil, status, err
+		return nil, status, nil, err
 	}
-	resp, status, _, err := c.performRequest(req, input)
+	resp, status, o, err := c.performRequest(req, input)
 	if err != nil {
-		return nil, status, err
+		return nil, status, o, err
 	}
-	return resp, status, nil
+	return resp, status, o, nil
 }

@@ -26,7 +26,7 @@ func NewDomainsClient(tenantId string) *DomainsClient {
 // List returns a list of Domains.
 func (c *DomainsClient) List(ctx context.Context) (*[]models.Domain, int, error) {
 	var status int
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/domains",
@@ -55,7 +55,7 @@ func (c *DomainsClient) List(ctx context.Context) (*[]models.Domain, int, error)
 // Get retrieves a Domain.
 func (c *DomainsClient) Get(ctx context.Context, id string) (*models.Domain, int, error) {
 	var status int
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      fmt.Sprintf("/domains/%s", id),

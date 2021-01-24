@@ -25,7 +25,7 @@ func NewMeClient(tenantId string) *MeClient {
 // Get retrieves information about the authenticated user.
 func (c *MeClient) Get(ctx context.Context) (*models.Me, int, error) {
 	var status int
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/me",
@@ -47,7 +47,7 @@ func (c *MeClient) Get(ctx context.Context) (*models.Me, int, error) {
 // GetProfile retrieves the profile of the authenticated user.
 func (c *MeClient) GetProfile(ctx context.Context) (*models.Me, int, error) {
 	var status int
-	resp, status, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: base.Uri{
 			Entity:      "/me/profile",

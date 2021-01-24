@@ -31,7 +31,7 @@ func (i GetHttpRequestInput) GetValidStatusFunc() ValidStatusFunc {
 }
 
 // Get performs a GET request.
-func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Response, int, error) {
+func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Response, int, *odata.OData, error) {
 	var status int
 
 	// Check for a raw uri, else build one from the Uri field
@@ -40,20 +40,20 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		var err error
 		url, err = c.buildUri(input.Uri)
 		if err != nil {
-			return nil, status, fmt.Errorf("unable to make request: %v", err)
+			return nil, status, nil, fmt.Errorf("unable to make request: %v", err)
 		}
 	}
 
 	// Build a new request
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return nil, status, err
+		return nil, status, nil, err
 	}
 
 	// Perform the request
-	resp, status, _, err := c.performRequest(req, input)
+	resp, status, o, err := c.performRequest(req, input)
 	if err != nil {
-		return nil, status, err
+		return nil, status, o, err
 	}
 
 	// Check for json content before handling pagination
@@ -66,21 +66,21 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		// Unmarshall firstOdata
 		var firstOdata odata.OData
 		if err := json.Unmarshal(respBody, &firstOdata); err != nil {
-			return nil, status, err
+			return nil, status, o, err
 		}
 
 		if firstOdata.NextLink == nil || firstOdata.Value == nil {
 			// No more pages, reassign response body and return
 			resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
-			return resp, status, nil
+			return resp, status, o, nil
 		}
 
 		// Get the next page, recursively
 		nextInput := input
 		nextInput.rawUri = *firstOdata.NextLink
-		nextResp, status, err := c.Get(ctx, nextInput)
+		nextResp, status, o, err := c.Get(ctx, nextInput)
 		if err != nil {
-			return resp, status, err
+			return resp, status, o, err
 		}
 
 		// Read the next page response body and close it
@@ -90,7 +90,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		// Unmarshall firstOdata from the next page
 		var nextOdata odata.OData
 		if err := json.Unmarshal(nextRespBody, &nextOdata); err != nil {
-			return resp, status, err
+			return resp, status, o, err
 		}
 
 		if nextOdata.Value != nil {
@@ -102,12 +102,12 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		// Marshal the entire result, along with fields from the final page
 		newJson, err := json.Marshal(nextOdata)
 		if err != nil {
-			return resp, status, err
+			return resp, status, o, err
 		}
 
 		// Reassign the response body
 		resp.Body = ioutil.NopCloser(bytes.NewBuffer(newJson))
 	}
 
-	return resp, status, nil
+	return resp, status, o, nil
 }
