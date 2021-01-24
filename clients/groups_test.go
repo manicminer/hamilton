@@ -7,6 +7,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
+	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
 )
 
@@ -42,15 +43,15 @@ func TestGroupsClient(t *testing.T) {
 	u.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	newGroup := models.Group{
-		DisplayName:     internal.String("Test Group"),
-		MailEnabled:     internal.Bool(false),
-		MailNickname:    internal.String(fmt.Sprintf("test-group-%s", c.randomString)),
-		SecurityEnabled: internal.Bool(true),
+		DisplayName:     utils.StringPtr("Test Group"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", c.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroup.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, claims.ObjectId)
 	group := testGroupsClient_Create(t, c, newGroup)
 	testGroupsClient_Get(t, c, *group.ID)
-	group.DisplayName = internal.String(fmt.Sprintf("test-updated-group-%s", c.randomString))
+	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.randomString))
 
 	testGroupsClient_Update(t, c, *group)
 
@@ -58,12 +59,12 @@ func TestGroupsClient(t *testing.T) {
 	testGroupsClient_GetOwner(t, c, *group.ID, (*owners)[0])
 
 	user := testUsersClient_Create(t, u, models.User{
-		AccountEnabled:    internal.Bool(true),
-		DisplayName:       internal.String("Test User"),
-		MailNickname:      internal.String(fmt.Sprintf("test-user-%s", c.randomString)),
-		UserPrincipalName: internal.String(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("Test User"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &models.UserPasswordProfile{
-			Password: internal.String(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
 		},
 	})
 	group.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, *user.ID)

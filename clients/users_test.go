@@ -7,6 +7,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
 	"github.com/manicminer/hamilton/clients/internal"
+	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
 )
 
@@ -26,16 +27,16 @@ func TestUsersClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	user := testUsersClient_Create(t, c, models.User{
-		AccountEnabled:    internal.Bool(true),
-		DisplayName:       internal.String("Test User"),
-		MailNickname:      internal.String(fmt.Sprintf("test-user-%s", c.randomString)),
-		UserPrincipalName: internal.String(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("Test User"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &models.UserPasswordProfile{
-			Password: internal.String(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
 		},
 	})
 	testUsersClient_Get(t, c, *user.ID)
-	user.DisplayName = internal.String(fmt.Sprintf("test-updated-user-%s", c.randomString))
+	user.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-user-%s", c.randomString))
 	testUsersClient_Update(t, c, *user)
 	testUsersClient_List(t, c)
 
@@ -47,16 +48,16 @@ func TestUsersClient(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := models.Group{
-		DisplayName:     internal.String("Test Group Parent"),
-		MailEnabled:     internal.Bool(false),
-		MailNickname:    internal.String(fmt.Sprintf("test-group-parent-%s", c.randomString)),
-		SecurityEnabled: internal.Bool(true),
+		DisplayName:     utils.StringPtr("Test Group Parent"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := models.Group{
-		DisplayName:     internal.String("Test Group Child"),
-		MailEnabled:     internal.Bool(false),
-		MailNickname:    internal.String(fmt.Sprintf("test-group-child-%s", c.randomString)),
-		SecurityEnabled: internal.Bool(true),
+		DisplayName:     utils.StringPtr("Test Group Child"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
 	}
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
