@@ -97,6 +97,7 @@ var PublishedApis = map[string]ApiAppId{
 	"SkypeForBusinessOnline":            "00000004-0000-0ff1-ce00-000000000000",
 	"SpeechRecognition":                 "1a6fcee6-0816-469b-acac-fe7ef2e87b83",
 	"TargetedMessagingService":          "4c4f550b-42b2-4a16-93f9-fdb9e01bb6ed",
+	"TeamsServices":                     "cc15fd57-2c6c-4117-a88c-83b1d56b4bbe",
 	"ThreatProtection":                  "8ee8fdad-f234-4243-8f3b-15c294843740",
 	"UniversalPrint":                    "da9b70f6-5323-4ce6-ae5c-88dcc5082966",
 	"WindowsDefenderAtp":                "fc780465-2017-40d4-a0c5-307022471b92",
