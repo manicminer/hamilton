@@ -2,6 +2,9 @@ package environments
 
 type ApiAppId string
 
+// PublishedApis is a map containing Application IDs for well known APIs published by Microsoft.
+// They can be used to acquire access tokens, but are primarily described here for easy inclusion in
+// application manifests and service principal assignments.
 var PublishedApis = map[string]ApiAppId{
 	"ApplicationInsights":               "f5c26e74-f226-4ae8-85f0-b4af0080ac9e",
 	"AttestationService":                "c61423b7-1d1f-430d-b444-0eee53298103",

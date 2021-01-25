@@ -25,6 +25,7 @@ type Connection struct {
 	DomainName string
 }
 
+// NewConnection configures and returns a Connection for use in tests.
 func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
 	t := Connection{
 		AuthConfig: &auth.Config{

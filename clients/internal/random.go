@@ -9,6 +9,7 @@ func init() {
 	rand.Seed(time.Now().UnixNano())
 }
 
+// RandomString returns a random alphanumeric string useful for testing purposes.
 func RandomString() string {
 	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	s := make([]rune, 8)
