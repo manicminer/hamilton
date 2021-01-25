@@ -3,6 +3,10 @@
 This is a working Go client for the [Microsoft Graph API][ms-graph-docs]. It is actively maintained and has growing
 support for services and objects in Azure Active Directory.
 
+## Documentation
+
+See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
+
 ## Example Usage
 
 ```go
