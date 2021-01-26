@@ -1,3 +1,7 @@
+## 0.6.0 (January 26, 2021)
+
+- Support authentication using VM managed identity.
+
 ## 0.5.0 (January 24, 2021)
 
 - All responses from Microsoft Graph and Azure Active Directory Graph are now parsed for OData metadata. Calls to `base.Client.Delete()`, `base.Client.Get()`, `base.Client.Patch()`, `base.Client.Post()` and `base.client.Put()` each now return OData metadata in addition to the complete response.
