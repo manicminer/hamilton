@@ -1,6 +1,7 @@
 ## 0.6.0 (January 26, 2021)
 
 - Support authentication using VM managed identity.
+- Add App ID for Teams Services API.
 
 ## 0.5.0 (January 24, 2021)
 
