@@ -33,7 +33,7 @@ func (a *MsiAuthorizer) Token() (*oauth2.Token, error) {
 	}
 	url := fmt.Sprintf("%s?%s", a.conf.MsiEndpoint, query.Encode())
 
-	body, err := msiRequest(a.ctx, url)
+	body, err := azureMetadata(a.ctx, url)
 	if err != nil {
 		return nil, fmt.Errorf("MsiAuthorizer: failed to request token from metadata endpoint: %v", err)
 	}
@@ -101,7 +101,7 @@ func NewMsiConfig(ctx context.Context, resource string, msiEndpoint string) (*Ms
 		"format":      []string{"text"},
 	}.Encode()
 
-	_, err = msiRequest(ctx, e.String())
+	_, err = azureMetadata(ctx, e.String())
 	if err != nil {
 		return nil, fmt.Errorf("NewMsiConfig: could not validate MSI endpoint: %v", err)
 	}
@@ -118,7 +118,7 @@ func (c *MsiConfig) TokenSource(ctx context.Context) Authorizer {
 	return CachedAuthorizer(&MsiAuthorizer{ctx: ctx, conf: c})
 }
 
-func msiRequest(ctx context.Context, url string) (body []byte, err error) {
+func azureMetadata(ctx context.Context, url string) (body []byte, err error) {
 	var req *http.Request
 	req, err = http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
