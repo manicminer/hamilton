@@ -9,6 +9,7 @@ const (
 	TokenVersion1
 )
 
+// Config sets up NewAuthorizer to return an Authorizer based on the provided configuration.
 type Config struct {
 	// Specifies the national cloud environment to use
 	Environment environments.Environment

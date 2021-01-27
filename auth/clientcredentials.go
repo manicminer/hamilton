@@ -74,8 +74,7 @@ type ClientCredentialsConfig struct {
 	Audience string
 }
 
-// TokenSource returns a JWT TokenSource using the configuration
-// in c and the HTTP client from the provided context.
+// TokenSource provides a source for obtaining access tokens using clientAssertionAuthorizer or clientSecretAuthorizer.
 func (c *ClientCredentialsConfig) TokenSource(ctx context.Context, authType ClientCredentialsType) (source Authorizer) {
 	switch authType {
 	case ClientCredentialsAssertionType:
