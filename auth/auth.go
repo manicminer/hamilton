@@ -11,55 +11,8 @@ import (
 	"golang.org/x/crypto/pkcs12"
 	"golang.org/x/oauth2"
 
-	"github.com/manicminer/hamilton/auth/internal/microsoft"
 	"github.com/manicminer/hamilton/environments"
 )
-
-type TokenVersion int
-
-const (
-	TokenVersion2 TokenVersion = iota
-	TokenVersion1
-)
-
-type Config struct {
-	// Specifies the national cloud environment to use
-	Environment environments.Environment
-
-	// Version specifies the token version  to acquire from Microsoft Identity Platform.
-	// Ignored when using Azure CLI authentication.
-	Version TokenVersion
-
-	// Azure Active Directory tenant to connect to, should be a valid UUID
-	TenantID string
-
-	// Client ID for the application used to authenticate the connection
-	ClientID string
-
-	// Enables authentication using Azure CLI
-	EnableAzureCliToken bool
-
-	// Enables authentication using managed service identity.
-	EnableMsiAuth bool
-
-	// Specifies a custom MSI endpoint to connect to
-	MsiEndpoint string
-
-	// Enables client certificate authentication using client assertions
-	EnableClientCertAuth bool
-
-	// Specifies the path to a client certificate bundle in PFX format
-	ClientCertPath string
-
-	// Specifies the encryption password to unlock a client certificate
-	ClientCertPassword string
-
-	// Enables client secret authentication using client credentials
-	EnableClientSecretAuth bool
-
-	// Specifies the password to authenticate with using client secret authentication
-	ClientSecret string
-}
 
 // Authorizer is anything that can return an access token for authorizing API connections
 type Authorizer interface {
@@ -164,7 +117,7 @@ func NewClientCertificateAuthorizer(ctx context.Context, environment environment
 		return nil, fmt.Errorf("unsupported non-rsa key was found in pkcs12 store %q", pfxPath)
 	}
 
-	conf := microsoft.Config{
+	conf := ClientCredentialsConfig{
 		ClientID:    clientId,
 		PrivateKey:  x509.MarshalPKCS1PrivateKey(priv),
 		Certificate: cert.Raw,
@@ -174,12 +127,12 @@ func NewClientCertificateAuthorizer(ctx context.Context, environment environment
 	if tokenVersion == TokenVersion1 {
 		conf.Resource = resource(environment, api)
 	}
-	return conf.TokenSource(ctx, microsoft.AuthTypeAssertion), nil
+	return conf.TokenSource(ctx, ClientCredentialsAssertionType), nil
 }
 
 // NewClientSecretAuthorizer returns an authorizer which uses client secret authentication.
 func NewClientSecretAuthorizer(ctx context.Context, environment environments.Environment, api Api, tokenVersion TokenVersion, tenantId, clientId, clientSecret string) (Authorizer, error) {
-	conf := microsoft.Config{
+	conf := ClientCredentialsConfig{
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
 		Scopes:       scopes(environment, api),
@@ -188,7 +141,7 @@ func NewClientSecretAuthorizer(ctx context.Context, environment environments.Env
 	if tokenVersion == TokenVersion1 {
 		conf.Resource = resource(environment, api)
 	}
-	return conf.TokenSource(ctx, microsoft.AuthTypeSecret), nil
+	return conf.TokenSource(ctx, ClientCredentialsSecretType), nil
 }
 
 func endpoint(endpoint environments.AzureADEndpoint, tenant string, version TokenVersion) (e string) {
