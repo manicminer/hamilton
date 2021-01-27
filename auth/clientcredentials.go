@@ -1,9 +1,13 @@
 package auth
 
 import (
+	"bytes"
 	"context"
+	"crypto"
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha1"
+	"crypto/sha256"
 	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
@@ -18,8 +22,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/go-uuid"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/jws" //nolint:staticcheck
 )
 
 type ClientCredentialsType int
@@ -85,53 +89,77 @@ func (c *ClientCredentialsConfig) TokenSource(ctx context.Context, authType Clie
 	return
 }
 
-func clientCredentialsToken(resp *http.Response) (*oauth2.Token, error) {
-	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, 1<<20))
+type clientAssertionTokenHeader struct {
+	Algorithm string `json:"alg"`
+	Type      string `json:"typ"`
+	KeyId     string `json:"kid"`
+}
+
+func (h *clientAssertionTokenHeader) encode() (string, error) {
+	b, err := json.Marshal(h)
 	if err != nil {
-		return nil, fmt.Errorf("oauth2: cannot fetch clientCredentialsToken: %v", err)
+		return "", err
+	}
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+type clientAssertionTokenClaims struct {
+	Audience  string `json:"aud"`
+	Expiry    int64  `json:"exp"`
+	Issuer    string `json:"iss"`
+	JwtId     string `json:"jti"`
+	NotBefore int64  `json:"nbf"`
+	Subject   string `json:"sub"`
+}
+
+func (c *clientAssertionTokenClaims) encode() (string, error) {
+	b, err := json.Marshal(c)
+	if err != nil {
+		return "", err
 	}
 
-	if c := resp.StatusCode; c < 200 || c > 299 {
-		return nil, &oauth2.RetrieveError{
-			Response: resp,
-			Body:     body,
+	return base64.RawURLEncoding.EncodeToString(b), nil
+}
+
+type clientAssertionToken struct {
+	header clientAssertionTokenHeader
+	claims clientAssertionTokenClaims
+}
+
+func (c *clientAssertionToken) encode(key *rsa.PrivateKey) (string, error) {
+	c.claims.NotBefore = time.Now().Unix()
+	c.claims.Expiry = time.Now().Add(time.Hour).Unix()
+	c.claims.JwtId, _ = uuid.GenerateUUID()
+
+	sign := func(data []byte) (sig []byte, err error) {
+		h := sha256.New()
+		_, err = h.Write(data)
+		if err != nil {
+			return
 		}
+		return rsa.SignPKCS1v15(rand.Reader, key, crypto.SHA256, h.Sum(nil))
 	}
 
-	// clientCredentialsToken response can arrive with numeric values as integers or strings :(
-	var tokenRes struct {
-		AccessToken string      `json:"access_token"`
-		TokenType   string      `json:"token_type"`
-		IDToken     string      `json:"id_token"`
-		Resource    string      `json:"resource"`
-		Scope       string      `json:"scope"`
-		ExpiresIn   interface{} `json:"expires_in"` // relative seconds from now
-		ExpiresOn   interface{} `json:"expires_on"` // timestamp
-	}
-	if err := json.Unmarshal(body, &tokenRes); err != nil {
-		return nil, fmt.Errorf("oauth2: cannot fetch clientCredentialsToken: %v", err)
+	// encode the header
+	hs, err := c.header.encode()
+	if err != nil {
+		return "", err
 	}
 
-	token := &oauth2.Token{
-		AccessToken: tokenRes.AccessToken,
-		TokenType:   tokenRes.TokenType,
-	}
-	var secs time.Duration
-	if exp, ok := tokenRes.ExpiresIn.(string); ok && exp != "" {
-		if v, err := strconv.Atoi(exp); err == nil {
-			secs = time.Duration(v)
-		}
-	} else if exp, ok := tokenRes.ExpiresIn.(int64); ok {
-		secs = time.Duration(exp)
-	} else if exp, ok := tokenRes.ExpiresIn.(float64); ok {
-		secs = time.Duration(exp)
-	}
-	if secs > 0 {
-		token.Expiry = time.Now().Add(secs * time.Second)
+	// encode the claims
+	cs, err := c.claims.encode()
+	if err != nil {
+		return "", err
 	}
 
-	return token, nil
+	// sign the token
+	ss := fmt.Sprintf("%s.%s", hs, cs)
+	sig, err := sign([]byte(ss))
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%s.%s", ss, base64.RawURLEncoding.EncodeToString(sig)), nil
 }
 
 type clientAssertionAuthorizer struct {
@@ -144,43 +172,39 @@ func (a clientAssertionAuthorizer) Token() (*oauth2.Token, error) {
 	if der, _ := pem.Decode(a.conf.Certificate); der != nil {
 		crt = der.Bytes
 	}
+
 	cert, err := x509.ParseCertificate(crt)
 	if err != nil {
-		return nil, fmt.Errorf("oauth2: cannot parse certificate: %v", err)
-	}
-	s := sha1.Sum(cert.Raw)
-	fp := base64.URLEncoding.EncodeToString(s[:])
-	h := jws.Header{
-		Algorithm: "RS256",
-		Typ:       "JWT",
-		KeyID:     fp,
+		return nil, fmt.Errorf("clientAssertionAuthorizer: cannot parse certificate: %v", err)
 	}
 
-	claimSet := &jws.ClaimSet{
-		Iss: a.conf.ClientID,
-		Sub: a.conf.ClientID,
-		Aud: a.conf.TokenURL,
-	}
-	if t := a.conf.Expires; t > 0 {
-		claimSet.Exp = time.Now().Add(t).Unix()
-	}
-	if aud := a.conf.Audience; aud != "" {
-		claimSet.Aud = aud
-	}
+	keySig := sha1.Sum(cert.Raw)
+	keyId := base64.URLEncoding.EncodeToString(keySig[:])
 
-	pk, err := parseKey(a.conf.PrivateKey)
+	privKey, err := parseKey(a.conf.PrivateKey)
 	if err != nil {
 		return nil, err
 	}
 
-	payload, err := jws.Encode(&h, claimSet, pk)
+	t := clientAssertionToken{
+		header: clientAssertionTokenHeader{
+			Algorithm: "RS256",
+			Type:      "JWT",
+			KeyId:     keyId,
+		},
+		claims: clientAssertionTokenClaims{
+			Audience: a.conf.TokenURL,
+			Issuer:   a.conf.ClientID,
+			Subject:  a.conf.ClientID,
+		},
+	}
+	assertion, err := t.encode(privKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("clientAssertionAuthorizer: failed to encode and sign JWT assertion")
 	}
 
-	hc := oauth2.NewClient(a.ctx, nil)
 	v := url.Values{
-		"client_assertion":      {payload},
+		"client_assertion":      {assertion},
 		"client_assertion_type": {"urn:ietf:params:oauth:client-assertion-type:jwt-bearer"},
 		"client_id":             {a.conf.ClientID},
 		"grant_type":            {"client_credentials"},
@@ -190,12 +214,8 @@ func (a clientAssertionAuthorizer) Token() (*oauth2.Token, error) {
 	} else {
 		v["scope"] = []string{strings.Join(a.conf.Scopes, " ")}
 	}
-	resp, err := hc.PostForm(a.conf.TokenURL, v)
-	if err != nil {
-		return nil, fmt.Errorf("oauth2: cannot fetch clientCredentialsToken: %v", err)
-	}
 
-	return clientCredentialsToken(resp)
+	return clientCredentialsToken(a.ctx, a.conf.TokenURL, &v)
 }
 
 // parseKey returns an rsa.PrivateKey containing the provided binary key data.
@@ -225,7 +245,6 @@ type clientSecretAuthorizer struct {
 }
 
 func (a clientSecretAuthorizer) Token() (*oauth2.Token, error) {
-	hc := oauth2.NewClient(a.ctx, nil)
 	v := url.Values{
 		"client_id":     {a.conf.ClientID},
 		"client_secret": {a.conf.ClientSecret},
@@ -236,10 +255,65 @@ func (a clientSecretAuthorizer) Token() (*oauth2.Token, error) {
 	} else {
 		v["scope"] = []string{strings.Join(a.conf.Scopes, " ")}
 	}
-	resp, err := hc.PostForm(a.conf.TokenURL, v)
+
+	return clientCredentialsToken(a.ctx, a.conf.TokenURL, &v)
+}
+
+func clientCredentialsToken(ctx context.Context, endpoint string, params *url.Values) (*oauth2.Token, error) {
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewBuffer([]byte(params.Encode())))
 	if err != nil {
-		return nil, fmt.Errorf("oauth2: cannot fetch clientCredentialsToken: %v", err)
+		return nil, fmt.Errorf("clientCredentialsToken: failed to build request")
 	}
 
-	return clientCredentialsToken(resp)
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("clientCredentialsToken: cannot request token: %v", err)
+	}
+
+	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(io.LimitReader(resp.Body, 1<<20))
+	if err != nil {
+		return nil, fmt.Errorf("clientCredentialsToken: cannot parse response: %v", err)
+	}
+
+	if c := resp.StatusCode; c < 200 || c > 299 {
+		return nil, fmt.Errorf("clientCredentialsToken: received HTTP status %d with response: %s", resp.StatusCode, body)
+	}
+
+	// clientCredentialsToken response can arrive with numeric values as integers or strings :(
+	var tokenRes struct {
+		AccessToken string      `json:"access_token"`
+		TokenType   string      `json:"token_type"`
+		IDToken     string      `json:"id_token"`
+		Resource    string      `json:"resource"`
+		Scope       string      `json:"scope"`
+		ExpiresIn   interface{} `json:"expires_in"` // relative seconds from now
+		ExpiresOn   interface{} `json:"expires_on"` // timestamp
+	}
+	if err := json.Unmarshal(body, &tokenRes); err != nil {
+		return nil, fmt.Errorf("clientCredentialsToken: cannot unmarshal response: %v", err)
+	}
+
+	token := &oauth2.Token{
+		AccessToken: tokenRes.AccessToken,
+		TokenType:   tokenRes.TokenType,
+	}
+	var secs time.Duration
+	if exp, ok := tokenRes.ExpiresIn.(string); ok && exp != "" {
+		if v, err := strconv.Atoi(exp); err == nil {
+			secs = time.Duration(v)
+		}
+	} else if exp, ok := tokenRes.ExpiresIn.(int64); ok {
+		secs = time.Duration(exp)
+	} else if exp, ok := tokenRes.ExpiresIn.(float64); ok {
+		secs = time.Duration(exp)
+	}
+	if secs > 0 {
+		token.Expiry = time.Now().Add(secs * time.Second)
+	}
+
+	return token, nil
 }
