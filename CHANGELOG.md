@@ -1,8 +1,9 @@
-## 0.7.0 (Unreleased)
+## 0.7.0 (January 27, 2021)
 
 - Check for supported `az` command version when using Azure CLI authentication
 - Remove dependency on deprecated package golang.org/x/oauth2/jws
 - Merge the `auth/internal/microsoft` package into `auth` now that it's stable
+- Validate the MSI auth configuration before returning an MsiAuthorizer - ensure the metadata endpoint is reachable
 
 ## 0.6.0 (January 26, 2021)
 
