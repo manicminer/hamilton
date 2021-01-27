@@ -183,7 +183,7 @@ func (a clientAssertionAuthorizer) Token() (*oauth2.Token, error) {
 
 	privKey, err := parseKey(a.conf.PrivateKey)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("clientAssertionAuthorizer: cannot parse private key: %v", err)
 	}
 
 	t := clientAssertionToken{
