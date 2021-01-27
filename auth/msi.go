@@ -4,17 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"golang.org/x/oauth2"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
 	"time"
+
+	"golang.org/x/oauth2"
 )
 
 const (
-	defaultMsiEndpoint   = "http://169.254.169.254/metadata/identity/oauth2/token"
-	defaultMsiApiVersion = "2018-02-01"
+	msiDefaultEndpoint   = "http://169.254.169.254/metadata/identity/oauth2/token"
+	msiDefaultApiVersion = "2018-02-01"
 )
 
 // MsiAuthorizer is an Authorizer which supports managed service identity.
@@ -100,21 +101,18 @@ type MsiConfig struct {
 
 // NewMsiConfig returns a new MsiConfig with a configured metadata endpoint and resource.
 func NewMsiConfig(resource string, msiEndpoint string) (*MsiConfig, error) {
-	endpoint := defaultMsiEndpoint
+	endpoint := msiDefaultEndpoint
 	if msiEndpoint != "" {
 		endpoint = msiEndpoint
 	}
 	return &MsiConfig{
 		Resource:      resource,
-		MsiApiVersion: defaultMsiApiVersion,
+		MsiApiVersion: msiDefaultApiVersion,
 		MsiEndpoint:   endpoint,
 	}, nil
 }
 
 // TokenSource provides a source for obtaining access tokens using MsiAuthorizer.
 func (c *MsiConfig) TokenSource(ctx context.Context) Authorizer {
-	return oauth2.ReuseTokenSource(nil, &MsiAuthorizer{
-		ctx:  ctx,
-		conf: c,
-	})
+	return CachedAuthorizer(&MsiAuthorizer{ctx: ctx, conf: c})
 }
