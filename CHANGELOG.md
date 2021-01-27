@@ -1,3 +1,8 @@
+## 0.7.0 (Unreleased)
+
+- Check for supported `az` command version when using Azure CLI authentication
+- Remove dependency on deprecated package golang.org/x/oauth2/jws
+
 ## 0.6.0 (January 26, 2021)
 
 - Support authentication using VM managed identity.
