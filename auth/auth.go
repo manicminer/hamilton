@@ -122,7 +122,7 @@ func NewClientCertificateAuthorizer(ctx context.Context, environment environment
 		PrivateKey:  x509.MarshalPKCS1PrivateKey(priv),
 		Certificate: cert.Raw,
 		Scopes:      scopes(environment, api),
-		TokenURL:    endpoint(environment.AzureADEndpoint, tenantId, tokenVersion),
+		TokenURL:    TokenEndpoint(environment.AzureADEndpoint, tenantId, tokenVersion),
 	}
 	if tokenVersion == TokenVersion1 {
 		conf.Resource = resource(environment, api)
@@ -136,7 +136,7 @@ func NewClientSecretAuthorizer(ctx context.Context, environment environments.Env
 		ClientID:     clientId,
 		ClientSecret: clientSecret,
 		Scopes:       scopes(environment, api),
-		TokenURL:     endpoint(environment.AzureADEndpoint, tenantId, tokenVersion),
+		TokenURL:     TokenEndpoint(environment.AzureADEndpoint, tenantId, tokenVersion),
 	}
 	if tokenVersion == TokenVersion1 {
 		conf.Resource = resource(environment, api)
@@ -144,7 +144,7 @@ func NewClientSecretAuthorizer(ctx context.Context, environment environments.Env
 	return conf.TokenSource(ctx, ClientCredentialsSecretType), nil
 }
 
-func endpoint(endpoint environments.AzureADEndpoint, tenant string, version TokenVersion) (e string) {
+func TokenEndpoint(endpoint environments.AzureADEndpoint, tenant string, version TokenVersion) (e string) {
 	if tenant == "" {
 		tenant = "common"
 	}
