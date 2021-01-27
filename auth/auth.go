@@ -37,7 +37,12 @@ const (
 //
 // For client certificate authentication, specify TenantID, ClientID and ClientCertPath.
 // For client secret authentication, specify TenantID, ClientID and ClientSecret.
-// Azure CLI authentication (if enabled) is used as a fallback mechanism.
+// MSI authentication (if enabled) using the Azure Metadata Service is then attempted
+// Azure CLI authentication (if enabled) is attempted last
+//
+// It's recommended to only enable the mechanisms you have configured and are known to work in the execution
+// environment. If any authentication mechanism fails due to misconfiguration or some other error, the function
+// will return (nil, error) and later mechanisms will not be attempted.
 func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error) {
 	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && strings.TrimSpace(c.ClientCertPath) != "" {
 		a, err := NewClientCertificateAuthorizer(ctx, c.Environment, api, c.Version, c.TenantID, c.ClientID, c.ClientCertPath, c.ClientCertPassword)
@@ -93,7 +98,7 @@ func NewAzureCliAuthorizer(ctx context.Context, api Api, tenantId string) (Autho
 
 // NewMsiAuthorizer returns an authorizer which uses managed service identity to for authentication.
 func NewMsiAuthorizer(ctx context.Context, environment environments.Environment, api Api, msiEndpoint string) (Authorizer, error) {
-	conf, err := NewMsiConfig(resource(environment, api), msiEndpoint)
+	conf, err := NewMsiConfig(ctx, resource(environment, api), msiEndpoint)
 	if err != nil {
 		return nil, err
 	}
