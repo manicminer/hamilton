@@ -1,6 +1,6 @@
 ## 0.8.0 (February 2, 2021)
 
-- Exponential backoff for rate limited and failed requests to MS Graph and AAD Graph
+- Exponential backoff for handling rate limited and failed requests to MS Graph and AAD Graph
 
 ## 0.7.0 (January 27, 2021)
 
