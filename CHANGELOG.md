@@ -1,3 +1,7 @@
+## 0.9.0 (March 1, 2021)
+
+- Add support for guest user invitations ([#21](https://github.com/manicminer/hamilton/pull/21))
+
 ## 0.8.0 (February 2, 2021)
 
 - Exponential backoff for handling rate limited and failed requests to MS Graph and AAD Graph
