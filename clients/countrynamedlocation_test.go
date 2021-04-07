@@ -3,6 +3,7 @@ package clients_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
@@ -27,12 +28,15 @@ func TestCountryNamedLocationClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	newCountryNamedLocation := models.CountryNamedLocation{
-		ODataType:           utils.StringPtr("#microsoft.graph.countryNamedLocation"),
-		DisplayName:         utils.StringPtr("Test Country Named Location"),
+		NamedLocation: &models.NamedLocation{
+			ODataType:   utils.StringPtr("#microsoft.graph.countryNamedLocation"),
+			DisplayName: utils.StringPtr("Test Country Named Location")},
 		CountriesAndRegions: &[]string{"US", "GB"},
 	}
 
 	countryNamedLocation := testCountryNamedLocationClient_Create(t, c, newCountryNamedLocation)
+	// Running get too quickly after create often results in the resource not being found
+	time.Sleep(5 * time.Second)
 	testCountryNamedLocationClient_Get(t, c, *countryNamedLocation.ID)
 
 	countryNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-cnl-%s", c.randomString))

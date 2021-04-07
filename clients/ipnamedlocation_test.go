@@ -3,6 +3,7 @@ package clients_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
@@ -27,8 +28,9 @@ func TestIPNamedLocationClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	newIPNamedLocation := models.IPNamedLocation{
-		ODataType:   utils.StringPtr("#microsoft.graph.ipNamedLocation"),
-		DisplayName: utils.StringPtr("Test IP Named Location"),
+		NamedLocation: &models.NamedLocation{
+			ODataType:   utils.StringPtr("#microsoft.graph.ipNamedLocation"),
+			DisplayName: utils.StringPtr("Test IP Named Location")},
 		IPRanges: &[]models.IPNamedLocationIPRange{
 			{
 				CIDRAddress: utils.StringPtr("8.8.8.8/32"),
@@ -41,6 +43,8 @@ func TestIPNamedLocationClient(t *testing.T) {
 	}
 
 	ipNamedLocation := testIPNamedLocationClient_Create(t, c, newIPNamedLocation)
+	// Running get too quickly after create often results in the resource not being found
+	time.Sleep(5 * time.Second)
 	testIPNamedLocationClient_Get(t, c, *ipNamedLocation.ID)
 
 	ipNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-ipnl-%s", c.randomString))
