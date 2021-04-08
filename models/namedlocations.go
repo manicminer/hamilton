@@ -1,6 +1,8 @@
 package models
 
-type NamedLocation struct {
+type NamedLocation interface{}
+
+type BaseNamedLocation struct {
 	ODataType   *string `json:"@odata.type,omitempty"`
 	ID          *string `json:"id,omitempty"`
 	DisplayName *string `json:"displayName,omitempty"`
@@ -10,14 +12,14 @@ type NamedLocation struct {
 
 // CountryNamedLocation describes an Country Named Location object.
 type CountryNamedLocation struct {
-	*NamedLocation
+	*BaseNamedLocation
 	CountriesAndRegions               *[]string `json:"countriesAndRegions,omitempty"`
 	IncludeUnknownCountriesAndRegions *bool     `json:"includeUnknownCountriesAndRegions,omitempty"`
 }
 
 // IPNamedLocation describes an IP Named Location object.
 type IPNamedLocation struct {
-	*NamedLocation
+	*BaseNamedLocation
 	IPRanges  *[]IPNamedLocationIPRange `json:"ipRanges,omitempty"`
 	IsTrusted *bool                     `json:"isTrusted,omitempty"`
 }

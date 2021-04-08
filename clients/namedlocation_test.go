@@ -28,7 +28,7 @@ func TestNamedLocationClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	newIPNamedLocation := models.IPNamedLocation{
-		NamedLocation: &models.NamedLocation{
+		BaseNamedLocation: &models.BaseNamedLocation{
 			DisplayName: utils.StringPtr("Test IP Named Location")},
 		IPRanges: &[]models.IPNamedLocationIPRange{
 			{
@@ -42,7 +42,7 @@ func TestNamedLocationClient(t *testing.T) {
 	}
 
 	newCountryNamedLocation := models.CountryNamedLocation{
-		NamedLocation: &models.NamedLocation{
+		BaseNamedLocation: &models.BaseNamedLocation{
 			DisplayName: utils.StringPtr("Test Country Named Location")},
 		CountriesAndRegions: &[]string{"US", "GB"},
 	}
@@ -61,7 +61,19 @@ func TestNamedLocationClient(t *testing.T) {
 	testNamedLocationClient_UpdateIP(t, c, *ipNamedLocation)
 	testNamedLocationClient_UpdateCountry(t, c, *countryNamedLocation)
 
-	testNamedLocationClient_List(t, c, "")
+	namedLocationSlice := testNamedLocationClient_List(t, c, "")
+	if namedLocationSlice != nil {
+		for _, l := range *namedLocationSlice {
+			t.Logf("%+v ", l)
+			if _, ok := l.(models.CountryNamedLocation); ok {
+				t.Logf("is a CountryNamedLocation")
+			} else if _, ok := l.(models.IPNamedLocation); ok {
+				t.Logf("is an IPNamedLocation")
+			} else {
+				t.Logf("Did not match a type")
+			}
+		}
+	}
 	testNamedLocationClient_Delete(t, c, *ipNamedLocation.ID)
 	testNamedLocationClient_Delete(t, c, *countryNamedLocation.ID)
 }
