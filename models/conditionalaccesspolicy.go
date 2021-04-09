@@ -17,13 +17,13 @@ type ConditionalAccessPolicy struct {
 }
 
 type ConditionalAccessConditionSet struct {
-	Applications     *[]ConditionalAccessApplications `json:"applications,omitempty"`
-	Users            *[]ConditionalAccessUsers        `json:"users,omitempty"`
-	ClientAppTypes   *[]string                        `json:"clientAppTypes,omitempty"`
-	Locations        *[]ConditionalAccessLocations    `json:"locations,omitempty"`
-	Platforms        *[]ConditionalAccessPlatforms    `json:"platforms,omitempty"`
-	SignInRiskLevels *[]string                        `json:"signInRiskLevels,omitempty"`
-	UserRiskLevels   *[]string                        `json:"userRiskLevels,omitempty"`
+	Applications     *ConditionalAccessApplications `json:"applications,omitempty"`
+	Users            *ConditionalAccessUsers        `json:"users,omitempty"`
+	ClientAppTypes   *[]string                      `json:"clientAppTypes,omitempty"`
+	Locations        *ConditionalAccessLocations    `json:"locations,omitempty"`
+	Platforms        *ConditionalAccessPlatforms    `json:"platforms,omitempty"`
+	SignInRiskLevels *[]string                      `json:"signInRiskLevels,omitempty"`
+	UserRiskLevels   *[]string                      `json:"userRiskLevels,omitempty"`
 }
 
 type ConditionalAccessApplications struct {
