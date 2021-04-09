@@ -3,7 +3,6 @@ package clients_test
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/clients"
@@ -50,11 +49,6 @@ func TestNamedLocationClient(t *testing.T) {
 	ipNamedLocation := testNamedLocationClient_CreateIP(t, c, newIPNamedLocation)
 	countryNamedLocation := testNamedLocationClient_CreateCountry(t, c, newCountryNamedLocation)
 
-	// Running get too quickly after create often results in the resource not being found
-	time.Sleep(10 * time.Second)
-	testNamedLocationClient_GetIP(t, c, *ipNamedLocation.ID)
-	testNamedLocationClient_GetCountry(t, c, *countryNamedLocation.ID)
-
 	ipNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-ipnl-%s", c.randomString))
 	countryNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-cnl-%s", c.randomString))
 
@@ -74,6 +68,10 @@ func TestNamedLocationClient(t *testing.T) {
 			}
 		}
 	}
+	// Running get after the update to give the API a chance to catch up
+	testNamedLocationClient_GetIP(t, c, *ipNamedLocation.ID)
+	testNamedLocationClient_GetCountry(t, c, *countryNamedLocation.ID)
+
 	testNamedLocationClient_Delete(t, c, *ipNamedLocation.ID)
 	testNamedLocationClient_Delete(t, c, *countryNamedLocation.ID)
 }
