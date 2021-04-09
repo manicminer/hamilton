@@ -1,13 +1,15 @@
 package models
 
+import "time"
+
 type NamedLocation interface{}
 
 type BaseNamedLocation struct {
-	ODataType   *string `json:"@odata.type,omitempty"`
-	ID          *string `json:"id,omitempty"`
-	DisplayName *string `json:"displayName,omitempty"`
-	// CreatedDateTime  *time.Time `json:"createdDateTime,omitempty"`
-	// ModifiedDateTime *time.Time `json:"modifiedDateTime,omitempty"`
+	ODataType        *string    `json:"@odata.type,omitempty"`
+	ID               *string    `json:"id,omitempty"`
+	DisplayName      *string    `json:"displayName,omitempty"`
+	CreatedDateTime  *time.Time `json:"createdDateTime,omitempty"`
+	ModifiedDateTime *time.Time `json:"modifiedDateTime,omitempty"`
 }
 
 // CountryNamedLocation describes an Country Named Location object.
