@@ -12,23 +12,25 @@ import (
 	"github.com/manicminer/hamilton/models"
 )
 
+var (
+	enterpriseAppId = os.Getenv("ENTERPRISE_APP_ID") // Enterprise Apps cannot be created using Graph. Therefore, to simplify testing pass the Enterprise App ID via an Env variable.
+)
+
 type ConditionalAccessPolicyTest struct {
-	connection      *internal.Connection
-	policyClient    *clients.ConditionalAccessPolicyClient
-	groupClient     *clients.GroupsClient
-	userClient      *clients.UsersClient
-	randomString    string
-	enterpriseAppId string
+	connection   *internal.Connection
+	policyClient *clients.ConditionalAccessPolicyClient
+	groupClient  *clients.GroupsClient
+	userClient   *clients.UsersClient
+	randomString string
 }
 
 func TestConditionalAccessPolicyClient(t *testing.T) {
 	c := ConditionalAccessPolicyTest{
-		connection:      internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString:    internal.RandomString(),
-		enterpriseAppId: os.Getenv("ENTERPRISE_APP_ID"), // Enterprise Apps cannot be created using Graph. Therefore, to simplify testing pass the Enterprise App ID via an Env variable.
+		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: internal.RandomString(),
 	}
 
-	if c.enterpriseAppId == "" {
+	if enterpriseAppId == "" {
 		t.Fatalf("ConditionalAccessPolicyClient.Create(): ENTERPRISE_APP_ID is not set")
 	}
 
@@ -52,7 +54,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 		Conditions: &models.ConditionalAccessConditionSet{
 			ClientAppTypes: &[]string{"mobileAppsAndDesktopClients", "browser"},
 			Applications: &models.ConditionalAccessApplications{
-				IncludeApplications: &[]string{*&c.enterpriseAppId},
+				IncludeApplications: &[]string{enterpriseAppId},
 			},
 			Users: &models.ConditionalAccessUsers{
 				IncludeUsers:  &[]string{"All"},
@@ -165,7 +167,6 @@ func testGroup_Delete(t *testing.T, c ConditionalAccessPolicyTest, group *models
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Create() - Could not delete test group: %v", err)
 	}
-	return
 }
 
 func testUser_Create(t *testing.T, c ConditionalAccessPolicyTest) (user *models.User) {
@@ -190,5 +191,4 @@ func testUser_Delete(t *testing.T, c ConditionalAccessPolicyTest, user *models.U
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Create() - Could not delete test user: %v", err)
 	}
-	return
 }
