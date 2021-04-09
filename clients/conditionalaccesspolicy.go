@@ -110,13 +110,10 @@ func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalA
 
 	// This API does not handle PATCH on some properties
 	// i.e. cannot update values such as CreatedDateTime
-	// https://stackoverflow.com/questions/46427723/golang-elegant-way-to-omit-a-json-property-from-being-serialized
-	type newPolicy models.ConditionalAccessPolicy
-	xPolicy := newPolicy(conditionalAccessPolicy)
-	xPolicy.CreatedDateTime = nil
-	xPolicy.ModifiedDateTime = nil
+	conditionalAccessPolicy.CreatedDateTime = nil
+	conditionalAccessPolicy.ModifiedDateTime = nil
 
-	body, err := json.Marshal(xPolicy)
+	body, err := json.Marshal(conditionalAccessPolicy)
 	if err != nil {
 		return status, err
 	}

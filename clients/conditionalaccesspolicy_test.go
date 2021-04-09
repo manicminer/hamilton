@@ -73,8 +73,13 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 		},
 	})
 
+	initCreatedDate := policy.CreatedDateTime
 	policy.DisplayName = utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.randomString))
 	testConditionalAccessPolicysClient_Update(t, c, *policy)
+
+	if policy.CreatedDateTime != initCreatedDate {
+		t.Fatalf("ConditionalAccessPolicyClient.Create(): unintended mutation on CreatedDateTime")
+	}
 
 	testConditionalAccessPolicysClient_List(t, c)
 	testConditionalAccessPolicysClient_Get(t, c, *policy.ID)
