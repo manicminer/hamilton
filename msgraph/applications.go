@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	odata2 "github.com/manicminer/hamilton/odata"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"regexp"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // ApplicationsClient performs operations on Applications.
@@ -239,7 +240,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 	}
 	for _, owner := range *application.Owners {
 		// don't fail if an owner already exists
-		checkOwnerAlreadyExists := func(resp *http.Response, o *odata2.OData) bool {
+		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
 				if o.Error != nil {
 					re := regexp.MustCompile("One or more added object references already exist")
@@ -294,7 +295,7 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 		}
 
 		// despite the above check, sometimes owners are just gone
-		checkOwnerGone := func(resp *http.Response, o *odata2.OData) bool {
+		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
 				if o.Error != nil {
 					re := regexp.MustCompile("One or more removed object references do not exist")
