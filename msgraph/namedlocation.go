@@ -1,4 +1,4 @@
-package clients
+package msgraph
 
 import (
 	"context"
@@ -8,21 +8,20 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/manicminer/hamilton/base"
-	"github.com/manicminer/hamilton/base/odata"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
+	"github.com/manicminer/hamilton/odata"
 )
 
 // NamedLocationClient performs operations on Named Locations.
 type NamedLocationClient struct {
-	BaseClient base.Client
+	BaseClient Client
 }
 
 // NewNamedLocationClient returns a new NamedLocationClient.
 func NewNamedLocationClient(tenantId string) *NamedLocationClient {
 	return &NamedLocationClient{
-		BaseClient: base.NewClient(base.Version10, tenantId),
+		BaseClient: NewClient(Version10, tenantId),
 	}
 }
 
@@ -33,9 +32,9 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]model
 		params.Add("$filter", filter)
 	}
 
-	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      "/identity/conditionalAccess/namedLocations",
 			Params:      params,
 			HasTenantId: true,
@@ -90,9 +89,9 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]model
 
 // Delete removes a Named Location.
 func (c *NamedLocationClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, _, err := c.BaseClient.Delete(ctx, base.DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
 		},
@@ -117,10 +116,10 @@ func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation mode
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      "/identity/conditionalAccess/namedLocations",
 			HasTenantId: true,
 		},
@@ -151,10 +150,10 @@ func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLoc
 	if err != nil {
 		return nil, status, err
 	}
-	resp, status, _, err := c.BaseClient.Post(ctx, base.PostHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      "/identity/conditionalAccess/namedLocations",
 			HasTenantId: true,
 		},
@@ -173,9 +172,9 @@ func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLoc
 
 // GetIP retrieves an IP Named Location.
 func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*models.IPNamedLocation, int, error) {
-	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
 		},
@@ -194,9 +193,9 @@ func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*models.IPN
 
 // GetCountry retrieves an Country Named Location.
 func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*models.CountryNamedLocation, int, error) {
-	resp, status, _, err := c.BaseClient.Get(ctx, base.GetHttpRequestInput{
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
 		},
@@ -226,10 +225,10 @@ func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation mode
 	if err != nil {
 		return status, err
 	}
-	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", *ipNamedLocation.ID),
 			HasTenantId: true,
 		},
@@ -253,10 +252,10 @@ func (c *NamedLocationClient) UpdateCountry(ctx context.Context, countryNamedLoc
 	if err != nil {
 		return status, err
 	}
-	_, status, _, err = c.BaseClient.Patch(ctx, base.PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusNoContent},
-		Uri: base.Uri{
+		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", *countryNamedLocation.ID),
 			HasTenantId: true,
 		},

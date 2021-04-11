@@ -1,29 +1,29 @@
-package clients_test
+package msgraph_test
 
 import (
 	"fmt"
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/clients"
-	"github.com/manicminer/hamilton/clients/internal"
+	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
+	"github.com/manicminer/hamilton/msgraph"
 )
 
 type NamedLocationClientTest struct {
-	connection   *internal.Connection
-	client       *clients.NamedLocationClient
+	connection   *test.Connection
+	client       *msgraph.NamedLocationClient
 	randomString string
 }
 
 func TestNamedLocationClient(t *testing.T) {
-	rs := internal.RandomString()
+	rs := test.RandomString()
 	c := NamedLocationClientTest{
-		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	c.client = clients.NewNamedLocationClient(c.connection.AuthConfig.TenantID)
+	c.client = msgraph.NewNamedLocationClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	newIPNamedLocation := models.IPNamedLocation{
