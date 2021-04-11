@@ -64,16 +64,22 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]model
 	var ret []models.NamedLocation
 	for _, namedLocation := range *data.NamedLocations {
 		var o odata.OData
-		json.Unmarshal(namedLocation, &o)
+		if err := json.Unmarshal(namedLocation, &o); err != nil {
+			return nil, status, err
+		}
 
 		switch *o.Type {
 		case "#microsoft.graph.countryNamedLocation":
 			var loc models.CountryNamedLocation
-			json.Unmarshal(namedLocation, &loc)
+			if err := json.Unmarshal(namedLocation, &loc); err != nil {
+				return nil, status, err
+			}
 			ret = append(ret, loc)
 		case "#microsoft.graph.ipNamedLocation":
 			var loc models.IPNamedLocation
-			json.Unmarshal(namedLocation, &loc)
+			if err := json.Unmarshal(namedLocation, &loc); err != nil {
+				return nil, status, err
+			}
 			ret = append(ret, loc)
 		}
 	}
