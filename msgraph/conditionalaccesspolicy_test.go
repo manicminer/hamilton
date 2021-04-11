@@ -1,4 +1,4 @@
-package clients_test
+package msgraph_test
 
 import (
 	"fmt"
@@ -6,10 +6,9 @@ import (
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/clients"
-	"github.com/manicminer/hamilton/clients/internal"
+	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
-	"github.com/manicminer/hamilton/models"
+	"github.com/manicminer/hamilton/msgraph"
 )
 
 var (
@@ -17,30 +16,30 @@ var (
 )
 
 type ConditionalAccessPolicyTest struct {
-	connection   *internal.Connection
-	policyClient *clients.ConditionalAccessPolicyClient
-	groupClient  *clients.GroupsClient
-	userClient   *clients.UsersClient
+	connection   *test.Connection
+	policyClient *msgraph.ConditionalAccessPolicyClient
+	groupClient  *msgraph.GroupsClient
+	userClient   *msgraph.UsersClient
 	randomString string
 }
 
 func TestConditionalAccessPolicyClient(t *testing.T) {
 	c := ConditionalAccessPolicyTest{
-		connection:   internal.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: internal.RandomString(),
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: test.RandomString(),
 	}
 
 	if enterpriseAppId == "" {
 		t.Fatalf("ConditionalAccessPolicyClient.Create(): ENTERPRISE_APP_ID is not set")
 	}
 
-	c.policyClient = clients.NewConditionalAccessPolicyClient(c.connection.AuthConfig.TenantID)
+	c.policyClient = msgraph.NewConditionalAccessPolicyClient(c.connection.AuthConfig.TenantID)
 	c.policyClient.BaseClient.Authorizer = c.connection.Authorizer
 
-	c.groupClient = clients.NewGroupsClient(c.connection.AuthConfig.TenantID)
+	c.groupClient = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
 	c.groupClient.BaseClient.Authorizer = c.connection.Authorizer
 
-	c.userClient = clients.NewUsersClient(c.connection.AuthConfig.TenantID)
+	c.userClient = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
 	c.userClient.BaseClient.Authorizer = c.connection.Authorizer
 
 	testIncGroup := testGroup_Create(t, c, "inc")
@@ -48,26 +47,26 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testUser := testUser_Create(t, c)
 
 	// act
-	policy := testConditionalAccessPolicysClient_Create(t, c, models.ConditionalAccessPolicy{
+	policy := testConditionalAccessPolicysClient_Create(t, c, msgraph.ConditionalAccessPolicy{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-%s", c.randomString)),
 		State:       utils.StringPtr("enabled"),
-		Conditions: &models.ConditionalAccessConditionSet{
+		Conditions: &msgraph.ConditionalAccessConditionSet{
 			ClientAppTypes: &[]string{"mobileAppsAndDesktopClients", "browser"},
-			Applications: &models.ConditionalAccessApplications{
+			Applications: &msgraph.ConditionalAccessApplications{
 				IncludeApplications: &[]string{enterpriseAppId},
 			},
-			Users: &models.ConditionalAccessUsers{
+			Users: &msgraph.ConditionalAccessUsers{
 				IncludeUsers:  &[]string{"All"},
 				ExcludeUsers:  &[]string{*testUser.ID, "GuestsOrExternalUsers"},
 				IncludeGroups: &[]string{*testIncGroup.ID},
 				ExcludeGroups: &[]string{*testExcGroup.ID},
 			},
-			Locations: &models.ConditionalAccessLocations{
+			Locations: &msgraph.ConditionalAccessLocations{
 				IncludeLocations: &[]string{"All"},
 				ExcludeLocations: &[]string{"AllTrusted"},
 			},
 		},
-		GrantControls: &models.ConditionalAccessGrantControls{
+		GrantControls: &msgraph.ConditionalAccessGrantControls{
 			Operator:        utils.StringPtr("OR"),
 			BuiltInControls: &[]string{"block"},
 		},
@@ -91,7 +90,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testUser_Delete(t, c, testUser)
 }
 
-func testConditionalAccessPolicysClient_Create(t *testing.T, c ConditionalAccessPolicyTest, a models.ConditionalAccessPolicy) (conditionalAccessPolicy *models.ConditionalAccessPolicy) {
+func testConditionalAccessPolicysClient_Create(t *testing.T, c ConditionalAccessPolicyTest, a msgraph.ConditionalAccessPolicy) (conditionalAccessPolicy *msgraph.ConditionalAccessPolicy) {
 	conditionalAccessPolicy, status, err := c.policyClient.Create(c.connection.Context, a)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Create(): %v", err)
@@ -108,7 +107,7 @@ func testConditionalAccessPolicysClient_Create(t *testing.T, c ConditionalAccess
 	return
 }
 
-func testConditionalAccessPolicysClient_Get(t *testing.T, c ConditionalAccessPolicyTest, id string) (policy *models.ConditionalAccessPolicy) {
+func testConditionalAccessPolicysClient_Get(t *testing.T, c ConditionalAccessPolicyTest, id string) (policy *msgraph.ConditionalAccessPolicy) {
 	policy, status, err := c.policyClient.Get(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Get(): %v", err)
@@ -122,7 +121,7 @@ func testConditionalAccessPolicysClient_Get(t *testing.T, c ConditionalAccessPol
 	return
 }
 
-func testConditionalAccessPolicysClient_Update(t *testing.T, c ConditionalAccessPolicyTest, policy models.ConditionalAccessPolicy) {
+func testConditionalAccessPolicysClient_Update(t *testing.T, c ConditionalAccessPolicyTest, policy msgraph.ConditionalAccessPolicy) {
 	status, err := c.policyClient.Update(c.connection.Context, policy)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Update(): %v", err)
@@ -132,7 +131,7 @@ func testConditionalAccessPolicysClient_Update(t *testing.T, c ConditionalAccess
 	}
 }
 
-func testConditionalAccessPolicysClient_List(t *testing.T, c ConditionalAccessPolicyTest) (policies *[]models.ConditionalAccessPolicy) {
+func testConditionalAccessPolicysClient_List(t *testing.T, c ConditionalAccessPolicyTest) (policies *[]msgraph.ConditionalAccessPolicy) {
 	policies, _, err := c.policyClient.List(c.connection.Context, "")
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.List(): %v", err)
@@ -153,8 +152,8 @@ func testConditionalAccessPolicysClient_Delete(t *testing.T, c ConditionalAccess
 	}
 }
 
-func testGroup_Create(t *testing.T, c ConditionalAccessPolicyTest, prefix string) (group *models.Group) {
-	group, _, err := c.groupClient.Create(c.connection.Context, models.Group{
+func testGroup_Create(t *testing.T, c ConditionalAccessPolicyTest, prefix string) (group *msgraph.Group) {
+	group, _, err := c.groupClient.Create(c.connection.Context, msgraph.Group{
 		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-test-group-%s", prefix, c.randomString)),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-test-group-%s", prefix, c.randomString)),
@@ -167,20 +166,20 @@ func testGroup_Create(t *testing.T, c ConditionalAccessPolicyTest, prefix string
 	return
 }
 
-func testGroup_Delete(t *testing.T, c ConditionalAccessPolicyTest, group *models.Group) {
+func testGroup_Delete(t *testing.T, c ConditionalAccessPolicyTest, group *msgraph.Group) {
 	_, err := c.groupClient.Delete(c.connection.Context, *group.ID)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Create() - Could not delete test group: %v", err)
 	}
 }
 
-func testUser_Create(t *testing.T, c ConditionalAccessPolicyTest) (user *models.User) {
-	user, _, err := c.userClient.Create(c.connection.Context, models.User{
+func testUser_Create(t *testing.T, c ConditionalAccessPolicyTest) (user *msgraph.User) {
+	user, _, err := c.userClient.Create(c.connection.Context, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("Test User"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
-		PasswordProfile: &models.UserPasswordProfile{
+		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
 		},
 	})
@@ -191,7 +190,7 @@ func testUser_Create(t *testing.T, c ConditionalAccessPolicyTest) (user *models.
 	return
 }
 
-func testUser_Delete(t *testing.T, c ConditionalAccessPolicyTest, user *models.User) {
+func testUser_Delete(t *testing.T, c ConditionalAccessPolicyTest, user *msgraph.User) {
 	_, err := c.userClient.Delete(c.connection.Context, *user.ID)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Create() - Could not delete test user: %v", err)
