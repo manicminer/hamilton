@@ -7,7 +7,6 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
-	"github.com/manicminer/hamilton/models"
 	"github.com/manicminer/hamilton/msgraph"
 )
 
@@ -26,10 +25,10 @@ func TestNamedLocationClient(t *testing.T) {
 	c.client = msgraph.NewNamedLocationClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
-	newIPNamedLocation := models.IPNamedLocation{
-		BaseNamedLocation: &models.BaseNamedLocation{
+	newIPNamedLocation := msgraph.IPNamedLocation{
+		BaseNamedLocation: &msgraph.BaseNamedLocation{
 			DisplayName: utils.StringPtr("Test IP Named Location")},
-		IPRanges: &[]models.IPNamedLocationIPRange{
+		IPRanges: &[]msgraph.IPNamedLocationIPRange{
 			{
 				CIDRAddress: utils.StringPtr("8.8.8.8/32"),
 			},
@@ -40,8 +39,8 @@ func TestNamedLocationClient(t *testing.T) {
 		IsTrusted: utils.BoolPtr(true),
 	}
 
-	newCountryNamedLocation := models.CountryNamedLocation{
-		BaseNamedLocation: &models.BaseNamedLocation{
+	newCountryNamedLocation := msgraph.CountryNamedLocation{
+		BaseNamedLocation: &msgraph.BaseNamedLocation{
 			DisplayName: utils.StringPtr("Test Country Named Location")},
 		CountriesAndRegions: &[]string{"US", "GB"},
 	}
@@ -59,9 +58,9 @@ func TestNamedLocationClient(t *testing.T) {
 	if namedLocationSlice != nil {
 		for _, l := range *namedLocationSlice {
 			t.Logf("%+v ", l)
-			if _, ok := l.(models.CountryNamedLocation); ok {
+			if _, ok := l.(msgraph.CountryNamedLocation); ok {
 				t.Logf("is a CountryNamedLocation")
-			} else if _, ok := l.(models.IPNamedLocation); ok {
+			} else if _, ok := l.(msgraph.IPNamedLocation); ok {
 				t.Logf("is an IPNamedLocation")
 			} else {
 				t.Logf("Did not match a type")
@@ -76,7 +75,7 @@ func TestNamedLocationClient(t *testing.T) {
 	testNamedLocationClient_Delete(t, c, *countryNamedLocation.ID)
 }
 
-func testNamedLocationClient_CreateIP(t *testing.T, c NamedLocationClientTest, ipnl models.IPNamedLocation) (ipNamedLocation *models.IPNamedLocation) {
+func testNamedLocationClient_CreateIP(t *testing.T, c NamedLocationClientTest, ipnl msgraph.IPNamedLocation) (ipNamedLocation *msgraph.IPNamedLocation) {
 	ipNamedLocation, status, err := c.client.CreateIP(c.connection.Context, ipnl)
 	if err != nil {
 		t.Fatalf("NamedLocationClient.CreateIP(): %v", err)
@@ -93,7 +92,7 @@ func testNamedLocationClient_CreateIP(t *testing.T, c NamedLocationClientTest, i
 	return
 }
 
-func testNamedLocationClient_CreateCountry(t *testing.T, c NamedLocationClientTest, cnl models.CountryNamedLocation) (countryNamedLocation *models.CountryNamedLocation) {
+func testNamedLocationClient_CreateCountry(t *testing.T, c NamedLocationClientTest, cnl msgraph.CountryNamedLocation) (countryNamedLocation *msgraph.CountryNamedLocation) {
 	countryNamedLocation, status, err := c.client.CreateCountry(c.connection.Context, cnl)
 	if err != nil {
 		t.Fatalf("NamedLocationClient.CreateCountry(): %v", err)
@@ -110,7 +109,7 @@ func testNamedLocationClient_CreateCountry(t *testing.T, c NamedLocationClientTe
 	return
 }
 
-func testNamedLocationClient_GetIP(t *testing.T, c NamedLocationClientTest, id string) (ipNamedLocation *models.IPNamedLocation) {
+func testNamedLocationClient_GetIP(t *testing.T, c NamedLocationClientTest, id string) (ipNamedLocation *msgraph.IPNamedLocation) {
 	ipNamedLocation, status, err := c.client.GetIP(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("IPNamedLocationClient.Get(): %v", err)
@@ -124,7 +123,7 @@ func testNamedLocationClient_GetIP(t *testing.T, c NamedLocationClientTest, id s
 	return
 }
 
-func testNamedLocationClient_GetCountry(t *testing.T, c NamedLocationClientTest, id string) (countryNamedLocation *models.CountryNamedLocation) {
+func testNamedLocationClient_GetCountry(t *testing.T, c NamedLocationClientTest, id string) (countryNamedLocation *msgraph.CountryNamedLocation) {
 	countryNamedLocation, status, err := c.client.GetCountry(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("NamedLocationClient.GetCountry(): %v", err)
@@ -138,7 +137,7 @@ func testNamedLocationClient_GetCountry(t *testing.T, c NamedLocationClientTest,
 	return
 }
 
-func testNamedLocationClient_UpdateIP(t *testing.T, c NamedLocationClientTest, ipnl models.IPNamedLocation) {
+func testNamedLocationClient_UpdateIP(t *testing.T, c NamedLocationClientTest, ipnl msgraph.IPNamedLocation) {
 	status, err := c.client.UpdateIP(c.connection.Context, ipnl)
 	if err != nil {
 		t.Fatalf("NamedLocationClient.UpdateIP(): %v", err)
@@ -148,7 +147,7 @@ func testNamedLocationClient_UpdateIP(t *testing.T, c NamedLocationClientTest, i
 	}
 }
 
-func testNamedLocationClient_UpdateCountry(t *testing.T, c NamedLocationClientTest, cnl models.CountryNamedLocation) {
+func testNamedLocationClient_UpdateCountry(t *testing.T, c NamedLocationClientTest, cnl msgraph.CountryNamedLocation) {
 	status, err := c.client.UpdateCountry(c.connection.Context, cnl)
 	if err != nil {
 		t.Fatalf("NamedLocationClient.UpdateCountry(): %v", err)
@@ -158,7 +157,7 @@ func testNamedLocationClient_UpdateCountry(t *testing.T, c NamedLocationClientTe
 	}
 }
 
-func testNamedLocationClient_List(t *testing.T, c NamedLocationClientTest, f string) (namedLocations *[]models.NamedLocation) {
+func testNamedLocationClient_List(t *testing.T, c NamedLocationClientTest, f string) (namedLocations *[]msgraph.NamedLocation) {
 	namedLocations, _, err := c.client.List(c.connection.Context, f)
 	if err != nil {
 		t.Fatalf("NamedLocationClient.List(): %v", err)

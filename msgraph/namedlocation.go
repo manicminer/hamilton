@@ -9,7 +9,6 @@ import (
 	"net/url"
 
 	"github.com/manicminer/hamilton/internal/utils"
-	"github.com/manicminer/hamilton/models"
 	"github.com/manicminer/hamilton/odata"
 )
 
@@ -26,7 +25,7 @@ func NewNamedLocationClient(tenantId string) *NamedLocationClient {
 }
 
 // List returns a list of Named Locations, optionally filtered using OData.
-func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]models.NamedLocation, int, error) {
+func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]NamedLocation, int, error) {
 	params := url.Values{}
 	if filter != "" {
 		params.Add("$filter", filter)
@@ -60,7 +59,7 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]model
 		return nil, status, err
 	}
 	// The Graph API returns a mixture of types, this loop matches up the result to the appropriate model
-	var ret []models.NamedLocation
+	var ret []NamedLocation
 	for _, namedLocation := range *data.NamedLocations {
 		var o odata.OData
 		if err := json.Unmarshal(namedLocation, &o); err != nil {
@@ -69,13 +68,13 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]model
 
 		switch *o.Type {
 		case "#microsoft.graph.countryNamedLocation":
-			var loc models.CountryNamedLocation
+			var loc CountryNamedLocation
 			if err := json.Unmarshal(namedLocation, &loc); err != nil {
 				return nil, status, err
 			}
 			ret = append(ret, loc)
 		case "#microsoft.graph.ipNamedLocation":
-			var loc models.IPNamedLocation
+			var loc IPNamedLocation
 			if err := json.Unmarshal(namedLocation, &loc); err != nil {
 				return nil, status, err
 			}
@@ -103,7 +102,7 @@ func (c *NamedLocationClient) Delete(ctx context.Context, id string) (int, error
 }
 
 // CreateIP creates a new IP Named Location.
-func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation models.IPNamedLocation) (*models.IPNamedLocation, int, error) {
+func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (*IPNamedLocation, int, error) {
 	var status int
 
 	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
@@ -129,7 +128,7 @@ func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation mode
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
-	var newIPNamedLocation models.IPNamedLocation
+	var newIPNamedLocation IPNamedLocation
 	if err := json.Unmarshal(respBody, &newIPNamedLocation); err != nil {
 		return nil, status, err
 	}
@@ -137,7 +136,7 @@ func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation mode
 }
 
 // CreateCountry creates a new Country Named Location.
-func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLocation models.CountryNamedLocation) (*models.CountryNamedLocation, int, error) {
+func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (*CountryNamedLocation, int, error) {
 	var status int
 
 	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
@@ -163,7 +162,7 @@ func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLoc
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
-	var newCountryNamedLocation models.CountryNamedLocation
+	var newCountryNamedLocation CountryNamedLocation
 	if err := json.Unmarshal(respBody, &newCountryNamedLocation); err != nil {
 		return nil, status, err
 	}
@@ -171,7 +170,7 @@ func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLoc
 }
 
 // GetIP retrieves an IP Named Location.
-func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*models.IPNamedLocation, int, error) {
+func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*IPNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
@@ -184,7 +183,7 @@ func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*models.IPN
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
-	var ipNamedLocation models.IPNamedLocation
+	var ipNamedLocation IPNamedLocation
 	if err := json.Unmarshal(respBody, &ipNamedLocation); err != nil {
 		return nil, status, err
 	}
@@ -192,7 +191,7 @@ func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*models.IPN
 }
 
 // GetCountry retrieves an Country Named Location.
-func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*models.CountryNamedLocation, int, error) {
+func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*CountryNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
@@ -205,7 +204,7 @@ func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*model
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
-	var countryNamedLocation models.CountryNamedLocation
+	var countryNamedLocation CountryNamedLocation
 	if err := json.Unmarshal(respBody, &countryNamedLocation); err != nil {
 		return nil, status, err
 	}
@@ -213,7 +212,7 @@ func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*model
 }
 
 // UpdateIP amends an existing IP Named Location.
-func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation models.IPNamedLocation) (int, error) {
+func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
 
 	// This API does not handle PATCH on some properties
@@ -240,7 +239,7 @@ func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation mode
 }
 
 // UpdateCountry amends an existing Country Named Location.
-func (c *NamedLocationClient) UpdateCountry(ctx context.Context, countryNamedLocation models.CountryNamedLocation) (int, error) {
+func (c *NamedLocationClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
 
 	// This API does not handle PATCH on some properties
