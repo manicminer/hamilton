@@ -7,7 +7,7 @@ import (
 	"os"
 
 	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/clients"
+	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/environments"
 )
 
@@ -33,7 +33,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client := clients.NewUsersClient(tenantId)
+	client := msgraph.NewUsersClient(tenantId)
 	client.BaseClient.Authorizer = authorizer
 
 	users, _, err := client.List(ctx, "")

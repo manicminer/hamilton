@@ -1,3 +1,12 @@
+## 0.10.0 (April 10, 2021)
+
+⚠️ BREAKING CHANGES:
+
+- This release refactors various packages to make for a better import experience.
+- `base`, `clients` and `models` packages have been combined into a single `msgraph` package.
+- `base/aadgraph` package has been moved to `aadgraph`.
+- `base/odata` package has been moved to `odata`.
+
 ## 0.9.0 (March 1, 2021)
 
 - Add support for guest user invitations ([#21](https://github.com/manicminer/hamilton/pull/21))
