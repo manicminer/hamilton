@@ -105,11 +105,6 @@ func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalA
 		return status, errors.New("cannot update conditionalAccessPolicy with nil ID")
 	}
 
-	// This API does not handle PATCH on some properties
-	// i.e. cannot update values such as CreatedDateTime
-	conditionalAccessPolicy.CreatedDateTime = nil
-	conditionalAccessPolicy.ModifiedDateTime = nil
-
 	body, err := json.Marshal(conditionalAccessPolicy)
 	if err != nil {
 		return status, err
