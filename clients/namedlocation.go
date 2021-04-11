@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/manicminer/hamilton/base"
+	"github.com/manicminer/hamilton/base/odata"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/models"
 )
@@ -49,14 +50,36 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]model
 	respBody, _ := ioutil.ReadAll(resp.Body)
 
 	var data struct {
-		NamedLocations []models.NamedLocation `json:"value"`
+		NamedLocations *[]json.RawMessage `json:"value"`
 	}
 
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, err
 	}
 
-	return &data.NamedLocations, status, nil
+	if data.NamedLocations == nil {
+		return nil, status, err
+	}
+	// The Graph API returns a mixture of types, this loop matches up the result to the appropriate model
+	var ret []models.NamedLocation
+	for _, namedLocation := range *data.NamedLocations {
+		var o odata.OData
+		json.Unmarshal(namedLocation, &o)
+
+		switch *o.Type {
+		case "#microsoft.graph.countryNamedLocation":
+			var loc models.CountryNamedLocation
+			json.Unmarshal(namedLocation, &loc)
+			ret = append(ret, loc)
+		case "#microsoft.graph.ipNamedLocation":
+			var loc models.IPNamedLocation
+			json.Unmarshal(namedLocation, &loc)
+			ret = append(ret, loc)
+		}
+	}
+
+	return &ret, status, nil
+
 }
 
 // Delete removes a Named Location.
