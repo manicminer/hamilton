@@ -2,17 +2,13 @@ package msgraph_test
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
+	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-)
-
-var (
-	enterpriseAppId = os.Getenv("ENTERPRISE_APP_ID") // Enterprise Apps cannot be created using Graph. Therefore, to simplify testing pass the Enterprise App ID via an Env variable.
 )
 
 type ConditionalAccessPolicyTest struct {
@@ -29,10 +25,6 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 		randomString: test.RandomString(),
 	}
 
-	if enterpriseAppId == "" {
-		t.Fatalf("ConditionalAccessPolicyClient.Create(): ENTERPRISE_APP_ID is not set")
-	}
-
 	c.policyClient = msgraph.NewConditionalAccessPolicyClient(c.connection.AuthConfig.TenantID)
 	c.policyClient.BaseClient.Authorizer = c.connection.Authorizer
 
@@ -42,6 +34,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	c.userClient = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
 	c.userClient.BaseClient.Authorizer = c.connection.Authorizer
 
+	testAppId := string(environments.PublishedApis["AzureDevOps"])
 	testIncGroup := testGroup_Create(t, c, "inc")
 	testExcGroup := testGroup_Create(t, c, "exc")
 	testUser := testUser_Create(t, c)
@@ -53,7 +46,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 		Conditions: &msgraph.ConditionalAccessConditionSet{
 			ClientAppTypes: &[]string{"mobileAppsAndDesktopClients", "browser"},
 			Applications: &msgraph.ConditionalAccessApplications{
-				IncludeApplications: &[]string{enterpriseAppId},
+				IncludeApplications: &[]string{testAppId},
 			},
 			Users: &msgraph.ConditionalAccessUsers{
 				IncludeUsers:  &[]string{"All"},
