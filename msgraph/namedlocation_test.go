@@ -51,7 +51,11 @@ func TestNamedLocationClient(t *testing.T) {
 	countryNamedLocation := testNamedLocationClient_CreateCountry(t, c, newCountryNamedLocation)
 
 	ipNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-ipnl-%s", c.randomString))
+	ipNamedLocation.CreatedDateTime = nil
+	ipNamedLocation.ModifiedDateTime = nil
 	countryNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-cnl-%s", c.randomString))
+	countryNamedLocation.CreatedDateTime = nil
+	countryNamedLocation.ModifiedDateTime = nil
 
 	testNamedLocationClient_UpdateIP(t, c, *ipNamedLocation)
 	testNamedLocationClient_UpdateCountry(t, c, *countryNamedLocation)
