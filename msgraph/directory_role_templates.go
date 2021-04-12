@@ -20,9 +20,8 @@ func NewDirectoryRoleTemplatesClient(tenantId string) *DirectoryRoleTemplatesCli
 	}
 }
 
-// List returns a list of DirectoryRoleTemplates, optionally filtered using OData.
+// List returns a list of DirectoryRoleTemplates.
 func (c *DirectoryRoleTemplatesClient) List(ctx context.Context) (*[]DirectoryRoleTemplate, int, error) {
-
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
