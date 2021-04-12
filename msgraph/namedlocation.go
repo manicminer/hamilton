@@ -66,6 +66,9 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]Named
 			return nil, status, err
 		}
 
+		if o.Type == nil {
+			continue
+		}
 		switch *o.Type {
 		case "#microsoft.graph.countryNamedLocation":
 			var loc CountryNamedLocation
