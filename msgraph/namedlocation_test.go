@@ -27,7 +27,7 @@ func TestNamedLocationClient(t *testing.T) {
 
 	newIPNamedLocation := msgraph.IPNamedLocation{
 		BaseNamedLocation: &msgraph.BaseNamedLocation{
-			DisplayName: utils.StringPtr("Test IP Named Location")
+			DisplayName: utils.StringPtr("Test IP Named Location"),
 		},
 		IPRanges: &[]msgraph.IPNamedLocationIPRange{
 			{
@@ -42,7 +42,7 @@ func TestNamedLocationClient(t *testing.T) {
 
 	newCountryNamedLocation := msgraph.CountryNamedLocation{
 		BaseNamedLocation: &msgraph.BaseNamedLocation{
-			DisplayName: utils.StringPtr("Test Country Named Location")
+			DisplayName: utils.StringPtr("Test Country Named Location"),
 		},
 		CountriesAndRegions: &[]string{"US", "GB"},
 	}
