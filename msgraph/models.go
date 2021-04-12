@@ -712,3 +712,11 @@ type VerifiedPublisher struct {
 	DisplayName         *string    `json:"displayName,omitempty"`
 	VerifiedPublisherId *string    `json:"verifiedPublisherId,omitempty"`
 }
+
+// DirectoryRoleTemplate describes a Directory Role Template.
+type DirectoryRoleTemplate struct {
+	ID              *string    `json:"id,omitempty"`
+	DeletedDateTime *time.Time `json:"deletedDateTime,omitempty"`
+	Description     *string    `json:"description,omitempty"`
+	DisplayName     *string    `json:"displayName,omitempty"`
+}
