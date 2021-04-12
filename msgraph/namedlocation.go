@@ -106,11 +106,6 @@ func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation IPNa
 	var status int
 
 	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
-	// This API does not handle PATCH on some properties
-	// i.e. cannot update values such as CreatedDateTime
-	ipNamedLocation.CreatedDateTime = nil
-	ipNamedLocation.ModifiedDateTime = nil
-
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
 		return nil, status, err
@@ -140,10 +135,6 @@ func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLoc
 	var status int
 
 	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
-	// This API does not handle PATCH on some properties
-	// i.e. cannot update values such as CreatedDateTime
-	countryNamedLocation.CreatedDateTime = nil
-	countryNamedLocation.ModifiedDateTime = nil
 
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {
@@ -215,11 +206,6 @@ func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*Count
 func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
 
-	// This API does not handle PATCH on some properties
-	// i.e. cannot update values such as CreatedDateTime
-	ipNamedLocation.CreatedDateTime = nil
-	ipNamedLocation.ModifiedDateTime = nil
-
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
 		return status, err
@@ -241,11 +227,6 @@ func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation IPNa
 // UpdateCountry amends an existing Country Named Location.
 func (c *NamedLocationClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
-
-	// This API does not handle PATCH on some properties
-	// i.e. cannot update values such as CreatedDateTime
-	countryNamedLocation.CreatedDateTime = nil
-	countryNamedLocation.ModifiedDateTime = nil
 
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {
