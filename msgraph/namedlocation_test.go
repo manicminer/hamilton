@@ -60,19 +60,7 @@ func TestNamedLocationClient(t *testing.T) {
 	testNamedLocationClient_UpdateIP(t, c, *ipNamedLocation)
 	testNamedLocationClient_UpdateCountry(t, c, *countryNamedLocation)
 
-	namedLocationSlice := testNamedLocationClient_List(t, c, "")
-	if namedLocationSlice != nil {
-		for _, l := range *namedLocationSlice {
-			t.Logf("%+v ", l)
-			if _, ok := l.(msgraph.CountryNamedLocation); ok {
-				t.Logf("is a CountryNamedLocation")
-			} else if _, ok := l.(msgraph.IPNamedLocation); ok {
-				t.Logf("is an IPNamedLocation")
-			} else {
-				t.Logf("Did not match a type")
-			}
-		}
-	}
+	testNamedLocationClient_List(t, c, "")
 	// Running get after the update to give the API a chance to catch up
 	testNamedLocationClient_GetIP(t, c, *ipNamedLocation.ID)
 	testNamedLocationClient_GetCountry(t, c, *countryNamedLocation.ID)
@@ -170,6 +158,13 @@ func testNamedLocationClient_List(t *testing.T, c NamedLocationClientTest, f str
 	}
 	if namedLocations == nil {
 		t.Fatal("NamedLocationClient.List(): ipNamedLocations was nil")
+	}
+	for _, loc := range *namedLocations {
+		_, ok1 := loc.(msgraph.CountryNamedLocation)
+		_, ok2 := loc.(msgraph.IPNamedLocation)
+		if !ok1 && !ok2 {
+			t.Fatal("NamedLocationsClient.List(): a NamedLocation was returned that did not match a known model")
+		}
 	}
 	return
 }
