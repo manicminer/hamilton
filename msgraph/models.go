@@ -240,6 +240,14 @@ type AppRole struct {
 	Value              *string   `json:"value,omitempty"`
 }
 
+type BaseNamedLocation struct {
+	ODataType        *string    `json:"@odata.type,omitempty"`
+	ID               *string    `json:"id,omitempty"`
+	DisplayName      *string    `json:"displayName,omitempty"`
+	CreatedDateTime  *time.Time `json:"createdDateTime,omitempty"`
+	ModifiedDateTime *time.Time `json:"modifiedDateTime,omitempty"`
+}
+
 type CloudAppSecurityControl struct {
 	IsEnabled            *bool   `json:"isEnabled,omitempty"`
 	CloudAppSecurityType *string `json:"cloudAppSecurityType,omitempty"`
@@ -304,6 +312,21 @@ type ConditionalAccessSessionControls struct {
 	CloudAppSecurity                *CloudAppSecurityControl                       `json:"cloudAppSecurity,omitempty"`
 	PersistentBrowser               *PersistentBrowserSessionControl               `json:"persistentBrowser,omitempty"`
 	SignInFrequency                 *SignInFrequencySessionControl                 `json:"signInFrequency,omitempty"`
+}
+
+// CountryNamedLocation describes an Country Named Location object.
+type CountryNamedLocation struct {
+	*BaseNamedLocation
+	CountriesAndRegions               *[]string `json:"countriesAndRegions,omitempty"`
+	IncludeUnknownCountriesAndRegions *bool     `json:"includeUnknownCountriesAndRegions,omitempty"`
+}
+
+// DirectoryRoleTemplate describes a Directory Role Template.
+type DirectoryRoleTemplate struct {
+	ID              *string    `json:"id,omitempty"`
+	DeletedDateTime *time.Time `json:"deletedDateTime,omitempty"`
+	Description     *string    `json:"description,omitempty"`
+	DisplayName     *string    `json:"displayName,omitempty"`
 }
 
 // Domain describes a Domain object.
@@ -451,6 +474,17 @@ type InvitedUserMessageInfo struct {
 	MessageLanguage       *string      `json:"messageLanguage,omitempty"`
 }
 
+// IPNamedLocation describes an IP Named Location object.
+type IPNamedLocation struct {
+	*BaseNamedLocation
+	IPRanges  *[]IPNamedLocationIPRange `json:"ipRanges,omitempty"`
+	IsTrusted *bool                     `json:"isTrusted,omitempty"`
+}
+
+type IPNamedLocationIPRange struct {
+	CIDRAddress *string `json:"cidrAddress,omitempty"`
+}
+
 type KerberosSignOnSettings struct {
 	ServicePrincipalName       *string `json:"kerberosServicePrincipalName,omitempty"`
 	SignOnMappingAttributeType *string `jsonL:"kerberosSignOnMappingAttributeType,omitempty"`
@@ -474,6 +508,8 @@ type Me struct {
 	DisplayName       *string `json:"displayName"`
 	UserPrincipalName *string `json:"userPrincipalName"`
 }
+
+type NamedLocation interface{}
 
 type OnPremisesPublishing struct {
 	AlternateUrl                  *string `json:"alternateUrl,omitempty"`
@@ -711,12 +747,4 @@ type VerifiedPublisher struct {
 	AddedDateTime       *time.Time `json:"addedDateTime,omitempty"`
 	DisplayName         *string    `json:"displayName,omitempty"`
 	VerifiedPublisherId *string    `json:"verifiedPublisherId,omitempty"`
-}
-
-// DirectoryRoleTemplate describes a Directory Role Template.
-type DirectoryRoleTemplate struct {
-	ID              *string    `json:"id,omitempty"`
-	DeletedDateTime *time.Time `json:"deletedDateTime,omitempty"`
-	Description     *string    `json:"description,omitempty"`
-	DisplayName     *string    `json:"displayName,omitempty"`
 }
