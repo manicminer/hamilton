@@ -329,6 +329,26 @@ type DirectoryRoleTemplate struct {
 	DisplayName     *string    `json:"displayName,omitempty"`
 }
 
+type DirectoryRole struct {
+	ID             *string `json:"id,omitempty"`
+	Description    *string `json:"description,omitempty"`
+	DisplayName    *string `json:"displayName,omitempty"`
+	RoleTemplateId *string `json:"roleTemplateId,omitempty"`
+
+	Members *[]string `json:"-"`
+}
+
+// AppendMember appends a new member object URI to the Members slice.
+func (d *DirectoryRole) AppendMember(endpoint environments.ApiEndpoint, apiVersion ApiVersion, id string) {
+	val := fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, id)
+	var members []string
+	if d.Members != nil {
+		members = *d.Members
+	}
+	members = append(members, val)
+	d.Members = &members
+}
+
 // Domain describes a Domain object.
 type Domain struct {
 	ID                               *string   `json:"id,omitempty"`
@@ -396,6 +416,7 @@ type Group struct {
 	Theme                         *string                             `json:"theme,omitempty"`
 	UnseenCount                   *int                                `json:"unseenCount,omitempty"`
 	Visibility                    *string                             `json:"visibility,omitempty"`
+	IsAssignableToRole            *bool                               `json:"isAssignableToRole,omitempty"`
 
 	Members *[]string `json:"members@odata.bind,omitempty"`
 	Owners  *[]string `json:"owners@odata.bind,omitempty"`

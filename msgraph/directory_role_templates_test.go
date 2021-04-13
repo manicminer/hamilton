@@ -38,15 +38,15 @@ func testDirectoryRoleTemplatesClient_List(t *testing.T, c DirectoryRoleTemplate
 }
 
 func testDirectoryRoleTemplatesClient_Get(t *testing.T, c DirectoryRoleTemplatesClientTest, id string) (directoryRoleTemplate *msgraph.DirectoryRoleTemplate) {
-	domain, status, err := c.client.Get(c.connection.Context, id)
+	directoryRoleTemplate, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryRoleTemplatesClient.Get(): %v", err)
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("DirectoryRoleTemplatesClient.Get(): invalid status: %d", status)
 	}
-	if domain == nil {
-		t.Fatal("DirectoryRoleTemplatesClient.Get(): domain was nil")
+	if directoryRoleTemplate == nil {
+		t.Fatal("DirectoryRoleTemplatesClient.Get(): directoryRoleTemplate was nil")
 	}
 	return
 }
