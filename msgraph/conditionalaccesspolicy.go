@@ -37,15 +37,18 @@ func (c *ConditionalAccessPolicyClient) List(ctx context.Context, filter string)
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var data struct {
 		ConditionalAccessPolicys []ConditionalAccessPolicy `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &data.ConditionalAccessPolicys, status, nil
 }
@@ -55,7 +58,7 @@ func (c *ConditionalAccessPolicyClient) Create(ctx context.Context, conditionalA
 	var status int
 	body, err := json.Marshal(conditionalAccessPolicy)
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
@@ -66,13 +69,16 @@ func (c *ConditionalAccessPolicyClient) Create(ctx context.Context, conditionalA
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var newConditionalAccessPolicy ConditionalAccessPolicy
 	if err := json.Unmarshal(respBody, &newConditionalAccessPolicy); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &newConditionalAccessPolicy, status, nil
 }
@@ -87,13 +93,16 @@ func (c *ConditionalAccessPolicyClient) Get(ctx context.Context, id string) (*Co
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var conditionalAccessPolicy ConditionalAccessPolicy
 	if err := json.Unmarshal(respBody, &conditionalAccessPolicy); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &conditionalAccessPolicy, status, nil
 }
@@ -107,7 +116,7 @@ func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalA
 
 	body, err := json.Marshal(conditionalAccessPolicy)
 	if err != nil {
-		return status, err
+		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:             body,
@@ -118,7 +127,7 @@ func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalA
 		},
 	})
 	if err != nil {
-		return status, err
+		return status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Patch(): %v", err)
 	}
 	return status, nil
 }
@@ -133,7 +142,7 @@ func (c *ConditionalAccessPolicyClient) Delete(ctx context.Context, id string) (
 		},
 	})
 	if err != nil {
-		return status, err
+		return status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Delete(): %v", err)
 	}
 	return status, nil
 }
