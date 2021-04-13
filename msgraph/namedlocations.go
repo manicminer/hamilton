@@ -12,20 +12,20 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
-// NamedLocationClient performs operations on Named Locations.
-type NamedLocationClient struct {
+// NamedLocationsClient performs operations on Named Locations.
+type NamedLocationsClient struct {
 	BaseClient Client
 }
 
-// NewNamedLocationClient returns a new NamedLocationClient.
-func NewNamedLocationClient(tenantId string) *NamedLocationClient {
-	return &NamedLocationClient{
+// NewNamedLocationsClient returns a new NamedLocationsClient.
+func NewNamedLocationsClient(tenantId string) *NamedLocationsClient {
+	return &NamedLocationsClient{
 		BaseClient: NewClient(Version10, tenantId),
 	}
 }
 
 // List returns a list of Named Locations, optionally filtered using OData.
-func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]NamedLocation, int, error) {
+func (c *NamedLocationsClient) List(ctx context.Context, filter string) (*[]NamedLocation, int, error) {
 	params := url.Values{}
 	if filter != "" {
 		params.Add("$filter", filter)
@@ -90,7 +90,7 @@ func (c *NamedLocationClient) List(ctx context.Context, filter string) (*[]Named
 }
 
 // Delete removes a Named Location.
-func (c *NamedLocationClient) Delete(ctx context.Context, id string) (int, error) {
+func (c *NamedLocationsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
@@ -105,7 +105,7 @@ func (c *NamedLocationClient) Delete(ctx context.Context, id string) (int, error
 }
 
 // CreateIP creates a new IP Named Location.
-func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (*IPNamedLocation, int, error) {
+func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (*IPNamedLocation, int, error) {
 	var status int
 
 	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
@@ -134,7 +134,7 @@ func (c *NamedLocationClient) CreateIP(ctx context.Context, ipNamedLocation IPNa
 }
 
 // CreateCountry creates a new Country Named Location.
-func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (*CountryNamedLocation, int, error) {
+func (c *NamedLocationsClient) CreateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (*CountryNamedLocation, int, error) {
 	var status int
 
 	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
@@ -164,7 +164,7 @@ func (c *NamedLocationClient) CreateCountry(ctx context.Context, countryNamedLoc
 }
 
 // GetIP retrieves an IP Named Location.
-func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*IPNamedLocation, int, error) {
+func (c *NamedLocationsClient) GetIP(ctx context.Context, id string) (*IPNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
@@ -185,7 +185,7 @@ func (c *NamedLocationClient) GetIP(ctx context.Context, id string) (*IPNamedLoc
 }
 
 // GetCountry retrieves an Country Named Location.
-func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*CountryNamedLocation, int, error) {
+func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*CountryNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
@@ -206,7 +206,7 @@ func (c *NamedLocationClient) GetCountry(ctx context.Context, id string) (*Count
 }
 
 // UpdateIP amends an existing IP Named Location.
-func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
+func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
 
 	body, err := json.Marshal(ipNamedLocation)
@@ -228,7 +228,7 @@ func (c *NamedLocationClient) UpdateIP(ctx context.Context, ipNamedLocation IPNa
 }
 
 // UpdateCountry amends an existing Country Named Location.
-func (c *NamedLocationClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
+func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
 
 	body, err := json.Marshal(countryNamedLocation)
