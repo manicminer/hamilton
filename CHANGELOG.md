@@ -1,3 +1,11 @@
+## 0.11.0 (April 13, 2021)
+
+- Support for Conditional Access Policies
+- Support for Named Locations (IP-based and Country-based)
+- Support for Directory Role Templates
+- Set a default User Agent string if not provided by the caller
+- Improved error handling
+
 ## 0.10.0 (April 10, 2021)
 
 ⚠️ BREAKING CHANGES:
