@@ -25,7 +25,7 @@ func NewDirectoryRolesClient(tenantId string) *DirectoryRolesClient {
 	}
 }
 
-// List returns a list of DirectoryRoles.
+// List returns a list of DirectoryRoles activated in the tenant.
 func (c *DirectoryRolesClient) List(ctx context.Context) (*[]DirectoryRole, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -219,4 +219,43 @@ func (c *DirectoryRolesClient) GetMember(ctx context.Context, directoryRoleId, m
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &data.Id, status, nil
+}
+
+// Activate activates a directory role. To read a directory role or update its members, it must first be activated in the tenant using role template id.
+// This method will fail if directory role is already activated in the tenant.
+// We could consider to list all directory roles firstly and check if the directory role exists. Activating it only if it does not exists.
+// Not ideal solution. API does not support retrieving directory role by role template id; it does not support does not support the OData Query Parameters.
+func (c *DirectoryRolesClient) Activate(ctx context.Context, roleTemplateID string) (*DirectoryRole, int, error) {
+	var status int
+	data := struct {
+		RoleTemplateID string `json:"roleTemplateId"`
+	}{
+		RoleTemplateID: roleTemplateID,
+	}
+	body, err := json.Marshal(data)
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity:      "/directoryRoles",
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("DirectoryRolesClient.BaseClient.Post(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+	var newDirRole DirectoryRole
+	if err := json.Unmarshal(respBody, &newDirRole); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &newDirRole, status, nil
 }
