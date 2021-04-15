@@ -7,14 +7,14 @@ import (
 	"os"
 
 	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/environments"
+	"github.com/manicminer/hamilton/msgraph"
 )
 
 var (
-	tenantId           = os.Getenv("TENANT_ID")
-	clientId           = os.Getenv("CLIENT_ID")
-	clientSecret       = os.Getenv("CLIENT_SECRET")
+	tenantId     = os.Getenv("TENANT_ID")
+	clientId     = os.Getenv("CLIENT_ID")
+	clientSecret = os.Getenv("CLIENT_SECRET")
 )
 
 func main() {

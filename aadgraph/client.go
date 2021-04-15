@@ -33,8 +33,8 @@ type HttpRequestInput interface {
 
 // Uri represents an Azure Active Directory Graph endpoint.
 type Uri struct {
-	Entity      string
-	Params      url.Values
+	Entity string
+	Params url.Values
 }
 
 // GraphClient is any suitable HTTP client.
