@@ -48,7 +48,7 @@ func TestApplicationsClient_groupMembershipClaims(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
+		DisplayName:           utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
 		GroupMembershipClaims: utils.StringPtr("SecurityGroup, ApplicationGroup"),
 	})
 	testApplicationsClient_Delete(t, c, *app.ID)
