@@ -513,15 +513,22 @@ type KerberosSignOnSettings struct {
 
 // KeyCredential describes a key (certificate) credential for an object.
 type KeyCredential struct {
-	CustomKeyIdentifier *string    `json:"customKeyIdentifier,omitempty"`
-	DisplayName         *string    `json:"displayName,omitempty"`
-	EndDateTime         *time.Time `json:"endDateTime,omitempty"`
-	KeyId               *string    `json:"keyId,omitempty"`
-	StartDateTime       *time.Time `json:"startDateTime,omitempty"`
-	Type                *string    `json:"type,omitempty"`
-	Usage               *string    `json:"usage,omitempty"`
-	Key                 *string    `json:"key,omitempty"`
+	CustomKeyIdentifier *string            `json:"customKeyIdentifier,omitempty"`
+	DisplayName         *string            `json:"displayName,omitempty"`
+	EndDateTime         *time.Time         `json:"endDateTime,omitempty"`
+	KeyId               *string            `json:"keyId,omitempty"`
+	StartDateTime       *time.Time         `json:"startDateTime,omitempty"`
+	Type                *string            `json:"type,omitempty"`
+	Usage               KeyCredentialUsage `json:"usage,omitempty"`
+	Key                 *string            `json:"key,omitempty"`
 }
+
+type KeyCredentialUsage string
+
+const (
+	KeyCredentialUsageSign   KeyCredentialUsage = "Sign"
+	KeyCredentialUsageVerify KeyCredentialUsage = "Verify"
+)
 
 // Me describes the authenticated user.
 type Me struct {
@@ -628,9 +635,16 @@ type RequiredResourceAccess struct {
 }
 
 type ResourceAccess struct {
-	ID   *string `json:"id,omitempty"`
-	Type *string `json:"type,omitempty"`
+	ID   *string            `json:"id,omitempty"`
+	Type ResourceAccessType `json:"type,omitempty"`
 }
+
+type ResourceAccessType string
+
+const (
+	ResourceAccessTypeRole  ResourceAccessType = "Role"
+	ResourceAccessTypeScope ResourceAccessType = "Scope"
+)
 
 type SamlSingleSignOnSettings struct {
 	RelayState *string `json:"relayState,omitempty"`
