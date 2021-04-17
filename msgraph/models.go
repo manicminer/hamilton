@@ -1,8 +1,10 @@
 package msgraph
 
 import (
+	"encoding/json"
 	goerrors "errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/manicminer/hamilton/environments"
@@ -35,7 +37,7 @@ type Application struct {
 	CreatedDateTime            *time.Time                `json:"createdDateTime,omitempty"`
 	DeletedDateTime            *time.Time                `json:"deletedDateTime,omitempty"`
 	DisplayName                *string                   `json:"displayName,omitempty"`
-	GroupMembershipClaims      *string                   `json:"groupMembershipClaims,omitempty"`
+	GroupMembershipClaims      *[]GroupMembershipClaim   `json:"groupMembershipClaims,omitempty"`
 	IdentifierUris             *[]string                 `json:"identifierUris,omitempty"`
 	Info                       *InformationalUrl         `json:"info,omitempty"`
 	IsFallbackPublicClient     *bool                     `json:"isFallbackPublicCLient,omitempty"`
@@ -54,6 +56,71 @@ type Application struct {
 	Web                        *ApplicationWeb           `json:"web,omitempty"`
 
 	Owners *[]string `json:"owners@odata.bind,omitempty"`
+}
+
+func (a Application) MarshalJSON() ([]byte, error) {
+	var groupMembershipClaims *string
+	if a.GroupMembershipClaims != nil {
+		claims := make([]string, 0)
+		for _, c := range *a.GroupMembershipClaims {
+			claims = append(claims, string(c))
+		}
+		theClaims := strings.Join(claims, ",")
+		groupMembershipClaims = &theClaims
+	}
+	type application Application
+	return json.Marshal(&struct {
+		GroupMembershipClaims *string `json:"groupMembershipClaims"`
+		*application
+	}{
+		GroupMembershipClaims: groupMembershipClaims,
+		application:           (*application)(&a),
+	})
+}
+
+func (a *Application) UnmarshalJSON(data []byte) error {
+	type application Application
+	app := &struct {
+		GroupMembershipClaims *string `json:"groupMembershipClaims"`
+		*application
+	}{
+		application: (*application)(a),
+	}
+	if err := json.Unmarshal(data, &app); err != nil {
+		return err
+	}
+	if app.GroupMembershipClaims != nil {
+		var groupMembershipClaims []GroupMembershipClaim
+		for _, c := range strings.Split(*app.GroupMembershipClaims, ",") {
+			groupMembershipClaims = append(groupMembershipClaims, GroupMembershipClaim(strings.TrimSpace(c)))
+		}
+		a.GroupMembershipClaims = &groupMembershipClaims
+	}
+	return nil
+}
+
+func (a *Application) UnmarshalJSON2(data []byte) error {
+	type application Application
+	var app application
+	if err := json.Unmarshal(data, &app); err != nil {
+		return err
+	}
+	*a = Application(app)
+	var app2 struct {
+		GroupMembershipClaims *string `json:"groupMembershipClaims"`
+	}
+	if err := json.Unmarshal(data, &app2); err != nil {
+		return err
+	}
+	if app2.GroupMembershipClaims != nil {
+		var groupMembershipClaims []GroupMembershipClaim
+		claims := strings.Split(*app2.GroupMembershipClaims, ",")
+		for _, c := range claims {
+			groupMembershipClaims = append(groupMembershipClaims, GroupMembershipClaim(strings.TrimSpace(c)))
+		}
+		a.GroupMembershipClaims = &groupMembershipClaims
+	}
+	return nil
 }
 
 // AppendOwner appends a new owner object URI to the Owners slice.
@@ -231,14 +298,21 @@ type ApplicationWeb struct {
 }
 
 type AppRole struct {
-	ID                 *string   `json:"id,omitempty"`
-	AllowedMemberTypes *[]string `json:"allowedMemberTypes,omitempty"`
-	Description        *string   `json:"description,omitempty"`
-	DisplayName        *string   `json:"displayName,omitempty"`
-	IsEnabled          *bool     `json:"isEnabled,omitempty"`
-	Origin             *string   `json:"origin,omitempty"`
-	Value              *string   `json:"value,omitempty"`
+	ID                 *string                     `json:"id,omitempty"`
+	AllowedMemberTypes *[]AppRoleAllowedMemberType `json:"allowedMemberTypes,omitempty"`
+	Description        *string                     `json:"description,omitempty"`
+	DisplayName        *string                     `json:"displayName,omitempty"`
+	IsEnabled          *bool                       `json:"isEnabled,omitempty"`
+	Origin             *string                     `json:"origin,omitempty"`
+	Value              *string                     `json:"value,omitempty"`
 }
+
+type AppRoleAllowedMemberType string
+
+const (
+	AppRoleAllowedMemberTypeApplication AppRoleAllowedMemberType = "Application"
+	AppRoleAllowedMemberTypeUser        AppRoleAllowedMemberType = "User"
+)
 
 type BaseNamedLocation struct {
 	ODataType        *string    `json:"@odata.type,omitempty"`
@@ -454,6 +528,16 @@ type GroupAssignedLicense struct {
 	SkuId         *string   `json:"skuId,omitempty"`
 }
 
+type GroupMembershipClaim string
+
+const (
+	GroupMembershipClaimAll              GroupMembershipClaim = "All"
+	GroupMembershipClaimNone             GroupMembershipClaim = "None"
+	GroupMembershipClaimApplicationGroup GroupMembershipClaim = "ApplicationGroup"
+	GroupMembershipClaimDirectoryRole    GroupMembershipClaim = "DirectoryRole"
+	GroupMembershipClaimSecurityGroup    GroupMembershipClaim = "SecurityGroup"
+)
+
 type GroupOnPremisesProvisioningError struct {
 	Category             *string   `json:"category,omitempty"`
 	OccurredDateTime     time.Time `json:"occurredDateTime,omitempty"`
@@ -606,15 +690,22 @@ type PasswordSingleSignOnSettings struct {
 }
 
 type PermissionScope struct {
-	ID                      *string `json:"id,omitempty"`
-	AdminConsentDescription *string `json:"adminConsentDescription,omitempty"`
-	AdminConsentDisplayName *string `json:"adminConsentDisplayName,omitempty"`
-	IsEnabled               *bool   `json:"isEnabled,omitempty"`
-	Type                    *string `json:"type,omitempty"`
-	UserConsentDescription  *string `json:"userConsentDescription,omitempty"`
-	UserConsentDisplayName  *string `json:"userConsentDisplayName,omitempty"`
-	Value                   *string `json:"value,omitempty"`
+	ID                      *string             `json:"id,omitempty"`
+	AdminConsentDescription *string             `json:"adminConsentDescription,omitempty"`
+	AdminConsentDisplayName *string             `json:"adminConsentDisplayName,omitempty"`
+	IsEnabled               *bool               `json:"isEnabled,omitempty"`
+	Type                    PermissionScopeType `json:"type,omitempty"`
+	UserConsentDescription  *string             `json:"userConsentDescription,omitempty"`
+	UserConsentDisplayName  *string             `json:"userConsentDisplayName,omitempty"`
+	Value                   *string             `json:"value,omitempty"`
 }
+
+type PermissionScopeType string
+
+const (
+	PermissionScopeTypeAdmin PermissionScopeType = "Admin"
+	PermissionScopeTypeUser  PermissionScopeType = "User"
+)
 
 type PersistentBrowserSessionControl struct {
 	IsEnabled *bool   `json:"isEnabled,omitempty"`
