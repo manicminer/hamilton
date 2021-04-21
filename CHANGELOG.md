@@ -1,5 +1,6 @@
 ## 0.12.0 (Unreleased)
 
+- Support for activating Directory Roles ([#31](https://github.com/manicminer/hamilton/pull/31))
 - Restore the retry mechanism previously introduced in v0.8.0
 - Use the `odata` package for parsing common error messages
 - Handle some additional errors, mainly for `ioutil.Read*()`
