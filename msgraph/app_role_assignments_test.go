@@ -68,12 +68,15 @@ func TestAppRoleAssignmentsClient(t *testing.T) {
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", appClient.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
-				ID:                 utils.StringPtr(testAppRoleId),
-				DisplayName:        utils.StringPtr(fmt.Sprintf("test-app-role-%s", appClient.randomString)),
-				IsEnabled:          utils.BoolPtr(true),
-				AllowedMemberTypes: &[]string{"User", "Application"},
-				Description:        utils.StringPtr(fmt.Sprintf("test-app-role-description-%s", appClient.randomString)),
-				Value:              utils.StringPtr(fmt.Sprintf("test-app-role-value-%s", appClient.randomString)),
+				ID:          utils.StringPtr(testAppRoleId),
+				DisplayName: utils.StringPtr(fmt.Sprintf("test-app-role-%s", appClient.randomString)),
+				IsEnabled:   utils.BoolPtr(true),
+				Description: utils.StringPtr(fmt.Sprintf("test-app-role-description-%s", appClient.randomString)),
+				Value:       utils.StringPtr(fmt.Sprintf("test-app-role-value-%s", appClient.randomString)),
+				AllowedMemberTypes: &[]msgraph.AppRoleAllowedMemberType{
+					msgraph.AppRoleAllowedMemberTypeUser,
+					msgraph.AppRoleAllowedMemberTypeApplication,
+				},
 			},
 		},
 	})
