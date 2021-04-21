@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"regexp"
 
 	"github.com/manicminer/hamilton/odata"
 )
@@ -121,18 +120,16 @@ func (c *DirectoryRolesClient) AddMembers(ctx context.Context, directoryRole *Di
 		return status, errors.New("cannot update directory role with nil Owners")
 	}
 	for _, member := range *directoryRole.Members {
-		// don't fail if an member already exists
+		// don't fail if a member already exists
 		checkMemberAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
 				if o.Error != nil {
-					re := regexp.MustCompile("One or more added object references already exist")
-					if re.MatchString(o.Error.String()) {
-						return true
-					}
+					return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 				}
 			}
 			return false
 		}
+
 		data := struct {
 			Member string `json:"@odata.id"`
 		}{
@@ -222,11 +219,20 @@ func (c *DirectoryRolesClient) GetMember(ctx context.Context, directoryRoleId, m
 }
 
 // Activate activates a directory role. To read a directory role or update its members, it must first be activated in the tenant using role template id.
-// This method will fail if directory role is already activated in the tenant.
-// We could consider to list all directory roles firstly and check if the directory role exists. Activating it only if it does not exists.
-// Not ideal solution. API does not support retrieving directory role by role template id; it does not support does not support the OData Query Parameters.
+// This method will attempt to detect whether a role is already activated in the tenant, but may fail in some circumstances.
 func (c *DirectoryRolesClient) Activate(ctx context.Context, roleTemplateID string) (*DirectoryRole, int, error) {
 	var status int
+
+	// don't fail if a role is already activated
+	checkRoleAlreadyActivated := func(resp *http.Response, o *odata.OData) bool {
+		if resp.StatusCode == http.StatusBadRequest {
+			if o.Error != nil {
+				return o.Error.Match(odata.ErrorConflictingObjectPresentInDirectory)
+			}
+		}
+		return false
+	}
+
 	data := struct {
 		RoleTemplateID string `json:"roleTemplateId"`
 	}{
@@ -240,6 +246,7 @@ func (c *DirectoryRolesClient) Activate(ctx context.Context, roleTemplateID stri
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusFunc:  checkRoleAlreadyActivated,
 		Uri: Uri{
 			Entity:      "/directoryRoles",
 			HasTenantId: true,

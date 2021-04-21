@@ -88,23 +88,32 @@ func testDirectoryRolesClient_Activate(t *testing.T, c DirectoryRolesClientTest,
 		return nil
 	}
 
-	if dirRole := findDirRoleByRoleTemplateId(*directoryRoles, roleTemplateId); dirRole != nil {
-		// directory role is already active in the tenant; call to activate directory role in the tenant would fail
-		t.Logf("directory role with %s template id is already active in the tenant\n", roleTemplateId)
-		return
+	// attempt to activate directory role if not already present in the directory
+	if dirRole := findDirRoleByRoleTemplateId(*directoryRoles, roleTemplateId); dirRole == nil {
+		t.Log("activating DirectoryRolesClientTest", roleTemplateId)
+		directoryRole, status, err := c.client.Activate(c.connection.Context, roleTemplateId)
+		if err != nil {
+			t.Fatalf("DirectoryRolesClient.Activate(): %v", err)
+		}
+		if status < 200 || status >= 300 {
+			t.Fatalf("DirectoryRolesClient.Activate(): invalid status: %d", status)
+		}
+		if directoryRole == nil {
+			t.Fatal("DirectoryRolesClient.Activate(): directoryRole was nil")
+		}
 	}
 
-	// attempt to activate directory role only if it is not already activated in the tenant
+	// attempt to activate directory role a second time to test the API error handling
 	t.Log("activating DirectoryRolesClientTest", roleTemplateId)
 	directoryRole, status, err := c.client.Activate(c.connection.Context, roleTemplateId)
 	if err != nil {
-		t.Fatalf("DirectoryRolesClient.Activate(): %v", err)
+		t.Fatalf("DirectoryRolesClient.Activate() [attempt 2]: %v", err)
 	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("DirectoryRolesClient.Activate(): invalid status: %d", status)
+	if (status < 200 || status >= 300) && (status < 400 || status >= 500) {
+		t.Fatalf("DirectoryRolesClient.Activate() [attempt 2]: invalid status: %d", status)
 	}
 	if directoryRole == nil {
-		t.Fatal("DirectoryRolesClient.Activate(): directoryRole was nil")
+		t.Fatal("DirectoryRolesClient.Activate() [attempt 2]: directoryRole was nil")
 	}
 	return
 }
