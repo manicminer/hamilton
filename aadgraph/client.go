@@ -8,7 +8,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
@@ -20,6 +22,12 @@ type ApiVersion string
 const (
 	Version16 ApiVersion = "1.6"
 	Version20 ApiVersion = "2.0"
+)
+
+const (
+	defaultInitialBackoff = 5 * time.Second
+	defaultBackoffCap     = 64 * time.Second
+	requestAttempts       = 10
 )
 
 // ValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
@@ -105,52 +113,82 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 		req.Header.Add("User-Agent", c.UserAgent)
 	}
 
-	resp, err := c.httpClient.Do(req)
-	if err != nil {
-		return nil, status, nil, err
+	var resp *http.Response
+	var o *odata.OData
+	var err error
+
+	var backoffPower func(int64, int64) int64
+	backoffPower = func(base, exp int64) int64 {
+		if exp <= 1 {
+			return base
+		}
+		return base * backoffPower(base, exp-1)
 	}
 
-	var o odata.OData
-
-	// Check for json content before looking for odata metadata
-	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
-	if strings.HasPrefix(contentType, "application/json") {
-		// Read the response body and close it
-		respBody, err := ioutil.ReadAll(resp.Body)
-		resp.Body.Close()
-		if err != nil {
-			return nil, status, nil, fmt.Errorf("could not read response body: %s", err)
+	var attempts, backoff, multiplier int64
+	for attempts = 0; attempts < requestAttempts; attempts++ {
+		// sleep after the previous failed attempt
+		if attempts > 0 {
+			time.Sleep(time.Duration(backoff))
 		}
 
-		// Unmarshall odata
-		if err := json.Unmarshal(respBody, &o); err != nil {
+		// default exponential backoff
+		multiplier++
+		backoff = int64(defaultInitialBackoff) * backoffPower(2, multiplier)
+		if cap := int64(defaultBackoffCap); backoff > cap {
+			backoff = cap
+		}
+
+		resp, err = c.httpClient.Do(req)
+		if err != nil {
 			return nil, status, nil, err
 		}
 
-		// Reassign the response body
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
-	}
-
-	status = resp.StatusCode
-	if !containsStatusCode(input.GetValidStatusCodes(), status) {
-		f := input.GetValidStatusFunc()
-		if f != nil && f(resp, &o) {
-			return resp, status, &o, nil
+		o, err = odata.FromResponse(resp)
+		if err != nil {
+			return nil, status, o, err
 		}
 
-		var errText string
-		switch {
-		case o.Error != nil && o.Error.String() != "":
-			errText = fmt.Sprintf("OData error: %s", o.Error)
-		default:
-			defer resp.Body.Close()
-			respBody, _ := ioutil.ReadAll(resp.Body)
-			errText = fmt.Sprintf("response: %s", respBody)
+		status = resp.StatusCode
+		if !containsStatusCode(input.GetValidStatusCodes(), status) {
+			f := input.GetValidStatusFunc()
+			if f != nil && f(resp, o) {
+				return resp, status, o, nil
+			}
+
+			// rate limiting
+			if containsStatusCode([]int{424, 429, 503}, status) {
+				if o.Error != nil && o.Error.Values != nil {
+					for _, v := range *o.Error.Values {
+						if v.Item == "BackoffTime" {
+							if r, err := strconv.ParseFloat(v.Value, 64); err == nil && r > 0 {
+								// BackoffTime detected, use that instead of default backoff
+								backoff = int64(r * float64(time.Second))
+								multiplier = 0
+							}
+							break
+						}
+					}
+				}
+				continue
+			}
+
+			var errText string
+			switch {
+			case o.Error != nil && o.Error.String() != "":
+				errText = fmt.Sprintf("OData error: %s", o.Error)
+			default:
+				defer resp.Body.Close()
+				respBody, _ := ioutil.ReadAll(resp.Body)
+				errText = fmt.Sprintf("response: %s", respBody)
+			}
+			return nil, status, o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
 		}
-		return nil, status, &o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
+
+		break
 	}
 
-	return resp, status, &o, nil
+	return resp, status, o, nil
 }
 
 // containsStatusCode determines whether the returned status code is in the []int of expected status codes.
