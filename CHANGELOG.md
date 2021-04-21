@@ -10,8 +10,13 @@
 
 ⚠️ BREAKING CHANGES:
 
-- `msgraph.KeyCredential{}.Usage` is now a custom type alias
-- `msgraph.ResourceAccess{}.ResourceAccessType` is now a custom type alias
+- `msgraph.Application{}.GroupMembershipClaims` is now a custom type
+- `msgraph.Application{}.SignInAudience` is now a custom type
+- `msgraph.AppRole{}.AllowedMemberTypes` is now a custom type
+- `msgraph.KeyCredential{}.Usage` is now a custom type
+- `msgraph.PermissionScope{}.Type` is now a custom type
+- `msgraph.ResourceAccess{}.Type` is now a custom type
+- `msgraph.ServicePrincipal{}.SignInAudience` is now a custom type
 
 ## 0.11.0 (April 13, 2021)
 
