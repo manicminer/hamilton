@@ -1,3 +1,16 @@
+## 0.12.0 (Unreleased)
+
+- Restore the retry mechanism previously introduced in v0.8.0
+- Use the `odata` package for parsing common error messages
+- Handle some additional errors, mainly for `ioutil.Read*()`
+- Add more `ValidStatusFunc`s for gracefully handling existing owner and member refs
+- Remove an unused struct field `auth.ClientCredentialsConfig{}.Expires`
+
+⚠️ BREAKING CHANGES:
+
+- `msgraph.KeyCredential{}.Usage` is now a custom type alias
+- `msgraph.ResourceAccess{}.ResourceAccessType` is now a custom type alias
+
 ## 0.11.0 (April 13, 2021)
 
 - Support for Conditional Access Policies
