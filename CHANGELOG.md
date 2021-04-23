@@ -1,4 +1,4 @@
-## 0.12.0 (Unreleased)
+## 0.12.0 (April 23, 2021)
 
 - Support for activating Directory Roles ([#31](https://github.com/manicminer/hamilton/pull/31))
 - Support for App Role Assignments ([#32](https://github.com/manicminer/hamilton/pull/32))
