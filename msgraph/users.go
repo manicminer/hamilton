@@ -174,6 +174,7 @@ func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, filte
 }
 
 // SendMail sends message specified in the request body.
+// TODO: Needs testing with an O365 user principal
 func (c *UsersClient) Sendmail(ctx context.Context, id string, message MailMessage) (int, error) {
 	var status int
 	body, err := json.Marshal(message)
