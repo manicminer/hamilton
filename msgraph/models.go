@@ -886,3 +886,29 @@ type AppRoleAssignment struct {
 	ResourceDisplayName  *string    `json:"resourceDisplayName,omitempty"`
 	ResourceId           *string    `json:"resourceId,omitempty"`
 }
+
+type MailMessage struct {
+	Message *Message `json:"message,omitempty"`
+}
+
+type Message struct {
+	ID            *string      `json:"id,omitempty"`
+	Subject       *string      `json:"subject,omitempty"`
+	Body          *ItemBody    `json:"body,omitempty"`
+	From          *Recipient   `json:"from,omitempty"`
+	ToRecipients  *[]Recipient `json:"toRecipients,omitempty"`
+	CcRecipients  *[]Recipient `json:"ccRecipients,omitempty"`
+	BccRecipients *[]Recipient `json:"bccRecipients,omitempty"`
+}
+
+type ItemBody struct {
+	Content     *string   `json:"content,omitempty"`
+	ContentType *BodyType `json:"contentType,omitempty"`
+}
+
+type BodyType string
+
+const (
+	BodyTypeText BodyType = "text"
+	BodyTypeHtml BodyType = "html"
+)
