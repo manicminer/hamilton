@@ -71,6 +71,7 @@ func (c *MeClient) GetProfile(ctx context.Context) (*Me, int, error) {
 }
 
 // SendMail sends message specified in the request body.
+// TODO: Needs testing with an O365 user principal
 func (c *MeClient) Sendmail(ctx context.Context, message MailMessage) (int, error) {
 	var status int
 	body, err := json.Marshal(message)
