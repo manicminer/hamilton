@@ -70,7 +70,7 @@ func (a Application) MarshalJSON() ([]byte, error) {
 	}
 	type application Application
 	return json.Marshal(&struct {
-		GroupMembershipClaims *string `json:"groupMembershipClaims"`
+		GroupMembershipClaims *string `json:"groupMembershipClaims,omitempty"`
 		*application
 	}{
 		GroupMembershipClaims: groupMembershipClaims,
