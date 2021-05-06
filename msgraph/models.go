@@ -159,6 +159,31 @@ func (a *Application) AppendAppRole(role AppRole) error {
 	return nil
 }
 
+// AppendAppRole adds a new AppRole to a Service Principal, checking to see if it already exists.
+func (s *ServicePrincipal) AppendAppRole(role AppRole) error {
+	if role.ID == nil {
+		return goerrors.New("ID of new role is nil")
+	}
+
+	cap := 1
+	if s.AppRoles != nil {
+		cap += len(*s.AppRoles)
+	}
+
+	newRoles := make([]AppRole, 1, cap)
+	newRoles[0] = role
+
+	for _, v := range *s.AppRoles {
+		if v.ID != nil && *v.ID == *role.ID {
+			return &errors.AlreadyExistsError{Obj: "AppRole", Id: *role.ID}
+		}
+		newRoles = append(newRoles, v)
+	}
+
+	s.AppRoles = &newRoles
+	return nil
+}
+
 // RemoveAppRole removes an AppRole from an Application.
 func (a *Application) RemoveAppRole(role AppRole) error {
 	if role.ID == nil {
@@ -184,6 +209,31 @@ func (a *Application) RemoveAppRole(role AppRole) error {
 	return nil
 }
 
+// RemoveAppRole removes an AppRole from a ServicePrincipal.
+func (s *ServicePrincipal) RemoveAppRole(role AppRole) error {
+	if role.ID == nil {
+		return goerrors.New("ID of role is nil")
+	}
+
+	if s.AppRoles == nil {
+		return goerrors.New("no roles to remove")
+	}
+
+	appRoles := make([]AppRole, 0, len(*s.AppRoles))
+	for _, v := range *s.AppRoles {
+		if v.ID == nil || *v.ID != *role.ID {
+			appRoles = append(appRoles, v)
+		}
+	}
+
+	if len(appRoles) == len(*s.AppRoles) {
+		return goerrors.New("could not find role to remove")
+	}
+
+	s.AppRoles = &appRoles
+	return nil
+}
+
 // UpdateAppRole amends an existing AppRole defined in an Application.
 func (a *Application) UpdateAppRole(role AppRole) error {
 	if role.ID == nil {
@@ -203,6 +253,28 @@ func (a *Application) UpdateAppRole(role AppRole) error {
 	}
 
 	a.AppRoles = &appRoles
+	return nil
+}
+
+// UpdateAppRole amends an existing AppRole defined in a ServicePrincipal.
+func (s *ServicePrincipal) UpdateAppRole(role AppRole) error {
+	if role.ID == nil {
+		return goerrors.New("ID of role is nil")
+	}
+
+	if s.AppRoles == nil {
+		return goerrors.New("no roles to update")
+	}
+
+	appRoles := *s.AppRoles
+	for i, v := range appRoles {
+		if v.ID != nil && *v.ID == *role.ID {
+			appRoles[i] = role
+			break
+		}
+	}
+
+	s.AppRoles = &appRoles
 	return nil
 }
 
