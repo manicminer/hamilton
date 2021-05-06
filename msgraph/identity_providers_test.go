@@ -42,6 +42,8 @@ func TestIdentityProvidersClientClient(t *testing.T) {
 	patchIdentityProvider.ClientSecret = utils.StringPtr("1111111111111")
 	testIdentityProvidersClient_Update(t, c, *patchIdentityProvider)
 
+	testIdentityProvidersClient_List(t, c)
+
 	testIdentityProvidersClient_Delete(t, c, *identityProvider.ID)
 }
 
@@ -120,6 +122,4 @@ func testIdentityProvidersClient_ListAvailableProviderTypes(t *testing.T, c Iden
 	if len(*availableIdentityProviders) == 0 {
 		t.Fatal("IdentityProvidersClient.ListAvailableProviderTypes(): expected availableIdentityProviders at least one available provider")
 	}
-
-	return
 }
