@@ -174,14 +174,14 @@ func testApplicationsClient_AddPassword(t *testing.T, c ApplicationsClientTest, 
 		DisplayName: utils.StringPtr("test password"),
 	}
 	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
-	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
-		t.Fatalf("ApplicationsClient.AddPassword(): nil or empty secretText returned by API")
-	}
 	if err != nil {
 		t.Fatalf("ApplicationsClient.AddPassword(): %v", err)
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.AddPassword(): invalid status: %d", status)
+	}
+	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
+		t.Fatalf("ApplicationsClient.AddPassword(): nil or empty secretText returned by API")
 	}
 	return newPwd
 }

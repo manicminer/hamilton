@@ -43,6 +43,8 @@ func TestServicePrincipalsClient(t *testing.T) {
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
 	testServicePrincipalsClient_Update(t, c, *sp)
+	pwd := testServicePrincipalsClient_AddPassword(t, c, sp)
+	testServicePrincipalsClient_RemovePassword(t, c, sp, pwd)
 	testServicePrincipalsClient_List(t, c)
 
 	g := GroupsClientTest{
@@ -159,4 +161,29 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePri
 	}
 
 	return
+}
+
+func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
+	pwd := msgraph.PasswordCredential{}
+	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): invalid status: %d", status)
+	}
+	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): nil or empty secretText returned by API")
+	}
+	return newPwd
+}
+
+func testServicePrincipalsClient_RemovePassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal, p *msgraph.PasswordCredential) {
+	status, err := c.client.RemovePassword(c.connection.Context, *a.ID, *p.KeyId)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.RemovePassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.RemovePassword(): invalid status: %d", status)
+	}
 }
