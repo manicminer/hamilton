@@ -1,6 +1,7 @@
 ## 0.13.0 (Unreleased)
 
 - Support for sending emails from the authenticated user principal or a specified user ([#37](https://github.com/manicminer/hamilton/pull/37))
+- Support for the ownedObjects endpoint for service principals ([#38](https://github.com/manicminer/hamilton/pull/38))
 
 ## 0.12.0 (April 23, 2021)
 
