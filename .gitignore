@@ -1,3 +1,4 @@
 example/example
 vendor/
 .idea
+*.pem
