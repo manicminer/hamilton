@@ -96,7 +96,10 @@ func testIdentityProvidersClient_Get(t *testing.T, c IdentityProvidersClientTest
 	if provider == nil {
 		t.Fatal("IdentityProvidersClient.Get(): provider was nil")
 	}
-	return
+	if provider.ID == nil {
+		t.Fatal("IdentityProvidersClient.Create(): provider.ID was nil")
+	}
+		return
 }
 
 func testIdentityProvidersClient_Delete(t *testing.T, c IdentityProvidersClientTest, id string) {
