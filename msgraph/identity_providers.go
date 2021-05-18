@@ -103,6 +103,9 @@ func (c *IdentityProvidersClient) Get(ctx context.Context, id string) (*Identity
 // Update amends an existing IdentityProvider.
 func (c *IdentityProvidersClient) Update(ctx context.Context, provider IdentityProvider) (int, error) {
 	var status int
+	if provider.ID == nil {
+		return status, errors.New("IdentityProvidersClient.Update(): cannot update identity provider with nil ID")
+	}
 	body, err := json.Marshal(provider)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
