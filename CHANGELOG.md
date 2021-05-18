@@ -6,6 +6,7 @@
 - Support for the [ownedObjects endpoint](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list-ownedobjects?view=graph-rest-beta&tabs=http) for service principals ([#38](https://github.com/manicminer/hamilton/pull/38))
 - Support for managing [identity providers](https://docs.microsoft.com/en-us/graph/api/resources/identityproviderbase?view=graph-rest-beta) ([#41](https://github.com/manicminer/hamilton/pull/41))
 - Support [adding](https://docs.microsoft.com/en-us/graph/api/application-addpassword?view=graph-rest-beta&tabs=http) and [removing](https://docs.microsoft.com/en-us/graph/api/application-removepassword?view=graph-rest-beta&tabs=http) application passwords ([#44](https://github.com/manicminer/hamilton/pull/44))
+- Support [adding](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-addpassword?view=graph-rest-beta&tabs=http) and [removing](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-removepassword?view=graph-rest-beta&tabs=http) service principal passwords ([#45](https://github.com/manicminer/hamilton/pull/45))
 
 ## 0.12.0 (April 23, 2021)
 
