@@ -1,4 +1,6 @@
-## 0.13.0 (Unreleased)
+## 0.14.0 (Unreleased)
+
+## 0.13.0 (May 18, 2021)
 
 - Bug fix: Don't clear `GroupMembershipClaims` when nil for an Application ([#40](https://github.com/manicminer/hamilton/pull/40))
 - Bug fix: Handle empty OData error collections ([#43](https://github.com/manicminer/hamilton/pull/43))
