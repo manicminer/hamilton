@@ -15,7 +15,7 @@ type IdentityProvidersClientTest struct {
 	randomString string
 }
 
-func TestIdentityProvidersClientClient(t *testing.T) {
+func TestIdentityProvidersClient(t *testing.T) {
 	rs := test.RandomString()
 	c := IdentityProvidersClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
