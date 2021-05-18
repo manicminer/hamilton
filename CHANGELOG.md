@@ -1,7 +1,8 @@
 ## 0.13.0 (Unreleased)
 
 - Support for sending emails from the authenticated user principal or a specified user ([#37](https://github.com/manicminer/hamilton/pull/37))
-- Support for the ownedObjects endpoint for service principals ([#38](https://github.com/manicminer/hamilton/pull/38))
+- Support for the [ownedObjects endpoint](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list-ownedobjects?view=graph-rest-beta&tabs=http) for service principals ([#38](https://github.com/manicminer/hamilton/pull/38))
+- Support for managing [identity providers](https://docs.microsoft.com/en-us/graph/api/resources/identityproviderbase?view=graph-rest-beta) ([#41](https://github.com/manicminer/hamilton/pull/41))
 
 ## 0.12.0 (April 23, 2021)
 
