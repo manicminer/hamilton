@@ -142,6 +142,41 @@ func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 	return status, nil
 }
 
+// ListDeleted retrieves a list of recently deleted users, optionally filtered using OData.
+func (c *UsersClient) ListDeleted(ctx context.Context, filter string) (*[]string, int, error) {
+	params := url.Values{}
+	if filter != "" {
+		params.Add("$filter", filter)
+	}
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      "/directory/deleteditems/microsoft.graph.user",
+			Params:      params,
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		DeletedUsers []struct {
+			Type string `json:"@odata.type"`
+			Id   string `json:"id"`
+		} `json:"value"`
+	}
+	if err = json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	ret := make([]string, len(data.DeletedUsers))
+	for i, v := range data.DeletedUsers {
+		ret[i] = v.Id
+	}
+	return &ret, status, nil
+}
+
 // ListGroupMemberships returns a list of Groups the user is member of, optionally filtered using OData.
 func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, filter string) (*[]Group, int, error) {
 	params := url.Values{}

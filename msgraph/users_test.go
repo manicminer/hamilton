@@ -71,6 +71,7 @@ func TestUsersClient(t *testing.T) {
 	testGroupsClient_Delete(t, g, *groupChild.ID)
 
 	testUsersClient_Delete(t, c, *user.ID)
+	testUsersClient_ListDeleted(t, c)
 }
 
 func testUsersClient_Create(t *testing.T, c UsersClientTest, u msgraph.User) (user *msgraph.User) {
@@ -149,5 +150,25 @@ func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id st
 		t.Fatalf("UsersClient.ListGroupMemberships(): expected groups length 2. was: %d", len(*groups))
 	}
 
+	return
+}
+
+func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest) (deletedUsers *[]string) {
+	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, "")
+	if err != nil {
+		t.Fatalf("UsersClient.ListDeleted(): %v", err)
+	}
+
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.ListDeleted(): invalid status: %d", status)
+	}
+
+	if deletedUsers == nil {
+		t.Fatal("UsersClient.ListDeleted(): deletedUsers was nil")
+	}
+
+	if len(*deletedUsers) == 0 {
+		t.Fatal("UsersClient.ListDeleted(): expected at least 1 deleted user. was: 0")
+	}
 	return
 }
