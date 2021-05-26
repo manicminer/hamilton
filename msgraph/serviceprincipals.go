@@ -337,7 +337,11 @@ func (c *ServicePrincipalsClient) ListGroupMemberships(ctx context.Context, id s
 // AddPassword appends a new password credential to a Service Principal.
 func (c *ServicePrincipalsClient) AddPassword(ctx context.Context, servicePrincipalId string, passwordCredential PasswordCredential) (*PasswordCredential, int, error) {
 	var status int
-	body, err := json.Marshal(passwordCredential)
+	body, err := json.Marshal(struct {
+		PwdCredential PasswordCredential `json:"passwordCredential"`
+	}{
+		PwdCredential: passwordCredential,
+	})
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
