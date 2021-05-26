@@ -7,6 +7,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // UsersClient performs operations on Users.
@@ -129,13 +132,34 @@ func (c *UsersClient) Update(ctx context.Context, user User) (int, error) {
 
 // Delete removes a User.
 func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
-	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+	input := DeleteHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/users/%s", id),
 			HasTenantId: true,
 		},
-	})
+	}
+
+	retryDeletion := func(resp *http.Response, o *odata.OData) bool {
+		retries := 3
+		backoff := 2 * time.Second
+
+		if resp.StatusCode == http.StatusNotFound {
+			for retry := 0; retry < retries; retry++ {
+				time.Sleep(backoff)
+				_, _, _, err := c.BaseClient.Delete(ctx, input)
+				if err == nil {
+					return true
+				}
+			}
+		}
+		return false
+	}
+
+	inputWithRetry := input
+	inputWithRetry.ValidStatusFunc = retryDeletion
+
+	_, status, _, err := c.BaseClient.Delete(ctx, inputWithRetry)
 	if err != nil {
 		return status, fmt.Errorf("UsersClient.BaseClient.Delete(): %v", err)
 	}
