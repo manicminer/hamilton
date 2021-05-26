@@ -183,6 +183,9 @@ func testApplicationsClient_AddPassword(t *testing.T, c ApplicationsClientTest, 
 	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
 		t.Fatalf("ApplicationsClient.AddPassword(): nil or empty secretText returned by API")
 	}
+	if *newPwd.DisplayName != *pwd.DisplayName {
+		t.Fatalf("ApplicationsClient.AddPassword(): password names do not match")
+	}
 	return newPwd
 }
 

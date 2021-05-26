@@ -183,7 +183,9 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePri
 }
 
 func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
-	pwd := msgraph.PasswordCredential{}
+	pwd := msgraph.PasswordCredential{
+		DisplayName: utils.StringPtr("test password"),
+	}
 	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
@@ -193,6 +195,9 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsCl
 	}
 	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): nil or empty secretText returned by API")
+	}
+	if *newPwd.DisplayName != *pwd.DisplayName {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): password names do not match")
 	}
 	return newPwd
 }
