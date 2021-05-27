@@ -148,6 +148,34 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 	return status, nil
 }
 
+// ListDeleted retrieves a list of recently deleted applications, optionally filtered using OData.
+func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[]Application, int, error) {
+	params := url.Values{}
+	if filter != "" {
+		params.Add("$filter", filter)
+	}
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      "/directory/deleteditems/microsoft.graph.application",
+			Params:      params,
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		DeletedApps []Application `json:"value"`
+	}
+	if err = json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	return &data.DeletedApps, status, nil
+}
+
 // AddPassword appends a new password credential to an Application.
 func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId string, passwordCredential PasswordCredential) (*PasswordCredential, int, error) {
 	var status int
