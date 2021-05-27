@@ -3,6 +3,7 @@
 - Bug fix: Correctly marshal the request body for `ApplicationsClient{}.AddPassword()` and `ServicePrincipalsClient{}.AddPassword()` ([#49](https://github.com/manicminer/hamilton/pull/49))
 - Bug fix: Resolve a potential race condition where a cached access token might be refreshed multiple times unnecessarily ([#46](https://github.com/manicminer/hamilton/pull/46))
 - Support for [app role assignments](https://docs.microsoft.com/en-us/graph/api/resources/approleassignment?view=graph-rest-1.0) using the [appRolesAssignedTo](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-list-approleassignedto?view=graph-rest-1.0&tabs=http) and [appRoleAssignments](https://docs.microsoft.com/en-us/graph/api/user-list-approleassignments?view=graph-rest-1.0&tabs=http) endpoints ([#39](https://github.com/manicminer/hamilton/pull/39))
+- Support for listing [deleted applications, groups and users](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-list?view=graph-rest-beta) ([#48](https://github.com/manicminer/hamilton/pull/48))
 
 ## 0.13.0 (May 18, 2021)
 
