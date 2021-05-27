@@ -116,7 +116,7 @@ func (c *UsersClient) GetDeleted(ctx context.Context, id string) (*User, int, er
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("UsersClient.BaseClient.GetDeleted(): %v", err)
+		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
 	respBody, err := ioutil.ReadAll(resp.Body)
