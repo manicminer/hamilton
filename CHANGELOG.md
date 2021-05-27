@@ -1,5 +1,7 @@
 ## 0.14.0 (Unreleased)
 
+- Bug fix: Resolve a potential race condition where a cached access token might be refreshed multiple times unnecessarily [GH-46]
+
 ## 0.13.0 (May 18, 2021)
 
 - Bug fix: Don't clear `GroupMembershipClaims` when nil for an Application ([#40](https://github.com/manicminer/hamilton/pull/40))
