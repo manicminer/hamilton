@@ -140,6 +140,7 @@ func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 		},
 	}
 
+	// TODO: Add a proper retry mechanism in the perforRequest function
 	retryDeletion := func(resp *http.Response, o *odata.OData) bool {
 		retries := 3
 		backoff := 2 * time.Second
@@ -147,8 +148,8 @@ func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 		if resp.StatusCode == http.StatusNotFound {
 			for retry := 0; retry < retries; retry++ {
 				time.Sleep(backoff)
-				_, _, _, err := c.BaseClient.Delete(ctx, input)
-				if err == nil {
+				_, status, _, err := c.BaseClient.Delete(ctx, input)
+				if err == nil && containsStatusCode(input.ValidStatusCodes, status) {
 					return true
 				}
 			}
