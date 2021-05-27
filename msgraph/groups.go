@@ -145,6 +145,7 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 }
 
 // ListDeleted retrieves a list of recently deleted O365 groups, optionally filtered using OData.
+// TODO: add test coverage once API supports creating O365 groups
 func (c *GroupsClient) ListDeleted(ctx context.Context, filter string) (*[]Group, int, error) {
 	params := url.Values{}
 	if filter != "" {
