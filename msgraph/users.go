@@ -106,6 +106,30 @@ func (c *UsersClient) Get(ctx context.Context, id string) (*User, int, error) {
 	return &user, status, nil
 }
 
+// GetDeleted retrieves a deleted User.
+func (c *UsersClient) GetDeleted(ctx context.Context, id string) (*User, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UsersClient.BaseClient.GetDeleted(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+	var user User
+	if err := json.Unmarshal(respBody, &user); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &user, status, nil
+}
+
 // Update amends an existing User.
 func (c *UsersClient) Update(ctx context.Context, user User) (int, error) {
 	var status int
