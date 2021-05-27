@@ -70,7 +70,7 @@ func (a Application) MarshalJSON() ([]byte, error) {
 	}
 	type application Application
 	return json.Marshal(&struct {
-		GroupMembershipClaims *string `json:"groupMembershipClaims"`
+		GroupMembershipClaims *string `json:"groupMembershipClaims,omitempty"`
 		*application
 	}{
 		GroupMembershipClaims: groupMembershipClaims,
@@ -602,10 +602,17 @@ type KeyCredential struct {
 	EndDateTime         *time.Time         `json:"endDateTime,omitempty"`
 	KeyId               *string            `json:"keyId,omitempty"`
 	StartDateTime       *time.Time         `json:"startDateTime,omitempty"`
-	Type                *string            `json:"type,omitempty"`
-	Usage               KeyCredentialUsage `json:"usage,omitempty"`
+	Type                KeyCredentialType  `json:"type"`
+	Usage               KeyCredentialUsage `json:"usage"`
 	Key                 *string            `json:"key,omitempty"`
 }
+
+type KeyCredentialType string
+
+const (
+	KeyCredentialTypeAsymmetricX509Cert  KeyCredentialType = "AsymmetricX509Cert"
+	KeyCredentialTypeX509CertAndPassword KeyCredentialType = "X509CertAndPassword"
+)
 
 type KeyCredentialUsage string
 
@@ -885,4 +892,39 @@ type AppRoleAssignment struct {
 	PrincipalType        *string    `json:"principalType,omitempty"`
 	ResourceDisplayName  *string    `json:"resourceDisplayName,omitempty"`
 	ResourceId           *string    `json:"resourceId,omitempty"`
+}
+
+type MailMessage struct {
+	Message *Message `json:"message,omitempty"`
+}
+
+type Message struct {
+	ID            *string      `json:"id,omitempty"`
+	Subject       *string      `json:"subject,omitempty"`
+	Body          *ItemBody    `json:"body,omitempty"`
+	From          *Recipient   `json:"from,omitempty"`
+	ToRecipients  *[]Recipient `json:"toRecipients,omitempty"`
+	CcRecipients  *[]Recipient `json:"ccRecipients,omitempty"`
+	BccRecipients *[]Recipient `json:"bccRecipients,omitempty"`
+}
+
+type ItemBody struct {
+	Content     *string   `json:"content,omitempty"`
+	ContentType *BodyType `json:"contentType,omitempty"`
+}
+
+type BodyType string
+
+const (
+	BodyTypeText BodyType = "text"
+	BodyTypeHtml BodyType = "html"
+)
+
+type IdentityProvider struct {
+	ODataType    *string `json:"@odata.type,omitempty"`
+	ID           *string `json:"id,omitempty"`
+	ClientId     *string `json:"clientId,omitempty"`
+	ClientSecret *string `json:"clientSecret,omitempty"`
+	Type         *string `json:"identityProviderType,omitempty"`
+	Name         *string `json:"displayName,omitempty"`
 }

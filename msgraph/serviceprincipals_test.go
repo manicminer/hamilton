@@ -42,9 +42,25 @@ func TestServicePrincipalsClient(t *testing.T) {
 		AppId:          app.AppId,
 		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
 	})
+
+	appChild := testApplicationsClient_Create(t, a, msgraph.Application{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-child%s", a.randomString)),
+	})
+	spChild := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
+		AccountEnabled: utils.BoolPtr(true),
+		AppId:          appChild.AppId,
+		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-child%s", c.randomString)),
+	})
+
+	spChild.AppendOwner(string(c.client.BaseClient.Endpoint), string(c.client.BaseClient.ApiVersion), *sp.ID)
+	testServicePrincipalsClient_AddOwners(t, c, spChild)
+	testServicePrincipalsClient_ListOwners(t, c, *spChild.ID, []string{*sp.ID})
+	testServicePrincipalsClient_GetOwner(t, c, *spChild.ID, *sp.ID)
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
 	testServicePrincipalsClient_Update(t, c, *sp)
+	pwd := testServicePrincipalsClient_AddPassword(t, c, sp)
+	testServicePrincipalsClient_RemovePassword(t, c, sp, pwd)
 	testServicePrincipalsClient_List(t, c)
 
 	g := GroupsClientTest{
@@ -75,12 +91,17 @@ func TestServicePrincipalsClient(t *testing.T) {
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
+	testServicePrincipalsClient_ListOwnedObjects(t, c, *sp.ID)
+
+	testServicePrincipalsClient_RemoveOwners(t, c, *spChild.ID, []string{*sp.ID})
 	testGroupsClient_Delete(t, g, *groupParent.ID)
 	testGroupsClient_Delete(t, g, *groupChild.ID)
 
 	testServicePrincipalsClient_Delete(t, c, *sp.ID)
+	testServicePrincipalsClient_Delete(t, c, *spChild.ID)
 
 	testApplicationsClient_Delete(t, a, *app.ID)
+	testApplicationsClient_Delete(t, a, *appChild.ID)
 }
 
 func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
@@ -253,6 +274,118 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePri
 	}
 
 	return
+}
+
+func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
+	pwd := msgraph.PasswordCredential{
+		DisplayName: utils.StringPtr("test password"),
+	}
+	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): invalid status: %d", status)
+	}
+	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): nil or empty secretText returned by API")
+	}
+	if *newPwd.DisplayName != *pwd.DisplayName {
+		t.Fatalf("ServicePrincipalsClient.AddPassword(): password names do not match")
+	}
+	return newPwd
+}
+
+func testServicePrincipalsClient_RemovePassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal, p *msgraph.PasswordCredential) {
+	status, err := c.client.RemovePassword(c.connection.Context, *a.ID, *p.KeyId)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.RemovePassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.RemovePassword(): invalid status: %d", status)
+	}
+}
+
+func testServicePrincipalsClient_AddOwners(t *testing.T, c ServicePrincipalsClientTest, sp *msgraph.ServicePrincipal) {
+	status, err := c.client.AddOwners(c.connection.Context, sp)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AddOwners(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AddOwners(): invalid status: %d", status)
+	}
+}
+
+func testServicePrincipalsClient_ListOwnedObjects(t *testing.T, c ServicePrincipalsClientTest, id string) (ownedObjects *[]string) {
+	ownedObjects, _, err := c.client.ListOwnedObjects(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.ListOwnedObjects(): %v", err)
+	}
+
+	if ownedObjects == nil {
+		t.Fatal("ServicePrincipalsClient.ListOwnedObjects(): ownedObjects was nil")
+	}
+
+	if len(*ownedObjects) != 1 {
+		t.Fatalf("ServicePrincipalsClient.ListOwnedObjects(): expected ownedObjects length 1. was: %d", len(*ownedObjects))
+	}
+	return
+}
+
+func testServicePrincipalsClient_ListOwners(t *testing.T, c ServicePrincipalsClientTest, id string, expected []string) (owners *[]string) {
+	owners, status, err := c.client.ListOwners(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.ListOwners(): %v", err)
+	}
+
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.ListOwners(): invalid status: %d", status)
+	}
+
+	ownersExpected := len(expected)
+
+	if len(*owners) < ownersExpected {
+		t.Fatalf("ServicePrincipalsClient.ListOwners(): expected at least %d owner. has: %d", ownersExpected, len(*owners))
+	}
+
+	var ownersFound int
+
+	for _, e := range expected {
+		for _, o := range *owners {
+			if e == o {
+				ownersFound++
+				continue
+			}
+		}
+	}
+
+	if ownersFound < ownersExpected {
+		t.Fatalf("ServicePrincipalsClient.ListOwners(): expected %d matching owners. found: %d", ownersExpected, ownersFound)
+	}
+	return
+}
+
+func testServicePrincipalsClient_GetOwner(t *testing.T, c ServicePrincipalsClientTest, spId, ownerId string) (owner *string) {
+	owner, status, err := c.client.GetOwner(c.connection.Context, spId, ownerId)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.GetOwner(): %v", err)
+	}
+
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.GetOwner(): invalid status: %d", status)
+	}
+
+	if owner == nil {
+		t.Fatalf("ServicePrincipalsClient.GetOwner(): owner was nil")
+	}
+	return
+}
+
+func testServicePrincipalsClient_RemoveOwners(t *testing.T, c ServicePrincipalsClientTest, spId string, ownerIds []string) {
+	_, err := c.client.RemoveOwners(c.connection.Context, spId, &ownerIds)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.RemoveOwners(): %v", err)
+	}
 }
 
 func testServicePrincipalsClient_AssignAppRole(t *testing.T, c ServicePrincipalsClientTest, principalId, resourceId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {

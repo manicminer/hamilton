@@ -35,6 +35,8 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_RemoveOwners(t, c, *app.ID, owners)
 	app.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, (*owners)[0])
 	testApplicationsClient_AddOwners(t, c, app)
+	pwd := testApplicationsClient_AddPassword(t, c, app)
+	testApplicationsClient_RemovePassword(t, c, app, pwd)
 	testApplicationsClient_List(t, c)
 	testApplicationsClient_Delete(t, c, *app.ID)
 }
@@ -164,5 +166,35 @@ func testApplicationsClient_RemoveOwners(t *testing.T, c ApplicationsClientTest,
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.RemoveOwners(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_AddPassword(t *testing.T, c ApplicationsClientTest, a *msgraph.Application) *msgraph.PasswordCredential {
+	pwd := msgraph.PasswordCredential{
+		DisplayName: utils.StringPtr("test password"),
+	}
+	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.AddPassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.AddPassword(): invalid status: %d", status)
+	}
+	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
+		t.Fatalf("ApplicationsClient.AddPassword(): nil or empty secretText returned by API")
+	}
+	if *newPwd.DisplayName != *pwd.DisplayName {
+		t.Fatalf("ApplicationsClient.AddPassword(): password names do not match")
+	}
+	return newPwd
+}
+
+func testApplicationsClient_RemovePassword(t *testing.T, c ApplicationsClientTest, a *msgraph.Application, p *msgraph.PasswordCredential) {
+	status, err := c.client.RemovePassword(c.connection.Context, *a.ID, *p.KeyId)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.RemovePassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.RemovePassword(): invalid status: %d", status)
 	}
 }

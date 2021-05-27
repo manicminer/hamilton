@@ -334,7 +334,98 @@ func (c *ServicePrincipalsClient) ListGroupMemberships(ctx context.Context, id s
 	return &data.Groups, status, nil
 }
 
-// ListAppRoleAssignment retrieves a list of appRoleAssignment that users, groups, or client service principals have been granted for the given resource service principal.
+// AddPassword appends a new password credential to a Service Principal.
+func (c *ServicePrincipalsClient) AddPassword(ctx context.Context, servicePrincipalId string, passwordCredential PasswordCredential) (*PasswordCredential, int, error) {
+	var status int
+	body, err := json.Marshal(struct {
+		PwdCredential PasswordCredential `json:"passwordCredential"`
+	}{
+		PwdCredential: passwordCredential,
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/addPassword", servicePrincipalId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Post(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+	var newPasswordCredential PasswordCredential
+	if err := json.Unmarshal(respBody, &newPasswordCredential); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &newPasswordCredential, status, nil
+}
+
+// RemovePassword removes a password credential from a Service Principal.
+func (c *ServicePrincipalsClient) RemovePassword(ctx context.Context, servicePrincipalId string, keyId string) (int, error) {
+	var status int
+	body, err := json.Marshal(struct {
+		KeyId string `json:"keyId"`
+	}{
+		KeyId: keyId,
+	})
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusOK, http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/removePassword", servicePrincipalId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Post(): %v", err)
+	}
+	return status, nil
+}
+
+// ListOwnedObjects retrieves the owned objects of the specified Service Principal.
+// id is the object ID of the service principal.
+func (c *ServicePrincipalsClient) ListOwnedObjects(ctx context.Context, id string) (*[]string, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/ownedObjects", id),
+			Params:      url.Values{"$select": []string{"id"}},
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+	defer resp.Body.Close()
+	respBody, _ := ioutil.ReadAll(resp.Body)
+	var data struct {
+		OwnedObjects []struct {
+			Type string `json:"@odata.type"`
+			Id   string `json:"id"`
+		} `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, err
+	}
+	ret := make([]string, len(data.OwnedObjects))
+	for i, v := range data.OwnedObjects {
+		ret[i] = v.Id
+	}
+	return &ret, status, nil
+}
+
+// ListAppRoleAssignments retrieves a list of appRoleAssignment that users, groups, or client service principals have been granted for the given resource service principal.
 func (c *ServicePrincipalsClient) ListAppRoleAssignments(ctx context.Context, resourceId string) (*[]AppRoleAssignment, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -375,7 +466,7 @@ func (c *ServicePrincipalsClient) RemoveAppRoleAssignment(ctx context.Context, r
 	return status, nil
 }
 
-// AppRoleAssignedTo assigns an app role for a resource service principal, to a user, group, or client service principal.
+// AssignAppRoleForResource assigns an app role for a resource service principal, to a user, group, or client service principal.
 // To grant an app role assignment, you need three identifiers:
 //
 // principalId: The id of the user, group or client servicePrincipal to which you are assigning the app role.
