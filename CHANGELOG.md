@@ -1,5 +1,9 @@
 ## 0.15.0 (Unreleased)
 
+## 0.14.1 (May 28, 2021)
+
+- Bug fix: Restore a missing field `OnPremisesImmutableId` in the User model ([#53](https://github.com/manicminer/hamilton/pull/53))
+
 ## 0.14.0 (May 27, 2021)
 
 - Bug fix: Correctly marshal the request body for `ApplicationsClient{}.AddPassword()` and `ServicePrincipalsClient{}.AddPassword()` ([#49](https://github.com/manicminer/hamilton/pull/49))
