@@ -149,7 +149,7 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 }
 
 // ListDeleted retrieves a list of recently deleted applications, optionally filtered using OData.
-func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[]string, int, error) {
+func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[]Application, int, error) {
 	params := url.Values{}
 	if filter != "" {
 		params.Add("$filter", filter)
@@ -168,19 +168,12 @@ func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
 	var data struct {
-		DeletedApps []struct {
-			Type string `json:"@odata.type"`
-			Id   string `json:"id"`
-		} `json:"value"`
+		DeletedApps []Application `json:"value"`
 	}
 	if err = json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, err
 	}
-	ret := make([]string, len(data.DeletedApps))
-	for i, v := range data.DeletedApps {
-		ret[i] = v.Id
-	}
-	return &ret, status, nil
+	return &data.DeletedApps, status, nil
 }
 
 // AddPassword appends a new password credential to an Application.

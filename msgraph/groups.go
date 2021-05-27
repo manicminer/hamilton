@@ -145,7 +145,7 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 }
 
 // ListDeleted retrieves a list of recently deleted O365 groups, optionally filtered using OData.
-func (c *GroupsClient) ListDeleted(ctx context.Context, filter string) (*[]string, int, error) {
+func (c *GroupsClient) ListDeleted(ctx context.Context, filter string) (*[]Group, int, error) {
 	params := url.Values{}
 	if filter != "" {
 		params.Add("$filter", filter)
@@ -164,19 +164,12 @@ func (c *GroupsClient) ListDeleted(ctx context.Context, filter string) (*[]strin
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
 	var data struct {
-		DeletedGroups []struct {
-			Type string `json:"@odata.type"`
-			Id   string `json:"id"`
-		} `json:"value"`
+		DeletedGroups []Group `json:"value"`
 	}
 	if err = json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, err
 	}
-	ret := make([]string, len(data.DeletedGroups))
-	for i, v := range data.DeletedGroups {
-		ret[i] = v.Id
-	}
-	return &ret, status, nil
+	return &data.DeletedGroups, status, nil
 }
 
 // ListMembers retrieves the members of the specified Group.
