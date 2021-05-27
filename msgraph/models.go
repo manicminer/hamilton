@@ -856,6 +856,7 @@ type User struct {
 	OfficeLocation                  *string    `json:"officeLocation,omitempty"`
 	OnPremisesDistinguishedName     *string    `json:"onPremisesDistinguishedName,omitempty"`
 	OnPremisesDomainName            *string    `json:"onPremisesDomainName,omitempty"`
+	OnPremisesImmutableId           *string    `json:"onPremisesImmutableId,omitempty"`
 	OnPremisesLastSyncDateTime      *string    `json:"onPremisesLastSyncDateTime,omitempty"`
 	OnPremisesSamAccountName        *string    `json:"onPremisesSamAccountName,omitempty"`
 	OnPremisesSecurityIdentifier    *string    `json:"onPremisesSecurityIdentifier,omitempty"`
