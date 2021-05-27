@@ -72,6 +72,7 @@ func TestUsersClient(t *testing.T) {
 
 	testUsersClient_Delete(t, c, *user.ID)
 	testUsersClient_ListDeleted(t, c, *user.ID)
+	testUsersClient_GetDeleted(t, c, *user.ID)
 }
 
 func testUsersClient_Create(t *testing.T, c UsersClientTest, u msgraph.User) (user *msgraph.User) {
@@ -122,6 +123,20 @@ func testUsersClient_Get(t *testing.T, c UsersClientTest, id string) (user *msgr
 	}
 	if user == nil {
 		t.Fatal("UsersClient.Get(): user was nil")
+	}
+	return
+}
+
+func testUsersClient_GetDeleted(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
+	user, status, err := c.client.GetDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("UsersClient.GetDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.GetDeleted(): invalid status: %d", status)
+	}
+	if user == nil {
+		t.Fatal("UsersClient.GetDeleted(): user was nil")
 	}
 	return
 }
