@@ -40,6 +40,7 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_List(t, c)
 	testApplicationsClient_Delete(t, c, *app.ID)
 	testApplicationsClient_ListDeleted(t, c, *app.ID)
+	testApplicationsClient_GetDeleted(t, c, *app.ID)
 }
 
 func TestApplicationsClient_groupMembershipClaims(t *testing.T) {
@@ -105,6 +106,20 @@ func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id strin
 	}
 	if application == nil {
 		t.Fatal("ApplicationsClient.Get(): application was nil")
+	}
+	return
+}
+
+func testApplicationsClient_GetDeleted(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
+	application, status, err := c.client.GetDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.GetDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.GetDeleted(): invalid status: %d", status)
+	}
+	if application == nil {
+		t.Fatal("ApplicationsClient.GetDeleted(): application was nil")
 	}
 	return
 }
