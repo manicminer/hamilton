@@ -270,6 +270,9 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 	var status int
 	// Patching group members support up to 20 members per request
 	var memberChunks [][]string
+	if group.Members == nil || len(*group.Members) == 0 {
+		return status, fmt.Errorf("no members specified")
+	}
 	members := *group.Members
 	max := len(members)
 	// Chunk into slices of 20 for batching
@@ -291,10 +294,8 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 			return false
 		}
 
-		data := struct {
-			Members []string `json:"members@odata.bind"`
-		}{
-			Members: members,
+		data := Group{
+			Members: &members,
 		}
 		body, err := json.Marshal(data)
 		if err != nil {
@@ -321,6 +322,9 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 // memberIds is a *[]string containing object IDs of members to remove.
 func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *[]string) (int, error) {
 	var status int
+	if memberIds == nil || len(*memberIds) == 0 {
+		return status, fmt.Errorf("no members specified")
+	}
 	for _, memberId := range *memberIds {
 		// check for membership before attempting deletion
 		if _, status, err := c.GetMember(ctx, id, memberId); err != nil {
@@ -427,6 +431,9 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 // First populate the Owners field of the Group using the AppendOwner method of the model, then call this method.
 func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error) {
 	var status int
+	if group.Owners == nil || len(*group.Owners) == 0 {
+		return status, fmt.Errorf("no owners specified")
+	}
 	for _, owner := range *group.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
@@ -468,6 +475,9 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 // ownerIds is a *[]string containing object IDs of owners to remove.
 func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
 	var status int
+	if ownerIds == nil || len(*ownerIds) == 0 {
+		return status, fmt.Errorf("no owners specified")
+	}
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
 		if _, status, err := c.GetOwner(ctx, id, ownerId); err != nil {
