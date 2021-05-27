@@ -120,7 +120,7 @@ func (c *ApplicationsClient) GetDeleted(ctx context.Context, id string) (*Applic
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.GetDeleted(): %v", err)
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
 	respBody, err := ioutil.ReadAll(resp.Body)
