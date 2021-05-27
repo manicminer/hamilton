@@ -108,6 +108,30 @@ func (c *GroupsClient) Get(ctx context.Context, id string) (*Group, int, error) 
 	return &group, status, nil
 }
 
+// GetDeleted retrieves a deleted O365 Group.
+func (c *GroupsClient) GetDeleted(ctx context.Context, id string) (*Group, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("GroupsClient.BaseClient.GetDeleted(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+	var group Group
+	if err := json.Unmarshal(respBody, &group); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &group, status, nil
+}
+
 // Update amends an existing Group.
 func (c *GroupsClient) Update(ctx context.Context, group Group) (int, error) {
 	var status int
