@@ -118,7 +118,7 @@ func (c *GroupsClient) GetDeleted(ctx context.Context, id string) (*Group, int, 
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("GroupsClient.BaseClient.GetDeleted(): %v", err)
+		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
 	respBody, err := ioutil.ReadAll(resp.Body)
