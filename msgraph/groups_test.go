@@ -48,14 +48,18 @@ func TestGroupsClient(t *testing.T) {
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroup.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, claims.ObjectId)
+	newGroup.AppendMember(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, claims.ObjectId)
 	group := testGroupsClient_Create(t, c, newGroup)
 	testGroupsClient_Get(t, c, *group.ID)
-	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.randomString))
-
-	testGroupsClient_Update(t, c, *group)
 
 	owners := testGroupsClient_ListOwners(t, c, *group.ID)
 	testGroupsClient_GetOwner(t, c, *group.ID, (*owners)[0])
+
+	members := testGroupsClient_ListMembers(t, c, *group.ID)
+	testGroupsClient_GetMember(t, c, *group.ID, (*members)[0])
+
+	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.randomString))
+	testGroupsClient_Update(t, c, *group)
 
 	user := testUsersClient_Create(t, u, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
@@ -66,15 +70,13 @@ func TestGroupsClient(t *testing.T) {
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
 		},
 	})
+
 	group.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, *user.ID)
 	testGroupsClient_AddOwners(t, c, group)
-
 	testGroupsClient_RemoveOwners(t, c, *group.ID, &([]string{claims.ObjectId}))
 
-	group.AppendMember(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, claims.ObjectId)
+	group.AppendMember(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, *user.ID)
 	testGroupsClient_AddMembers(t, c, group)
-	members := testGroupsClient_ListMembers(t, c, *group.ID)
-	testGroupsClient_GetMember(t, c, *group.ID, (*members)[0])
 	testGroupsClient_RemoveMembers(t, c, *group.ID, &([]string{claims.ObjectId}))
 
 	testGroupsClient_List(t, c)
