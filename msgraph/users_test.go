@@ -71,6 +71,8 @@ func TestUsersClient(t *testing.T) {
 	testGroupsClient_Delete(t, g, *groupChild.ID)
 
 	testUsersClient_Delete(t, c, *user.ID)
+	testUsersClient_ListDeleted(t, c, *user.ID)
+	testUsersClient_GetDeleted(t, c, *user.ID)
 }
 
 func testUsersClient_Create(t *testing.T, c UsersClientTest, u msgraph.User) (user *msgraph.User) {
@@ -125,6 +127,20 @@ func testUsersClient_Get(t *testing.T, c UsersClientTest, id string) (user *msgr
 	return
 }
 
+func testUsersClient_GetDeleted(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
+	user, status, err := c.client.GetDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("UsersClient.GetDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.GetDeleted(): invalid status: %d", status)
+	}
+	if user == nil {
+		t.Fatal("UsersClient.GetDeleted(): user was nil")
+	}
+	return
+}
+
 func testUsersClient_Delete(t *testing.T, c UsersClientTest, id string) {
 	status, err := c.client.Delete(c.connection.Context, id)
 	if err != nil {
@@ -149,5 +165,32 @@ func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id st
 		t.Fatalf("UsersClient.ListGroupMemberships(): expected groups length 2. was: %d", len(*groups))
 	}
 
+	return
+}
+
+func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest, expectedId string) (deletedUsers *[]msgraph.User) {
+	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, "")
+	if err != nil {
+		t.Fatalf("UsersClient.ListDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.ListDeleted(): invalid status: %d", status)
+	}
+	if deletedUsers == nil {
+		t.Fatal("UsersClient.ListDeleted(): deletedUsers was nil")
+	}
+	if len(*deletedUsers) == 0 {
+		t.Fatal("UsersClient.ListDeleted(): expected at least 1 deleted user. was: 0")
+	}
+	found := false
+	for _, user := range *deletedUsers {
+		if user.ID != nil && *user.ID == expectedId {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("UsersClient.ListDeleted(): expected userId %q in result", expectedId)
+	}
 	return
 }

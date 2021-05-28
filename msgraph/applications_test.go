@@ -35,8 +35,12 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_RemoveOwners(t, c, *app.ID, owners)
 	app.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, (*owners)[0])
 	testApplicationsClient_AddOwners(t, c, app)
+	pwd := testApplicationsClient_AddPassword(t, c, app)
+	testApplicationsClient_RemovePassword(t, c, app, pwd)
 	testApplicationsClient_List(t, c)
 	testApplicationsClient_Delete(t, c, *app.ID)
+	testApplicationsClient_ListDeleted(t, c, *app.ID)
+	testApplicationsClient_GetDeleted(t, c, *app.ID)
 }
 
 func TestApplicationsClient_groupMembershipClaims(t *testing.T) {
@@ -48,8 +52,8 @@ func TestApplicationsClient_groupMembershipClaims(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
-		GroupMembershipClaims: utils.StringPtr("SecurityGroup, ApplicationGroup"),
+		DisplayName:           utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
+		GroupMembershipClaims: &[]msgraph.GroupMembershipClaim{"SecurityGroup", "ApplicationGroup"},
 	})
 	testApplicationsClient_Delete(t, c, *app.ID)
 }
@@ -102,6 +106,20 @@ func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id strin
 	}
 	if application == nil {
 		t.Fatal("ApplicationsClient.Get(): application was nil")
+	}
+	return
+}
+
+func testApplicationsClient_GetDeleted(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
+	application, status, err := c.client.GetDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.GetDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.GetDeleted(): invalid status: %d", status)
+	}
+	if application == nil {
+		t.Fatal("ApplicationsClient.GetDeleted(): application was nil")
 	}
 	return
 }
@@ -165,4 +183,61 @@ func testApplicationsClient_RemoveOwners(t *testing.T, c ApplicationsClientTest,
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.RemoveOwners(): invalid status: %d", status)
 	}
+}
+
+func testApplicationsClient_AddPassword(t *testing.T, c ApplicationsClientTest, a *msgraph.Application) *msgraph.PasswordCredential {
+	pwd := msgraph.PasswordCredential{
+		DisplayName: utils.StringPtr("test password"),
+	}
+	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.AddPassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.AddPassword(): invalid status: %d", status)
+	}
+	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
+		t.Fatalf("ApplicationsClient.AddPassword(): nil or empty secretText returned by API")
+	}
+	if *newPwd.DisplayName != *pwd.DisplayName {
+		t.Fatalf("ApplicationsClient.AddPassword(): password names do not match")
+	}
+	return newPwd
+}
+
+func testApplicationsClient_RemovePassword(t *testing.T, c ApplicationsClientTest, a *msgraph.Application, p *msgraph.PasswordCredential) {
+	status, err := c.client.RemovePassword(c.connection.Context, *a.ID, *p.KeyId)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.RemovePassword(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.RemovePassword(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, expectedId string) (deletedApps *[]msgraph.Application) {
+	deletedApps, status, err := c.client.ListDeleted(c.connection.Context, "")
+	if err != nil {
+		t.Fatalf("ApplicationsClient.ListDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.ListDeleted(): invalid status: %d", status)
+	}
+	if deletedApps == nil {
+		t.Fatal("ApplicationsClient.ListDeleted(): deletedApps was nil")
+	}
+	if len(*deletedApps) == 0 {
+		t.Fatal("ApplicationsClient.ListDeleted(): expected at least 1 deleted application. was: 0")
+	}
+	found := false
+	for _, app := range *deletedApps {
+		if app.ID != nil && *app.ID == expectedId {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("ApplicationsClient.ListDeleted(): expected appId %q in result", expectedId)
+	}
+	return
 }

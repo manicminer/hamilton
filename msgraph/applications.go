@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"regexp"
 
 	"github.com/manicminer/hamilton/odata"
 )
@@ -40,15 +39,18 @@ func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]Applic
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var data struct {
 		Applications []Application `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &data.Applications, status, nil
 }
@@ -58,7 +60,7 @@ func (c *ApplicationsClient) Create(ctx context.Context, application Application
 	var status int
 	body, err := json.Marshal(application)
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
@@ -69,13 +71,16 @@ func (c *ApplicationsClient) Create(ctx context.Context, application Application
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var newApplication Application
 	if err := json.Unmarshal(respBody, &newApplication); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &newApplication, status, nil
 }
@@ -90,13 +95,41 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string) (*Application, 
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var application Application
 	if err := json.Unmarshal(respBody, &application); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &application, status, nil
+}
+
+// GetDeleted retrieves a deleted Application manifest.
+// id is the object ID of the application.
+func (c *ApplicationsClient) GetDeleted(ctx context.Context, id string) (*Application, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+	var application Application
+	if err := json.Unmarshal(respBody, &application); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &application, status, nil
 }
@@ -105,11 +138,11 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string) (*Application, 
 func (c *ApplicationsClient) Update(ctx context.Context, application Application) (int, error) {
 	var status int
 	if application.ID == nil {
-		return status, errors.New("cannot update application with nil ID")
+		return status, errors.New("ApplicationsClient.Update(): cannot update application with nil ID")
 	}
 	body, err := json.Marshal(application)
 	if err != nil {
-		return status, err
+		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:             body,
@@ -120,7 +153,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application Application
 		},
 	})
 	if err != nil {
-		return status, err
+		return status, fmt.Errorf("ApplicationsClient.BaseClient.Patch(): %v", err)
 	}
 	return status, nil
 }
@@ -135,23 +168,22 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 		},
 	})
 	if err != nil {
-		return status, err
+		return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
 	}
 	return status, nil
 }
 
-// AddKey appends a new key credential to an Application.
-func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, keyCredential KeyCredential) (*KeyCredential, int, error) {
-	var status int
-	body, err := json.Marshal(keyCredential)
-	if err != nil {
-		return nil, status, err
+// ListDeleted retrieves a list of recently deleted applications, optionally filtered using OData.
+func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[]Application, int, error) {
+	params := url.Values{}
+	if filter != "" {
+		params.Add("$filter", filter)
 	}
-	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/applications/%s/addKey", applicationId),
+			Entity:      "/directory/deleteditems/microsoft.graph.application",
+			Params:      params,
 			HasTenantId: true,
 		},
 	})
@@ -160,11 +192,72 @@ func (c *ApplicationsClient) AddKey(ctx context.Context, applicationId string, k
 	}
 	defer resp.Body.Close()
 	respBody, _ := ioutil.ReadAll(resp.Body)
-	var newKeyCredential KeyCredential
-	if err := json.Unmarshal(respBody, &newKeyCredential); err != nil {
+	var data struct {
+		DeletedApps []Application `json:"value"`
+	}
+	if err = json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, err
 	}
-	return &newKeyCredential, status, nil
+	return &data.DeletedApps, status, nil
+}
+
+// AddPassword appends a new password credential to an Application.
+func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId string, passwordCredential PasswordCredential) (*PasswordCredential, int, error) {
+	var status int
+	body, err := json.Marshal(struct {
+		PwdCredential PasswordCredential `json:"passwordCredential"`
+	}{
+		PwdCredential: passwordCredential,
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/applications/%s/addPassword", applicationId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+	var newPasswordCredential PasswordCredential
+	if err := json.Unmarshal(respBody, &newPasswordCredential); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &newPasswordCredential, status, nil
+}
+
+// RemovePassword removes a password credential from an Application.
+func (c *ApplicationsClient) RemovePassword(ctx context.Context, applicationId string, keyId string) (int, error) {
+	var status int
+	body, err := json.Marshal(struct {
+		KeyId string `json:"keyId"`
+	}{
+		KeyId: keyId,
+	})
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusOK, http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/applications/%s/removePassword", applicationId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
+	}
+	return status, nil
 }
 
 // ListOwners retrieves the owners of the specified Application.
@@ -179,10 +272,13 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var data struct {
 		Owners []struct {
 			Type string `json:"@odata.type"`
@@ -190,7 +286,7 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 		} `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	ret := make([]string, len(data.Owners))
 	for i, v := range data.Owners {
@@ -212,10 +308,13 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 		},
 	})
 	if err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
 	var data struct {
 		Context string `json:"@odata.context"`
 		Type    string `json:"@odata.type"`
@@ -223,7 +322,7 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 		Url     string `json:"url"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, status, err
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &data.Id, status, nil
 }
@@ -243,10 +342,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
 				if o.Error != nil {
-					re := regexp.MustCompile("One or more added object references already exist")
-					if re.MatchString(o.Error.String()) {
-						return true
-					}
+					return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 				}
 			}
 			return false
@@ -259,7 +355,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 		}
 		body, err := json.Marshal(data)
 		if err != nil {
-			return status, err
+			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
 		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
 			Body:             body,
@@ -271,7 +367,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 			},
 		})
 		if err != nil {
-			return status, err
+			return status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 		}
 	}
 	return status, nil
@@ -298,10 +394,7 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest {
 				if o.Error != nil {
-					re := regexp.MustCompile("One or more removed object references do not exist")
-					if re.MatchString(o.Error.String()) {
-						return true
-					}
+					return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
 				}
 			}
 			return false
@@ -317,7 +410,7 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 			},
 		})
 		if err != nil {
-			return status, err
+			return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
 		}
 	}
 	return status, nil
