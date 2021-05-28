@@ -226,6 +226,8 @@ func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*Coun
 // UpdateIP amends an existing IP Named Location.
 func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
+	
+	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
 
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
@@ -248,6 +250,8 @@ func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPN
 // UpdateCountry amends an existing Country Named Location.
 func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
+	
+	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
 
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {
