@@ -63,6 +63,8 @@ func TestNamedLocationsClient(t *testing.T) {
 	// Running get after the update to give the API a chance to catch up
 	testNamedLocationsClient_GetIP(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_GetCountry(t, c, *countryNamedLocation.ID)
+	testNamedLocationsClient_Get(t, c, *ipNamedLocation.ID)
+	testNamedLocationsClient_Get(t, c, *countryNamedLocation.ID)
 
 	testNamedLocationsClient_Delete(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_Delete(t, c, *countryNamedLocation.ID)
@@ -126,6 +128,25 @@ func testNamedLocationsClient_GetCountry(t *testing.T, c NamedLocationsClientTes
 	}
 	if countryNamedLocation == nil {
 		t.Fatal("NamedLocationsClient.GetCountry(): countryNamedLocation was nil")
+	}
+	return
+}
+
+func testNamedLocationsClient_Get(t *testing.T, c NamedLocationsClientTest, id string) (namedLocation *msgraph.NamedLocation) {
+	namedLocation, status, err := c.client.Get(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("NamedLocationsClient.Get(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("NamedLocationsClient.Get(): invalid status: %d", status)
+	}
+	if namedLocation == nil {
+		t.Fatal("NamedLocationsClient.Get(): NamedLocation was nil")
+	}
+	_, ok1 := (*namedLocation).(msgraph.CountryNamedLocation)
+	_, ok2 := (*namedLocation).(msgraph.IPNamedLocation)
+	if !ok1 && !ok2 {
+		t.Fatal("NamedLocationsClient.Get(): a NamedLocation was returned that did not match a known model")
 	}
 	return
 }
