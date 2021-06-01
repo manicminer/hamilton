@@ -1,5 +1,7 @@
 ## 0.15.0 (Unreleased)
 
+- Support for [permanently deleting](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-delete?view=graph-rest-1.0&tabs=http) applications, groups and service principals ([#54](https://github.com/manicminer/hamilton/pull/54))
+
 ## 0.14.1 (May 28, 2021)
 
 - Bug fix: Restore a missing field `OnPremisesImmutableId` in the User model ([#53](https://github.com/manicminer/hamilton/pull/53))
