@@ -199,6 +199,56 @@ func (c *NamedLocationsClient) GetIP(ctx context.Context, id string) (*IPNamedLo
 	return &ipNamedLocation, status, nil
 }
 
+// Get retrieves a Named Location which can be type asserted back to IP or Country Named Location.
+func (c *NamedLocationsClient) Get(ctx context.Context, id string) (*NamedLocation, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+
+	var o odata.OData
+	if err := json.Unmarshal(respBody, &o); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	// The Graph API returns a mixture of types, this matches up the result to the appropriate model
+	var ret NamedLocation
+
+	if o.Type == nil {
+		// Treat this as no result
+		return &ret, status, nil
+	}
+
+	switch *o.Type {
+	case "#microsoft.graph.countryNamedLocation":
+		var loc CountryNamedLocation
+		if err := json.Unmarshal(respBody, &loc); err != nil {
+			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+		}
+		ret = loc
+	case "#microsoft.graph.ipNamedLocation":
+		var loc IPNamedLocation
+		if err := json.Unmarshal(respBody, &loc); err != nil {
+			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+		}
+		ret = loc
+	}
+
+	return &ret, status, nil
+
+}
+
 // GetCountry retrieves an Country Named Location.
 func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*CountryNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
