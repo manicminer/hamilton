@@ -41,6 +41,7 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_Delete(t, c, *app.ID)
 	testApplicationsClient_ListDeleted(t, c, *app.ID)
 	testApplicationsClient_GetDeleted(t, c, *app.ID)
+	testApplicationsClient_DeletePermanently(t, c, *app.ID)
 }
 
 func TestApplicationsClient_groupMembershipClaims(t *testing.T) {
@@ -131,6 +132,16 @@ func testApplicationsClient_Delete(t *testing.T, c ApplicationsClientTest, id st
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.Delete(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_DeletePermanently(t *testing.T, c ApplicationsClientTest, id string) {
+	status, err := c.client.DeletePermanently(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.DeletePermanently(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.DeletePermanently(): invalid status: %d", status)
 	}
 }
 

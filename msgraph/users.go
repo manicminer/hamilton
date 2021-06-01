@@ -166,6 +166,21 @@ func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 	return status, nil
 }
 
+// DeletePermanently removes a deleted User permanently.
+func (c *UsersClient) DeletePermanently(ctx context.Context, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("UsersClient.BaseClient.Delete(): %v", err)
+	}
+	return status, nil
+}
+
 // ListDeleted retrieves a list of recently deleted users, optionally filtered using OData.
 func (c *UsersClient) ListDeleted(ctx context.Context, filter string) (*[]User, int, error) {
 	params := url.Values{}

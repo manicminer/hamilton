@@ -173,6 +173,22 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 	return status, nil
 }
 
+// DeletePermanently removes a deleted Application permanently.
+// id is the object ID of the application.
+func (c *ApplicationsClient) DeletePermanently(ctx context.Context, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
+	}
+	return status, nil
+}
+
 // ListDeleted retrieves a list of recently deleted applications, optionally filtered using OData.
 func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[]Application, int, error) {
 	params := url.Values{}

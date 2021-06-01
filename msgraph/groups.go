@@ -109,6 +109,7 @@ func (c *GroupsClient) Get(ctx context.Context, id string) (*Group, int, error) 
 }
 
 // GetDeleted retrieves a deleted O365 Group.
+// TODO: add test coverage once API supports creating O365 groups.
 func (c *GroupsClient) GetDeleted(ctx context.Context, id string) (*Group, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
@@ -159,6 +160,22 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/groups/%s", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("GroupsClient.BaseClient.Delete(): %v", err)
+	}
+	return status, nil
+}
+
+// DeletePermanently removes a deleted O365 Group permanently.
+// TODO: add test coverage once API supports creating O365 groups.
+func (c *GroupsClient) DeletePermanently(ctx context.Context, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
 			HasTenantId: true,
 		},
 	})
