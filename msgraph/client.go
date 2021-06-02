@@ -194,6 +194,8 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 			rateLimitingStatuses := []int{
 				http.StatusFailedDependency,
 				http.StatusTooManyRequests,
+				http.StatusInternalServerError,
+				http.StatusBadGateway,
 				http.StatusServiceUnavailable,
 			}
 			if containsStatusCode(rateLimitingStatuses, status) {
