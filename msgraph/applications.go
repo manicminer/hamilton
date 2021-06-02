@@ -88,7 +88,8 @@ func (c *ApplicationsClient) Create(ctx context.Context, application Application
 // Get retrieves an Application manifest.
 func (c *ApplicationsClient) Get(ctx context.Context, id string) (*Application, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s", id),
 			HasTenantId: true,
@@ -145,8 +146,9 @@ func (c *ApplicationsClient) Update(ctx context.Context, application Application
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s", *application.ID),
 			HasTenantId: true,
@@ -161,7 +163,8 @@ func (c *ApplicationsClient) Update(ctx context.Context, application Application
 // Delete removes an Application.
 func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s", id),
 			HasTenantId: true,
@@ -229,8 +232,9 @@ func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId stri
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusOK, http.StatusCreated},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK, http.StatusCreated},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s/addPassword", applicationId),
 			HasTenantId: true,
@@ -316,7 +320,8 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 // ownerId is the object ID of the owning object.
 func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerId string) (*string, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
 			Params:      url.Values{"$select": []string{"id,url"}},
@@ -374,9 +379,10 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
 		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
-			Body:             body,
-			ValidStatusCodes: []int{http.StatusNoContent},
-			ValidStatusFunc:  checkOwnerAlreadyExists,
+			Body:                   body,
+			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+			ValidStatusCodes:       []int{http.StatusNoContent},
+			ValidStatusFunc:        checkOwnerAlreadyExists,
 			Uri: Uri{
 				Entity:      fmt.Sprintf("/applications/%s/owners/$ref", *application.ID),
 				HasTenantId: true,
