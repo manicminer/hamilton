@@ -1,5 +1,15 @@
 ## 0.16.0 (Unreleased)
 
+BEHAVIORAL CHANGES:
+
+- This release implements a retry mechanism for some types of failed requests where the likely cause is indicated to be replication delays in Azure Active Directory ([#57](https://github.com/manicminer/hamilton/pull/57))
+- Client methods which retrieve, update or delete _single_, _mutable_ objects will all exert this retry mechanism, and may take up to 2 minutes to return (successfully or not)
+- To opt out of this behavior, simply set the `BaseClient.DisableRetries` field to `true` on your client(s), for example:
+  ```go
+  client := msgraph.NewApplicationsClient(tenantId)
+  client.BaseClient.DisableRetries = true
+  ```
+
 ## 0.15.0 (June 01, 2021)
 
 - Bug fix: Set correct OData types when updating named locations ([#55](https://github.com/manicminer/hamilton/pull/55))
