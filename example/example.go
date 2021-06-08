@@ -38,12 +38,13 @@ func main() {
 
 	users, _, err := client.List(ctx, "")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	if users == nil {
-		log.Fatalln("bad API response, nil result received")
+		log.Println("bad API response, nil result received")
+		return
 	}
-
 	for _, user := range *users {
 		fmt.Printf("%s: %s <%s>\n", *user.ID, *user.DisplayName, *user.UserPrincipalName)
 	}

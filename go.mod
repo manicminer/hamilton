@@ -3,11 +3,11 @@ module github.com/manicminer/hamilton
 go 1.16
 
 require (
-	github.com/golang/protobuf v1.4.3 // indirect
+	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/go-uuid v1.0.2
-	github.com/hashicorp/go-version v1.2.1
-	golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2
-	golang.org/x/net v0.0.0-20201209123823-ac852fbbde11 // indirect
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	github.com/hashicorp/go-version v1.3.0
+	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
+	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
+	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	google.golang.org/appengine v1.6.7 // indirect
 )

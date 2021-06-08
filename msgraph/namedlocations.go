@@ -98,7 +98,8 @@ func (c *NamedLocationsClient) List(ctx context.Context, filter string) (*[]Name
 // Delete removes a Named Location.
 func (c *NamedLocationsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
@@ -178,7 +179,8 @@ func (c *NamedLocationsClient) CreateCountry(ctx context.Context, countryNamedLo
 // GetIP retrieves an IP Named Location.
 func (c *NamedLocationsClient) GetIP(ctx context.Context, id string) (*IPNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
@@ -202,7 +204,8 @@ func (c *NamedLocationsClient) GetIP(ctx context.Context, id string) (*IPNamedLo
 // Get retrieves a Named Location which can be type asserted back to IP or Country Named Location.
 func (c *NamedLocationsClient) Get(ctx context.Context, id string) (*NamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
@@ -252,7 +255,8 @@ func (c *NamedLocationsClient) Get(ctx context.Context, id string) (*NamedLocati
 // GetCountry retrieves an Country Named Location.
 func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*CountryNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
@@ -276,7 +280,7 @@ func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*Coun
 // UpdateIP amends an existing IP Named Location.
 func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
-	
+
 	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
 
 	body, err := json.Marshal(ipNamedLocation)
@@ -284,8 +288,9 @@ func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPN
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", *ipNamedLocation.ID),
 			HasTenantId: true,
@@ -300,7 +305,7 @@ func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPN
 // UpdateCountry amends an existing Country Named Location.
 func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
-	
+
 	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
 
 	body, err := json.Marshal(countryNamedLocation)
@@ -308,8 +313,9 @@ func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLo
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", *countryNamedLocation.ID),
 			HasTenantId: true,
