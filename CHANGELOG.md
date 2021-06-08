@@ -1,4 +1,6 @@
-## 0.16.0 (Unreleased)
+## 0.17.0 (Unreleased)
+
+## 0.16.0 (June 08, 2021)
 
 BEHAVIORAL CHANGES:
 
