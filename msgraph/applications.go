@@ -114,7 +114,8 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string) (*Application, 
 // id is the object ID of the application.
 func (c *ApplicationsClient) GetDeleted(ctx context.Context, id string) (*Application, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
 			HasTenantId: true,
@@ -180,7 +181,8 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 // id is the object ID of the application.
 func (c *ApplicationsClient) DeletePermanently(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
 			HasTenantId: true,
@@ -267,8 +269,9 @@ func (c *ApplicationsClient) RemovePassword(ctx context.Context, applicationId s
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusOK, http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK, http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s/removePassword", applicationId),
 			HasTenantId: true,
@@ -284,7 +287,8 @@ func (c *ApplicationsClient) RemovePassword(ctx context.Context, applicationId s
 // id is the object ID of the application.
 func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]string, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners", id),
 			Params:      url.Values{"$select": []string{"id"}},
@@ -361,10 +365,8 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 	for _, owner := range *application.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest {
-				if o.Error != nil {
-					return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
-				}
+			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 			}
 			return false
 		}
@@ -414,18 +416,17 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 
 		// despite the above check, sometimes owners are just gone
 		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest {
-				if o.Error != nil {
-					return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
-				}
+			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+				return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
 			}
 			return false
 		}
 
 		var err error
 		_, status, _, err = c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-			ValidStatusCodes: []int{http.StatusNoContent},
-			ValidStatusFunc:  checkOwnerGone,
+			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+			ValidStatusCodes:       []int{http.StatusNoContent},
+			ValidStatusFunc:        checkOwnerGone,
 			Uri: Uri{
 				Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
 				HasTenantId: true,

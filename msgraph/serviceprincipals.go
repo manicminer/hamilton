@@ -237,10 +237,8 @@ func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipa
 	for _, owner := range *servicePrincipal.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest {
-				if o.Error != nil {
-					return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
-				}
+			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 			}
 			return false
 		}
@@ -290,17 +288,16 @@ func (c *ServicePrincipalsClient) RemoveOwners(ctx context.Context, servicePrinc
 
 		// despite the above check, sometimes owners are just gone
 		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest {
-				if o.Error != nil {
-					return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
-				}
+			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+				return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
 			}
 			return false
 		}
 
 		_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-			ValidStatusCodes: []int{http.StatusNoContent},
-			ValidStatusFunc:  checkOwnerGone,
+			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+			ValidStatusCodes:       []int{http.StatusNoContent},
+			ValidStatusFunc:        checkOwnerGone,
 			Uri: Uri{
 				Entity:      fmt.Sprintf("/servicePrincipals/%s/owners/%s/$ref", servicePrincipalId, ownerId),
 				HasTenantId: true,
@@ -392,8 +389,9 @@ func (c *ServicePrincipalsClient) RemovePassword(ctx context.Context, servicePri
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusOK, http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK, http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/removePassword", servicePrincipalId),
 			HasTenantId: true,
@@ -468,7 +466,8 @@ func (c *ServicePrincipalsClient) ListAppRoleAssignments(ctx context.Context, re
 // RemoveAppRoleAssignment deletes an appRoleAssignment that a user, group, or client service principal has been granted for a resource service principal.
 func (c *ServicePrincipalsClient) RemoveAppRoleAssignment(ctx context.Context, resourceId, appRoleAssignmentId string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/appRoleAssignedTo/%s", resourceId, appRoleAssignmentId),
 			HasTenantId: true,

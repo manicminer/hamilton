@@ -110,7 +110,8 @@ func (c *UsersClient) Get(ctx context.Context, id string) (*User, int, error) {
 // GetDeleted retrieves a deleted User.
 func (c *UsersClient) GetDeleted(ctx context.Context, id string) (*User, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
 			HasTenantId: true,
@@ -172,7 +173,8 @@ func (c *UsersClient) Delete(ctx context.Context, id string) (int, error) {
 // DeletePermanently removes a deleted User permanently.
 func (c *UsersClient) DeletePermanently(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
 			HasTenantId: true,

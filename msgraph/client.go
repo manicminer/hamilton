@@ -25,10 +25,10 @@ const (
 )
 
 const (
-	consistencyRetryDelay = 2 * time.Second
-	defaultInitialBackoff = 1 * time.Second
-	defaultBackoffCap     = 64 * time.Second
-	requestAttempts       = 10
+	retryBackoffInitialDelay       = 1 * time.Second
+	retryBackoffDelayCap           = 64 * time.Second
+	requestAttemptsForRateLimiting = 10
+	requestAttemptsForConsistency  = 6
 )
 
 // ConsistencyFailureFunc is a function that determines whether an HTTP request has failed due to eventual consistency and should be retried
@@ -150,7 +150,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	}
 
 	var attempts, backoff, multiplier int64
-	for attempts = 0; attempts < requestAttempts; attempts++ {
+	for attempts = 0; attempts < requestAttemptsForRateLimiting; attempts++ {
 		// sleep after the previous failed attempt
 		if attempts > 0 {
 			time.Sleep(time.Duration(backoff))
@@ -158,8 +158,8 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 
 		// default exponential backoff
 		multiplier++
-		backoff = int64(defaultInitialBackoff) * backoffPower(2, multiplier)
-		if cap := int64(defaultBackoffCap); backoff > cap {
+		backoff = int64(retryBackoffInitialDelay) * backoffPower(2, multiplier)
+		if cap := int64(retryBackoffDelayCap); backoff > cap {
 			backoff = cap
 		}
 
@@ -178,9 +178,9 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 			f := input.GetConsistencyFailureFunc()
 			if f != nil && f(resp, o) {
 				// eventual consistency, just try again
-				backoff = int64(consistencyRetryDelay)
-				multiplier = 0
-				continue
+				if attempts < requestAttemptsForConsistency {
+					continue
+				}
 			}
 		}
 
@@ -202,7 +202,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 				// rate limiting
 				if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
 					if r, err := strconv.ParseFloat(retryAfter, 64); err == nil && r > 0 {
-						// Retry-After header detected, use that instead of default backoff
+						// Retry-After header detected, use that instead of exponential backoff
 						backoff = int64(r * float64(time.Second))
 						multiplier = 0
 					}
