@@ -41,6 +41,8 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_Delete(t, c, *app.ID)
 	testApplicationsClient_ListDeleted(t, c, *app.ID)
 	testApplicationsClient_GetDeleted(t, c, *app.ID)
+	testApplicationsClient_RestoreDeleted(t, c, *app.ID)
+	testApplicationsClient_Delete(t, c, *app.ID)
 	testApplicationsClient_DeletePermanently(t, c, *app.ID)
 }
 
@@ -142,6 +144,25 @@ func testApplicationsClient_DeletePermanently(t *testing.T, c ApplicationsClient
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.DeletePermanently(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_RestoreDeleted(t *testing.T, c ApplicationsClientTest, id string) {
+	application, status, err := c.client.RestoreDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.RestoreDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.RestoreDeleted(): invalid status: %d", status)
+	}
+	if application == nil {
+		t.Fatal("ApplicationsClient.RestoreDeleted(): application was nil")
+	}
+	if application.ID == nil {
+		t.Fatal("ApplicationsClient.RestoreDeleted(): application.ID was nil")
+	}
+	if *application.ID != id {
+		t.Fatal("ApplicationsClient.RestoreDeleted(): application ids do not match")
 	}
 }
 
