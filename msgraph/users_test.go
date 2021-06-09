@@ -73,6 +73,8 @@ func TestUsersClient(t *testing.T) {
 	testUsersClient_Delete(t, c, *user.ID)
 	testUsersClient_ListDeleted(t, c, *user.ID)
 	testUsersClient_GetDeleted(t, c, *user.ID)
+	testUsersClient_RestoreDeleted(t, c, *user.ID)
+	testUsersClient_Delete(t, c, *user.ID)
 	testUsersClient_DeletePermanently(t, c, *user.ID)
 }
 
@@ -204,4 +206,23 @@ func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest, expectedId str
 		t.Fatalf("UsersClient.ListDeleted(): expected userId %q in result", expectedId)
 	}
 	return
+}
+
+func testUsersClient_RestoreDeleted(t *testing.T, c UsersClientTest, id string) {
+	user, status, err := c.client.RestoreDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("UsersClient.RestoreDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.RestoreDeleted(): invalid status: %d", status)
+	}
+	if user == nil {
+		t.Fatal("UsersClient.RestoreDeleted(): user was nil")
+	}
+	if user.ID == nil {
+		t.Fatal("UsersClient.RestoreDeleted(): user.ID was nil")
+	}
+	if *user.ID != id {
+		t.Fatal("UsersClient.RestoreDeleted(): user ids do not match")
+	}
 }
