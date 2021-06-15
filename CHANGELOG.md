@@ -1,4 +1,6 @@
-## 0.17.0 (Unreleased)
+## 0.18.0 (Unreleased)
+
+## 0.17.0 (June 15, 2021)
 
 - Support for [restoring deleted applications/users/groups](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-restore?view=graph-rest-1.0) ([#58](https://github.com/manicminer/hamilton/pull/58))
 - Support `PersonalMicrosoftAccount` for the `SignInAudience` field for Applications ([#59](https://github.com/manicminer/hamilton/pull/59))
