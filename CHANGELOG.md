@@ -1,5 +1,7 @@
 ## 0.17.0 (Unreleased)
 
+- Support for [restoring deleted applications/users/groups](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-restore?view=graph-rest-1.0) ([#58](https://github.com/manicminer/hamilton/pull/58))
+
 ## 0.16.0 (June 08, 2021)
 
 BEHAVIORAL CHANGES:
