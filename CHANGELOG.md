@@ -1,6 +1,12 @@
 ## 0.17.0 (Unreleased)
 
 - Support for [restoring deleted applications/users/groups](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-restore?view=graph-rest-1.0) ([#58](https://github.com/manicminer/hamilton/pull/58))
+- Support `PersonalMicrosoftAccount` for the `SignInAudience` field for Applications ([#59](https://github.com/manicminer/hamilton/pull/59))
+
+⚠️ BREAKING CHANGES:
+
+- This release adds a new type alias `StringNullWhenEmpty` which has replaced several existing field string types
+- It enables zeroing field values that don't accept empty strings. See ([#59](https://github.com/manicminer/hamilton/pull/59)) for details and example usage
 
 ## 0.16.0 (June 08, 2021)
 
