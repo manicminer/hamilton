@@ -2,6 +2,9 @@ package msgraph
 
 import "encoding/json"
 
+// StringNullWhenEmpty is a string type that marshals its JSON representation as null when set to its zero value.
+// Can be used with a pointer reference with the `omitempty` tag to omit a field when the pointer is nil, but send a
+// JSON null value when the string is empty.
 type StringNullWhenEmpty string
 
 func (s StringNullWhenEmpty) MarshalJSON() ([]byte, error) {
