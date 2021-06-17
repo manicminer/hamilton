@@ -22,8 +22,8 @@ func TestSignInReportsTest(t *testing.T) {
 	c.client = msgraph.NewSignInLogsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
-	auditLogs := testSignInReports_List(t, c)
-	testSignInReports_Get(t, c, *(*auditLogs)[0].ID)
+	signInLogs := testSignInReports_List(t, c)
+	testSignInReports_Get(t, c, *(*signInLogs)[0].ID)
 }
 
 func testSignInReports_List(t *testing.T, c TestSignInReportsTest) (signInLogs *[]msgraph.SignInReport) {
