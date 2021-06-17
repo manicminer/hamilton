@@ -9,20 +9,20 @@ import (
 	"net/url"
 )
 
-// UsersClient performs operations on Users.
-type SignInLogsClient struct {
+// SignInReports Client performs operations on Sign in reports.
+type SignInReportsClient struct {
 	BaseClient Client
 }
 
-// NewUsersClient returns a new UsersClient.
-func NewSignInLogsClient(tenantId string) *SignInLogsClient {
-	return &SignInLogsClient{
+// NewSignInLogsClient returns a new SignInReportsClient.
+func NewSignInLogsClient(tenantId string) *SignInReportsClient {
+	return &SignInReportsClient{
 		BaseClient: NewClient(VersionBeta, tenantId),
 	}
 }
 
-// List returns a list of Sign-in Logs, optionally filtered using OData.
-func (c *SignInLogsClient) List(ctx context.Context, filter string) (*[]SignInLog, int, error) {
+// List returns a list of Sign-in Reports, optionally filtered using OData.
+func (c *SignInReportsClient) List(ctx context.Context, filter string) (*[]SignInReport, int, error) {
 	params := url.Values{}
 	if filter != "" {
 		params.Add("$filter", filter)
@@ -44,7 +44,7 @@ func (c *SignInLogsClient) List(ctx context.Context, filter string) (*[]SignInLo
 		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
 	}
 	var data struct {
-		SignInLogs []SignInLog `json:"value"`
+		SignInLogs []SignInReport `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
@@ -52,8 +52,8 @@ func (c *SignInLogsClient) List(ctx context.Context, filter string) (*[]SignInLo
 	return &data.SignInLogs, status, nil
 }
 
-// Get retrieves a SignInLog.
-func (c *SignInLogsClient) Get(ctx context.Context, id string) (*SignInLog, int, error) {
+// Get retrieves a Sign-in Report.
+func (c *SignInReportsClient) Get(ctx context.Context, id string) (*SignInReport, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
@@ -70,9 +70,9 @@ func (c *SignInLogsClient) Get(ctx context.Context, id string) (*SignInLog, int,
 	if err != nil {
 		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
 	}
-	var signInLog SignInLog
-	if err := json.Unmarshal(respBody, &signInLog); err != nil {
+	var signInReport SignInReport
+	if err := json.Unmarshal(respBody, &signInReport); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
-	return &signInLog, status, nil
+	return &signInReport, status, nil
 }

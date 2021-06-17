@@ -898,7 +898,7 @@ type AppliedConditionalAccessPolicy struct {
 	Result                  *string   `json:"appliedConditionalAccessPolicyResult,omitempty"`
 }
 
-type SignInLog struct {
+type SignInReport struct {
 	Id                               *string                           `json:"id,omitempty"`
 	CreatedDateTime                  *time.Time                        `json:"createdDateTime,omitempty"`
 	UserDisplayName                  *string                           `json:"userDisplayName,omitempty"`
@@ -922,4 +922,57 @@ type SignInLog struct {
 	DeviceDetail                     *DeviceDetail                     `json:"deviceDetail,omitempty"`
 	Location                         *Location                         `json:"location,omitempty"`
 	AppliedConditionalAccessPolicies *[]AppliedConditionalAccessPolicy `json:"appliedConditionalAccessPolicies,omitempty"`
+}
+
+type AuditActivityInitiator struct {
+	App  *AppIdentity  `json:"app,omitempty"`
+	User *UserIdentity `json:"user,omitempty"`
+}
+
+type AppIdentity struct {
+	AppId                *string `json:"appId,omitempty"`
+	DisplayName          *string `json:"displayName,omitempty"`
+	ServicePrincipalId   *string `json:"servicePrincipalId,omitempty"`
+	ServicePrincipalName *string `json:"servicePrincipalName,omitempty"`
+}
+
+type UserIdentity struct {
+	DisplayName       *string `json:"displayName,omitempty"`
+	Id                *string `json:"id,omitempty"`
+	IPAddress         *string `json:"ipAddress,omitempty"`
+	UserPrincipalName *string `json:"userPrincipalName,omitempty"`
+}
+
+type ModifiedProperty struct {
+	DisplayName *string `json:"displayName,omitempty"`
+	NewValue    *string `json:"newValue,omitempty"`
+	OldValue    *string `json:"oldValue,omitempty"`
+}
+
+type TargetResource struct {
+	Id                 *string             `json:"id,omitempty"`
+	DisplayName        *string             `json:"displayName,omitempty"`
+	Type               *string             `json:"type,omitempty"`
+	UserPrincipalName  *string             `json:"userPrincipalName,omitempty"`
+	GroupType          *string             `json:"groupType,omitempty"`
+	ModifiedProperties *[]ModifiedProperty `json:"modifiedProperties,omitempty"`
+}
+
+type AdditionalDetail struct {
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+type AuditLog struct {
+	ActivityDateTime    *time.Time              `json:"activityDateTime,omitempty"`
+	ActivityDisplayName *string                 `json:"activityDisplayName,omitempty"`
+	AdditionalDetails   *[]AdditionalDetail     `json:"additionalDetails,omitempty"`
+	Category            *string                 `json:"category,omitempty"`
+	CorrelationId       *string                 `json:"correlationId,omitempty"`
+	Id                  *string                 `json:"id,omitempty"`
+	InitiatedBy         *AuditActivityInitiator `json:"initiatedBy,omitempty"`
+	LoggedByService     *string                 `json:"loggedByService,omitempty"`
+	Result              *string                 `json:"result,omitempty"`
+	ResultReason        *string                 `json:"resultReason,omitempty"`
+	TargetResources     *[]TargetResource       `json:"targetResources,omitempty"`
 }
