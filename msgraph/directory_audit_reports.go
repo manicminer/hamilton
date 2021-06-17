@@ -58,7 +58,7 @@ func (c *DirectoryAuditReportsClient) Get(ctx context.Context, id string) (*Audi
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/auditLogs/signIns/%s", id),
+			Entity:      fmt.Sprintf("/auditLogs/directoryAudits/%s", id),
 			HasTenantId: true,
 		},
 	})

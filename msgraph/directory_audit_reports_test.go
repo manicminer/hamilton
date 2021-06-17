@@ -40,7 +40,7 @@ func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsClientT
 	if dirLogs == nil {
 		t.Fatal("DirectoryAuditReportsClient.List():logs was nil")
 	}
-	return
+	return dirLogs
 }
 
 func testDirectoryAuditReports_Get(t *testing.T, c DirectoryAuditReportsClientTest, id string) (dirLog *msgraph.AuditLog) {
@@ -54,5 +54,5 @@ func testDirectoryAuditReports_Get(t *testing.T, c DirectoryAuditReportsClientTe
 	if dirLog == nil {
 		t.Fatal("DirectoryAuditReportsClient.Get(): domain was nil")
 	}
-	return
+	return dirLog
 }
