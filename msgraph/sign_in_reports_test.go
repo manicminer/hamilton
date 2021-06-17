@@ -23,11 +23,11 @@ func TestSignInReportsTest(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	signInLogs := testSignInReports_List(t, c)
-	testSignInReports_Get(t, c, *(*signInLogs)[0].ID)
+	testSignInReports_Get(t, c, *(*signInLogs)[0].Id)
 }
 
-func testSignInReports_List(t *testing.T, c TestSignInReportsTest) (signInLogs *[]msgraph.SignInReport) {
-	signInLogs, status, err := c.client.List(c.connection.Context)
+func testSignInReports_List(t *testing.T, c SignInReportsClientTest) (signInLogs *[]msgraph.SignInReport) {
+	signInLogs, status, err := c.client.List(c.connection.Context, "")
 
 	if status < 200 || status >= 300 {
 		t.Fatalf("SignInReportsClient.List(): invalid status: %d", status)
@@ -43,7 +43,7 @@ func testSignInReports_List(t *testing.T, c TestSignInReportsTest) (signInLogs *
 	return
 }
 
-func testSignInReports_Get(t *testing.T, c TestSignInReportsTest, id string) (signInLog *msgraph.SignInReport) {
+func testSignInReports_Get(t *testing.T, c SignInReportsClientTest, id string) (signInLog *msgraph.SignInReport) {
 	signInLog, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("SignInReportsClient.Get(): %v", err)

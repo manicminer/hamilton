@@ -8,14 +8,14 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
-type DirectoryAuditReportsTest struct {
+type DirectoryAuditReportsClientTest struct {
 	connection   *test.Connection
 	client       *msgraph.DirectoryAuditReportsClient
 	randomString string
 }
 
 func TestDirectoryAuditReportsTest(t *testing.T) {
-	c := DirectoryAuditReportsTest{
+	c := DirectoryAuditReportsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: test.RandomString(),
 	}
@@ -23,11 +23,11 @@ func TestDirectoryAuditReportsTest(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	auditLogs := testDirectoryAuditReports_List(t, c)
-	testDirectoryAuditReports_Get(t, c, *(*auditLogs)[0].ID)
+	testDirectoryAuditReports_Get(t, c, *(*auditLogs)[0].Id)
 }
 
-func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsTest) (dirLogs *[]msgraph.AuditLog) {
-	dirLogs, status, err := c.client.List(c.connection.Context)
+func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsClientTest) (dirLogs *[]msgraph.AuditLog) {
+	dirLogs, status, err := c.client.List(c.connection.Context, "")
 
 	if status < 200 || status >= 300 {
 		t.Fatalf("DirectoryAuditReportsClient.List(): invalid status: %d", status)
@@ -43,7 +43,7 @@ func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsTest) (
 	return
 }
 
-func testDirectoryAuditReports_Get(t *testing.T, c DirectoryAuditReportsTest, id string) (dirLog *msgraph.AuditLog) {
+func testDirectoryAuditReports_Get(t *testing.T, c DirectoryAuditReportsClientTest, id string) (dirLog *msgraph.AuditLog) {
 	dirLog, status, err := c.client.Get(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryAuditReportsClient.Get(): %v", err)
