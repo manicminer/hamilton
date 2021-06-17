@@ -860,3 +860,66 @@ type VerifiedPublisher struct {
 	DisplayName         *string    `json:"displayName,omitempty"`
 	VerifiedPublisherId *string    `json:"verifiedPublisherId,omitempty"`
 }
+
+type Status struct {
+	ErrorCode         *int32  `json:"errorCode,omitempty"`
+	FailureReason     *string `json:"failureReason,omitempty"`
+	AdditionalDetails *string `json:"additionalDetails,omitempty"`
+}
+
+type DeviceDetail struct {
+	Browser         *string `json:"browser,omitempty"`
+	DeviceId        *string `json:"deviceId,omitempty"`
+	DisplayName     *string `json:"displayName,omitempty"`
+	IsCompliant     *bool   `json:"isCompliant,omitempty"`
+	IsManaged       *bool   `json:"isManaged,omitempty"`
+	OperatingSystem *string `json:"operatingSystem,omitempty"`
+	TrustType       *string `json:"trustType,omitempty"`
+}
+
+type GeoCoordinates struct {
+	Altitude  *float64 `json:"altitude,omitempty"`
+	Latitude  *float64 `json:"latitude,omitempty"`
+	Longitude *float64 `json:"longitude,omitempty"`
+}
+
+type Location struct {
+	City            *string         `json:"city,omitempty"`
+	CountryOrRegion *string         `json:"countryOrRegion,omitempty"`
+	GeoCoordinates  *GeoCoordinates `json:"geoCoordinates,omitempty"`
+	State           *string         `json:"state,omitempty"`
+}
+
+type AppliedConditionalAccessPolicy struct {
+	DisplayName             *string   `json:"displayName,omitempty"`
+	EnforcedGrantControls   *[]string `json:"enforcedGrantControls,omitempty"`
+	EnforcedSessionControls *[]string `json:"enforcedSessionControls,omitempty"`
+	Id                      *string   `json:"id,omitempty"`
+	Result                  *string   `json:"appliedConditionalAccessPolicyResult,omitempty"`
+}
+
+type SignInLog struct {
+	Id                               *string                           `json:"id,omitempty"`
+	CreatedDateTime                  *time.Time                        `json:"createdDateTime,omitempty"`
+	UserDisplayName                  *string                           `json:"userDisplayName,omitempty"`
+	UserPrincipalName                *string                           `json:"userPrincipalName,omitempty"`
+	UserId                           *string                           `json:"userId,omitempty"`
+	AppId                            *string                           `json:"appId,omitempty"`
+	AppDisplayName                   *string                           `json:"appDisplayName,omitempty"`
+	IPAddress                        *string                           `json:"ipAddress,omitempty"`
+	ClientAppUsed                    *string                           `json:"clientAppUsed,omitempty"`
+	CorrelationId                    *string                           `json:"correlationId,omitempty"`
+	ConditionalAccessStatus          *string                           `json:"conditionalAccessStatus,omitempty"`
+	IsInteractive                    *bool                             `json:"isInteractive,omitempty"`
+	RiskDetail                       *string                           `json:"riskDetail,omitempty"`
+	RiskLevelAggregated              *string                           `json:"riskLevelAggregated,omitempty"`
+	RiskLevelDuringSignIn            *string                           `json:"riskLevelDuringSignIn,omitempty"`
+	RiskState                        *string                           `json:"riskState,omitempty"`
+	RiskEventTypes                   *[]string                         `json:"riskEventTypes,omitempty"`
+	ResourceDisplayName              *string                           `json:"resourceDisplayName,omitempty"`
+	ResourceId                       *string                           `json:"resourceId,omitempty"`
+	Status                           *Status                           `json:"status,omitempty"`
+	DeviceDetail                     *DeviceDetail                     `json:"deviceDetail,omitempty"`
+	Location                         *Location                         `json:"location,omitempty"`
+	AppliedConditionalAccessPolicies *[]AppliedConditionalAccessPolicy `json:"appliedConditionalAccessPolicies,omitempty"`
+}
