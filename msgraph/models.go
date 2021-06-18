@@ -197,6 +197,16 @@ type ApplicationApi struct {
 	RequestedAccessTokenVersion *int32                         `json:"requestedAccessTokenVersion,omitempty"`
 }
 
+//Application extension Property
+type ApplicationExtension struct {
+	Id                     *string   `json:"id,omitempty"`
+	AppDisplayName         *string   `json:"appDisplayName,omitempty"`
+	DataType               *string   `json:"dataType,omitempty"`
+	IsSyncedFromOnPremises *bool     `json:"isSyncedFromOnPremises,omitempty"`
+	Name                   *string   `json:"name,omitempty"`
+	TargetObjects          *[]string `json:"targetObjects,omitempty"`
+}
+
 // AppendOAuth2PermissionScope adds a new ApplicationOAuth2PermissionScope to an ApplicationApi, checking to see if it already exists.
 func (a *ApplicationApi) AppendOAuth2PermissionScope(scope PermissionScope) error {
 	if scope.ID == nil {

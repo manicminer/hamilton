@@ -29,6 +29,17 @@ func TestApplicationsClient(t *testing.T) {
 	})
 	testApplicationsClient_Get(t, c, *app.ID)
 	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.randomString))
+	targetObject := []string{"User"}
+	dataType := "String"
+	exName := "extName"
+	newExtension := msgraph.ApplicationExtension{
+		DataType:      &dataType,
+		Name:          &exName,
+		TargetObjects: &targetObject,
+	}
+	extensionId := testApplicationsClient_CreateExtension(t, c, newExtension, *app.ID)
+	testApplicationsClient_ListExtension(t, c, *app.ID)
+	testApplicationsClient_DeleteExtension(t, c, extensionId, *app.ID)
 	testApplicationsClient_Update(t, c, *app)
 	owners := testApplicationsClient_ListOwners(t, c, *app.ID)
 	testApplicationsClient_GetOwner(t, c, *app.ID, (*owners)[0])
@@ -111,6 +122,46 @@ func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id strin
 		t.Fatal("ApplicationsClient.Get(): application was nil")
 	}
 	return
+}
+
+func testApplicationsClient_CreateExtension(t *testing.T, c ApplicationsClientTest, applicationExtention msgraph.ApplicationExtension, id string) string {
+	extension, status, err := c.client.CreateExtension(c.connection.Context, applicationExtention, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.CreateExtension(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.CreateExtension(): invalid status: %d", status)
+	}
+	if extension == nil {
+		t.Fatal("ApplicationsClient.CreateExtension(): extension was nil")
+	}
+	if extension.Id == nil {
+		t.Fatal("ApplicationsClient.CreateExtension(): extension.Id was nil")
+	}
+	return *extension.Id
+}
+
+func testApplicationsClient_ListExtension(t *testing.T, c ApplicationsClientTest, id string) {
+	extension, status, err := c.client.ListExtensions(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.ListExtensions(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.ListExtensions(): invalid status: %d", status)
+	}
+	if extension == nil {
+		t.Fatal("ApplicationsClient.ListExtensions(): extension was nil")
+	}
+}
+
+func testApplicationsClient_DeleteExtension(t *testing.T, c ApplicationsClientTest, extensionId, id string) {
+	status, err := c.client.DeleteExtension(c.connection.Context, extensionId, id)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.ListExtensions(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.ListExtensions(): invalid status: %d", status)
+	}
 }
 
 func testApplicationsClient_GetDeleted(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
