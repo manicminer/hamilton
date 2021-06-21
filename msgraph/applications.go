@@ -525,12 +525,12 @@ func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExt
 }
 
 // DeleteExtension removes an Application Extension.
-func (c *ApplicationsClient) DeleteExtension(ctx context.Context, extensionId, ApplicationId string) (int, error) {
+func (c *ApplicationsClient) DeleteExtension(ctx context.Context, applicationId, extensionId string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/applications/%s/extensionProperties/%s", ApplicationId, extensionId),
+			Entity:      fmt.Sprintf("/applications/%s/extensionProperties/%s", applicationId, extensionId),
 			HasTenantId: true,
 		},
 	})

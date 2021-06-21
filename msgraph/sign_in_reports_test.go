@@ -9,15 +9,13 @@ import (
 )
 
 type SignInReportsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.SignInReportsClient
-	randomString string
+	connection *test.Connection
+	client     *msgraph.SignInReportsClient
 }
 
 func TestSignInReportsTest(t *testing.T) {
 	c := SignInReportsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
+		connection: test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 	}
 	c.client = msgraph.NewSignInLogsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer

@@ -29,12 +29,12 @@ func TestApplicationsClient(t *testing.T) {
 	})
 	testApplicationsClient_Get(t, c, *app.ID)
 	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.randomString))
-	targetObject := []string{"User"}
-	dataType := "String"
-	exName := "extName"
+	targetObject := []msgraph.ApplicationExtensionTargetObject{
+		msgraph.ApplicationExtensionTargetObjectUser,
+	}
 	newExtension := msgraph.ApplicationExtension{
-		DataType:      &dataType,
-		Name:          &exName,
+		DataType:      msgraph.ApplicationExtensionDataTypeString,
+		Name:          utils.StringPtr("extName"),
 		TargetObjects: &targetObject,
 	}
 	extensionId := testApplicationsClient_CreateExtension(t, c, newExtension, *app.ID)
@@ -155,7 +155,7 @@ func testApplicationsClient_ListExtension(t *testing.T, c ApplicationsClientTest
 }
 
 func testApplicationsClient_DeleteExtension(t *testing.T, c ApplicationsClientTest, extensionId, id string) {
-	status, err := c.client.DeleteExtension(c.connection.Context, extensionId, id)
+	status, err := c.client.DeleteExtension(c.connection.Context, id, extensionId)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.ListExtensions(): %v", err)
 	}
