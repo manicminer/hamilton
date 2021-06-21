@@ -14,6 +14,27 @@ func (s StringNullWhenEmpty) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
 }
 
+type ApplicationExtensionDataType string
+
+const (
+	ApplicationExtensionDataTypeBinary       ApplicationExtensionDataType = "Binary"
+	ApplicationExtensionDataTypeBoolean      ApplicationExtensionDataType = "Boolean"
+	ApplicationExtensionDataTypeDateTime     ApplicationExtensionDataType = "DateTime"
+	ApplicationExtensionDataTypeInteger      ApplicationExtensionDataType = "Integer"
+	ApplicationExtensionDataTypeLargeInteger ApplicationExtensionDataType = "LargeInteger"
+	ApplicationExtensionDataTypeString       ApplicationExtensionDataType = "String"
+)
+
+type ApplicationExtensionTargetObject string
+
+const (
+	ApplicationExtensionTargetObjectApplication  ApplicationExtensionTargetObject = "Application"
+	ApplicationExtensionTargetObjectDevice       ApplicationExtensionTargetObject = "Device"
+	ApplicationExtensionTargetObjectGroup        ApplicationExtensionTargetObject = "Group"
+	ApplicationExtensionTargetObjectOrganization ApplicationExtensionTargetObject = "Organization"
+	ApplicationExtensionTargetObjectUser         ApplicationExtensionTargetObject = "User"
+)
+
 type AppRoleAllowedMemberType string
 
 const (
