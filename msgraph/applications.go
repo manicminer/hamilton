@@ -464,3 +464,78 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 	}
 	return status, nil
 }
+
+func (c *ApplicationsClient) ListExtensions(ctx context.Context, id string) (*[]ApplicationExtension, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/applications/%s/extensionProperties", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.List(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		ApplicationExtension []ApplicationExtension `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &data.ApplicationExtension, status, nil
+}
+
+// Create creates a new ApplicationExtention.
+func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExtention ApplicationExtension, id string) (*ApplicationExtension, int, error) {
+	var status int
+	body, err := json.Marshal(applicationExtention)
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/applications/%s/extensionProperties", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+
+	var newApplicationExtension ApplicationExtension
+	if err := json.Unmarshal(respBody, &newApplicationExtension); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newApplicationExtension, status, nil
+}
+
+// DeleteExtension removes an Application Extension.
+func (c *ApplicationsClient) DeleteExtension(ctx context.Context, applicationId, extensionId string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/applications/%s/extensionProperties/%s", applicationId, extensionId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
+	}
+	return status, nil
+}
