@@ -106,7 +106,6 @@ func (c *GroupsClient) Get(ctx context.Context, id string) (*Group, int, error) 
 }
 
 // GetDeleted retrieves a deleted O365 Group.
-// TODO: add test coverage once API supports creating O365 groups.
 func (c *GroupsClient) GetDeleted(ctx context.Context, id string) (*Group, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -170,7 +169,6 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 }
 
 // DeletePermanently removes a deleted O365 Group permanently.
-// TODO: add test coverage once API supports creating O365 groups.
 func (c *GroupsClient) DeletePermanently(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -187,7 +185,6 @@ func (c *GroupsClient) DeletePermanently(ctx context.Context, id string) (int, e
 }
 
 // ListDeleted retrieves a list of recently deleted O365 groups, optionally queried using OData.
-// TODO: add test coverage once API supports creating O365 groups
 func (c *GroupsClient) ListDeleted(ctx context.Context, query odata.Query) (*[]Group, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
@@ -213,7 +210,6 @@ func (c *GroupsClient) ListDeleted(ctx context.Context, query odata.Query) (*[]G
 }
 
 // RestoreDeleted restores a recently deleted O365 Group.
-// TODO: add test coverage once API supports creating O365 groups.
 func (c *GroupsClient) RestoreDeleted(ctx context.Context, id string) (*Group, int, error) {
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,

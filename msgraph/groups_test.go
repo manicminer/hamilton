@@ -83,6 +83,21 @@ func TestGroupsClient(t *testing.T) {
 	testGroupsClient_List(t, c)
 	testGroupsClient_Delete(t, c, *group.ID)
 	testUsersClient_Delete(t, u, *user.ID)
+
+	newGroup365 := msgraph.Group{
+		DisplayName:     utils.StringPtr("Test 365 Group"),
+		GroupTypes:      []msgraph.GroupType{msgraph.GroupTypeUnified},
+		MailEnabled:     utils.BoolPtr(true),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-365-group-%s", c.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+	}
+	group365 := testGroupsClient_Create(t, c, newGroup365)
+	testGroupsClient_Delete(t, c, *group365.ID)
+	testGroupsClient_GetDeleted(t, c, *group365.ID)
+	testGroupsClient_RestoreDeleted(t, c, *group365.ID)
+	testGroupsClient_Delete(t, c, *group365.ID)
+	testGroupsClient_ListDeleted(t, c, *group365.ID)
+	testGroupsClient_DeletePermanently(t, c, *group365.ID)
 }
 
 func testGroupsClient_Create(t *testing.T, c GroupsClientTest, g msgraph.Group) (group *msgraph.Group) {
@@ -144,6 +159,16 @@ func testGroupsClient_Delete(t *testing.T, c GroupsClientTest, id string) {
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("GroupsClient.Delete(): invalid status: %d", status)
+	}
+}
+
+func testGroupsClient_DeletePermanently(t *testing.T, c GroupsClientTest, id string) {
+	status, err := c.client.DeletePermanently(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("GroupsClient.DeletePermanently(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.DeletePermanently(): invalid status: %d", status)
 	}
 }
 
@@ -246,5 +271,68 @@ func testGroupsClient_RemoveMembers(t *testing.T, c GroupsClientTest, groupId st
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("GroupsClient.RemoveMembers(): invalid status: %d", status)
+	}
+}
+
+func testGroupsClient_GetDeleted(t *testing.T, c GroupsClientTest, id string) (group *msgraph.Group) {
+	group, status, err := c.client.GetDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("GroupsClient.GetDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.GetDeleted(): invalid status: %d", status)
+	}
+	if group == nil {
+		t.Fatal("GroupsClient.GetDeleted(): group was nil")
+	}
+	return
+}
+
+func testGroupsClient_ListDeleted(t *testing.T, c GroupsClientTest, expectedId string) (deletedGroups *[]msgraph.Group) {
+	deletedGroups, status, err := c.client.ListDeleted(c.connection.Context, odata.Query{
+		Filter: fmt.Sprintf("id eq '%s'", expectedId),
+		Top:    10,
+	})
+	if err != nil {
+		t.Fatalf("GroupsClient.ListDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.ListDeleted(): invalid status: %d", status)
+	}
+	if deletedGroups == nil {
+		t.Fatal("GroupsClient.ListDeleted(): deletedGroups was nil")
+	}
+	if len(*deletedGroups) == 0 {
+		t.Fatal("GroupsClient.ListDeleted(): expected at least 1 deleted group, was: 0")
+	}
+	found := false
+	for _, group := range *deletedGroups {
+		if group.ID != nil && *group.ID == expectedId {
+			found = true
+			break
+		}
+	}
+	if !found {
+		t.Fatalf("GroupsClient.ListDeleted(): expected group ID %q in result", expectedId)
+	}
+	return
+}
+
+func testGroupsClient_RestoreDeleted(t *testing.T, c GroupsClientTest, id string) {
+	group, status, err := c.client.RestoreDeleted(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("GroupsClient.RestoreDeleted(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.RestoreDeleted(): invalid status: %d", status)
+	}
+	if group == nil {
+		t.Fatal("GroupsClient.RestoreDeleted(): group was nil")
+	}
+	if group.ID == nil {
+		t.Fatal("GroupsClient.RestoreDeleted(): group.ID was nil")
+	}
+	if *group.ID != id {
+		t.Fatal("GroupsClient.RestoreDeleted(): group IDs do not match")
 	}
 }
