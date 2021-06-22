@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type ApplicationsClientTest struct {
@@ -100,7 +101,7 @@ func testApplicationsClient_Update(t *testing.T, c ApplicationsClientTest, a msg
 }
 
 func testApplicationsClient_List(t *testing.T, c ApplicationsClientTest) (applications *[]msgraph.Application) {
-	applications, _, err := c.client.List(c.connection.Context, "")
+	applications, _, err := c.client.List(c.connection.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.List(): %v", err)
 	}
@@ -124,8 +125,8 @@ func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id strin
 	return
 }
 
-func testApplicationsClient_CreateExtension(t *testing.T, c ApplicationsClientTest, applicationExtention msgraph.ApplicationExtension, id string) string {
-	extension, status, err := c.client.CreateExtension(c.connection.Context, applicationExtention, id)
+func testApplicationsClient_CreateExtension(t *testing.T, c ApplicationsClientTest, applicationExtension msgraph.ApplicationExtension, id string) string {
+	extension, status, err := c.client.CreateExtension(c.connection.Context, applicationExtension, id)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.CreateExtension(): %v", err)
 	}
@@ -157,10 +158,10 @@ func testApplicationsClient_ListExtension(t *testing.T, c ApplicationsClientTest
 func testApplicationsClient_DeleteExtension(t *testing.T, c ApplicationsClientTest, extensionId, id string) {
 	status, err := c.client.DeleteExtension(c.connection.Context, id, extensionId)
 	if err != nil {
-		t.Fatalf("ApplicationsClient.ListExtensions(): %v", err)
+		t.Fatalf("ApplicationsClient.DeleteExtension(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ApplicationsClient.ListExtensions(): invalid status: %d", status)
+		t.Fatalf("ApplicationsClient.DeleteExtension(): invalid status: %d", status)
 	}
 }
 
@@ -299,7 +300,10 @@ func testApplicationsClient_RemovePassword(t *testing.T, c ApplicationsClientTes
 }
 
 func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, expectedId string) (deletedApps *[]msgraph.Application) {
-	deletedApps, status, err := c.client.ListDeleted(c.connection.Context, "")
+	deletedApps, status, err := c.client.ListDeleted(c.connection.Context, odata.Query{
+		Filter: fmt.Sprintf("id eq '%s'", expectedId),
+		Top:    10,
+	})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.ListDeleted(): %v", err)
 	}
@@ -310,7 +314,7 @@ func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, 
 		t.Fatal("ApplicationsClient.ListDeleted(): deletedApps was nil")
 	}
 	if len(*deletedApps) == 0 {
-		t.Fatal("ApplicationsClient.ListDeleted(): expected at least 1 deleted application. was: 0")
+		t.Fatal("ApplicationsClient.ListDeleted(): expected at least 1 deleted application, was: 0")
 	}
 	found := false
 	for _, app := range *deletedApps {
@@ -320,7 +324,7 @@ func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, 
 		}
 	}
 	if !found {
-		t.Fatalf("ApplicationsClient.ListDeleted(): expected appId %q in result", expectedId)
+		t.Fatalf("ApplicationsClient.ListDeleted(): expected app ID %q in result", expectedId)
 	}
 	return
 }

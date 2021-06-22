@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type UsersClientTest struct {
@@ -106,7 +107,7 @@ func testUsersClient_Update(t *testing.T, c UsersClientTest, u msgraph.User) {
 }
 
 func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.User) {
-	users, _, err := c.client.List(c.connection.Context, "")
+	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("UsersClient.List(): %v", err)
 	}
@@ -165,7 +166,7 @@ func testUsersClient_DeletePermanently(t *testing.T, c UsersClientTest, id strin
 }
 
 func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id string) (groups *[]msgraph.Group) {
-	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.ListGroupMemberships(): %v", err)
 	}
@@ -182,7 +183,10 @@ func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id st
 }
 
 func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest, expectedId string) (deletedUsers *[]msgraph.User) {
-	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, "")
+	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, odata.Query{
+		Filter: fmt.Sprintf("id eq '%s'", expectedId),
+		Top:    10,
+	})
 	if err != nil {
 		t.Fatalf("UsersClient.ListDeleted(): %v", err)
 	}
