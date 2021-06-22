@@ -1,4 +1,6 @@
-## 0.18.0 (Unreleased)
+## 0.19.0 (Unreleased)
+
+## 0.18.0 (June 22, 2021)
 
 - Support for [application extensions](https://docs.microsoft.com/en-us/graph/api/resources/extensionproperty?view=graph-rest-beta) ([#61](https://github.com/manicminer/hamilton/pull/61))
 - Support for [directory audit and sign-in reports](https://docs.microsoft.com/en-us/graph/api/resources/azure-ad-auditlog-overview?view=graph-rest-beta) ([#61](https://github.com/manicminer/hamilton/pull/61))
