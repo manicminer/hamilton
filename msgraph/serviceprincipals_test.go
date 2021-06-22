@@ -10,6 +10,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type ServicePrincipalsClientTest struct {
@@ -225,7 +226,7 @@ func testServicePrincipalsClient_Update(t *testing.T, c ServicePrincipalsClientT
 }
 
 func testServicePrincipalsClient_List(t *testing.T, c ServicePrincipalsClientTest) (servicePrincipals *[]msgraph.ServicePrincipal) {
-	servicePrincipals, _, err := c.client.List(c.connection.Context, "")
+	servicePrincipals, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.List(): %v", err)
 	}
@@ -260,7 +261,7 @@ func testServicePrincipalsClient_Delete(t *testing.T, c ServicePrincipalsClientT
 }
 
 func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePrincipalsClientTest, id string) (groups *[]msgraph.Group) {
-	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListGroupMemberships(): %v", err)
 	}
@@ -277,9 +278,7 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePri
 }
 
 func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
-	pwd := msgraph.PasswordCredential{
-		DisplayName: utils.StringPtr("test password"),
-	}
+	pwd := msgraph.PasswordCredential{}
 	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
@@ -289,9 +288,6 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsCl
 	}
 	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): nil or empty secretText returned by API")
-	}
-	if *newPwd.DisplayName != *pwd.DisplayName {
-		t.Fatalf("ServicePrincipalsClient.AddPassword(): password names do not match")
 	}
 	return newPwd
 }
@@ -391,16 +387,16 @@ func testServicePrincipalsClient_RemoveOwners(t *testing.T, c ServicePrincipalsC
 func testServicePrincipalsClient_AssignAppRole(t *testing.T, c ServicePrincipalsClientTest, principalId, resourceId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
 	appRoleAssignment, status, err := c.client.AssignAppRoleForResource(c.connection.Context, principalId, resourceId, appRoleId)
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.Create(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.AssignAppRoleForResource(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ServicePrincipalsClient.Create(): invalid status: %d", status)
+		t.Fatalf("ServicePrincipalsClient.AssignAppRoleForResource(): invalid status: %d", status)
 	}
 	if appRoleAssignment == nil {
-		t.Fatal("ServicePrincipalsClient.Create(): appRoleAssignment was nil")
+		t.Fatal("ServicePrincipalsClient.AssignAppRoleForResource(): appRoleAssignment was nil")
 	}
 	if appRoleAssignment.Id == nil {
-		t.Fatal("ServicePrincipalsClient.Create(): appRoleAssignment.Id was nil")
+		t.Fatal("ServicePrincipalsClient.AssignAppRoleForResource(): appRoleAssignment.Id was nil")
 	}
 	return
 }
@@ -408,10 +404,10 @@ func testServicePrincipalsClient_AssignAppRole(t *testing.T, c ServicePrincipals
 func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c ServicePrincipalsClientTest, resourceId string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
 	appRoleAssignments, _, err := c.client.ListAppRoleAssignments(c.connection.Context, resourceId)
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.List(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.ListAppRoleAssignments(): %v", err)
 	}
 	if appRoleAssignments == nil {
-		t.Fatal("ServicePrincipalsClient.List(): appRoleAssignments was nil")
+		t.Fatal("ServicePrincipalsClient.ListAppRoleAssignments(): appRoleAssignments was nil")
 	}
 	return
 }
@@ -419,9 +415,9 @@ func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c ServiceP
 func testServicePrincipalsClient_RemoveAppRoleAssignment(t *testing.T, c ServicePrincipalsClientTest, resourceId, appRoleAssignmentId string) {
 	status, err := c.client.RemoveAppRoleAssignment(c.connection.Context, resourceId, appRoleAssignmentId)
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.Delete(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.RemoveAppRoleAssignment(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ServicePrincipalsClient.Delete(): invalid status: %d", status)
+		t.Fatalf("ServicePrincipalsClient.RemoveAppRoleAssignment(): invalid status: %d", status)
 	}
 }

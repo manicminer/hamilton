@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"github.com/manicminer/hamilton/odata"
 )
@@ -24,17 +23,14 @@ func NewApplicationsClient(tenantId string) *ApplicationsClient {
 	}
 }
 
-// List returns a list of Applications, optionally filtered using OData.
-func (c *ApplicationsClient) List(ctx context.Context, filter string) (*[]Application, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
+// List returns a list of Applications, optionally queried using OData.
+func (c *ApplicationsClient) List(ctx context.Context, query odata.Query) (*[]Application, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/applications",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -194,17 +190,14 @@ func (c *ApplicationsClient) DeletePermanently(ctx context.Context, id string) (
 	return status, nil
 }
 
-// ListDeleted retrieves a list of recently deleted applications, optionally filtered using OData.
-func (c *ApplicationsClient) ListDeleted(ctx context.Context, filter string) (*[]Application, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
+// ListDeleted retrieves a list of recently deleted applications, optionally queried using OData.
+func (c *ApplicationsClient) ListDeleted(ctx context.Context, query odata.Query) (*[]Application, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/directory/deleteditems/microsoft.graph.application",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -317,7 +310,7 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners", id),
-			Params:      url.Values{"$select": []string{"id"}},
+			Params:      odata.Query{Select: []string{"id"}}.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -354,7 +347,7 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s/owners/%s/$ref", applicationId, ownerId),
-			Params:      url.Values{"$select": []string{"id,url"}},
+			Params:      odata.Query{Select: []string{"id", "url"}}.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -492,10 +485,10 @@ func (c *ApplicationsClient) ListExtensions(ctx context.Context, id string) (*[]
 	return &data.ApplicationExtension, status, nil
 }
 
-// Create creates a new ApplicationExtention.
-func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExtention ApplicationExtension, id string) (*ApplicationExtension, int, error) {
+// Create creates a new ApplicationExtension.
+func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExtension ApplicationExtension, id string) (*ApplicationExtension, int, error) {
 	var status int
-	body, err := json.Marshal(applicationExtention)
+	body, err := json.Marshal(applicationExtension)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}

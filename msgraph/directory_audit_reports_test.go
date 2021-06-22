@@ -6,6 +6,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type DirectoryAuditReportsClientTest struct {
@@ -25,7 +26,7 @@ func TestDirectoryAuditReportsTest(t *testing.T) {
 }
 
 func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsClientTest) (dirLogs *[]msgraph.DirectoryAudit) {
-	dirLogs, status, err := c.client.List(c.connection.Context, "")
+	dirLogs, status, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
 
 	if status < 200 || status >= 300 {
 		t.Fatalf("DirectoryAuditReportsClient.List(): invalid status: %d", status)

@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type GroupsClientTest struct {
@@ -112,7 +113,7 @@ func testGroupsClient_Update(t *testing.T, c GroupsClientTest, g msgraph.Group) 
 }
 
 func testGroupsClient_List(t *testing.T, c GroupsClientTest) (groups *[]msgraph.Group) {
-	groups, _, err := c.client.List(c.connection.Context, "")
+	groups, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("GroupsClient.List(): %v", err)
 	}

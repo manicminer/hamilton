@@ -310,26 +310,26 @@ func testAppRoleAssignmentsClient_List(t *testing.T, c AppRoleAssignmentsClientT
 func testAppRoleAssignmentsClient_Remove(t *testing.T, c AppRoleAssignmentsClientTest, id, appRoleAssignmentId string) {
 	status, err := c.client.Remove(c.connection.Context, id, appRoleAssignmentId)
 	if err != nil {
-		t.Fatalf("AppRoleAssignmentsClient.Delete(): %v", err)
+		t.Fatalf("AppRoleAssignmentsClient.Remove(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("AppRoleAssignmentsClient.Delete(): invalid status: %d", status)
+		t.Fatalf("AppRoleAssignmentsClient.Remove(): invalid status: %d", status)
 	}
 }
 
 func testAppRoleAssignmentsClient_Assign(t *testing.T, c AppRoleAssignmentsClientTest, principalId, resourceServicePrincipalId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
 	appRoleAssignment, status, err := c.client.Assign(c.connection.Context, principalId, resourceServicePrincipalId, appRoleId)
 	if err != nil {
-		t.Fatalf("AppRoleAssignmentsClient.Create(): %v", err)
+		t.Fatalf("AppRoleAssignmentsClient.Assign(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("AppRoleAssignmentsClient.Create(): invalid status: %d", status)
+		t.Fatalf("AppRoleAssignmentsClient.Assign(): invalid status: %d", status)
 	}
 	if appRoleAssignment == nil {
-		t.Fatal("AppRoleAssignmentsClient.Create(): appRoleAssignment was nil")
+		t.Fatal("AppRoleAssignmentsClient.Assign(): appRoleAssignment was nil")
 	}
 	if appRoleAssignment.Id == nil {
-		t.Fatal("AppRoleAssignmentsClient.Create(): appRoleAssignment.Id was nil")
+		t.Fatal("AppRoleAssignmentsClient.Assign(): appRoleAssignment.Id was nil")
 	}
 	return
 }

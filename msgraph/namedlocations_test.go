@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type NamedLocationsClientTest struct {
@@ -59,7 +60,7 @@ func TestNamedLocationsClient(t *testing.T) {
 	testNamedLocationsClient_UpdateIP(t, c, *ipNamedLocation)
 	testNamedLocationsClient_UpdateCountry(t, c, *countryNamedLocation)
 
-	testNamedLocationsClient_List(t, c, "")
+	testNamedLocationsClient_List(t, c)
 	// Running get after the update to give the API a chance to catch up
 	testNamedLocationsClient_GetIP(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_GetCountry(t, c, *countryNamedLocation.ID)
@@ -107,13 +108,13 @@ func testNamedLocationsClient_CreateCountry(t *testing.T, c NamedLocationsClient
 func testNamedLocationsClient_GetIP(t *testing.T, c NamedLocationsClientTest, id string) (ipNamedLocation *msgraph.IPNamedLocation) {
 	ipNamedLocation, status, err := c.client.GetIP(c.connection.Context, id)
 	if err != nil {
-		t.Fatalf("IPNamedLocationsClient.Get(): %v", err)
+		t.Fatalf("IPNamedLocationsClient.GetIP(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("IPNamedLocationsClient.Get(): invalid status: %d", status)
+		t.Fatalf("IPNamedLocationsClient.GetIP(): invalid status: %d", status)
 	}
 	if ipNamedLocation == nil {
-		t.Fatal("IPNamedLocationsClient.Get(): ipNamedLocation was nil")
+		t.Fatal("IPNamedLocationsClient.GetIP(): ipNamedLocation was nil")
 	}
 	return
 }
@@ -171,8 +172,8 @@ func testNamedLocationsClient_UpdateCountry(t *testing.T, c NamedLocationsClient
 	}
 }
 
-func testNamedLocationsClient_List(t *testing.T, c NamedLocationsClientTest, f string) (namedLocations *[]msgraph.NamedLocation) {
-	namedLocations, _, err := c.client.List(c.connection.Context, f)
+func testNamedLocationsClient_List(t *testing.T, c NamedLocationsClientTest) (namedLocations *[]msgraph.NamedLocation) {
+	namedLocations, _, err := c.client.List(c.connection.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.List(): %v", err)
 	}
