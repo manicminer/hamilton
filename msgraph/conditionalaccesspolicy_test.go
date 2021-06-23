@@ -35,7 +35,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	c.usersClient = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
 	c.usersClient.BaseClient.Authorizer = c.connection.Authorizer
 
-	testAppId := string(environments.PublishedApis["AzureDevOps"])
+	testAppId := string(environments.PublishedApis["Office365ExchangeOnline"])
 	testIncGroup := testGroup_Create(t, c, "inc")
 	testExcGroup := testGroup_Create(t, c, "exc")
 	testUser := testUser_Create(t, c)
