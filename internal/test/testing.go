@@ -2,6 +2,7 @@ package test
 
 import (
 	"context"
+	"encoding/base64"
 	"log"
 	"os"
 
@@ -10,12 +11,13 @@ import (
 )
 
 var (
-	tenantId           = os.Getenv("TENANT_ID")
-	tenantDomain       = os.Getenv("TENANT_DOMAIN")
-	clientId           = os.Getenv("CLIENT_ID")
-	clientCertificate  = os.Getenv("CLIENT_CERTIFICATE")
-	clientCertPassword = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
-	clientSecret       = os.Getenv("CLIENT_SECRET")
+	tenantId              = os.Getenv("TENANT_ID")
+	tenantDomain          = os.Getenv("TENANT_DOMAIN")
+	clientId              = os.Getenv("CLIENT_ID")
+	clientCertificate     = os.Getenv("CLIENT_CERTIFICATE")
+	clientCertificatePath = os.Getenv("CLIENT_CERTIFICATE_PATH")
+	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
+	clientSecret          = os.Getenv("CLIENT_SECRET")
 )
 
 type Connection struct {
@@ -27,13 +29,21 @@ type Connection struct {
 
 // NewConnection configures and returns a Connection for use in tests.
 func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
+	var pfx []byte
+	if clientCertificate != "" {
+		_, err := base64.RawStdEncoding.Decode(pfx, []byte(clientCertificate))
+		if err != nil {
+			log.Fatalf("test.NewConnection(): could not decode value of CLIENT_CERTIFICATE: %v", err)
+		}
+	}
 	t := Connection{
 		AuthConfig: &auth.Config{
 			Environment:            environments.Global,
 			Version:                tokenVersion,
 			TenantID:               tenantId,
 			ClientID:               clientId,
-			ClientCertPath:         clientCertificate,
+			ClientCertData:         pfx,
+			ClientCertPath:         clientCertificatePath,
 			ClientCertPassword:     clientCertPassword,
 			ClientSecret:           clientSecret,
 			EnableClientCertAuth:   true,
