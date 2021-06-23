@@ -31,10 +31,12 @@ type Connection struct {
 func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
 	var pfx []byte
 	if clientCertificate != "" {
-		_, err := base64.RawStdEncoding.Decode(pfx, []byte(clientCertificate))
+		out := make([]byte, base64.StdEncoding.DecodedLen(len(clientCertificate)))
+		n, err := base64.StdEncoding.Decode(out, []byte(clientCertificate))
 		if err != nil {
 			log.Fatalf("test.NewConnection(): could not decode value of CLIENT_CERTIFICATE: %v", err)
 		}
+		pfx = out[:n]
 	}
 	t := Connection{
 		AuthConfig: &auth.Config{
