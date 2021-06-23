@@ -149,11 +149,11 @@ func TestAzureCliAuthorizer(t *testing.T) {
 func TestMsiAuthorizer(t *testing.T) {
 	ctx := context.Background()
 	if msiToken != "" {
+		msiEndpoint = "http://localhost:8080/metadata/identity/oauth2/token"
 		done := test.MsiStubServer(ctx, 8080, msiToken)
 		defer func() {
 			done <- true
 		}()
-		msiEndpoint = "http://localhost:8080/metadata/identity/oauth2/token"
 	}
 	auth, err := auth.NewMsiAuthorizer(ctx, environments.Global, auth.MsGraph, msiEndpoint)
 	if err != nil {
