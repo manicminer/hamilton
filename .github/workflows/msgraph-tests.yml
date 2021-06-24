@@ -6,7 +6,6 @@ on:
     paths:
       - "msgraph/**.go"
       - ".github/workflows/msgraph-tests.yml"
-      - "**"
 
 jobs:
   test:
