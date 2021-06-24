@@ -3,9 +3,13 @@ name: Scheduled cleanup
 on:
   schedule:
     - cron: "58 * * * *"
+  pull_request:
+    types: ["opened", "synchronize"]
+    paths:
+      - ".github/workflows/scheduled-cleanup.yml"
 
 jobs:
-  test:
+  cleanup:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: true

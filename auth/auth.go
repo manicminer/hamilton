@@ -4,8 +4,10 @@ import (
 	"context"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/base64"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"strings"
 
 	"golang.org/x/crypto/pkcs12"
@@ -44,6 +46,17 @@ const (
 // environment. If any authentication mechanism fails due to misconfiguration or some other error, the function
 // will return (nil, error) and later mechanisms will not be attempted.
 func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error) {
+	redact := func(str string) string {
+		head := str[:4]
+		tail := str[4:]
+		mask := strings.Repeat("x", len(tail))
+		return fmt.Sprintf("%v%v", head, mask)
+	}
+	log.Printf("c.EnableClientCertAuth = %t\n", c.EnableClientCertAuth)
+	log.Printf("c.TenantID = %s\n", redact(c.TenantID))
+	log.Printf("c.ClientID = %s\n", redact(c.ClientID))
+	log.Printf("c.ClientCertData = %s\n", redact(base64.StdEncoding.EncodeToString(c.ClientCertData)))
+	log.Printf("c.ClientCertPassword = %s\n", redact(c.ClientCertPassword+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"))
 	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && (len(c.ClientCertData) > 0 || strings.TrimSpace(c.ClientCertPath) != "") {
 		a, err := NewClientCertificateAuthorizer(ctx, c.Environment, api, c.Version, c.TenantID, c.ClientID, c.ClientCertData, c.ClientCertPath, c.ClientCertPassword)
 		if err != nil {
