@@ -72,13 +72,13 @@ func TestServicePrincipalsClient(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Parent"),
+		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Child"),
+		DisplayName:     utils.StringPtr("test-group-servicePrincipal-child"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -124,7 +124,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
 	// create a new test application with a test app role
 	app := testApplicationsClient_Create(t, a, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", a.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-appRoleAssignments-%s", a.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
 				ID:          utils.StringPtr(testResourceAppRoleId),
@@ -158,13 +158,13 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Parent"),
+		DisplayName:     utils.StringPtr("test-group-parent-servicePrincipals-appRoleAssignments"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Child"),
+		DisplayName:     utils.StringPtr("test-group-child-servicePrincipals-appRoleAssignments"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),

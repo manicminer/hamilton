@@ -36,8 +36,8 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	c.usersClient.BaseClient.Authorizer = c.connection.Authorizer
 
 	testAppId := string(environments.PublishedApis["Office365ExchangeOnline"])
-	testIncGroup := testGroup_Create(t, c, "inc")
-	testExcGroup := testGroup_Create(t, c, "exc")
+	testIncGroup := testGroup_Create(t, c, "test-conditionalAccessPolicy-inc")
+	testExcGroup := testGroup_Create(t, c, "test-conditionalAccessPolicy-exc")
 	testUser := testUser_Create(t, c)
 
 	// act
@@ -146,9 +146,9 @@ func testConditionalAccessPolicysClient_Delete(t *testing.T, c ConditionalAccess
 
 func testGroup_Create(t *testing.T, c ConditionalAccessPolicyTest, prefix string) (group *msgraph.Group) {
 	group, _, err := c.groupsClient.Create(c.connection.Context, msgraph.Group{
-		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-test-group-%s", prefix, c.randomString)),
+		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", prefix, c.randomString)),
 		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-test-group-%s", prefix, c.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", prefix, c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	})
 
@@ -168,7 +168,7 @@ func testGroup_Delete(t *testing.T, c ConditionalAccessPolicyTest, group *msgrap
 func testUser_Create(t *testing.T, c ConditionalAccessPolicyTest) (user *msgraph.User) {
 	user, _, err := c.usersClient.Create(c.connection.Context, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("Test User"),
+		DisplayName:       utils.StringPtr("test-user-conditionalAccessPolicy"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{

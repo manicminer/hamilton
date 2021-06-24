@@ -43,7 +43,7 @@ func TestGroupsClient(t *testing.T) {
 	u.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	newGroup := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group"),
+		DisplayName:     utils.StringPtr("test-group"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -64,7 +64,7 @@ func TestGroupsClient(t *testing.T) {
 
 	user := testUsersClient_Create(t, u, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("Test User"),
+		DisplayName:       utils.StringPtr("test-user"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
@@ -85,7 +85,7 @@ func TestGroupsClient(t *testing.T) {
 	testUsersClient_Delete(t, u, *user.ID)
 
 	newGroup365 := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test 365 Group"),
+		DisplayName:     utils.StringPtr("test-group-365"),
 		GroupTypes:      []msgraph.GroupType{msgraph.GroupTypeUnified},
 		MailEnabled:     utils.BoolPtr(true),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-365-group-%s", c.randomString)),

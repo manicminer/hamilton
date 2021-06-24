@@ -54,7 +54,7 @@ func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
 
 	// create a new test group
 	newGroup := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group"),
+		DisplayName:     utils.StringPtr("test-group-appRoleAssignments"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", groupsClient.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -65,7 +65,7 @@ func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
 	// create a new test application with a test resourceApp role
 	resourceApp := testApplicationsClient_Create(t, appClient, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", appClient.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-appRoleAssignments-%s", appClient.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
 				ID:          utils.StringPtr(testResourceAppRoleId),
@@ -144,7 +144,7 @@ func TestUsersAppRoleAssignmentsClient(t *testing.T) {
 	// create a new test user
 	newUser := msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("Test User"),
+		DisplayName:       utils.StringPtr("test-user-appRoleAssignments"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", usersClient.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", usersClient.randomString, usersClient.connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
@@ -157,7 +157,7 @@ func TestUsersAppRoleAssignmentsClient(t *testing.T) {
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
 	// create a new test application with a test resourceApp role
 	resourceApp := testApplicationsClient_Create(t, appClient, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", appClient.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-appRoleAssignments-%s", appClient.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
 				ID:          utils.StringPtr(testResourceAppRoleId),
@@ -229,7 +229,7 @@ func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
 	// create a new test application with a test resourceApp role
 	resourceApp := testApplicationsClient_Create(t, appClient, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", appClient.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-appRoleAssignments-%s", appClient.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
 				ID:          utils.StringPtr(testResourceAppRoleId),
@@ -255,7 +255,7 @@ func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
 
 	// create a new test 2 application
 	clientApp := testApplicationsClient_Create(t, appClient, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-2-application-%s", appClient.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-appRoleAssignments-2-%s", appClient.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
 				ID:          utils.StringPtr(testResourceAppRoleId),

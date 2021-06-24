@@ -28,7 +28,7 @@ func TestUsersClient(t *testing.T) {
 
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("Test User"),
+		DisplayName:       utils.StringPtr("test-user"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
@@ -48,13 +48,13 @@ func TestUsersClient(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Parent"),
+		DisplayName:     utils.StringPtr("test-group-parent-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Child"),
+		DisplayName:     utils.StringPtr("test-group-child-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
