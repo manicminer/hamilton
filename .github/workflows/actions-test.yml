@@ -1,0 +1,30 @@
+name: Actions testing
+on:
+  pull_request:
+    types: ["opened", "synchronize"]
+    paths:
+      - "msgraph/**.go"
+      - ".github/workflows/*.yml"
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: secrets check
+        run: |
+          [ "${TENANT_DOMAIN}" = "" ] || TENANT_DOMAIN is set
+          [ "${TENANT_ID}" = "" ] || TENANT_ID is set
+          [ "${CLIENT_ID}" = "" ] || CLIENT_ID is set
+          [ "${CLIENT_CERTIFICATE}" = "" ] || CLIENT_CERTIFICATE is set
+          [ "${CLIENT_CERTIFICATE_PASSWORD}" = "" ] || CLIENT_CERTIFICATE_PASSWORD is set
+          [ "${TENANT_DOMAIN}" = "" ] || TENANT_DOMAIN is set
+        env:
+          TENANT_DOMAIN: ${{ secrets.TENANT_DOMAIN }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+          CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CLIENT_CERTIFICATE_PASSWORD }}
+
+# vim: set ts=2 sts=2 sw=2 et:
