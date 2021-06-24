@@ -2,9 +2,10 @@ package test
 
 import (
 	"context"
-	"encoding/base64"
 	"log"
 	"os"
+
+	"github.com/manicminer/hamilton/internal/utils"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
@@ -29,22 +30,13 @@ type Connection struct {
 
 // NewConnection configures and returns a Connection for use in tests.
 func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
-	var pfx []byte
-	if clientCertificate != "" {
-		out := make([]byte, base64.StdEncoding.DecodedLen(len(clientCertificate)))
-		n, err := base64.StdEncoding.Decode(out, []byte(clientCertificate))
-		if err != nil {
-			log.Fatalf("test.NewConnection(): could not decode value of CLIENT_CERTIFICATE: %v", err)
-		}
-		pfx = out[:n]
-	}
 	t := Connection{
 		AuthConfig: &auth.Config{
 			Environment:            environments.Global,
 			Version:                tokenVersion,
 			TenantID:               tenantId,
 			ClientID:               clientId,
-			ClientCertData:         pfx,
+			ClientCertData:         utils.Base64DecodeCertificate(clientCertificate),
 			ClientCertPath:         clientCertificatePath,
 			ClientCertPassword:     clientCertPassword,
 			ClientSecret:           clientSecret,

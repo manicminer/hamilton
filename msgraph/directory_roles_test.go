@@ -41,7 +41,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 
 	// create a new test group which can be later assigned as a member of the previously listed directory role
 	newGroup := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group"),
+		DisplayName:     utils.StringPtr("test-group-directoryRoles"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", groupsClient.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),

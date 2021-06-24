@@ -35,7 +35,7 @@ const (
 // Whether one of these is returned depends on whether it is enabled in the Config, and whether sufficient
 // configuration fields are set to enable that authentication method.
 //
-// For client certificate authentication, specify TenantID, ClientID and ClientCertPath.
+// For client certificate authentication, specify TenantID, ClientID and ClientCertData / ClientCertPath.
 // For client secret authentication, specify TenantID, ClientID and ClientSecret.
 // MSI authentication (if enabled) using the Azure Metadata Service is then attempted
 // Azure CLI authentication (if enabled) is attempted last
@@ -44,7 +44,7 @@ const (
 // environment. If any authentication mechanism fails due to misconfiguration or some other error, the function
 // will return (nil, error) and later mechanisms will not be attempted.
 func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error) {
-	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && strings.TrimSpace(c.ClientCertPath) != "" {
+	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && (len(c.ClientCertData) > 0 || strings.TrimSpace(c.ClientCertPath) != "") {
 		a, err := NewClientCertificateAuthorizer(ctx, c.Environment, api, c.Version, c.TenantID, c.ClientID, c.ClientCertData, c.ClientCertPath, c.ClientCertPassword)
 		if err != nil {
 			return nil, fmt.Errorf("could not configure ClientCertificate Authorizer: %s", err)

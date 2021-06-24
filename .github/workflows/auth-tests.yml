@@ -1,0 +1,41 @@
+---
+name: Tests - auth
+on:
+  pull_request:
+    types: ["opened", "synchronize"]
+    paths:
+      - "auth/**.go"
+      - ".github/workflows/auth-tests.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Azure CLI login
+        uses: azure/login@v1
+        with:
+          allow-no-subscriptions: true
+          creds: '{"clientId":"${{ secrets.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","tenantId":"${{ secrets.TENANT_ID }}"}'
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.4
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: go test --race -v ./auth
+        env:
+          TENANT_DOMAIN: ${{ secrets.TENANT_DOMAIN }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+          CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CLIENT_CERTIFICATE_PASSWORD }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          MSI_TOKEN: ${{ secrets.MSI_TOKEN }}
+
+# vim: set ts=2 sts=2 sw=2 et:
