@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // SchemaExtensionsClient performs operations on Schema Extensions.
@@ -22,16 +23,13 @@ func NewSchemaExtensionsClient(tenantId string) *SchemaExtensionsClient {
 }
 
 // List returns a list of Schema Extensions, optionally filtered using OData.
-func (c *SchemaExtensionsClient) List(ctx context.Context, filter string) (*[]SchemaExtension, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
+func (c *SchemaExtensionsClient) List(ctx context.Context, query odata.Query) (*[]SchemaExtension, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/schemaExtensions",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
