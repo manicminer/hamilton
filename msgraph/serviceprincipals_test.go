@@ -41,7 +41,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 	sp := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
 		AccountEnabled: utils.BoolPtr(true),
 		AppId:          app.AppId,
-		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    app.DisplayName,
 	})
 
 	appChild := testApplicationsClient_Create(t, a, msgraph.Application{
@@ -50,7 +50,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 	spChild := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
 		AccountEnabled: utils.BoolPtr(true),
 		AppId:          appChild.AppId,
-		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-child%s", c.randomString)),
+		DisplayName:    appChild.DisplayName,
 	})
 
 	spChild.AppendOwner(string(c.client.BaseClient.Endpoint), string(c.client.BaseClient.ApiVersion), *sp.ID)
@@ -143,7 +143,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	sp := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
 		AccountEnabled: utils.BoolPtr(true),
 		AppId:          app.AppId,
-		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    app.DisplayName,
 	})
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
