@@ -8,7 +8,7 @@ on:
       - ".github/workflows/msgraph-tests.yml"
 
 jobs:
-  test:
+  test-msgraph:
     runs-on: self-hosted
     strategy:
       fail-fast: true
@@ -22,12 +22,6 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Test
-        run: go test --race -v ./msgraph
-        env:
-          TENANT_DOMAIN: ${{ secrets.TENANT_DOMAIN }}
-          TENANT_ID: ${{ secrets.TENANT_ID }}
-          CLIENT_ID: ${{ secrets.CLIENT_ID }}
-          CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
-          CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CLIENT_CERTIFICATE_PASSWORD }}
+        run: go test -count=1 -race -v ./msgraph
 
 # vim: set ts=2 sts=2 sw=2 et:
