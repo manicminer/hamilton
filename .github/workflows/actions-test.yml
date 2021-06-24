@@ -14,12 +14,12 @@ jobs:
     steps:
       - name: secrets check
         run: |
-          [ "${TENANT_DOMAIN}" = "" ] || TENANT_DOMAIN is set
-          [ "${TENANT_ID}" = "" ] || TENANT_ID is set
-          [ "${CLIENT_ID}" = "" ] || CLIENT_ID is set
-          [ "${CLIENT_CERTIFICATE}" = "" ] || CLIENT_CERTIFICATE is set
-          [ "${CLIENT_CERTIFICATE_PASSWORD}" = "" ] || CLIENT_CERTIFICATE_PASSWORD is set
-          [ "${TENANT_DOMAIN}" = "" ] || TENANT_DOMAIN is set
+          [ "${TENANT_DOMAIN}" = "" ] || echo TENANT_DOMAIN is set
+          [ "${TENANT_ID}" = "" ] || echo TENANT_ID is set
+          [ "${CLIENT_ID}" = "" ] || echo CLIENT_ID is set
+          [ "${CLIENT_CERTIFICATE}" = "" ] || echo CLIENT_CERTIFICATE is set
+          [ "${CLIENT_CERTIFICATE_PASSWORD}" = "" ] || echo CLIENT_CERTIFICATE_PASSWORD is set
+          [ "${TENANT_DOMAIN}" = "" ] || echo TENANT_DOMAIN is set
         env:
           TENANT_DOMAIN: ${{ secrets.TENANT_DOMAIN }}
           TENANT_ID: ${{ secrets.TENANT_ID }}
