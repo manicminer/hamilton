@@ -21,15 +21,13 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 var (
-	tenantId           = os.Getenv("TENANT_ID")
-	tenantDomain       = os.Getenv("TENANT_DOMAIN")
-	clientId           = os.Getenv("CLIENT_ID")
-	clientCertificate  = os.Getenv("CLIENT_CERTIFICATE")
-	clientCertPassword = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
-	clientSecret       = os.Getenv("CLIENT_SECRET")
+	tenantId     = os.Getenv("TENANT_ID")
+	clientId     = os.Getenv("CLIENT_ID")
+	clientSecret = os.Getenv("CLIENT_SECRET")
 )
 
 func main() {
@@ -51,14 +49,15 @@ func main() {
 	client := msgraph.NewUsersClient(tenantId)
 	client.BaseClient.Authorizer = authorizer
 
-	users, _, err := client.List(ctx, "")
+	users, _, err := client.List(ctx, odata.Query{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	if users == nil {
-		log.Fatalln("bad API response, nil result received")
+		log.Println("bad API response, nil result received")
+		return
 	}
-
 	for _, user := range *users {
 		fmt.Printf("%s: %s <%s>\n", *user.ID, *user.DisplayName, *user.UserPrincipalName)
 	}

@@ -565,6 +565,23 @@ func (g *Group) AppendOwner(endpoint environments.ApiEndpoint, apiVersion ApiVer
 	g.Owners = &owners
 }
 
+// HasTypes returns true if the group has all the specified GroupTypes
+func (g *Group) HasTypes(types []GroupType) bool {
+	for _, t := range types {
+		found := false
+		for _, gt := range g.GroupTypes {
+			if t == gt {
+				found = true
+				break
+			}
+		}
+		if !found {
+			return false
+		}
+	}
+	return true
+}
+
 type GroupAssignedLabel struct {
 	LabelId     *string `json:"labelId,omitempty"`
 	DisplayName *string `json:"displayNanme,omitempty"`

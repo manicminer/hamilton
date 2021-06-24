@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // SignInReports Client performs operations on Sign in reports.
@@ -21,17 +22,14 @@ func NewSignInLogsClient(tenantId string) *SignInReportsClient {
 	}
 }
 
-// List returns a list of Sign-in Reports, optionally filtered using OData.
-func (c *SignInReportsClient) List(ctx context.Context, filter string) (*[]SignInReport, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
+// List returns a list of Sign-in Reports, optionally queried using OData.
+func (c *SignInReportsClient) List(ctx context.Context, query odata.Query) (*[]SignInReport, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/auditLogs/signIns",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})

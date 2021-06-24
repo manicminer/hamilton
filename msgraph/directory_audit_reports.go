@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // DirectoryAuditReportsClient performs operations on directory Audit reports.
@@ -21,17 +22,14 @@ func NewDirectoryAuditReportsClient(tenantId string) *DirectoryAuditReportsClien
 	}
 }
 
-// List returns a list of Directory audit report logs, optionally filtered using OData.
-func (c *DirectoryAuditReportsClient) List(ctx context.Context, filter string) (*[]DirectoryAudit, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
+// List returns a list of Directory audit report logs, optionally queried using OData.
+func (c *DirectoryAuditReportsClient) List(ctx context.Context, query odata.Query) (*[]DirectoryAudit, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/auditLogs/directoryAudits",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})

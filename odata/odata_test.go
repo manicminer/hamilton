@@ -87,6 +87,21 @@ func TestError(t *testing.T) {
 }`,
 			expected: "Request_InvalidDataContractVersion: The specified api-version is invalid. The value must exactly match a supported version.",
 		},
+		{
+			response: `{
+  "error": {
+    "code": "BadRequest",
+    "message": "The server could not process the request because it is malformed or incorrect.",
+    "innerError": {
+      "message": "1034: Policy contains invalid applications: {\"499b84ac-1321-427f-aa17-267ca6975798\":\"ServicePrincipalNotFound\"}",
+      "date": "2021-06-23T21:54:16",
+      "request-id": "4486d728-c654-4a30-bf71-bd5035f008a4",
+      "client-request-id": "4486d728-c654-4a30-bf71-bd5035f008a4"
+    }
+  }
+}`,
+			expected: "BadRequest: The server could not process the request because it is malformed or incorrect.: 1034: Policy contains invalid applications: {\"499b84ac-1321-427f-aa17-267ca6975798\":\"ServicePrincipalNotFound\"}",
+		},
 	}
 
 	for n, c := range testCases {

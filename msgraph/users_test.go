@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type UsersClientTest struct {
@@ -27,7 +28,7 @@ func TestUsersClient(t *testing.T) {
 
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("Test User"),
+		DisplayName:       utils.StringPtr("test-user"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
@@ -47,13 +48,13 @@ func TestUsersClient(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Parent"),
+		DisplayName:     utils.StringPtr("test-group-parent-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Child"),
+		DisplayName:     utils.StringPtr("test-group-child-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -106,7 +107,7 @@ func testUsersClient_Update(t *testing.T, c UsersClientTest, u msgraph.User) {
 }
 
 func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.User) {
-	users, _, err := c.client.List(c.connection.Context, "")
+	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("UsersClient.List(): %v", err)
 	}
@@ -165,7 +166,7 @@ func testUsersClient_DeletePermanently(t *testing.T, c UsersClientTest, id strin
 }
 
 func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id string) (groups *[]msgraph.Group) {
-	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.ListGroupMemberships(): %v", err)
 	}
@@ -182,7 +183,10 @@ func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id st
 }
 
 func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest, expectedId string) (deletedUsers *[]msgraph.User) {
-	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, "")
+	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, odata.Query{
+		Filter: fmt.Sprintf("id eq '%s'", expectedId),
+		Top:    10,
+	})
 	if err != nil {
 		t.Fatalf("UsersClient.ListDeleted(): %v", err)
 	}
