@@ -1,7 +1,33 @@
-## 0.18.0 (Unreleased)
+## 0.19.0 (Unreleased)
+
+⚠️ BREAKING CHANGES:
+
+- Support for passing the raw bytes of a PKCS#12 bundle when using client certificate authentication. This alters the method signature of `auth.NewClientCertificateAuthorizer()` but does not affect the use of a PFX file read from the filesystem. See [#65](https://github.com/manicminer/hamilton/pull/65) for details and example usage.
+
+## 0.18.0 (June 22, 2021)
 
 - Support for [application extensions](https://docs.microsoft.com/en-us/graph/api/resources/extensionproperty?view=graph-rest-beta) ([#61](https://github.com/manicminer/hamilton/pull/61))
 - Support for [directory audit and sign-in reports](https://docs.microsoft.com/en-us/graph/api/resources/azure-ad-auditlog-overview?view=graph-rest-beta) ([#61](https://github.com/manicminer/hamilton/pull/61))
+
+⚠️ BREAKING CHANGES:
+
+- This release introduces support for [OData query parameters](https://docs.microsoft.com/en-us/graph/query-parameters) via a new type `odata.Query{}`. Instead of accepting just a filter string, all clients now accept an instance of `odata.Query{}` on relevant List methods which encapsulates any combination of odata queries such as `$filter`, `$search`, `$top` etc. All documented parameters are supported and wrapped lightly where appropriate.  ([#63](https://github.com/manicminer/hamilton/pull/63))
+- Updating to this release will require changes to affected method calls, for example:
+  ```go
+  apps, status, err := appsClient.List(ctx, odata.Query{
+  	Filter: fmt.Sprintf("startsWith(displayName,'%s')", searchTerm),
+  	OrderBy: odata.OrderBy{
+  		Field:     "displayName",
+  		Direction: "asc",
+  	},
+  	Top: 10,
+  })
+  ```
+- Where an empty filter string was previously specified, it should be replaced with an empty `odata.Query{}` struct:
+  ```go
+  apps, status, err := appsClient.List(ctx, odata.Query{})
+  ```
+
 
 ## 0.17.0 (June 15, 2021)
 

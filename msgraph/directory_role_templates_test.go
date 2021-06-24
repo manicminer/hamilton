@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
@@ -38,8 +39,13 @@ func TestDirectoryRoleTemplatesClient(t *testing.T) {
 
 	// activate a directory role in the tenant using role template id if not already activated
 	// https://docs.microsoft.com/en-us/azure/active-directory/roles/permissions-reference
-	globalAdministratorRoleId := "62e90394-69f5-4237-9190-012177145e10"
-	testDirectoryRolesClient_Activate(t, dirRolesClient, globalAdministratorRoleId)
+	var globalReaderRoleId string
+	for _, template := range *directoryRoleTemplates {
+		if strings.EqualFold(*template.DisplayName, "Global Reader") {
+			globalReaderRoleId = *template.ID
+		}
+	}
+	testDirectoryRolesClient_Activate(t, dirRolesClient, globalReaderRoleId)
 }
 
 func testDirectoryRoleTemplatesClient_List(t *testing.T, c DirectoryRoleTemplatesClientTest) (directoryRoleTemplates *[]msgraph.DirectoryRoleTemplate) {
@@ -90,7 +96,6 @@ func testDirectoryRolesClient_Activate(t *testing.T, c DirectoryRolesClientTest,
 
 	// attempt to activate directory role if not already present in the directory
 	if dirRole := findDirRoleByRoleTemplateId(*directoryRoles, roleTemplateId); dirRole == nil {
-		t.Log("activating DirectoryRolesClientTest", roleTemplateId)
 		directoryRole, status, err := c.client.Activate(c.connection.Context, roleTemplateId)
 		if err != nil {
 			t.Fatalf("DirectoryRolesClient.Activate(): %v", err)
@@ -104,7 +109,6 @@ func testDirectoryRolesClient_Activate(t *testing.T, c DirectoryRolesClientTest,
 	}
 
 	// attempt to activate directory role a second time to test the API error handling
-	t.Log("activating DirectoryRolesClientTest", roleTemplateId)
 	directoryRole, status, err := c.client.Activate(c.connection.Context, roleTemplateId)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.Activate() [attempt 2]: %v", err)

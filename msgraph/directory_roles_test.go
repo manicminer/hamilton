@@ -41,7 +41,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 
 	// create a new test group which can be later assigned as a member of the previously listed directory role
 	newGroup := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group"),
+		DisplayName:     utils.StringPtr("test-group-directoryRoles"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", groupsClient.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -55,10 +55,10 @@ func TestDirectoryRolesClient(t *testing.T) {
 	directoryRole.AppendMember(dirRolesClient.client.BaseClient.Endpoint, dirRolesClient.client.BaseClient.ApiVersion, *group.ID)
 	testDirectoryRolesClient_AddMembers(t, dirRolesClient, &directoryRole)
 
-	// list members of the directory role; then remove all members to clean up
-	members := testDirectoryRolesClient_ListMembers(t, dirRolesClient, *directoryRole.ID)
-	testDirectoryRolesClient_GetMember(t, dirRolesClient, *directoryRole.ID, (*members)[0])
-	testDirectoryRolesClient_RemoveMembers(t, dirRolesClient, *directoryRole.ID, members)
+	// list members of the directory role; then remove the added group member to clean up
+	testDirectoryRolesClient_ListMembers(t, dirRolesClient, *directoryRole.ID)
+	testDirectoryRolesClient_GetMember(t, dirRolesClient, *directoryRole.ID, *group.ID)
+	testDirectoryRolesClient_RemoveMembers(t, dirRolesClient, *directoryRole.ID, &[]string{*group.ID})
 
 	// remove the test group to clean up
 	testGroupsClient_Delete(t, groupsClient, *group.ID)

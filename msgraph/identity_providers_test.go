@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
@@ -23,6 +24,13 @@ func TestIdentityProvidersClient(t *testing.T) {
 	}
 	c.client = msgraph.NewIdentityProvidersClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+
+	providers := testIdentityProvidersClient_List(t, c)
+	for _, provider := range *providers {
+		if strings.EqualFold(*provider.Type, "Google") {
+			testIdentityProvidersClient_Delete(t, c, *provider.ID)
+		}
+	}
 
 	testIdentityProvidersClient_ListAvailableProviderTypes(t, c)
 
@@ -97,9 +105,9 @@ func testIdentityProvidersClient_Get(t *testing.T, c IdentityProvidersClientTest
 		t.Fatal("IdentityProvidersClient.Get(): provider was nil")
 	}
 	if provider.ID == nil {
-		t.Fatal("IdentityProvidersClient.Create(): provider.ID was nil")
+		t.Fatal("IdentityProvidersClient.Get(): provider.ID was nil")
 	}
-		return
+	return
 }
 
 func testIdentityProvidersClient_Delete(t *testing.T, c IdentityProvidersClientTest, id string) {

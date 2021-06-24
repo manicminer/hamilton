@@ -9,6 +9,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 var (
@@ -36,7 +37,7 @@ func main() {
 	client := msgraph.NewUsersClient(tenantId)
 	client.BaseClient.Authorizer = authorizer
 
-	users, _, err := client.List(ctx, "")
+	users, _, err := client.List(ctx, odata.Query{})
 	if err != nil {
 		log.Println(err)
 		return

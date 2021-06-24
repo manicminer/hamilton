@@ -1,0 +1,30 @@
+---
+name: Scheduled cleanup
+on:
+  schedule:
+    - cron: "58 * * * *"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.4
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Vacuum brrrrr
+        run: go run ./internal/cmd/test-cleanup
+        env:
+          TENANT_DOMAIN: ${{ secrets.TENANT_DOMAIN }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_CERTIFICATE: ${{ secrets.CLIENT_CERTIFICATE }}
+          CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.CLIENT_CERTIFICATE_PASSWORD }}
+
+# vim: set ts=2 sts=2 sw=2 et:
