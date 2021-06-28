@@ -49,6 +49,30 @@ const (
 	BodyTypeHtml BodyType = "html"
 )
 
+type ExtensionSchemaTargetType string
+
+const (
+	ExtensionSchemaTargetTypeAdministrativeUnit ExtensionSchemaTargetType = "AdministrativeUnit"
+	ExtensionSchemaTargetTypeContact            ExtensionSchemaTargetType = "Contact"
+	ExtensionSchemaTargetTypeDevice             ExtensionSchemaTargetType = "Device"
+	ExtensionSchemaTargetTypeEvent              ExtensionSchemaTargetType = "Event"
+	ExtensionSchemaTargetTypePost               ExtensionSchemaTargetType = "Post"
+	ExtensionSchemaTargetTypeGroup              ExtensionSchemaTargetType = "Group"
+	ExtensionSchemaTargetTypeMessage            ExtensionSchemaTargetType = "Message"
+	ExtensionSchemaTargetTypeOrganization       ExtensionSchemaTargetType = "Organization"
+	ExtensionSchemaTargetTypeUser               ExtensionSchemaTargetType = "User"
+)
+
+type ExtensionSchemaPropertyDataType string
+
+const (
+	ExtensionSchemaPropertyDataBinary   ExtensionSchemaPropertyDataType = "Binary"
+	ExtensionSchemaPropertyDataBoolean  ExtensionSchemaPropertyDataType = "Boolean"
+	ExtensionSchemaPropertyDataDateTime ExtensionSchemaPropertyDataType = "DateTime"
+	ExtensionSchemaPropertyDataInteger  ExtensionSchemaPropertyDataType = "Integer"
+	ExtensionSchemaPropertyDataString   ExtensionSchemaPropertyDataType = "String"
+)
+
 type GroupType string
 
 const (

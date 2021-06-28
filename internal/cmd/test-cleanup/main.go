@@ -37,6 +37,7 @@ func init() {
 		ClientCertPath:         clientCertificatePath,
 		ClientCertPassword:     clientCertPassword,
 		ClientSecret:           clientSecret,
+		EnableClientCertAuth:   true,
 		EnableClientSecretAuth: true,
 	}
 
@@ -48,10 +49,12 @@ func init() {
 }
 
 func main() {
+	log.Println("Starting test cleanup...")
 	cleanupConditionalAccessPolicies()
 	cleanupNamedLocations()
 	cleanupServicePrincipals()
 	cleanupApplications()
 	cleanupGroups()
 	cleanupUsers()
+	log.Println("Finished test cleanup")
 }
