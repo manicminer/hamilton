@@ -1,5 +1,7 @@
 ## 0.19.0 (Unreleased)
 
+- Support for [schema extensions](https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-beta) ([#68](https://github.com/manicminer/hamilton/pull/68))
+
 ⚠️ BREAKING CHANGES:
 
 - Support for passing the raw bytes of a PKCS#12 bundle when using client certificate authentication. This alters the method signature of `auth.NewClientCertificateAuthorizer()` but does not affect the use of a PFX file read from the filesystem. See [#65](https://github.com/manicminer/hamilton/pull/65) for details and example usage.
