@@ -52,14 +52,15 @@ const (
 type ExtensionSchemaTargetType string
 
 const (
-	ExtensionSchemaTargetTypeContact      ExtensionSchemaTargetType = "Contact"
-	ExtensionSchemaTargetTypeDevice       ExtensionSchemaTargetType = "Device"
-	ExtensionSchemaTargetTypeEvent        ExtensionSchemaTargetType = "Event"
-	ExtensionSchemaTargetTypePost         ExtensionSchemaTargetType = "Post"
-	ExtensionSchemaTargetTypeGroup        ExtensionSchemaTargetType = "Group"
-	ExtensionSchemaTargetTypeMessage      ExtensionSchemaTargetType = "Message"
-	ExtensionSchemaTargetTypeOrganization ExtensionSchemaTargetType = "Organization"
-	ExtensionSchemaTargetTypeUser         ExtensionSchemaTargetType = "User"
+	ExtensionSchemaTargetTypeAdministrativeUnit ExtensionSchemaTargetType = "AdministrativeUnit"
+	ExtensionSchemaTargetTypeContact            ExtensionSchemaTargetType = "Contact"
+	ExtensionSchemaTargetTypeDevice             ExtensionSchemaTargetType = "Device"
+	ExtensionSchemaTargetTypeEvent              ExtensionSchemaTargetType = "Event"
+	ExtensionSchemaTargetTypePost               ExtensionSchemaTargetType = "Post"
+	ExtensionSchemaTargetTypeGroup              ExtensionSchemaTargetType = "Group"
+	ExtensionSchemaTargetTypeMessage            ExtensionSchemaTargetType = "Message"
+	ExtensionSchemaTargetTypeOrganization       ExtensionSchemaTargetType = "Organization"
+	ExtensionSchemaTargetTypeUser               ExtensionSchemaTargetType = "User"
 )
 
 type ExtensionSchemaPropertyDataType string
