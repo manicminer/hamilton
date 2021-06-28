@@ -491,6 +491,11 @@ type EmailAddress struct {
 	Name    *string `json:"name,omitempty"`
 }
 
+type ExtensionSchemaProperty struct {
+	Name *string                         `json:"name,omitempty"`
+	Type ExtensionSchemaPropertyDataType `json:"type,omitempty"`
+}
+
 type GeoCoordinates struct {
 	Altitude  *float64 `json:"altitude,omitempty"`
 	Latitude  *float64 `json:"latitude,omitempty"`
@@ -818,6 +823,15 @@ type ResourceAccess struct {
 
 type SamlSingleSignOnSettings struct {
 	RelayState *string `json:"relayState,omitempty"`
+}
+
+type SchemaExtension struct {
+	ID          *string                      `json:"id,omitempty"`
+	Description *string                      `json:"description,omitempty"`
+	Owner       *string                      `json:"owner,omitempty"`
+	Properties  *[]ExtensionSchemaProperty   `json:"properties,omitempty"`
+	TargetTypes *[]ExtensionSchemaTargetType `json:"targetTypes,omitempty"`
+	Status      *string                      `json:"status,omitempty"`
 }
 
 // ServicePrincipal describes a Service Principal object.
