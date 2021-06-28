@@ -882,6 +882,11 @@ func (a *ServicePrincipal) AppendOwner(endpoint string, apiVersion string, id st
 	a.Owners = &owners
 }
 
+type SignInActivity struct {
+	LastSignInDateTime  *time.Time `json:"lastSignInDateTime,omitempty"`
+	LastSignInRequestId *string    `json:"lastSignInRequestId,omitempty"`
+}
+
 type SignInFrequencySessionControl struct {
 	IsEnabled *bool   `json:"isEnabled,omitempty"`
 	Type      *string `json:"type,omitempty"`
@@ -986,6 +991,7 @@ type User struct {
 	Responsibilities                *[]string            `json:"responsibilities,omitempty"`
 	Schools                         *[]string            `json:"schools,omitempty"`
 	ShowInAddressList               *bool                `json:"showInAddressList,omitempty"`
+	SignInActivity                  *SignInActivity      `json:"signInActivity,omitempty"`
 	SignInSessionsValidFromDateTime *time.Time           `json:"signInSessionsValidFromDateTime,omitempty"`
 	Skills                          *[]string            `json:"skills,omitempty"`
 	State                           *StringNullWhenEmpty `json:"state,omitempty"`
