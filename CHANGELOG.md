@@ -1,4 +1,6 @@
-## 0.19.0 (Unreleased)
+## 0.20.0 (Unreleased)
+
+## 0.19.0 (June 29, 2021)
 
 - Support for [schema extensions](https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-beta) ([#68](https://github.com/manicminer/hamilton/pull/68))
 - Support for retrieving `SignInActivity` for users ([#72](https://github.com/manicminer/hamilton/pull/72))
