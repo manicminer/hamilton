@@ -1,5 +1,7 @@
 ## 0.20.0 (Unreleased)
 
+- Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
+
 ## 0.19.0 (June 29, 2021)
 
 - Support for [schema extensions](https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-beta) ([#68](https://github.com/manicminer/hamilton/pull/68))
