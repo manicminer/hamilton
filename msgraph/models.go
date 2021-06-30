@@ -63,6 +63,7 @@ type Application struct {
 	PublisherDomain               *string                   `json:"publisherDomain,omitempty"`
 	RequiredResourceAccess        *[]RequiredResourceAccess `json:"requiredResourceAccess,omitempty"`
 	SignInAudience                SignInAudience            `json:"signInAudience,omitempty"`
+	Spa                           *ApplicationSpa           `json:"spa,omitempty"`
 	Tags                          *[]string                 `json:"tags,omitempty"`
 	TokenEncryptionKeyId          *string                   `json:"tokenEncryptionKeyId,omitempty"`
 	UniqueName                    *string                   `json:"uniqueName,omitempty"`
@@ -287,6 +288,10 @@ type ApplicationExtension struct {
 	IsSyncedFromOnPremises *bool                               `json:"isSyncedFromOnPremises,omitempty"`
 	Name                   *string                             `json:"name,omitempty"`
 	TargetObjects          *[]ApplicationExtensionTargetObject `json:"targetObjects,omitempty"`
+}
+
+type ApplicationSpa struct {
+	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
 
 type ApplicationWeb struct {
