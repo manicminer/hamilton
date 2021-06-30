@@ -1,4 +1,6 @@
-## 0.20.0 (Unreleased)
+## 0.21.0 (Unreleased)
+
+## 0.20.0 (Jul 1, 2021)
 
 - Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
 
