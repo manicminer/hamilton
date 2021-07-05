@@ -1,5 +1,12 @@
 ## 0.21.0 (Unreleased)
 
+⚠️ BREAKING CHANGES:
+
+- `msgraph.Group{}.ResourceBehaviorOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.ResourceProvisioningOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Theme` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Visibility` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+
 ## 0.20.0 (Jul 1, 2021)
 
 - Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
