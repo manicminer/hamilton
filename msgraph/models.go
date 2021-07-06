@@ -62,7 +62,7 @@ type Application struct {
 	PublicClient                  *PublicClient             `json:"publicClient,omitempty"`
 	PublisherDomain               *string                   `json:"publisherDomain,omitempty"`
 	RequiredResourceAccess        *[]RequiredResourceAccess `json:"requiredResourceAccess,omitempty"`
-	SignInAudience                SignInAudience            `json:"signInAudience,omitempty"`
+	SignInAudience                *SignInAudience           `json:"signInAudience,omitempty"`
 	Spa                           *ApplicationSpa           `json:"spa,omitempty"`
 	Tags                          *[]string                 `json:"tags,omitempty"`
 	TokenEncryptionKeyId          *string                   `json:"tokenEncryptionKeyId,omitempty"`
@@ -870,7 +870,7 @@ type ServicePrincipal struct {
 	SamlSingleSignOnSettings            *SamlSingleSignOnSettings     `json:"samlSingleSignOnSettings,omitempty"`
 	ServicePrincipalNames               *[]string                     `json:"servicePrincipalNames,omitempty"`
 	ServicePrincipalType                *string                       `json:"servicePrincipalType,omitempty"`
-	SignInAudience                      SignInAudience                `json:"signInAudience,omitempty"`
+	SignInAudience                      *SignInAudience               `json:"signInAudience,omitempty"`
 	Tags                                *[]string                     `json:"tags,omitempty"`
 	TokenEncryptionKeyId                *string                       `json:"tokenEncryptionKeyId,omitempty"`
 	VerifiedPublisher                   *VerifiedPublisher            `json:"verifiedPublisher,omitempty"`
