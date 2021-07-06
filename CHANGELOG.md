@@ -1,4 +1,6 @@
-## 0.21.0 (Unreleased)
+## 0.22.0 (Unreleased)
+
+## 0.21.0 (July 6, 2021)
 
 - `msgraph.User{}` now supports the `AgeGroup` field ([#76](https://github.com/manicminer/hamilton/pull/76))
 - `msgraph.User{}` now supports the `ConsentProvidedForMinor` field ([#76](https://github.com/manicminer/hamilton/pull/76))
@@ -27,7 +29,7 @@
 - `msgraph.ResourceAccessType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
 - `msgraph.SignInAudience` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
 
-## 0.20.0 (Jul 1, 2021)
+## 0.20.0 (July 1, 2021)
 
 - Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
 
