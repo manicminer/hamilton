@@ -1,4 +1,6 @@
-## 0.22.0 (Unreleased)
+## 0.23.0 (Unreleased)
+
+## 0.22.0 (July 13, 2021)
 
 - `msgraph.ServicePrincipal{}` now supports the `Description` field ([#77](https://github.com/manicminer/hamilton/pull/77))
 - `msgraph.ServicePrincipal{}` now supports the `Notes` field ([#77](https://github.com/manicminer/hamilton/pull/77))
