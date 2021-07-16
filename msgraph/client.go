@@ -34,6 +34,12 @@ const (
 // ConsistencyFailureFunc is a function that determines whether an HTTP request has failed due to eventual consistency and should be retried
 type ConsistencyFailureFunc func(*http.Response, *odata.OData) bool
 
+// RequestMiddleware can manipulate or log a request before it is sent
+type RequestMiddleware func(*http.Request) (*http.Request, error)
+
+// ResponseMiddleware can manipulate or log a response before it is parsed and returned
+type ResponseMiddleware func(*http.Request, *http.Response) (*http.Response, error)
+
 // RetryOn404ConsistencyFailureFunc can be used to retry a request when a 404 response is received
 func RetryOn404ConsistencyFailureFunc(resp *http.Response, _ *odata.OData) bool {
 	return resp.StatusCode == http.StatusNotFound
@@ -77,6 +83,12 @@ type Client struct {
 	// DisableRetries prevents the client from reattempting failed requests (which it does to work around eventual consistency issues).
 	// This does not impact handling of retries related to rate limiting, which are always performed.
 	DisableRetries bool
+
+	// RequestMiddlewares is a slice of functions that are called in order before a request is sent
+	RequestMiddlewares []RequestMiddleware
+
+	// ResponseMiddlewares is a slice of functions that are called in order before a response is parsed and returned
+	ResponseMiddlewares []ResponseMiddleware
 
 	httpClient *http.Client
 }
@@ -164,9 +176,26 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 		}
 
 		req.Body = io.NopCloser(bytes.NewBuffer(reqBody))
+
+		for _, m := range c.RequestMiddlewares {
+			r, err := m(req)
+			if err != nil {
+				return nil, status, nil, err
+			}
+			req = r
+		}
+
 		resp, err = c.httpClient.Do(req)
 		if err != nil {
 			return nil, status, nil, err
+		}
+
+		for _, m := range c.ResponseMiddlewares {
+			r, err := m(req, resp)
+			if err != nil {
+				return nil, status, nil, err
+			}
+			resp = r
 		}
 
 		o, err = odata.FromResponse(resp)
