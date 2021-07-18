@@ -81,12 +81,13 @@ func (c *UsersClient) Create(ctx context.Context, user User) (*User, int, error)
 }
 
 // Get retrieves a User.
-func (c *UsersClient) Get(ctx context.Context, id string) (*User, int, error) {
+func (c *UsersClient) Get(ctx context.Context, id string, query odata.Query) (*User, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/users/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -106,12 +107,13 @@ func (c *UsersClient) Get(ctx context.Context, id string) (*User, int, error) {
 }
 
 // GetDeleted retrieves a deleted User.
-func (c *UsersClient) GetDeleted(ctx context.Context, id string) (*User, int, error) {
+func (c *UsersClient) GetDeleted(ctx context.Context, id string, query odata.Query) (*User, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})

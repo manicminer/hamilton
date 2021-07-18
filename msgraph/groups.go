@@ -81,12 +81,13 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 }
 
 // Get retrieves a Group.
-func (c *GroupsClient) Get(ctx context.Context, id string) (*Group, int, error) {
+func (c *GroupsClient) Get(ctx context.Context, id string, query odata.Query) (*Group, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/groups/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -106,12 +107,13 @@ func (c *GroupsClient) Get(ctx context.Context, id string) (*Group, int, error) 
 }
 
 // GetDeleted retrieves a deleted O365 Group.
-func (c *GroupsClient) GetDeleted(ctx context.Context, id string) (*Group, int, error) {
+func (c *GroupsClient) GetDeleted(ctx context.Context, id string, query odata.Query) (*Group, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/directory/deletedItems/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})

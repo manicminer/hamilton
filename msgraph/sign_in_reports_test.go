@@ -43,7 +43,7 @@ func testSignInReports_List(t *testing.T, c SignInReportsClientTest) (signInLogs
 }
 
 func testSignInReports_Get(t *testing.T, c SignInReportsClientTest, id string) (signInLog *msgraph.SignInReport) {
-	signInLog, status, err := c.client.Get(c.connection.Context, id)
+	signInLog, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("SignInReportsClient.Get(): %v", err)
 	}

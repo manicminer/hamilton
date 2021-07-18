@@ -100,7 +100,7 @@ func testConditionalAccessPolicysClient_Create(t *testing.T, c ConditionalAccess
 }
 
 func testConditionalAccessPolicysClient_Get(t *testing.T, c ConditionalAccessPolicyTest, id string) (policy *msgraph.ConditionalAccessPolicy) {
-	policy, status, err := c.policyClient.Get(c.connection.Context, id)
+	policy, status, err := c.policyClient.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Get(): %v", err)
 	}

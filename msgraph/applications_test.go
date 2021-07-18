@@ -112,7 +112,7 @@ func testApplicationsClient_List(t *testing.T, c ApplicationsClientTest) (applic
 }
 
 func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
-	application, status, err := c.client.Get(c.connection.Context, id)
+	application, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Get(): %v", err)
 	}
@@ -143,7 +143,7 @@ func testApplicationsClient_CreateExtension(t *testing.T, c ApplicationsClientTe
 }
 
 func testApplicationsClient_ListExtension(t *testing.T, c ApplicationsClientTest, id string) {
-	extension, status, err := c.client.ListExtensions(c.connection.Context, id)
+	extension, status, err := c.client.ListExtensions(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.ListExtensions(): %v", err)
 	}
@@ -166,7 +166,7 @@ func testApplicationsClient_DeleteExtension(t *testing.T, c ApplicationsClientTe
 }
 
 func testApplicationsClient_GetDeleted(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
-	application, status, err := c.client.GetDeleted(c.connection.Context, id)
+	application, status, err := c.client.GetDeleted(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.GetDeleted(): %v", err)
 	}

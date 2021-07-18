@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type SchemaExtensionsClientTest struct {
@@ -72,7 +73,7 @@ func testSchemaExtensionsClient_Create(t *testing.T, c SchemaExtensionsClientTes
 }
 
 func testSchemaExtensionsClient_Get(t *testing.T, c SchemaExtensionsClientTest, id string) (schema *msgraph.SchemaExtension) {
-	schema, status, err := c.client.Get(c.connection.Context, id)
+	schema, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Get(): %v", err)
 	}
