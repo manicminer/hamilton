@@ -1,5 +1,29 @@
 ## 0.23.0 (Unreleased)
 
+⚠️ BREAKING CHANGES:
+
+- Support `odata.Query{}` in more client methods ([#80](https://github.com/manicminer/hamilton/pull/80))
+  - `ApplicationsClient{}.Get()`
+  - `ApplicationsClient{}.GetDeleted()`
+  - `ApplicationsClient{}.ListExtensions()`
+  - `ConditionalAccessPolicyClient{}.Get()`
+  - `DirectoryAuditReportsClient{}.Get()`
+  - `DomainsClient{}.List()`
+  - `DomainsClient{}.Get()`
+  - `GroupsClient{}.Get()`
+  - `GroupsClient{}.GetDeleted()`
+  - `MeClient{}.Get()`
+  - `MeClient{}.GetProfile()`
+  - `NamedLocationsClient{}.Get()`
+  - `NamedLocationsClient{}.GetCountry()`
+  - `NamedLocationsClient{}.GetIP()`
+  - `SchemaExtensionsClient{}.Get()`
+  - `ServicePrincipalsClient{}.Get()`
+  - `ServicePrincipalsClient{}.ListAppRoleAssignments()`
+  - `SignInReportsClient{}.Get()`
+  - `UsersClient{}.Get()`
+  - `UsersClient{}.GetDeleted()`
+
 ## 0.22.0 (July 13, 2021)
 
 - `msgraph.ServicePrincipal{}` now supports the `Description` field ([#77](https://github.com/manicminer/hamilton/pull/77))
