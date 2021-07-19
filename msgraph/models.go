@@ -838,7 +838,7 @@ type SchemaExtension struct {
 	Owner       *string                      `json:"owner,omitempty"`
 	Properties  *[]ExtensionSchemaProperty   `json:"properties,omitempty"`
 	TargetTypes *[]ExtensionSchemaTargetType `json:"targetTypes,omitempty"`
-	Status      *string                      `json:"status,omitempty"`
+	Status      SchemaExtensionStatus        `json:"status,omitempty"`
 }
 
 // ServicePrincipal describes a Service Principal object.

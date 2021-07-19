@@ -181,6 +181,14 @@ const (
 	ResourceAccessTypeScope ResourceAccessType = "Scope"
 )
 
+type SchemaExtensionStatus = string
+
+const (
+	SchemaExtensionStatusInDevelopment SchemaExtensionStatus = "InDevelopment"
+	SchemaExtensionStatusAvailable     SchemaExtensionStatus = "Available"
+	SchemaExtensionStatusDeprecated    SchemaExtensionStatus = "Deprecated"
+)
+
 type SignInAudience = string
 
 const (
