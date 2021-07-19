@@ -551,8 +551,52 @@ type Group struct {
 	Visibility                    *GroupVisibility                    `json:"visibility,omitempty"`
 	IsAssignableToRole            *bool                               `json:"isAssignableToRole,omitempty"`
 
+	SchemaExtensions *[]SchemaExtensionData `json:"-"`
+
 	Members *[]string `json:"members@odata.bind,omitempty"`
 	Owners  *[]string `json:"owners@odata.bind,omitempty"`
+}
+
+func (g Group) MarshalJSON() ([]byte, error) {
+	docs := make([][]byte, 0)
+	type group Group
+	d, err := json.Marshal(group(g))
+	if err != nil {
+		return d, err
+	}
+	docs = append(docs, d)
+	if g.SchemaExtensions != nil {
+		for _, se := range *g.SchemaExtensions {
+			d, err := json.Marshal(se)
+			if err != nil {
+				return d, err
+			}
+			docs = append(docs, d)
+		}
+	}
+	return MarshalDocs(docs)
+}
+
+func (g *Group) UnmarshalJSON(data []byte) error {
+	type group Group
+	g2 := (*group)(g)
+	if err := json.Unmarshal(data, g2); err != nil {
+		return err
+	}
+	if g.SchemaExtensions != nil {
+		var fields map[string]json.RawMessage
+		if err := json.Unmarshal(data, &fields); err != nil {
+			return err
+		}
+		for _, ext := range *g.SchemaExtensions {
+			if v, ok := fields[ext.ID]; ok {
+				if err := json.Unmarshal(v, &ext.Properties); err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
 }
 
 // AppendMember appends a new member object URI to the Members slice.
@@ -1005,6 +1049,7 @@ type User struct {
 	OnPremisesUserPrincipalName     *string                  `json:"onPremisesUserPrincipalName,omitempty"`
 	OtherMails                      *[]string                `json:"otherMails,omitempty"`
 	PasswordPolicies                *string                  `json:"passwordPolicies,omitempty"`
+	PasswordProfile                 *UserPasswordProfile     `json:"passwordProfile,omitempty"`
 	PastProjects                    *[]string                `json:"pastProjects,omitempty"`
 	PostalCode                      *StringNullWhenEmpty     `json:"postalCode,omitempty"`
 	PreferredDataLocation           *string                  `json:"preferredDataLocation,omitempty"`
@@ -1024,8 +1069,6 @@ type User struct {
 	UsageLocation                   *StringNullWhenEmpty     `json:"usageLocation,omitempty"`
 	UserPrincipalName               *string                  `json:"userPrincipalName,omitempty"`
 	UserType                        *string                  `json:"userType,omitempty"`
-
-	PasswordProfile *UserPasswordProfile `json:"passwordProfile,omitempty"`
 
 	SchemaExtensions *[]SchemaExtensionData `json:"-"`
 }
@@ -1047,18 +1090,7 @@ func (u User) MarshalJSON() ([]byte, error) {
 			docs = append(docs, d)
 		}
 	}
-	out := make(map[string]interface{})
-	for _, d := range docs {
-		var o map[string]interface{}
-		err := json.Unmarshal(d, &o)
-		if err != nil {
-			return d, err
-		}
-		for k, v := range o {
-			out[k] = v
-		}
-	}
-	return json.Marshal(out)
+	return MarshalDocs(docs)
 }
 
 func (u *User) UnmarshalJSON(data []byte) error {
