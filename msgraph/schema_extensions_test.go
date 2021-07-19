@@ -119,7 +119,7 @@ func testSchemaExtensionsUser_Get(t *testing.T, u UsersClientTest, id string, sc
 	for _, s := range schemaExtensions {
 		sel = append(sel, s.ID)
 	}
-	user, status, err := u.client.Get(u.connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
+	user, status, err := u.client.GetWithSchemaExtensions(u.connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
 		t.Fatalf("UsersClient.Get(): %v", err)
 	}

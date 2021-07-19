@@ -118,7 +118,7 @@ func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.Use
 }
 
 func testUsersClient_Get(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
-	user, status, err := c.client.Get(c.connection.Context, id, odata.Query{}, nil)
+	user, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.Get(): %v", err)
 	}
