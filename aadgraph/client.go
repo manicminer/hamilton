@@ -295,7 +295,8 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 			return nil, status, o, err
 		}
 
-		if input.DisablePaging || firstOdata.NextLink == nil || firstOdata.Value == nil {
+		firstValue, ok := firstOdata.Value.([]interface{})
+		if input.DisablePaging || firstOdata.NextLink == nil || firstValue == nil || !ok {
 			// No more pages, reassign response body and return
 			resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
 			return resp, status, o, nil
@@ -319,9 +320,9 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 			return resp, status, o, err
 		}
 
-		if nextOdata.Value != nil {
+		if nextValue, ok := nextOdata.Value.([]interface{}); ok {
 			// Next page has results, append to current page
-			value := append(*firstOdata.Value, *nextOdata.Value...)
+			value := append(firstValue, nextValue...)
 			nextOdata.Value = &value
 		}
 
