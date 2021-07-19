@@ -193,6 +193,14 @@ type SchemaExtensionProperties interface {
 	UnmarshalJSON([]byte) error
 }
 
+type SchemaExtensionMap map[string]interface{}
+
+func (m *SchemaExtensionMap) UnmarshalJSON(data []byte) error {
+	type sem SchemaExtensionMap
+	m2 := (*sem)(m)
+	return json.Unmarshal(data, m2)
+}
+
 type SignInAudience = string
 
 const (

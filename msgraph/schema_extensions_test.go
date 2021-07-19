@@ -19,13 +19,13 @@ type SchemaExtensionsClientTest struct {
 	randomString string
 }
 
-type ExtensionProperties struct {
+type MyExtensionProperties struct {
 	Property1 *string `json:"property1,omitempty"`
 	Property2 *bool   `json:"property2,omitempty"`
 }
 
-func (e *ExtensionProperties) UnmarshalJSON(data []byte) error {
-	type ep ExtensionProperties
+func (e *MyExtensionProperties) UnmarshalJSON(data []byte) error {
+	type ep MyExtensionProperties
 	e2 := (*ep)(e)
 	return json.Unmarshal(data, e2)
 }
@@ -75,8 +75,10 @@ func TestSchemaExtensionsClient(t *testing.T) {
 
 	testSchemaExtensionsClient_Update(t, c, updateExtension)
 
+	// Replication seems to be a problem with schema extensions, no viable workaround as yet
 	time.Sleep(10 * time.Second)
 
+	// First create a user having schema extension data expressed using msgraph.SchemaExtensionMap
 	user := testUsersClient_Create(t, u, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user"),
@@ -85,36 +87,66 @@ func TestSchemaExtensionsClient(t *testing.T) {
 		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
 		},
-		SchemaExtensions: &[]msgraph.SchemaExtensionMap{
+		SchemaExtensions: &[]msgraph.SchemaExtensionData{
 			{
 				ID: *schema.ID,
-				Properties: &ExtensionProperties{
-					Property1: utils.StringPtr("my string value"),
-					Property2: utils.BoolPtr(true),
+				Properties: &msgraph.SchemaExtensionMap{
+					"property1": utils.StringPtr("my string value"),
+					"property2": utils.BoolPtr(true),
 				},
 			},
 		},
 	})
 
-	user = testSchemaExtensionsUser_Get(t, u, *user.ID, []msgraph.SchemaExtensionMap{
+	// Then retrieve the user and populate using msgraph.SchemaExtensionGraph
+	user = testSchemaExtensionsUser_Get(t, u, *user.ID, []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
-			Properties: &ExtensionProperties{},
+			Properties: &msgraph.SchemaExtensionMap{},
 		},
 	})
 	schemaExtensions := *user.SchemaExtensions
-	if val := schemaExtensions[0].Properties.(*ExtensionProperties).Property1; val == nil || *val != "my string value" {
+	m := *schemaExtensions[0].Properties.(*msgraph.SchemaExtensionMap)
+	if val, ok := m["property1"].(string); !ok || val != "my string value" {
+		t.Fatalf("Unexpected value for property1 returned: %+v", val)
+	}
+	if val, ok := m["property2"].(bool); !ok || !val {
+		t.Fatalf("Unexpected value for property2 returned: %+v", val)
+	}
+
+	// Next, update the user with schema extension data expressed using MyExtensionProperties
+	user.SchemaExtensions = &[]msgraph.SchemaExtensionData{
+		{
+			ID: *schema.ID,
+			Properties: &MyExtensionProperties{
+				Property1: utils.StringPtr("my stringy value"),
+				Property2: utils.BoolPtr(true),
+			},
+		},
+	}
+	testUsersClient_Update(t, u, *user)
+
+	// Finally retrieve the user and populate using MyExtensionProperties
+	user = testSchemaExtensionsUser_Get(t, u, *user.ID, []msgraph.SchemaExtensionData{
+		{
+			ID:         *schema.ID,
+			Properties: &MyExtensionProperties{},
+		},
+	})
+	schemaExtensions = *user.SchemaExtensions
+	if val := schemaExtensions[0].Properties.(*MyExtensionProperties).Property1; val == nil || *val != "my stringy value" {
 		t.Fatalf("Unexpected value for Property1 returned: %+v", val)
 	}
-	if val := schemaExtensions[0].Properties.(*ExtensionProperties).Property2; val == nil || !*val {
+	if val := schemaExtensions[0].Properties.(*MyExtensionProperties).Property2; val == nil || !*val {
 		t.Fatalf("Unexpected value for Property2 returned: %+v", val)
 	}
+
 	testUsersClient_Delete(t, u, *user.ID)
 
 	testSchemaExtensionsClient_Delete(t, c, *schema.ID)
 }
 
-func testSchemaExtensionsUser_Get(t *testing.T, u UsersClientTest, id string, schemaExtensions []msgraph.SchemaExtensionMap) (user *msgraph.User) {
+func testSchemaExtensionsUser_Get(t *testing.T, u UsersClientTest, id string, schemaExtensions []msgraph.SchemaExtensionData) (user *msgraph.User) {
 	sel := []string{"id", "displayName"}
 	for _, s := range schemaExtensions {
 		sel = append(sel, s.ID)

@@ -107,7 +107,7 @@ func (c *UsersClient) Get(ctx context.Context, id string, query odata.Query) (*U
 }
 
 // GetWithSchemaExtensions retrieves a User, including the values for any specified schema extensions
-func (c *UsersClient) GetWithSchemaExtensions(ctx context.Context, id string, query odata.Query, schemaExtensions *[]SchemaExtensionMap) (*User, int, error) {
+func (c *UsersClient) GetWithSchemaExtensions(ctx context.Context, id string, query odata.Query, schemaExtensions *[]SchemaExtensionData) (*User, int, error) {
 	var sel []string
 	if len(query.Select) > 0 {
 		sel = query.Select

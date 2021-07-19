@@ -841,12 +841,12 @@ type SchemaExtension struct {
 	Status      SchemaExtensionStatus        `json:"status,omitempty"`
 }
 
-type SchemaExtensionMap struct {
+type SchemaExtensionData struct {
 	ID         string
 	Properties SchemaExtensionProperties
 }
 
-func (se SchemaExtensionMap) MarshalJSON() ([]byte, error) {
+func (se SchemaExtensionData) MarshalJSON() ([]byte, error) {
 	in := map[string]interface{}{
 		se.ID: se.Properties,
 	}
@@ -1027,7 +1027,7 @@ type User struct {
 
 	PasswordProfile *UserPasswordProfile `json:"passwordProfile,omitempty"`
 
-	SchemaExtensions *[]SchemaExtensionMap `json:"-"`
+	SchemaExtensions *[]SchemaExtensionData `json:"-"`
 }
 
 func (u User) MarshalJSON() ([]byte, error) {
