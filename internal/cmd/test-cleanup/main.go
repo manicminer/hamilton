@@ -56,5 +56,6 @@ func main() {
 	cleanupApplications()
 	cleanupGroups()
 	cleanupUsers()
+	cleanupSchemaExtensions()
 	log.Println("Finished test cleanup")
 }
