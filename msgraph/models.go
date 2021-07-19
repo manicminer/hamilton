@@ -101,7 +101,7 @@ func (a *Application) UnmarshalJSON(data []byte) error {
 	}{
 		application: (*application)(a),
 	}
-	if err := json.Unmarshal(data, &app); err != nil {
+	if err := json.Unmarshal(data, app); err != nil {
 		return err
 	}
 	if app.GroupMembershipClaims != nil {
