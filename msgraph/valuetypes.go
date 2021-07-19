@@ -189,6 +189,10 @@ const (
 	SchemaExtensionStatusDeprecated    SchemaExtensionStatus = "Deprecated"
 )
 
+type SchemaExtensionProperties interface {
+	UnmarshalJSON([]byte) error
+}
+
 type SignInAudience = string
 
 const (

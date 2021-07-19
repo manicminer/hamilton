@@ -81,7 +81,7 @@ func (c *UsersClient) Create(ctx context.Context, user User) (*User, int, error)
 }
 
 // Get retrieves a User.
-func (c *UsersClient) Get(ctx context.Context, id string, query odata.Query) (*User, int, error) {
+func (c *UsersClient) Get(ctx context.Context, id string, query odata.Query, schemaExtensions *[]SchemaExtensionMap) (*User, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
@@ -99,7 +99,7 @@ func (c *UsersClient) Get(ctx context.Context, id string, query odata.Query) (*U
 	if err != nil {
 		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
 	}
-	var user User
+	user := User{SchemaExtensions: schemaExtensions}
 	if err := json.Unmarshal(respBody, &user); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
