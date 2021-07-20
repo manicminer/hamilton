@@ -8,9 +8,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
-	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
@@ -22,13 +22,6 @@ type ApiVersion string
 const (
 	Version10   ApiVersion = "v1.0"
 	VersionBeta ApiVersion = "beta"
-)
-
-const (
-	retryBackoffInitialDelay       = 1 * time.Second
-	retryBackoffDelayCap           = 64 * time.Second
-	requestAttemptsForRateLimiting = 10
-	requestAttemptsForConsistency  = 6
 )
 
 // ConsistencyFailureFunc is a function that determines whether an HTTP request has failed due to eventual consistency and should be retried
@@ -85,22 +78,25 @@ type Client struct {
 	DisableRetries bool
 
 	// RequestMiddlewares is a slice of functions that are called in order before a request is sent
-	RequestMiddlewares []RequestMiddleware
+	RequestMiddlewares *[]RequestMiddleware
 
 	// ResponseMiddlewares is a slice of functions that are called in order before a response is parsed and returned
-	ResponseMiddlewares []ResponseMiddleware
+	ResponseMiddlewares *[]ResponseMiddleware
 
-	httpClient *http.Client
+	HttpClient      *http.Client
+	retryableClient *retryablehttp.Client
 }
 
 // NewClient returns a new Client configured with the specified API version and tenant ID.
 func NewClient(apiVersion ApiVersion, tenantId string) Client {
+	r := retryablehttp.NewClient()
 	return Client{
-		Endpoint:   environments.MsGraphGlobal.Endpoint,
-		ApiVersion: apiVersion,
-		TenantId:   tenantId,
-		UserAgent:  "Hamilton (Go-http-client/1.1)",
-		httpClient: &http.Client{},
+		Endpoint:        environments.MsGraphGlobal.Endpoint,
+		ApiVersion:      apiVersion,
+		TenantId:        tenantId,
+		UserAgent:       "Hamilton (Go-http-client/1.1)",
+		HttpClient:      r.StandardClient(),
+		retryableClient: r,
 	}
 }
 
@@ -145,14 +141,6 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	var o *odata.OData
 	var err error
 
-	var backoffPower func(int64, int64) int64
-	backoffPower = func(base, exp int64) int64 {
-		if exp <= 1 {
-			return base
-		}
-		return base * backoffPower(base, exp-1)
-	}
-
 	var reqBody []byte
 	if req.Body != nil {
 		reqBody, err = io.ReadAll(req.Body)
@@ -161,100 +149,73 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 		}
 	}
 
-	var attempts, backoff, multiplier int64
-	for attempts = 0; attempts < requestAttemptsForRateLimiting; attempts++ {
-		// sleep after the previous failed attempt
-		if attempts > 0 {
-			time.Sleep(time.Duration(backoff))
+	c.retryableClient.CheckRetry = func(ctx context.Context, resp *http.Response, err error) (bool, error) {
+		if !c.DisableRetries {
+			o, err = odata.FromResponse(resp)
+			if err != nil {
+				return false, err
+			}
+
+			f := input.GetConsistencyFailureFunc()
+			if f != nil && f(resp, o) {
+				return true, nil
+			}
 		}
+		return retryablehttp.DefaultRetryPolicy(ctx, resp, err)
+	}
 
-		// default exponential backoff
-		multiplier++
-		backoff = int64(retryBackoffInitialDelay) * backoffPower(2, multiplier)
-		if cap := int64(retryBackoffDelayCap); backoff > cap {
-			backoff = cap
-		}
+	req.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 
-		req.Body = io.NopCloser(bytes.NewBuffer(reqBody))
-
-		for _, m := range c.RequestMiddlewares {
+	if c.RequestMiddlewares != nil {
+		for _, m := range *c.RequestMiddlewares {
 			r, err := m(req)
 			if err != nil {
 				return nil, status, nil, err
 			}
 			req = r
 		}
+	}
 
-		resp, err = c.httpClient.Do(req)
-		if err != nil {
-			return nil, status, nil, err
-		}
+	resp, err = c.HttpClient.Do(req)
+	if err != nil {
+		return nil, status, nil, err
+	}
 
-		for _, m := range c.ResponseMiddlewares {
+	if c.ResponseMiddlewares != nil {
+		for _, m := range *c.ResponseMiddlewares {
 			r, err := m(req, resp)
 			if err != nil {
 				return nil, status, nil, err
 			}
 			resp = r
 		}
+	}
 
-		o, err = odata.FromResponse(resp)
-		if err != nil {
-			return nil, status, o, err
+	o, err = odata.FromResponse(resp)
+	if err != nil {
+		return nil, status, o, err
+	}
+
+	status = resp.StatusCode
+	if !containsStatusCode(input.GetValidStatusCodes(), status) {
+		f := input.GetValidStatusFunc()
+		if f != nil && f(resp, o) {
+			return resp, status, o, nil
 		}
 
-		if !c.DisableRetries {
-			f := input.GetConsistencyFailureFunc()
-			if f != nil && f(resp, o) {
-				// eventual consistency, just try again
-				if attempts < requestAttemptsForConsistency {
-					continue
-				}
+		var errText string
+		switch {
+		case o != nil && o.Error != nil && o.Error.String() != "":
+			errText = fmt.Sprintf("OData error: %s", o.Error)
+		default:
+			defer resp.Body.Close()
+			respBody, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", resp.StatusCode)
 			}
+			errText = fmt.Sprintf("response: %s", respBody)
 		}
-
-		status = resp.StatusCode
-		if !containsStatusCode(input.GetValidStatusCodes(), status) {
-			f := input.GetValidStatusFunc()
-			if f != nil && f(resp, o) {
-				return resp, status, o, nil
-			}
-
-			rateLimitingStatuses := []int{
-				http.StatusFailedDependency,
-				http.StatusTooManyRequests,
-				http.StatusInternalServerError,
-				http.StatusBadGateway,
-				http.StatusServiceUnavailable,
-			}
-			if containsStatusCode(rateLimitingStatuses, status) {
-				// rate limiting
-				if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
-					if r, err := strconv.ParseFloat(retryAfter, 64); err == nil && r > 0 {
-						// Retry-After header detected, use that instead of exponential backoff
-						backoff = int64(r * float64(time.Second))
-						multiplier = 0
-					}
-				}
-				continue
-			}
-
-			var errText string
-			switch {
-			case o != nil && o.Error != nil && o.Error.String() != "":
-				errText = fmt.Sprintf("OData error: %s", o.Error)
-			default:
-				defer resp.Body.Close()
-				respBody, err := io.ReadAll(resp.Body)
-				if err != nil {
-					return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", resp.StatusCode)
-				}
-				errText = fmt.Sprintf("response: %s", respBody)
-			}
-			return nil, status, o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
-		}
-
-		break
+		return nil, status, o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
 	}
 
 	return resp, status, o, nil
