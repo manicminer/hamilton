@@ -1,4 +1,6 @@
-## 0.23.0 (Unreleased)
+## 0.24.0 (Unreleased)
+
+## 0.23.0 (July 21, 2021)
 
 - Support for schema extension data for Groups and Users  ([#81](https://github.com/manicminer/hamilton/pull/81))
   - Marshaling of schema extension data is handled automatically by the Group and User structs, enabling use of the existing `Update()` methods on the respective clients.
