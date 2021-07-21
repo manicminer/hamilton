@@ -151,7 +151,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	}
 
 	c.retryableClient.CheckRetry = func(ctx context.Context, resp *http.Response, err error) (bool, error) {
-		if !c.DisableRetries {
+		if resp != nil && !c.DisableRetries {
 			if resp.StatusCode == http.StatusFailedDependency {
 				return true, nil
 			}
@@ -200,6 +200,9 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	if err != nil {
 		return nil, status, o, err
 	}
+	if resp == nil {
+		return resp, status, o, fmt.Errorf("nil response received")
+	}
 
 	status = resp.StatusCode
 	if !containsStatusCode(input.GetValidStatusCodes(), status) {
@@ -216,11 +219,14 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 			defer resp.Body.Close()
 			respBody, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", resp.StatusCode)
+				return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", status)
+			}
+			if len(respBody) == 0 {
+				return nil, status, o, fmt.Errorf("unexpected status %d received with no body", status)
 			}
 			errText = fmt.Sprintf("response: %s", respBody)
 		}
-		return nil, status, o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
+		return nil, status, o, fmt.Errorf("unexpected status %d with %s", status, errText)
 	}
 
 	return resp, status, o, nil
