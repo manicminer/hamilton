@@ -1,5 +1,9 @@
 ## 0.24.0 (Unreleased)
 
+## 0.23.1 (July 21, 2021)
+
+- Disable the default logger for `retryablehttp.Client{}` ([#83](https://github.com/manicminer/hamilton/pull/83))
+
 ## 0.23.0 (July 21, 2021)
 
 - Support for schema extension data for Groups and Users  ([#81](https://github.com/manicminer/hamilton/pull/81))
