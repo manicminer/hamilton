@@ -1,5 +1,9 @@
 ## 0.23.0 (Unreleased)
 
+- Support for schema extension data for Groups and Users  ([#81](https://github.com/manicminer/hamilton/pull/81))
+  - Marshaling of schema extension data is handled automatically by the Group and User structs, enabling use of the existing `Update()` methods on the respective clients.
+  - Unmarshaling is handled by either the provided `msgraph.SchemaExtensionMap` type, or a custom type supplied by the caller. Such a custom type must have an explicit `UnmarshalJSON()` method to satisfy the `SchemaExtensionProperties` interface. Both approaches have examples in the `TestSchemaExtensionsClient()` test.
+
 ⚠️ BREAKING CHANGES:
 
 - Support `odata.Query{}` in more client methods ([#80](https://github.com/manicminer/hamilton/pull/80))
