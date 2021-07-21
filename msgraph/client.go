@@ -83,6 +83,7 @@ type Client struct {
 	// ResponseMiddlewares is a slice of functions that are called in order before a response is parsed and returned
 	ResponseMiddlewares *[]ResponseMiddleware
 
+	// HttpClient is the underlying http.Client, which by default uses a retryable client
 	HttpClient      *http.Client
 	retryableClient *retryablehttp.Client
 }
@@ -151,6 +152,10 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 
 	c.retryableClient.CheckRetry = func(ctx context.Context, resp *http.Response, err error) (bool, error) {
 		if !c.DisableRetries {
+			if resp.StatusCode == http.StatusFailedDependency {
+				return true, nil
+			}
+
 			o, err = odata.FromResponse(resp)
 			if err != nil {
 				return false, err
