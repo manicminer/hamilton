@@ -91,6 +91,8 @@ type Client struct {
 // NewClient returns a new Client configured with the specified API version and tenant ID.
 func NewClient(apiVersion ApiVersion, tenantId string) Client {
 	r := retryablehttp.NewClient()
+	r.Logger = nil
+
 	return Client{
 		Endpoint:        environments.MsGraphGlobal.Endpoint,
 		ApiVersion:      apiVersion,
