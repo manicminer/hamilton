@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
+	"github.com/mitchellh/copystructure"
 )
 
 // UsersClient performs operations on Users.
@@ -48,6 +49,77 @@ func (c *UsersClient) List(ctx context.Context, query odata.Query) (*[]User, int
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 	return &data.Users, status, nil
+}
+
+// ListWithSchemaExtensions returns a list of Users, including the values for any specified schema extensions
+func (c *UsersClient) ListWithSchemaExtensions(ctx context.Context, query odata.Query, schemaExtensions *[]SchemaExtensionData) (*[]User, int, error) {
+	var sel []string
+	if len(query.Select) > 0 {
+		sel = query.Select
+		query.Select = []string{}
+	}
+
+	users, status, err := c.List(ctx, query)
+	if err != nil {
+		return users, status, err
+	}
+	if users == nil {
+		return users, status, nil
+	}
+
+	if len(sel) > 0 {
+		query.Select = sel
+	}
+
+	var resp *http.Response
+	resp, status, _, err = c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      "/users",
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+	}
+
+	emptyUsersWithSchema := make([]User, len(*users))
+	for i := 0; i <= len(*users); i++ {
+		schExt, err := copystructure.Copy(schemaExtensions)
+		if err != nil {
+			return users, status, fmt.Errorf("copystructure.Copy(): %v", err)
+		}
+		emptyUsersWithSchema[i] = User{
+			SchemaExtensions: schExt.(*[]SchemaExtensionData),
+		}
+	}
+
+	data := struct {
+		Users []User `json:"value"`
+	}{
+		Users: emptyUsersWithSchema,
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	out := *users
+	for i := 0; i <= len(*users); i++ {
+		for _, u := range data.Users {
+			if u.ID != nil && out[i].ID != nil && *u.ID == *out[i].ID {
+				out[i].SchemaExtensions = u.SchemaExtensions
+				continue
+			}
+		}
+	}
+	return &out, status, nil
 }
 
 // Create creates a new User.

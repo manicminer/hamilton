@@ -166,19 +166,19 @@ func testSchemaExtensionsGroup_Get(t *testing.T, g GroupsClientTest, id string, 
 	}
 	group, status, err := g.client.GetWithSchemaExtensions(g.connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
-		t.Fatalf("GroupsClient.Get(): %v", err)
+		t.Fatalf("GroupsClient.GetWithSchemaExtensions(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("GroupsClient.Get(): invalid status: %d", status)
+		t.Fatalf("GroupsClient.GetWithSchemaExtensions(): invalid status: %d", status)
 	}
 	if group == nil {
-		t.Fatal("GroupsClient.Get(): group was nil")
+		t.Fatal("GroupsClient.GetWithSchemaExtensions(): group was nil")
 	}
 	if group.SchemaExtensions == nil {
-		t.Fatal("GroupsClient.Get(): group.SchemaExtensions was nil")
+		t.Fatal("GroupsClient.GetWithSchemaExtensions(): group.SchemaExtensions was nil")
 	}
 	if len(*group.SchemaExtensions) != len(schemaExtensions) {
-		t.Fatalf("GroupsClient.Get(): unexpected length of group.SchemaExtensions, was %d, expected %d", len(*group.SchemaExtensions), len(schemaExtensions))
+		t.Fatalf("GroupsClient.GetWithSchemaExtensions(): unexpected length of group.SchemaExtensions, was %d, expected %d", len(*group.SchemaExtensions), len(schemaExtensions))
 	}
 	return
 }
@@ -257,19 +257,40 @@ func testSchemaExtensionsUser_Get(t *testing.T, u UsersClientTest, id string, sc
 	}
 	user, status, err := u.client.GetWithSchemaExtensions(u.connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
-		t.Fatalf("UsersClient.Get(): %v", err)
+		t.Fatalf("UsersClient.GetWithSchemaExtensions(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("UsersClient.Get(): invalid status: %d", status)
+		t.Fatalf("UsersClient.GetWithSchemaExtensions(): invalid status: %d", status)
 	}
 	if user == nil {
-		t.Fatal("UsersClient.Get(): user was nil")
+		t.Fatal("UsersClient.GetWithSchemaExtensions(): user was nil")
 	}
 	if user.SchemaExtensions == nil {
-		t.Fatal("UsersClient.Get(): user.SchemaExtensions was nil")
+		t.Fatal("UsersClient.GetWithSchemaExtensions(): user.SchemaExtensions was nil")
 	}
 	if len(*user.SchemaExtensions) != len(schemaExtensions) {
-		t.Fatalf("UsersClient.Get(): unexpected length of user.SchemaExtensions, was %d, expected %d", len(*user.SchemaExtensions), len(schemaExtensions))
+		t.Fatalf("UsersClient.GetWithSchemaExtensions(): unexpected length of user.SchemaExtensions, was %d, expected %d", len(*user.SchemaExtensions), len(schemaExtensions))
+	}
+	return
+}
+
+func testSchemaExtensionsUser_List(t *testing.T, u UsersClientTest, schemaExtensions []msgraph.SchemaExtensionData) (user *[]msgraph.User) {
+	sel := []string{"id", "displayName"}
+	for _, s := range schemaExtensions {
+		sel = append(sel, s.ID)
+	}
+	users, status, err := u.client.ListWithSchemaExtensions(u.connection.Context, odata.Query{Select: sel}, &schemaExtensions)
+	if err != nil {
+		t.Fatalf("UsersClient.ListWithSchemaExtensions(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.ListWithSchemaExtensions(): invalid status: %d", status)
+	}
+	if users == nil {
+		t.Fatal("UsersClient.ListWithSchemaExtensions(): users was nil")
+	}
+	if len(*users) == 0 {
+		t.Fatal("UsersClient.ListWithSchemaExtensions(): zero users returned")
 	}
 	return
 }

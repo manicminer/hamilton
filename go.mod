@@ -8,6 +8,7 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.2
 	github.com/hashicorp/go-version v1.3.0
+	github.com/mitchellh/copystructure v1.2.0 // indirect
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a
 	golang.org/x/net v0.0.0-20210525063256-abc453219eb5 // indirect
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
