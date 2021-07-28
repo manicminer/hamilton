@@ -107,7 +107,7 @@ func testUsersClient_Update(t *testing.T, c UsersClientTest, u msgraph.User) {
 }
 
 func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.User) {
-	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
+	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10, Expand: odata.Expand{Relationship: "memberOf"}})
 	if err != nil {
 		t.Fatalf("UsersClient.List(): %v", err)
 	}
