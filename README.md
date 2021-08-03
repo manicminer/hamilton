@@ -72,11 +72,13 @@ Please raise a pull request on GitHub to submit contributions. Bug reports and f
 
 ## Testing
 
-Testing requires an Azure AD tenant and real credentials. You can authenticate with any supported method for the client
-tests, and the auth tests are split by authentication method.
+Testing requires an Azure AD tenant and real credentials. Note that some tests require an Azure AD Premium P2 license and/or an Office 365 license.
+You can authenticate with any supported method for the client tests, and the auth tests are split by authentication method.
 
 Note that each client generally has a single test that exercises all methods. This is to help ensure that test objects
-are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up manually.
+are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up separately.
+The [test-cleanup](https://github.com/manicminer/hamilton/tree/main/internal/cmd/test-cleanup) command can be used to
+delete leftover test objects.
 
 It's recommended to use an isolated tenant for testing and _not_ a production tenant.
 

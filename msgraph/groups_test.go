@@ -139,7 +139,7 @@ func testGroupsClient_List(t *testing.T, c GroupsClientTest) (groups *[]msgraph.
 }
 
 func testGroupsClient_Get(t *testing.T, c GroupsClientTest, id string) (group *msgraph.Group) {
-	group, status, err := c.client.Get(c.connection.Context, id)
+	group, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("GroupsClient.Get(): %v", err)
 	}
@@ -275,7 +275,7 @@ func testGroupsClient_RemoveMembers(t *testing.T, c GroupsClientTest, groupId st
 }
 
 func testGroupsClient_GetDeleted(t *testing.T, c GroupsClientTest, id string) (group *msgraph.Group) {
-	group, status, err := c.client.GetDeleted(c.connection.Context, id)
+	group, status, err := c.client.GetDeleted(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("GroupsClient.GetDeleted(): %v", err)
 	}

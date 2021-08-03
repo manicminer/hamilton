@@ -43,7 +43,7 @@ func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsClientT
 }
 
 func testDirectoryAuditReports_Get(t *testing.T, c DirectoryAuditReportsClientTest, id string) (dirLog *msgraph.DirectoryAudit) {
-	dirLog, status, err := c.client.Get(c.connection.Context, id)
+	dirLog, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DirectoryAuditReportsClient.Get(): %v", err)
 	}

@@ -106,7 +106,7 @@ func testNamedLocationsClient_CreateCountry(t *testing.T, c NamedLocationsClient
 }
 
 func testNamedLocationsClient_GetIP(t *testing.T, c NamedLocationsClientTest, id string) (ipNamedLocation *msgraph.IPNamedLocation) {
-	ipNamedLocation, status, err := c.client.GetIP(c.connection.Context, id)
+	ipNamedLocation, status, err := c.client.GetIP(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("IPNamedLocationsClient.GetIP(): %v", err)
 	}
@@ -120,7 +120,7 @@ func testNamedLocationsClient_GetIP(t *testing.T, c NamedLocationsClientTest, id
 }
 
 func testNamedLocationsClient_GetCountry(t *testing.T, c NamedLocationsClientTest, id string) (countryNamedLocation *msgraph.CountryNamedLocation) {
-	countryNamedLocation, status, err := c.client.GetCountry(c.connection.Context, id)
+	countryNamedLocation, status, err := c.client.GetCountry(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.GetCountry(): %v", err)
 	}
@@ -134,7 +134,7 @@ func testNamedLocationsClient_GetCountry(t *testing.T, c NamedLocationsClientTes
 }
 
 func testNamedLocationsClient_Get(t *testing.T, c NamedLocationsClientTest, id string) (namedLocation *msgraph.NamedLocation) {
-	namedLocation, status, err := c.client.Get(c.connection.Context, id)
+	namedLocation, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.Get(): %v", err)
 	}

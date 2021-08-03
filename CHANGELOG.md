@@ -1,6 +1,92 @@
-## 0.19.0 (Unreleased)
+## 0.24.0 (Unreleased)
+
+## 0.23.1 (July 21, 2021)
+
+- Disable the default logger for `retryablehttp.Client{}` ([#83](https://github.com/manicminer/hamilton/pull/83))
+
+## 0.23.0 (July 21, 2021)
+
+- Support for schema extension data for Groups and Users  ([#81](https://github.com/manicminer/hamilton/pull/81))
+  - Marshaling of schema extension data is handled automatically by the Group and User structs, enabling use of the existing `Update()` methods on the respective clients.
+  - Unmarshaling is handled by either the provided `msgraph.SchemaExtensionMap` type, or a custom type supplied by the caller. Such a custom type must have an explicit `UnmarshalJSON()` method to satisfy the `SchemaExtensionProperties` interface. Both approaches have examples in the `TestSchemaExtensionsClient()` test.
+- Support for injecting and sequencing middleware functions for manipulating and/or copying requests and responses ([#78](https://github.com/manicminer/hamilton/pull/78))
+  - See [example.go](https://github.com/manicminer/hamilton/blob/main/example/example.go) for an example that logs requests and responses
+- Request retry handling for rate limiting, server errors and replication delays is now handled by [go-retryablehttp](https://github.com/hashicorp/go-retryablehttp) ([#78](https://github.com/manicminer/hamilton/pull/78))
+- `msgraph.Client{}.HttpClient` is now exported so callers can supply their own `http.Client` ([#78](https://github.com/manicminer/hamilton/pull/78))
+
+⚠️ BREAKING CHANGES:
+
+- Support `odata.Query{}` in more client methods ([#80](https://github.com/manicminer/hamilton/pull/80))
+  - `ApplicationsClient{}.Get()`
+  - `ApplicationsClient{}.GetDeleted()`
+  - `ApplicationsClient{}.ListExtensions()`
+  - `ConditionalAccessPolicyClient{}.Get()`
+  - `DirectoryAuditReportsClient{}.Get()`
+  - `DomainsClient{}.List()`
+  - `DomainsClient{}.Get()`
+  - `GroupsClient{}.Get()`
+  - `GroupsClient{}.GetDeleted()`
+  - `MeClient{}.Get()`
+  - `MeClient{}.GetProfile()`
+  - `NamedLocationsClient{}.Get()`
+  - `NamedLocationsClient{}.GetCountry()`
+  - `NamedLocationsClient{}.GetIP()`
+  - `SchemaExtensionsClient{}.Get()`
+  - `ServicePrincipalsClient{}.Get()`
+  - `ServicePrincipalsClient{}.ListAppRoleAssignments()`
+  - `SignInReportsClient{}.Get()`
+  - `UsersClient{}.Get()`
+  - `UsersClient{}.GetDeleted()`
+
+## 0.22.0 (July 13, 2021)
+
+- `msgraph.ServicePrincipal{}` now supports the `Description` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}` now supports the `Notes` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}` now supports the `SamlMetadataUrl` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+
+⚠️ BREAKING CHANGES:
+
+- `environments.ApiAppId` is now a type alias
+- `msgraph.ServicePrincipal{}.LoginUrl` is now a `StringNullWhenEmpty` type ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}.PreferredSingleSignOnMode` is now a type alias pointer (formerly a string pointer) ([#77](https://github.com/manicminer/hamilton/pull/77))
+
+## 0.21.0 (July 6, 2021)
+
+- `msgraph.User{}` now supports the `AgeGroup` field ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}` now supports the `ConsentProvidedForMinor` field ([#76](https://github.com/manicminer/hamilton/pull/76))
+
+⚠️ BREAKING CHANGES:
+
+- `msgraph.Application{}.SignInAudience` is now a pointer reference ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ServicePrincipal{}.SignInAudience` is now a pointer reference ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.Group{}.ResourceBehaviorOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.ResourceProvisioningOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Theme` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Visibility` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.User{}.EmployeeId` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.FaxNumber` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.Mail` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.PreferredLanguage` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ApplicationExtensionTargetObject` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.AppRoleAllowedMemberType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.BodyType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ExtensionSchemaPropertyDataType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.GroupType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.GroupMembershipClaim` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.KeyCredentialType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.KeyCredentialUsage` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.PermissionScopeType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ResourceAccessType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.SignInAudience` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+
+## 0.20.0 (July 1, 2021)
+
+- Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
+
+## 0.19.0 (June 29, 2021)
 
 - Support for [schema extensions](https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-beta) ([#68](https://github.com/manicminer/hamilton/pull/68))
+- Support for retrieving `SignInActivity` for users ([#72](https://github.com/manicminer/hamilton/pull/72))
 
 ⚠️ BREAKING CHANGES:
 

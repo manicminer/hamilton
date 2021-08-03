@@ -237,7 +237,7 @@ func testServicePrincipalsClient_List(t *testing.T, c ServicePrincipalsClientTes
 }
 
 func testServicePrincipalsClient_Get(t *testing.T, c ServicePrincipalsClientTest, id string) (servicePrincipal *msgraph.ServicePrincipal) {
-	servicePrincipal, status, err := c.client.Get(c.connection.Context, id)
+	servicePrincipal, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.Get(): %v", err)
 	}
@@ -402,7 +402,7 @@ func testServicePrincipalsClient_AssignAppRole(t *testing.T, c ServicePrincipals
 }
 
 func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c ServicePrincipalsClientTest, resourceId string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.client.ListAppRoleAssignments(c.connection.Context, resourceId)
+	appRoleAssignments, _, err := c.client.ListAppRoleAssignments(c.connection.Context, resourceId, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListAppRoleAssignments(): %v", err)
 	}
