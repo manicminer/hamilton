@@ -22,7 +22,7 @@ func TestSignInReportsTest(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	signInLogs := testSignInReports_List(t, c)
-	if signInLogs != nil {
+	if *signInLogs != nil && len(*signInLogs) > 0 {
 		testSignInReports_Get(t, c, *(*signInLogs)[0].Id)
 	}
 }
