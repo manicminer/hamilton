@@ -22,7 +22,9 @@ func TestSignInReportsTest(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	signInLogs := testSignInReports_List(t, c)
-	testSignInReports_Get(t, c, *(*signInLogs)[0].Id)
+	if signInLogs != nil {
+		testSignInReports_Get(t, c, *(*signInLogs)[0].Id)
+	}
 }
 
 func testSignInReports_List(t *testing.T, c SignInReportsClientTest) (signInLogs *[]msgraph.SignInReport) {
