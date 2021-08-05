@@ -51,6 +51,16 @@ const (
 	AppRoleAllowedMemberTypeUser        AppRoleAllowedMemberType = "User"
 )
 
+type AuthenticationMethodFeature = string
+
+const (
+	AuthenticationMethodFeatureSsprRegistered      AuthenticationMethodFeature = "ssprRegistered"
+	AuthenticationMethodFeatureSsprEnabled         AuthenticationMethodFeature = "ssprEnabled"
+	AuthenticationMethodFeatureSsprCapable         AuthenticationMethodFeature = "ssprCapable"
+	AuthenticationMethodFeaturePasswordlessCapable AuthenticationMethodFeature = "passwordlessCapable"
+	AuthenticationMethodFeatureMfaCapable          AuthenticationMethodFeature = "mfaCapable"
+)
+
 type BodyType = string
 
 const (
@@ -65,6 +75,14 @@ const (
 	ConsentProvidedForMinorDenied      ConsentProvidedForMinor = "Denied"
 	ConsentProvidedForMinorGranted     ConsentProvidedForMinor = "Granted"
 	ConsentProvidedForMinorNotRequired ConsentProvidedForMinor = "NotRequired"
+)
+
+type CredentialUsageSummaryPeriod = string
+
+const (
+	CredentialUsageSummaryPeriod30 CredentialUsageSummaryPeriod = "D30"
+	CredentialUsageSummaryPeriod7  CredentialUsageSummaryPeriod = "D7"
+	CredentialUsageSummaryPeriod1  CredentialUsageSummaryPeriod = "D1"
 )
 
 type ExtensionSchemaTargetType = string
@@ -89,6 +107,14 @@ const (
 	ExtensionSchemaPropertyDataDateTime ExtensionSchemaPropertyDataType = "DateTime"
 	ExtensionSchemaPropertyDataInteger  ExtensionSchemaPropertyDataType = "Integer"
 	ExtensionSchemaPropertyDataString   ExtensionSchemaPropertyDataType = "String"
+)
+
+type FeatureType = string
+
+const (
+	FeatureTypeRegistration       FeatureType = "registration"
+	FeatureTypeReset              FeatureType = "reset"
+	FeatureTypeUnknownFutureValue FeatureType = "unknownFutureValue"
 )
 
 type GroupType = string
@@ -174,6 +200,30 @@ const (
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
 )
 
+type RegistrationAuthMethod = string
+
+const (
+	RegistrationAuthMethodEmail                RegistrationAuthMethod = "email"
+	RegistrationAuthMethodMobilePhone          RegistrationAuthMethod = "mobilePhone"
+	RegistrationAuthMethodOfficePhone          RegistrationAuthMethod = "officePhone"
+	RegistrationAuthMethodSecurityQuestion     RegistrationAuthMethod = "securityQuestion"
+	RegistrationAuthMethodAppNotification      RegistrationAuthMethod = "appNotification"
+	RegistrationAuthMethodAppCode              RegistrationAuthMethod = "appCode"
+	RegistrationAuthMethodAlternateMobilePhone RegistrationAuthMethod = "alternateMobilePhone"
+	RegistrationAuthMethodFido                 RegistrationAuthMethod = "fido"
+	RegistrationAuthMethodAppPassword          RegistrationAuthMethod = "appPassword"
+	RegistrationAuthMethodUnknownFutureValue   RegistrationAuthMethod = "unknownFutureValue"
+)
+
+type RegistrationStatus = string
+
+const (
+	RegistrationStatusRegistered    RegistrationStatus = "registered"
+	RegistrationStatusEnabled       RegistrationStatus = "enabled"
+	RegistrationStatusCapable       RegistrationStatus = "capable"
+	RegistrationStatusMfaRegistered RegistrationStatus = "mfaRegistered"
+)
+
 type ResourceAccessType = string
 
 const (
@@ -208,4 +258,37 @@ const (
 	SignInAudienceAzureADMultipleOrgs                SignInAudience = "AzureADMultipleOrgs"
 	SignInAudienceAzureADandPersonalMicrosoftAccount SignInAudience = "AzureADandPersonalMicrosoftAccount"
 	SignInAudiencePersonalMicrosoftAccount           SignInAudience = "PersonalMicrosoftAccount"
+)
+
+type UsageAuthMethod = string
+
+const (
+	UsageAuthMethodEmail                 UsageAuthMethod = "email"
+	UsageAuthMethodMobileSMS             UsageAuthMethod = "mobileSMS"
+	UsageAuthMethodMobileCall            UsageAuthMethod = "mobileCall"
+	UsageAuthMethodOfficePhone           UsageAuthMethod = "officePhone"
+	UsageAuthMethodSecurityQuestion      UsageAuthMethod = "securityQuestion"
+	UsageAuthMethodAppNotification       UsageAuthMethod = "appNotification"
+	UsageAuthMethodAppCode               UsageAuthMethod = "appCode"
+	UsageAuthMethodAlternativeMobileCall UsageAuthMethod = "alternateMobileCall"
+	UsageAuthMethodFido                  UsageAuthMethod = "fido"
+	UsageAuthMethodAppPassword           UsageAuthMethod = "appPassword"
+	UsageAuthMethodUnknownFutureValue    UsageAuthMethod = "unknownFutureValue"
+)
+
+type IncludedUserRoles = string
+
+const (
+	IncludedUserRolesAll             IncludedUserRoles = "all"
+	IncludedUserRolesPrivilegedAdmin IncludedUserRoles = "privilegedAdmin"
+	IncludedUserRolesAdmin           IncludedUserRoles = "admin"
+	IncludedUserRolesUser            IncludedUserRoles = "user"
+)
+
+type IncludedUserTypes = string
+
+const (
+	IncludedUserTypesAll    IncludedUserTypes = "all"
+	IncludedUserTypesMember IncludedUserTypes = "member"
+	IncludedUserTypesGuest  IncludedUserTypes = "guest"
 )
