@@ -1,5 +1,7 @@
 ## 0.24.0 (Unreleased)
 
+- Support for [authentication methods usage reports](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-usage-insights-overview?view=graph-rest-beta) ([#85](https://github.com/manicminer/hamilton/pull/85))
+
 ## 0.23.1 (July 21, 2021)
 
 - Disable the default logger for `retryablehttp.Client{}` ([#83](https://github.com/manicminer/hamilton/pull/83))
