@@ -417,6 +417,30 @@ type CountryNamedLocation struct {
 	IncludeUnknownCountriesAndRegions *bool     `json:"includeUnknownCountriesAndRegions,omitempty"`
 }
 
+type CredentialUserRegistrationCount struct {
+	ID                     *string                  `json:"id,omitempty"`
+	TotalUserCount         *int64                   `json:"totalUserCount,omitempty"`
+	UserRegistrationCounts *[]UserRegistrationCount `json:"userRegistrationCounts,omitempty"`
+}
+
+type CredentialUsageSummary struct {
+	AuthMethod              *UsageAuthMethod `json:"usageAuthMethod,omitempty"`
+	FailureActivityCount    *int64           `json:"failureActivityCount,omitempty"`
+	Feature                 *FeatureType     `json:"feature,omitempty"`
+	ID                      *string          `json:"id,omitempty"`
+	SuccessfulActivityCount *int64           `json:"successfulActivityCount,omitempty"`
+}
+type CredentialUserRegistrationDetails struct {
+	AuthMethods       *[]RegistrationAuthMethod `json:"authMethods,omitempty"`
+	ID                *string                   `json:"id,omitempty"`
+	IsCapable         *bool                     `json:"isCapable,omitempty"`
+	IsEnabled         *bool                     `json:"isEnabled,omitempty"`
+	IsMfaRegistered   *bool                     `json:"isMfaRegistered,omitempty"`
+	IsRegistered      *bool                     `json:"isRegistered,omitempty"`
+	UserDisplayName   *string                   `json:"userDisplayName,omitempty"`
+	UserPrincipalName *string                   `json:"UserPrincipalName,omitempty"`
+}
+
 type DeviceDetail struct {
 	Browser         *string `json:"browser,omitempty"`
 	DeviceId        *string `json:"deviceId,omitempty"`
@@ -1128,6 +1152,44 @@ type UserPasswordProfile struct {
 	Password                             *string `json:"password,omitempty"`
 }
 
+type UserRegistrationCount struct {
+	RegistrationStatus *RegistrationStatus `json:"registrationStatus,omitempty"`
+	RegistrationCount  *int64              `json:"registrationCount,omitempty"`
+}
+
+type UserRegistrationFeatureCount struct {
+	Feature   *AuthenticationMethodFeature `json:"feature,omitempty"`
+	UserCount *int64                       `json:"userCount"`
+}
+type UserRegistrationFeatureSummary struct {
+	TotalUserCount                *int64                          `json:"totalUserCount,omitempty"`
+	UserRegistrationFeatureCounts *[]UserRegistrationFeatureCount `json:"userRegistrationFeatureCounts"`
+	UserRoles                     IncludedUserRoles               `json:"userRoles,omitempty"`
+	UserTypes                     IncludedUserTypes               `json:"userTypes,omitempty"`
+}
+
+type UserRegistrationMethodCount struct {
+	AuthenticationMethod *string `json:"authenticationMethod,omitempty"`
+	UserCount            *int64  `json:"userCount,omitempty"`
+}
+
+type UserRegistrationMethodSummary struct {
+	TotalUserCount               *int64                         `json:"totalUserCount"`
+	UserRegistrationMethodsCount *[]UserRegistrationMethodCount `json:"userRegistrationMethodCounts,omitempty"`
+	UerRoles                     IncludedUserRoles              `json:"userRoles,omitempty"`
+	UserTypes                    IncludedUserTypes              `json:"userTypes,omitempty"`
+}
+
+type UserCredentialUsageDetails struct {
+	AuthMethod        *UsageAuthMethod `json:"authMethod,omitempty"`
+	EventDateTime     *time.Time       `json:"eventDateTime,omitempty"`
+	FailureReason     *string          `json:"failureReason,omitempty"`
+	Feature           *FeatureType     `json:"feature,omitempty"`
+	ID                *string          `json:"id,omitempty"`
+	IsSuccess         *bool            `json:"isSuccess,omitempty"`
+	UserDisplayName   *string          `json:"userDisplayName,omitempty"`
+	UserPrincipalName *string          `json:"userPrincipalName,omitempty"`
+}
 type VerifiedPublisher struct {
 	AddedDateTime       *time.Time `json:"addedDateTime,omitempty"`
 	DisplayName         *string    `json:"displayName,omitempty"`
