@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -36,9 +36,9 @@ func (c *ReportsClient) GetCredentialUserRegistrationCount(ctx context.Context, 
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		CredentialUserRegistrationCount []CredentialUserRegistrationCount `json:"value"`
@@ -63,9 +63,9 @@ func (c *ReportsClient) GetCredentialUserRegistrationDetails(ctx context.Context
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		CredentialUserRegistrationDetails []CredentialUserRegistrationDetails `json:"value"`
@@ -90,9 +90,9 @@ func (c *ReportsClient) GetUserCredentialUsageDetails(ctx context.Context, query
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		UserCredentialUsageDetails []UserCredentialUsageDetails `json:"value"`
@@ -117,9 +117,9 @@ func (c *ReportsClient) GetCredentialUsageSummary(ctx context.Context, period Cr
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		CredentialUsageSummary []CredentialUsageSummary `json:"value"`
@@ -144,9 +144,9 @@ func (c *ReportsClient) GetAuthenticationMethodsUsersRegisteredByFeature(ctx con
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var userRegistrationFeatureSummary UserRegistrationFeatureSummary
@@ -171,9 +171,9 @@ func (c *ReportsClient) GetAuthenticationMethodsUsersRegisteredByMethod(ctx cont
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var userRegistrationMethodSummary UserRegistrationMethodSummary

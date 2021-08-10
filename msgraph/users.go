@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -37,9 +37,9 @@ func (c *UsersClient) List(ctx context.Context, query odata.Query) (*[]User, int
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Users []User `json:"value"`
@@ -69,9 +69,9 @@ func (c *UsersClient) Create(ctx context.Context, user User) (*User, int, error)
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newUser User
 	if err := json.Unmarshal(respBody, &newUser); err != nil {
@@ -95,9 +95,9 @@ func (c *UsersClient) Get(ctx context.Context, id string, query odata.Query) (*U
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var user User
 	if err := json.Unmarshal(respBody, &user); err != nil {
@@ -137,9 +137,9 @@ func (c *UsersClient) GetWithSchemaExtensions(ctx context.Context, id string, qu
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	user.SchemaExtensions = schemaExtensions
@@ -164,9 +164,9 @@ func (c *UsersClient) GetDeleted(ctx context.Context, id string, query odata.Que
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var user User
 	if err := json.Unmarshal(respBody, &user); err != nil {
@@ -244,7 +244,7 @@ func (c *UsersClient) ListDeleted(ctx context.Context, query odata.Query) (*[]Us
 		return nil, status, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 	var data struct {
 		DeletedUsers []User `json:"value"`
 	}
@@ -268,9 +268,9 @@ func (c *UsersClient) RestoreDeleted(ctx context.Context, id string) (*User, int
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var restoredUser User
 	if err = json.Unmarshal(respBody, &restoredUser); err != nil {
@@ -295,9 +295,9 @@ func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, query
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Groups []Group `json:"value"`

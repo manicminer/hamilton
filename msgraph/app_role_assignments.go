@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -59,9 +59,9 @@ func (c *AppRoleAssignmentsClient) List(ctx context.Context, id string) (*[]AppR
 		return nil, status, fmt.Errorf("AppRoleAssignmentsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		AppRoleAssignments []AppRoleAssignment `json:"value"`
@@ -118,9 +118,9 @@ func (c *AppRoleAssignmentsClient) Assign(ctx context.Context, clientServicePrin
 		return nil, status, fmt.Errorf("AppRoleAssignmentsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var appRoleAssignment AppRoleAssignment
 	if err := json.Unmarshal(respBody, &appRoleAssignment); err != nil {

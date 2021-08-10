@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -38,9 +38,9 @@ func (c *ServicePrincipalsClient) List(ctx context.Context, query odata.Query) (
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		ServicePrincipals []ServicePrincipal `json:"value"`
@@ -74,9 +74,9 @@ func (c *ServicePrincipalsClient) Create(ctx context.Context, servicePrincipal S
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newServicePrincipal ServicePrincipal
 	if err := json.Unmarshal(respBody, &newServicePrincipal); err != nil {
@@ -100,9 +100,9 @@ func (c *ServicePrincipalsClient) Get(ctx context.Context, id string, query odat
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var servicePrincipal ServicePrincipal
 	if err := json.Unmarshal(respBody, &servicePrincipal); err != nil {
@@ -168,9 +168,9 @@ func (c *ServicePrincipalsClient) ListOwners(ctx context.Context, id string) (*[
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Owners []struct {
@@ -205,9 +205,9 @@ func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipal
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Context string `json:"@odata.context"`
@@ -323,9 +323,9 @@ func (c *ServicePrincipalsClient) ListGroupMemberships(ctx context.Context, id s
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Groups []Group `json:"value"`
@@ -360,9 +360,9 @@ func (c *ServicePrincipalsClient) AddPassword(ctx context.Context, servicePrinci
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newPasswordCredential PasswordCredential
 	if err := json.Unmarshal(respBody, &newPasswordCredential); err != nil {
@@ -413,7 +413,7 @@ func (c *ServicePrincipalsClient) ListOwnedObjects(ctx context.Context, id strin
 		return nil, status, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 	var data struct {
 		OwnedObjects []struct {
 			Type string `json:"@odata.type"`
@@ -445,9 +445,9 @@ func (c *ServicePrincipalsClient) ListAppRoleAssignments(ctx context.Context, re
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		AppRoleAssignments []AppRoleAssignment `json:"value"`
@@ -509,9 +509,9 @@ func (c *ServicePrincipalsClient) AssignAppRoleForResource(ctx context.Context, 
 		return nil, status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var appRoleAssignment AppRoleAssignment
 	if err := json.Unmarshal(respBody, &appRoleAssignment); err != nil {

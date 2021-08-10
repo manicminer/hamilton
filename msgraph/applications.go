@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -38,9 +38,9 @@ func (c *ApplicationsClient) List(ctx context.Context, query odata.Query) (*[]Ap
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Applications []Application `json:"value"`
@@ -70,9 +70,9 @@ func (c *ApplicationsClient) Create(ctx context.Context, application Application
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newApplication Application
 	if err := json.Unmarshal(respBody, &newApplication); err != nil {
@@ -96,9 +96,9 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string, query odata.Que
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var application Application
 	if err := json.Unmarshal(respBody, &application); err != nil {
@@ -123,9 +123,9 @@ func (c *ApplicationsClient) GetDeleted(ctx context.Context, id string, query od
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var application Application
 	if err := json.Unmarshal(respBody, &application); err != nil {
@@ -207,7 +207,7 @@ func (c *ApplicationsClient) ListDeleted(ctx context.Context, query odata.Query)
 		return nil, status, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 	var data struct {
 		DeletedApps []Application `json:"value"`
 	}
@@ -232,9 +232,9 @@ func (c *ApplicationsClient) RestoreDeleted(ctx context.Context, id string) (*Ap
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var restoredApplication Application
 	if err = json.Unmarshal(respBody, &restoredApplication); err != nil {
@@ -267,9 +267,9 @@ func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId stri
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newPasswordCredential PasswordCredential
 	if err := json.Unmarshal(respBody, &newPasswordCredential); err != nil {
@@ -320,9 +320,9 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Owners []struct {
@@ -357,9 +357,9 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Context string `json:"@odata.context"`
@@ -474,9 +474,9 @@ func (c *ApplicationsClient) ListExtensions(ctx context.Context, id string, quer
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.List(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var data struct {
@@ -507,9 +507,9 @@ func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExt
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var newApplicationExtension ApplicationExtension

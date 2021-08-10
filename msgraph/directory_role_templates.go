@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -33,9 +33,9 @@ func (c *DirectoryRoleTemplatesClient) List(ctx context.Context) (*[]DirectoryRo
 		return nil, status, fmt.Errorf("DirectoryRoleTemplatesClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		DirectoryRoleTemplates []DirectoryRoleTemplate `json:"value"`
@@ -60,9 +60,9 @@ func (c *DirectoryRoleTemplatesClient) Get(ctx context.Context, id string) (*Dir
 		return nil, status, fmt.Errorf("DirectoryRoleTemplatesClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var dirRoleTemplate DirectoryRoleTemplate
 	if err := json.Unmarshal(respBody, &dirRoleTemplate); err != nil {

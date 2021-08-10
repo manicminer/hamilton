@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/internal/utils"
@@ -40,9 +40,9 @@ func (c *NamedLocationsClient) List(ctx context.Context, query odata.Query) (*[]
 	}
 
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var data struct {
@@ -127,9 +127,9 @@ func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPN
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newIPNamedLocation IPNamedLocation
 	if err := json.Unmarshal(respBody, &newIPNamedLocation); err != nil {
@@ -160,9 +160,9 @@ func (c *NamedLocationsClient) CreateCountry(ctx context.Context, countryNamedLo
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newCountryNamedLocation CountryNamedLocation
 	if err := json.Unmarshal(respBody, &newCountryNamedLocation); err != nil {
@@ -186,9 +186,9 @@ func (c *NamedLocationsClient) GetIP(ctx context.Context, id string, query odata
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var ipNamedLocation IPNamedLocation
 	if err := json.Unmarshal(respBody, &ipNamedLocation); err != nil {
@@ -212,9 +212,9 @@ func (c *NamedLocationsClient) Get(ctx context.Context, id string, query odata.Q
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var o odata.OData
@@ -264,9 +264,9 @@ func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string, query 
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var countryNamedLocation CountryNamedLocation
 	if err := json.Unmarshal(respBody, &countryNamedLocation); err != nil {

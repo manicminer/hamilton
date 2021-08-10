@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -37,9 +37,9 @@ func (c *SignInReportsClient) List(ctx context.Context, query odata.Query) (*[]S
 		return nil, status, fmt.Errorf("SignInLogsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		SignInLogs []SignInReport `json:"value"`
@@ -65,9 +65,9 @@ func (c *SignInReportsClient) Get(ctx context.Context, id string, query odata.Qu
 		return nil, status, fmt.Errorf("SignInLogsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var signInReport SignInReport
 	if err := json.Unmarshal(respBody, &signInReport); err != nil {

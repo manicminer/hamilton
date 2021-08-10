@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -37,9 +37,9 @@ func (c *DirectoryAuditReportsClient) List(ctx context.Context, query odata.Quer
 		return nil, status, fmt.Errorf("DirectoryAuditReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		DirectoryAuditReports []DirectoryAudit `json:"value"`
@@ -65,9 +65,9 @@ func (c *DirectoryAuditReportsClient) Get(ctx context.Context, id string, query 
 		return nil, status, fmt.Errorf("DirectoryAuditReportsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var directoryAuditReport DirectoryAudit
 	if err := json.Unmarshal(respBody, &directoryAuditReport); err != nil {

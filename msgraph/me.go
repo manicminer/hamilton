@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -37,9 +37,9 @@ func (c *MeClient) Get(ctx context.Context, query odata.Query) (*Me, int, error)
 		return nil, status, fmt.Errorf("MeClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var me Me
 	if err := json.Unmarshal(respBody, &me); err != nil {
@@ -63,9 +63,9 @@ func (c *MeClient) GetProfile(ctx context.Context, query odata.Query) (*Me, int,
 		return nil, status, fmt.Errorf("MeClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var me Me
 	if err := json.Unmarshal(respBody, &me); err != nil {

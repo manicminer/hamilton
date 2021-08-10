@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -34,9 +34,9 @@ func (c *IdentityProvidersClient) List(ctx context.Context) (*[]IdentityProvider
 		return nil, status, fmt.Errorf("IdentityProvidersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		IdentityProviders []IdentityProvider `json:"value"`
@@ -66,9 +66,9 @@ func (c *IdentityProvidersClient) Create(ctx context.Context, provider IdentityP
 		return nil, status, fmt.Errorf("IdentityProvidersClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newProvider IdentityProvider
 	if err := json.Unmarshal(respBody, &newProvider); err != nil {
@@ -91,9 +91,9 @@ func (c *IdentityProvidersClient) Get(ctx context.Context, id string) (*Identity
 		return nil, status, fmt.Errorf("IdentityProvidersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var provider IdentityProvider
 	if err := json.Unmarshal(respBody, &provider); err != nil {
@@ -156,9 +156,9 @@ func (c *IdentityProvidersClient) ListAvailableProviderTypes(ctx context.Context
 		return nil, status, fmt.Errorf("IdentityProvidersClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		IdentityProviderTypes []string `json:"value"`

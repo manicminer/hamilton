@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -38,9 +38,9 @@ func (c *ConditionalAccessPolicyClient) List(ctx context.Context, query odata.Qu
 		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		ConditionalAccessPolicys []ConditionalAccessPolicy `json:"value"`
@@ -70,9 +70,9 @@ func (c *ConditionalAccessPolicyClient) Create(ctx context.Context, conditionalA
 		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newConditionalAccessPolicy ConditionalAccessPolicy
 	if err := json.Unmarshal(respBody, &newConditionalAccessPolicy); err != nil {
@@ -96,9 +96,9 @@ func (c *ConditionalAccessPolicyClient) Get(ctx context.Context, id string, quer
 		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var conditionalAccessPolicy ConditionalAccessPolicy
 	if err := json.Unmarshal(respBody, &conditionalAccessPolicy); err != nil {

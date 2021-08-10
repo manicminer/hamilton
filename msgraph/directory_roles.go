@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -36,9 +36,9 @@ func (c *DirectoryRolesClient) List(ctx context.Context) (*[]DirectoryRole, int,
 		return nil, status, fmt.Errorf("DirectoryRolesClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		DirectoryRoles []DirectoryRole `json:"value"`
@@ -62,9 +62,9 @@ func (c *DirectoryRolesClient) Get(ctx context.Context, id string) (*DirectoryRo
 		return nil, status, fmt.Errorf("DirectoryRolesClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var dirRole DirectoryRole
 	if err := json.Unmarshal(respBody, &dirRole); err != nil {
@@ -88,9 +88,9 @@ func (c *DirectoryRolesClient) ListMembers(ctx context.Context, id string) (*[]s
 		return nil, status, fmt.Errorf("DirectoryRolesClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Members []struct {
@@ -201,9 +201,9 @@ func (c *DirectoryRolesClient) GetMember(ctx context.Context, directoryRoleId, m
 		return nil, status, fmt.Errorf("DirectoryRolesClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Context string `json:"@odata.context"`
@@ -255,9 +255,9 @@ func (c *DirectoryRolesClient) Activate(ctx context.Context, roleTemplateID stri
 		return nil, status, fmt.Errorf("DirectoryRolesClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newDirRole DirectoryRole
 	if err := json.Unmarshal(respBody, &newDirRole); err != nil {

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
@@ -39,9 +39,9 @@ func (c *InvitationsClient) Create(ctx context.Context, invitation Invitation) (
 		return nil, status, fmt.Errorf("InvitationsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newInvitation Invitation
 	if err := json.Unmarshal(respBody, &newInvitation); err != nil {

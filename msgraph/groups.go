@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -37,9 +37,9 @@ func (c *GroupsClient) List(ctx context.Context, query odata.Query) (*[]Group, i
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Groups []Group `json:"value"`
@@ -69,9 +69,9 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newGroup Group
 	if err := json.Unmarshal(respBody, &newGroup); err != nil {
@@ -95,9 +95,9 @@ func (c *GroupsClient) Get(ctx context.Context, id string, query odata.Query) (*
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var group Group
 	if err := json.Unmarshal(respBody, &group); err != nil {
@@ -137,9 +137,9 @@ func (c *GroupsClient) GetWithSchemaExtensions(ctx context.Context, id string, q
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	group.SchemaExtensions = schemaExtensions
@@ -164,9 +164,9 @@ func (c *GroupsClient) GetDeleted(ctx context.Context, id string, query odata.Qu
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var group Group
 	if err := json.Unmarshal(respBody, &group); err != nil {
@@ -244,7 +244,7 @@ func (c *GroupsClient) ListDeleted(ctx context.Context, query odata.Query) (*[]G
 		return nil, status, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 	var data struct {
 		DeletedGroups []Group `json:"value"`
 	}
@@ -268,9 +268,9 @@ func (c *GroupsClient) RestoreDeleted(ctx context.Context, id string) (*Group, i
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var restoredGroup Group
 	if err = json.Unmarshal(respBody, &restoredGroup); err != nil {
@@ -295,9 +295,9 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Members []struct {
@@ -332,9 +332,9 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Context string `json:"@odata.context"`
@@ -458,9 +458,9 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, in
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Owners []struct {
@@ -495,9 +495,9 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		Context string `json:"@odata.context"`

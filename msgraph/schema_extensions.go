@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -37,9 +37,9 @@ func (c *SchemaExtensionsClient) List(ctx context.Context, query odata.Query) (*
 		return nil, status, fmt.Errorf("SchemaExtensionsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		SchemaExtensions []SchemaExtension `json:"value"`
@@ -65,9 +65,9 @@ func (c *SchemaExtensionsClient) Get(ctx context.Context, id string, query odata
 		return nil, status, fmt.Errorf("SchemaExtensionsClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var schemaExtension SchemaExtension
 	if err := json.Unmarshal(respBody, &schemaExtension); err != nil {
@@ -117,9 +117,9 @@ func (c *SchemaExtensionsClient) Create(ctx context.Context, schemaExtension Sch
 		return nil, status, fmt.Errorf("SchemaExtensionsClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newSchemaExtension SchemaExtension
 	if err := json.Unmarshal(respBody, &newSchemaExtension); err != nil {
