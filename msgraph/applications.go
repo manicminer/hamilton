@@ -373,8 +373,8 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 	return &data.Id, status, nil
 }
 
-// AddOwners adds a new owner to an Application.
-// First populate the Owners field of the Application using the AppendOwner method of the model, then call this method.
+// AddOwners adds new owners to an Application.
+// First populate the `owners` field, then call this method
 func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Application) (int, error) {
 	var status int
 	if application.ID == nil {
@@ -392,12 +392,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 			return false
 		}
 
-		data := struct {
-			Owner string `json:"@odata.id"`
-		}{
-			Owner: owner,
-		}
-		body, err := json.Marshal(data)
+		body, err := json.Marshal(DirectoryObject{ODataId: owner.ODataId})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}

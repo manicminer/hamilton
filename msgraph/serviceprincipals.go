@@ -221,8 +221,8 @@ func (c *ServicePrincipalsClient) GetOwner(ctx context.Context, servicePrincipal
 	return &data.Id, status, nil
 }
 
-// AddOwners adds a new owner to a Service Principal.
-// First populate the Owners field of the ServicePrincipal using the AppendOwner method of the model, then call this method.
+// AddOwners adds owners to a Service Principal.
+// First populate the `owners` field, then call this method
 func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipal *ServicePrincipal) (int, error) {
 	var status int
 	if servicePrincipal.ID == nil {
@@ -240,12 +240,11 @@ func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipa
 			return false
 		}
 
-		data := struct {
-			Owner string `json:"@odata.id"`
+		body, err := json.Marshal(struct {
+			Owner odata.Id `json:"@odata.id"`
 		}{
-			Owner: owner,
-		}
-		body, err := json.Marshal(data)
+			Owner: *owner.ODataId,
+		})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}

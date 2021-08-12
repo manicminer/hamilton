@@ -53,7 +53,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 		DisplayName:    appChild.DisplayName,
 	})
 
-	spChild.AppendOwner(string(c.client.BaseClient.Endpoint), string(c.client.BaseClient.ApiVersion), *sp.ID)
+	spChild.Owners = &msgraph.Owners{*sp.DirectoryObject}
 	testServicePrincipalsClient_AddOwners(t, c, spChild)
 	testServicePrincipalsClient_ListOwners(t, c, *spChild.ID, []string{*sp.ID})
 	testServicePrincipalsClient_GetOwner(t, c, *spChild.ID, *sp.ID)
@@ -86,9 +86,9 @@ func TestServicePrincipalsClient(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	groupParent.Members = &msgraph.Members{*groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *sp.ID)
+	groupChild.Members = &msgraph.Members{*sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
@@ -172,9 +172,9 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	groupParent.Members = &msgraph.Members{*groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *sp.ID)
+	groupChild.Members = &msgraph.Members{*sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)

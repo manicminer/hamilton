@@ -52,7 +52,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 	group := testGroupsClient_Create(t, groupsClient, newGroup)
 
 	// add the test group as a member of directory role
-	directoryRole.AppendMember(dirRolesClient.client.BaseClient.Endpoint, dirRolesClient.client.BaseClient.ApiVersion, *group.ID)
+	directoryRole.Members = &msgraph.Members{*group.DirectoryObject}
 	testDirectoryRolesClient_AddMembers(t, dirRolesClient, &directoryRole)
 
 	// list members of the directory role; then remove the added group member to clean up

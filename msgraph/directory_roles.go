@@ -108,8 +108,8 @@ func (c *DirectoryRolesClient) ListMembers(ctx context.Context, id string) (*[]s
 	return &ret, status, nil
 }
 
-// AddMembers adds a new member to a Directory Role.
-// First populate the Members field of the DirectoryRole using the AppendMember method of the model, then call this method.
+// AddMembers adds new members to a Directory Role.
+// First populate the `members` field, then call this method
 func (c *DirectoryRolesClient) AddMembers(ctx context.Context, directoryRole *DirectoryRole) (int, error) {
 	var status int
 	if directoryRole.ID == nil {
@@ -129,12 +129,11 @@ func (c *DirectoryRolesClient) AddMembers(ctx context.Context, directoryRole *Di
 			return false
 		}
 
-		data := struct {
-			Member string `json:"@odata.id"`
+		body, err := json.Marshal(struct {
+			Member odata.Id `json:"@odata.id"`
 		}{
-			Member: member,
-		}
-		body, err := json.Marshal(data)
+			Member: *member.ODataId,
+		})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}

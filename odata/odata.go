@@ -14,16 +14,47 @@ const (
 	ErrorServicePrincipalInvalidAppId        = "The appId '.+' of the service principal does not reference a valid application object."
 )
 
+type Id string
+
+func (o *Id) UnmarshalJSON(data []byte) error {
+	var id string
+	if err := json.Unmarshal(data, &id); err != nil {
+		return err
+	}
+	*o = Id(regexp.MustCompile(`/v2/`).ReplaceAllString(id, `/v1.0/`))
+	return nil
+}
+
+type Type = string
+
+const (
+	TypeAdministrativeUnit      Type = "#microsoft.graph.administrativeUnit"
+	TypeApplication             Type = "#microsoft.graph.application"
+	TypeConditionalAccessPolicy Type = "#microsoft.graph.conditionalAccessPolicy"
+	TypeCountryNamedLocation    Type = "#microsoft.graph.countryNamedLocation"
+	TypeDevice                  Type = "#microsoft.graph.device"
+	TypeDirectoryRole           Type = "#microsoft.graph.directoryRole"
+	TypeDirectoryRoleTemplate   Type = "#microsoft.graph.directoryRoleTemplate"
+	TypeDomain                  Type = "#microsoft.graph.domain"
+	TypeGroup                   Type = "#microsoft.graph.group"
+	TypeIpNamedLocation         Type = "#microsoft.graph.ipNamedLocation"
+	TypeNamedLocation           Type = "#microsoft.graph.namedLocation"
+	TypeOrganization            Type = "#microsoft.graph.organization"
+	TypeServicePrincipal        Type = "#microsoft.graph.servicePrincipal"
+	TypeSocialIdentityProvider  Type = "#microsoft.graph.socialIdentityProvider"
+	TypeUser                    Type = "#microsoft.graph.user"
+)
+
 // OData is used to unmarshall OData metadata from an API response.
 type OData struct {
 	Context      *string `json:"@odata.context"`
 	MetadataEtag *string `json:"@odata.metadataEtag"`
-	Type         *string `json:"@odata.type"`
+	Type         *Type   `json:"@odata.type"`
 	Count        *string `json:"@odata.count"`
 	NextLink     *string `json:"@odata.nextLink"`
 	Delta        *string `json:"@odata.delta"`
 	DeltaLink    *string `json:"@odata.deltaLink"`
-	Id           *string `json:"@odata.id"`
+	Id           *Id     `json:"@odata.id"`
 	Etag         *string `json:"@odata.etag"`
 
 	Error *Error `json:"-"`

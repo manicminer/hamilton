@@ -348,27 +348,15 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 	return &data.Id, status, nil
 }
 
-// AddMembers adds a new member to a Group.
-// First populate the Members field of the Group using the AppendMember method of the model, then call this method.
+// AddMembers adds new members to a Group.
+// First populate the `members` field, then call this method
 func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error) {
 	var status int
-	// Patching group members support up to 20 members per request
-	var memberChunks [][]string
 	if group.Members == nil || len(*group.Members) == 0 {
 		return status, fmt.Errorf("no members specified")
 	}
-	members := *group.Members
-	max := len(members)
-	// Chunk into slices of 20 for batching
-	for i := 0; i < max; i += 20 {
-		end := i + 20
-		if end > max {
-			end = max
-		}
-		memberChunks = append(memberChunks, members[i:end])
-	}
-	for _, members := range memberChunks {
-		// don't fail if a member already exists
+	for _, member := range *group.Members {
+		// don't fail if an member already exists
 		checkMemberAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
 			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
 				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
@@ -376,25 +364,26 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 			return false
 		}
 
-		data := Group{
-			Members: &members,
-		}
-		body, err := json.Marshal(data)
+		body, err := json.Marshal(struct {
+			Member odata.Id `json:"@odata.id"`
+		}{
+			Member: *member.ODataId,
+		})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
-		_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
+		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
 			Body:                   body,
 			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkMemberAlreadyExists,
 			Uri: Uri{
-				Entity:      fmt.Sprintf("/groups/%s", *group.ID),
+				Entity:      fmt.Sprintf("/groups/%s/members/$ref", *group.ID),
 				HasTenantId: true,
 			},
 		})
 		if err != nil {
-			return status, fmt.Errorf("GroupsClient.BaseClient.Patch(): %v", err)
+			return status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 		}
 	}
 	return status, nil
@@ -511,8 +500,8 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 	return &data.Id, status, nil
 }
 
-// AddOwners adds a new owner to a Group.
-// First populate the Owners field of the Group using the AppendOwner method of the model, then call this method.
+// AddOwners adds new owners to a Group.
+// First populate the `owners` field, then call this method
 func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error) {
 	var status int
 	if group.Owners == nil || len(*group.Owners) == 0 {
@@ -527,12 +516,11 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 			return false
 		}
 
-		data := struct {
-			Owner string `json:"@odata.id"`
+		body, err := json.Marshal(struct {
+			Owner odata.Id `json:"@odata.id"`
 		}{
-			Owner: owner,
-		}
-		body, err := json.Marshal(data)
+			Owner: *owner.ODataId,
+		})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}

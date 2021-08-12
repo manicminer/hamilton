@@ -71,13 +71,13 @@ func (c *NamedLocationsClient) List(ctx context.Context, query odata.Query) (*[]
 			continue
 		}
 		switch *o.Type {
-		case "#microsoft.graph.countryNamedLocation":
+		case odata.TypeCountryNamedLocation:
 			var loc CountryNamedLocation
 			if err := json.Unmarshal(namedLocation, &loc); err != nil {
 				return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 			}
 			ret = append(ret, loc)
-		case "#microsoft.graph.ipNamedLocation":
+		case odata.TypeIpNamedLocation:
 			var loc IPNamedLocation
 			if err := json.Unmarshal(namedLocation, &loc); err != nil {
 				return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
@@ -110,7 +110,7 @@ func (c *NamedLocationsClient) Delete(ctx context.Context, id string) (int, erro
 func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (*IPNamedLocation, int, error) {
 	var status int
 
-	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
+	ipNamedLocation.ODataType = utils.StringPtr(odata.TypeIpNamedLocation)
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
@@ -142,7 +142,7 @@ func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPN
 func (c *NamedLocationsClient) CreateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (*CountryNamedLocation, int, error) {
 	var status int
 
-	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
+	countryNamedLocation.ODataType = utils.StringPtr(odata.TypeCountryNamedLocation)
 
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {
@@ -231,13 +231,13 @@ func (c *NamedLocationsClient) Get(ctx context.Context, id string, query odata.Q
 	}
 
 	switch *o.Type {
-	case "#microsoft.graph.countryNamedLocation":
+	case odata.TypeCountryNamedLocation:
 		var loc CountryNamedLocation
 		if err := json.Unmarshal(respBody, &loc); err != nil {
 			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 		}
 		ret = loc
-	case "#microsoft.graph.ipNamedLocation":
+	case odata.TypeIpNamedLocation:
 		var loc IPNamedLocation
 		if err := json.Unmarshal(respBody, &loc); err != nil {
 			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
@@ -279,7 +279,7 @@ func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string, query 
 func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
 
-	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
+	ipNamedLocation.ODataType = utils.StringPtr(odata.TypeIpNamedLocation)
 
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
@@ -304,7 +304,7 @@ func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPN
 func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
 
-	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
+	countryNamedLocation.ODataType = utils.StringPtr(odata.TypeCountryNamedLocation)
 
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {

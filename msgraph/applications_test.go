@@ -18,15 +18,52 @@ type ApplicationsClientTest struct {
 }
 
 func TestApplicationsClient(t *testing.T) {
+	rs := test.RandomString()
 	c := ApplicationsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
+		randomString: rs,
 	}
 	c.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
+	token, err := c.connection.Authorizer.Token()
+	if err != nil {
+		t.Fatalf("could not acquire access token: %v", err)
+	}
+	claims, err := auth.ParseClaims(token)
+	if err != nil {
+		t.Fatalf("could not parse claims: %v", err)
+	}
+
+	u := UsersClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
+	u.client.BaseClient.Authorizer = u.connection.Authorizer
+
+	user := testUsersClient_Create(t, u, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-applicationowner"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-applicationowner-%s", c.randomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-applicationowner-%s@%s", c.randomString, c.connection.DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+		},
+	})
+
+	o := DirectoryObjectsClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	o.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
+	o.client.BaseClient.Authorizer = o.connection.Authorizer
+
+	self := testDirectoryObjectsClient_Get(t, o, claims.ObjectId)
+
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
+		Owners:      &msgraph.Owners{*self},
 	})
 	testApplicationsClient_Get(t, c, *app.ID)
 	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.randomString))
@@ -45,7 +82,7 @@ func TestApplicationsClient(t *testing.T) {
 	owners := testApplicationsClient_ListOwners(t, c, *app.ID)
 	testApplicationsClient_GetOwner(t, c, *app.ID, (*owners)[0])
 	testApplicationsClient_RemoveOwners(t, c, *app.ID, owners)
-	app.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, (*owners)[0])
+	app.Owners = &msgraph.Owners{*user.DirectoryObject}
 	testApplicationsClient_AddOwners(t, c, app)
 	pwd := testApplicationsClient_AddPassword(t, c, app)
 	testApplicationsClient_RemovePassword(t, c, app, pwd)
