@@ -85,7 +85,7 @@ type Client struct {
 
 	// HttpClient is the underlying http.Client, which by default uses a retryable client
 	HttpClient      *http.Client
-	retryableClient *retryablehttp.Client
+	RetryableClient *retryablehttp.Client
 }
 
 // NewClient returns a new Client configured with the specified API version and tenant ID.
@@ -99,7 +99,7 @@ func NewClient(apiVersion ApiVersion, tenantId string) Client {
 		TenantId:        tenantId,
 		UserAgent:       "Hamilton (Go-http-client/1.1)",
 		HttpClient:      r.StandardClient(),
-		retryableClient: r,
+		RetryableClient: r,
 	}
 }
 
@@ -152,7 +152,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 		}
 	}
 
-	c.retryableClient.CheckRetry = func(ctx context.Context, resp *http.Response, err error) (bool, error) {
+	c.RetryableClient.CheckRetry = func(ctx context.Context, resp *http.Response, err error) (bool, error) {
 		if resp != nil && !c.DisableRetries {
 			if resp.StatusCode == http.StatusFailedDependency {
 				return true, nil
