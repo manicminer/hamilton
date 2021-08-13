@@ -10,8 +10,9 @@ import (
 const (
 	ErrorAddedObjectReferencesAlreadyExist   = "One or more added object references already exist"
 	ErrorConflictingObjectPresentInDirectory = "A conflicting object with one or more of the specified property values is present in the directory"
+	ErrorResourceDoesNotExist                = "Resource '.+' does not exist or one of its queried reference-property objects are not present"
 	ErrorRemovedObjectReferencesDoNotExist   = "One or more removed object references do not exist"
-	ErrorServicePrincipalInvalidAppId        = "The appId '.+' of the service principal does not reference a valid application object."
+	ErrorServicePrincipalInvalidAppId        = "The appId '.+' of the service principal does not reference a valid application object"
 )
 
 type Id string

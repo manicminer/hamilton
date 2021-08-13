@@ -57,9 +57,13 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+	ownersNotReplicated := func(resp *http.Response, o *odata.OData) bool {
+		return o.Error != nil && o.Error.Match(odata.ErrorResourceDoesNotExist)
+	}
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		Body:                   body,
+		ConsistencyFailureFunc: ownersNotReplicated,
+		ValidStatusCodes:       []int{http.StatusCreated},
 		Uri: Uri{
 			Entity:      "/groups",
 			HasTenantId: true,
