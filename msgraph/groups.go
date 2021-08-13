@@ -58,7 +58,7 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	ownersNotReplicated := func(resp *http.Response, o *odata.OData) bool {
-		return o.Error != nil && o.Error.Match(odata.ErrorResourceDoesNotExist)
+		return o != nil && o.Error != nil && o.Error.Match(odata.ErrorResourceDoesNotExist)
 	}
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
@@ -362,7 +362,7 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 	for _, member := range *group.Members {
 		// don't fail if an member already exists
 		checkMemberAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 			}
 			return false
@@ -412,7 +412,7 @@ func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *
 
 		// despite the above check, sometimes members are just gone
 		checkMemberGone := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
 			}
 			return false
@@ -514,7 +514,7 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 	for _, owner := range *group.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 			}
 			return false
@@ -564,7 +564,7 @@ func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]
 
 		// despite the above check, sometimes owners are just gone
 		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
 			}
 			return false

@@ -59,7 +59,7 @@ func (c *ServicePrincipalsClient) Create(ctx context.Context, servicePrincipal S
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	appNotReplicated := func(resp *http.Response, o *odata.OData) bool {
-		return o.Error != nil && o.Error.Match(odata.ErrorServicePrincipalInvalidAppId)
+		return o != nil && o.Error != nil && o.Error.Match(odata.ErrorServicePrincipalInvalidAppId)
 	}
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
@@ -234,7 +234,7 @@ func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipa
 	for _, owner := range *servicePrincipal.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 			}
 			return false
@@ -284,7 +284,7 @@ func (c *ServicePrincipalsClient) RemoveOwners(ctx context.Context, servicePrinc
 
 		// despite the above check, sometimes owners are just gone
 		checkOwnerGone := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o.Error != nil {
+			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorRemovedObjectReferencesDoNotExist)
 			}
 			return false
