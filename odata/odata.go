@@ -25,6 +25,26 @@ func (o *Id) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type ShortType = string
+
+const (
+	ShortTypeAdministrativeUnit      ShortType = "administrativeUnit"
+	ShortTypeApplication             ShortType = "application"
+	ShortTypeConditionalAccessPolicy ShortType = "conditionalAccessPolicy"
+	ShortTypeCountryNamedLocation    ShortType = "countryNamedLocation"
+	ShortTypeDevice                  ShortType = "device"
+	ShortTypeDirectoryRole           ShortType = "directoryRole"
+	ShortTypeDirectoryRoleTemplate   ShortType = "directoryRoleTemplate"
+	ShortTypeDomain                  ShortType = "domain"
+	ShortTypeGroup                   ShortType = "group"
+	ShortTypeIpNamedLocation         ShortType = "ipNamedLocation"
+	ShortTypeNamedLocation           ShortType = "namedLocation"
+	ShortTypeOrganization            ShortType = "organization"
+	ShortTypeServicePrincipal        ShortType = "servicePrincipal"
+	ShortTypeSocialIdentityProvider  ShortType = "socialIdentityProvider"
+	ShortTypeUser                    ShortType = "user"
+)
+
 type Type = string
 
 const (

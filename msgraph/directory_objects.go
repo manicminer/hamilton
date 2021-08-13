@@ -49,6 +49,45 @@ func (c *DirectoryObjectsClient) Get(ctx context.Context, id string, query odata
 	return &directoryObject, status, nil
 }
 
+// GetByIds retrieves multiple DirectoryObjects from a list of IDs.
+func (c *DirectoryObjectsClient) GetByIds(ctx context.Context, ids []string, types []odata.ShortType) (*[]DirectoryObject, int, error) {
+	var status int
+	body, err := json.Marshal(struct {
+		IDs   []string     `json:"ids"`
+		Types []odata.Type `json:"types"`
+	}{
+		IDs:   ids,
+		Types: types,
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      "/directoryObjects/getByIds",
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("DirectoryObjects.BaseClient.Post(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+	var data struct {
+		Objects []DirectoryObject `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+	return &data.Objects, status, nil
+}
+
 // Delete removes a DirectoryObject.
 func (c *DirectoryObjectsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{

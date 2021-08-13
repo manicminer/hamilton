@@ -75,6 +75,7 @@ func TestDirectoryObjectsClient(t *testing.T) {
 	testDirectoryObjectsClient_Get(t, c, *group1.ID)
 	testDirectoryObjectsClient_GetMemberGroups(t, c, *user.ID, true, []string{*group1.ID, *group2.ID})
 	testDirectoryObjectsClient_GetMemberObjects(t, c, *group1.ID, true, []string{*group2.ID})
+	testDirectoryObjectsClient_GetByIds(t, c, []string{*group1.ID, *group2.ID, *user.ID}, []string{odata.ShortTypeGroup})
 	testDirectoryObjectsClient_Delete(t, c, *group1.ID)
 }
 
@@ -91,6 +92,23 @@ func testDirectoryObjectsClient_Get(t *testing.T, c DirectoryObjectsClientTest, 
 	}
 	if directoryObject.ID == nil {
 		t.Fatal("DirectoryObjectsClient.Get(): directoryObject ID was nil")
+	}
+	return
+}
+
+func testDirectoryObjectsClient_GetByIds(t *testing.T, c DirectoryObjectsClientTest, ids []string, types []odata.ShortType) (directoryObjects *[]msgraph.DirectoryObject) {
+	directoryObjects, status, err := c.client.GetByIds(c.connection.Context, ids, types)
+	if err != nil {
+		t.Fatalf("DirectoryObjectsClient.GetByIds(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("DirectoryObjectsClient.GetByIds(): invalid status: %d", status)
+	}
+	if directoryObjects == nil {
+		t.Fatal("DirectoryObjectsClient.GetByIds(): directoryObject was nil")
+	}
+	if len(*directoryObjects) == 0 {
+		t.Fatal("DirectoryObjectsClient.GetByIds(): directoryObjects was empty")
 	}
 	return
 }
