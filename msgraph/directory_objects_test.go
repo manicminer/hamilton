@@ -56,7 +56,7 @@ func TestDirectoryObjectsClient(t *testing.T) {
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-directoryobject-member-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
-	newGroup1.Members = &msgraph.Members{*user.DirectoryObject}
+	newGroup1.Members = &msgraph.Members{user.DirectoryObject}
 	group1 := testGroupsClient_Create(t, g, newGroup1)
 
 	newGroup2 := msgraph.Group{
@@ -65,8 +65,8 @@ func TestDirectoryObjectsClient(t *testing.T) {
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-directoryobject-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 		Members: &msgraph.Members{
-			*group1.DirectoryObject,
-			*user.DirectoryObject,
+			group1.DirectoryObject,
+			user.DirectoryObject,
 		},
 	}
 	group2 := testGroupsClient_Create(t, g, newGroup2)
@@ -132,16 +132,16 @@ func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c DirectoryObjects
 	if len(*directoryObjects) < expectedCount {
 		t.Fatalf("DirectoryObjectsClient.GetMemberGroups(): expected at least %d result. has: %d", expectedCount, len(*directoryObjects))
 	}
-	var expectedFound int
+	var actualCount int
 	for _, e := range expected {
 		for _, o := range *directoryObjects {
 			if o.ID != nil && e == *o.ID {
-				expectedFound++
+				actualCount++
 			}
 		}
 	}
-	if expectedFound < expectedCount {
-		t.Fatalf("DirectoryObjectsClient.GetMemberGroups(): expected %d matching objects. found: %d", expectedCount, expectedFound)
+	if actualCount < expectedCount {
+		t.Fatalf("DirectoryObjectsClient.GetMemberGroups(): expected %d matching objects. found: %d", expectedCount, actualCount)
 	}
 	return
 }
@@ -165,16 +165,16 @@ func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c DirectoryObject
 	if len(*directoryObjects) < expectedCount {
 		t.Fatalf("DirectoryObjectsClient.GetMemberObjects(): expected at least %d result. has: %d", expectedCount, len(*directoryObjects))
 	}
-	var expectedFound int
+	var actualCount int
 	for _, e := range expected {
 		for _, o := range *directoryObjects {
 			if o.ID != nil && e == *o.ID {
-				expectedFound++
+				actualCount++
 			}
 		}
 	}
-	if expectedFound < expectedCount {
-		t.Fatalf("DirectoryObjectsClient.GetMemberObjects(): expected %d matching objects. found: %d", expectedCount, expectedFound)
+	if actualCount < expectedCount {
+		t.Fatalf("DirectoryObjectsClient.GetMemberObjects(): expected %d matching objects. found: %d", expectedCount, actualCount)
 	}
 	return
 }

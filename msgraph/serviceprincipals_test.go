@@ -53,7 +53,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 		DisplayName:    appChild.DisplayName,
 	})
 
-	spChild.Owners = &msgraph.Owners{*sp.DirectoryObject}
+	spChild.Owners = &msgraph.Owners{sp.DirectoryObject}
 	testServicePrincipalsClient_AddOwners(t, c, spChild)
 	testServicePrincipalsClient_ListOwners(t, c, *spChild.ID, []string{*sp.ID})
 	testServicePrincipalsClient_GetOwner(t, c, *spChild.ID, *sp.ID)
@@ -86,9 +86,9 @@ func TestServicePrincipalsClient(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.Members = &msgraph.Members{*groupChild.DirectoryObject}
+	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.Members = &msgraph.Members{*sp.DirectoryObject}
+	groupChild.Members = &msgraph.Members{sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
@@ -172,9 +172,9 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.Members = &msgraph.Members{*groupChild.DirectoryObject}
+	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.Members = &msgraph.Members{*sp.DirectoryObject}
+	groupChild.Members = &msgraph.Members{sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)

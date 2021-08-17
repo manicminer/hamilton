@@ -81,11 +81,11 @@ func TestGroupsClient(t *testing.T) {
 		},
 	})
 
-	group.Owners = &msgraph.Owners{*user.DirectoryObject}
+	group.Owners = &msgraph.Owners{user.DirectoryObject}
 	testGroupsClient_AddOwners(t, c, group)
 	testGroupsClient_RemoveOwners(t, c, *group.ID, &([]string{claims.ObjectId}))
 
-	group.Members = &msgraph.Members{*user.DirectoryObject}
+	group.Members = &msgraph.Members{user.DirectoryObject}
 	testGroupsClient_AddMembers(t, c, group)
 	testGroupsClient_RemoveMembers(t, c, *group.ID, &([]string{claims.ObjectId}))
 

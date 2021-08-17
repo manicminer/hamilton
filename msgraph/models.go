@@ -38,7 +38,7 @@ type AppIdentity struct {
 
 // Application describes an Application object.
 type Application struct {
-	*DirectoryObject
+	DirectoryObject
 	Owners *Owners `json:"owners@odata.bind,omitempty"`
 
 	AddIns                        *[]AddIn                  `json:"addIns,omitempty"`
@@ -85,6 +85,8 @@ func (a Application) MarshalJSON() ([]byte, error) {
 		theClaims := StringNullWhenEmpty(strings.Join(claims, ","))
 		val = &theClaims
 	}
+
+	// Local type needed to avoid recursive MarshalJSON calls
 	type application Application
 	app := struct {
 		GroupMembershipClaims *StringNullWhenEmpty `json:"groupMembershipClaims,omitempty"`
@@ -98,9 +100,7 @@ func (a Application) MarshalJSON() ([]byte, error) {
 }
 
 func (a *Application) UnmarshalJSON(data []byte) error {
-	if a.DirectoryObject == nil {
-		a.DirectoryObject = &DirectoryObject{}
-	}
+	// Local type needed to avoid recursive UnmarshalJSON calls
 	type application Application
 	app := struct {
 		GroupMembershipClaims *string `json:"groupMembershipClaims"`
@@ -475,7 +475,7 @@ func (o *DirectoryObject) Uri(endpoint environments.ApiEndpoint, apiVersion ApiV
 }
 
 type DirectoryRole struct {
-	*DirectoryObject
+	DirectoryObject
 	Members *Members `json:"-"`
 
 	Description    *string `json:"description,omitempty"`
@@ -484,9 +484,7 @@ type DirectoryRole struct {
 }
 
 func (r *DirectoryRole) UnmarshalJSON(data []byte) error {
-	if r.DirectoryObject == nil {
-		r.DirectoryObject = &DirectoryObject{}
-	}
+	// Local type needed to avoid recursive UnmarshalJSON calls
 	type directoryrole DirectoryRole
 	r2 := (*directoryrole)(r)
 	if err := json.Unmarshal(data, r2); err != nil {
@@ -543,7 +541,7 @@ type GeoCoordinates struct {
 
 // Group describes a Group object.
 type Group struct {
-	*DirectoryObject
+	DirectoryObject
 	Members          *Members               `json:"members@odata.bind,omitempty"`
 	Owners           *Owners                `json:"owners@odata.bind,omitempty"`
 	SchemaExtensions *[]SchemaExtensionData `json:"-"`
@@ -592,6 +590,7 @@ type Group struct {
 
 func (g Group) MarshalJSON() ([]byte, error) {
 	docs := make([][]byte, 0)
+	// Local type needed to avoid recursive MarshalJSON calls
 	type group Group
 	d, err := json.Marshal((*group)(&g))
 	if err != nil {
@@ -611,9 +610,7 @@ func (g Group) MarshalJSON() ([]byte, error) {
 }
 
 func (g *Group) UnmarshalJSON(data []byte) error {
-	if g.DirectoryObject == nil {
-		g.DirectoryObject = &DirectoryObject{}
-	}
+	// Local type needed to avoid recursive UnmarshalJSON calls
 	type group Group
 	g2 := (*group)(g)
 	if err := json.Unmarshal(data, g2); err != nil {
@@ -913,7 +910,7 @@ func (se SchemaExtensionData) MarshalJSON() ([]byte, error) {
 
 // ServicePrincipal describes a Service Principal object.
 type ServicePrincipal struct {
-	*DirectoryObject
+	DirectoryObject
 	Owners *Owners `json:"-"`
 
 	AccountEnabled                      *bool                         `json:"accountEnabled,omitempty"`
@@ -952,9 +949,7 @@ type ServicePrincipal struct {
 }
 
 func (s *ServicePrincipal) UnmarshalJSON(data []byte) error {
-	if s.DirectoryObject == nil {
-		s.DirectoryObject = &DirectoryObject{}
-	}
+	// Local type needed to avoid recursive UnmarshalJSON calls
 	type serviceprincipal ServicePrincipal
 	s2 := (*serviceprincipal)(s)
 	if err := json.Unmarshal(data, s2); err != nil {
@@ -1024,7 +1019,7 @@ type TargetResource struct {
 
 // User describes a User object.
 type User struct {
-	*DirectoryObject
+	DirectoryObject
 
 	AboutMe                         *string                  `json:"aboutMe,omitempty"`
 	AccountEnabled                  *bool                    `json:"accountEnabled,omitempty"`
@@ -1091,6 +1086,7 @@ type User struct {
 
 func (u User) MarshalJSON() ([]byte, error) {
 	docs := make([][]byte, 0)
+	// Local type needed to avoid recursive MarshalJSON calls
 	type user User
 	d, err := json.Marshal(user(u))
 	if err != nil {
@@ -1110,9 +1106,7 @@ func (u User) MarshalJSON() ([]byte, error) {
 }
 
 func (u *User) UnmarshalJSON(data []byte) error {
-	if u.DirectoryObject == nil {
-		u.DirectoryObject = &DirectoryObject{}
-	}
+	// Local type needed to avoid recursive UnmarshalJSON calls
 	type user User
 	u2 := (*user)(u)
 	if err := json.Unmarshal(data, u2); err != nil {

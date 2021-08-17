@@ -63,7 +63,7 @@ func TestApplicationsClient(t *testing.T) {
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
-		Owners:      &msgraph.Owners{*self},
+		Owners: &msgraph.Owners{*self},
 	})
 	testApplicationsClient_Get(t, c, *app.ID)
 	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.randomString))
@@ -82,7 +82,7 @@ func TestApplicationsClient(t *testing.T) {
 	owners := testApplicationsClient_ListOwners(t, c, *app.ID)
 	testApplicationsClient_GetOwner(t, c, *app.ID, (*owners)[0])
 	testApplicationsClient_RemoveOwners(t, c, *app.ID, owners)
-	app.Owners = &msgraph.Owners{*user.DirectoryObject}
+	app.Owners = &msgraph.Owners{user.DirectoryObject}
 	testApplicationsClient_AddOwners(t, c, app)
 	pwd := testApplicationsClient_AddPassword(t, c, app)
 	testApplicationsClient_RemovePassword(t, c, app, pwd)
