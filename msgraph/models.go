@@ -1047,6 +1047,7 @@ type User struct {
 	JobTitle                        *StringNullWhenEmpty     `json:"jobTitle,omitempty"`
 	Mail                            *StringNullWhenEmpty     `json:"mail,omitempty"`
 	MailNickname                    *string                  `json:"mailNickname,omitempty"`
+	MemberOf                        *[]DirectoryObject       `json:"memberOf,omitempty"`
 	MobilePhone                     *StringNullWhenEmpty     `json:"mobilePhone,omitempty"`
 	MySite                          *string                  `json:"mySite,omitempty"`
 	OfficeLocation                  *StringNullWhenEmpty     `json:"officeLocation,omitempty"`
