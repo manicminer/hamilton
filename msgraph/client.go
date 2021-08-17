@@ -35,7 +35,7 @@ type ResponseMiddleware func(*http.Request, *http.Response) (*http.Response, err
 
 // RetryOn404ConsistencyFailureFunc can be used to retry a request when a 404 response is received
 func RetryOn404ConsistencyFailureFunc(resp *http.Response, _ *odata.OData) bool {
-	return resp.StatusCode == http.StatusNotFound
+	return resp != nil && resp.StatusCode == http.StatusNotFound
 }
 
 // ValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
