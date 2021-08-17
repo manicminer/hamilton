@@ -63,6 +63,11 @@ func TestApplicationsClient(t *testing.T) {
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
+		GroupMembershipClaims: &[]msgraph.GroupMembershipClaim{
+			msgraph.GroupMembershipClaimApplicationGroup,
+			msgraph.GroupMembershipClaimDirectoryRole,
+			msgraph.GroupMembershipClaimSecurityGroup,
+		},
 		Owners: &msgraph.Owners{*self},
 	})
 	testApplicationsClient_Get(t, c, *app.ID)

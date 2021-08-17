@@ -50,7 +50,7 @@ type Application struct {
 	DeletedDateTime               *time.Time                `json:"deletedDateTime,omitempty"`
 	DisabledByMicrosoftStatus     interface{}               `json:"disabledByMicrosoftStatus,omitempty"`
 	DisplayName                   *string                   `json:"displayName,omitempty"`
-	GroupMembershipClaims         *[]GroupMembershipClaim   `json:"groupMembershipClaims,omitempty"` // TODO: tag needed?
+	GroupMembershipClaims         *[]GroupMembershipClaim   `json:"-"` // see Application.MarshalJSON / Application.UnmarshalJSON
 	IdentifierUris                *[]string                 `json:"identifierUris,omitempty"`
 	Info                          *InformationalUrl         `json:"info,omitempty"`
 	IsAuthorizationServiceEnabled *bool                     `json:"isAuthorizationServiceEnabled,omitempty"`
