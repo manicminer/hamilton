@@ -1,4 +1,6 @@
-## 0.24.0 (Unreleased)
+## 0.25.0 (Unreleased)
+
+## 0.24.0 (August 17, 2021)
 
 - When authenticating using Azure CLI, access tokens are now cached to avoid repeatedly invoking `az` to get the latest token ([#88](https://github.com/manicminer/hamilton/pull/88))
 - Support for [authentication methods usage reports](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-usage-insights-overview?view=graph-rest-beta) ([#85](https://github.com/manicminer/hamilton/pull/85))
