@@ -36,30 +36,36 @@ func (c *GroupsClient) List(ctx context.Context, query odata.Query) (*[]Group, i
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Groups []Group `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.Groups, status, nil
 }
 
 // Create creates a new Group.
 func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, error) {
 	var status int
+
 	body, err := json.Marshal(group)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	ownersNotReplicated := func(resp *http.Response, o *odata.OData) bool {
 		return o != nil && o.Error != nil && o.Error.Match(odata.ErrorResourceDoesNotExist)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: ownersNotReplicated,
@@ -72,15 +78,18 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var newGroup Group
 	if err := json.Unmarshal(respBody, &newGroup); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &newGroup, status, nil
 }
 
@@ -98,15 +107,18 @@ func (c *GroupsClient) Get(ctx context.Context, id string, query odata.Query) (*
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var group Group
 	if err := json.Unmarshal(respBody, &group); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &group, status, nil
 }
 
@@ -140,6 +152,7 @@ func (c *GroupsClient) GetWithSchemaExtensions(ctx context.Context, id string, q
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -150,6 +163,7 @@ func (c *GroupsClient) GetWithSchemaExtensions(ctx context.Context, id string, q
 	if err := json.Unmarshal(respBody, group); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return group, status, nil
 }
 
@@ -167,25 +181,30 @@ func (c *GroupsClient) GetDeleted(ctx context.Context, id string, query odata.Qu
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var group Group
 	if err := json.Unmarshal(respBody, &group); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &group, status, nil
 }
 
 // Update amends an existing Group.
 func (c *GroupsClient) Update(ctx context.Context, group Group) (int, error) {
 	var status int
+
 	body, err := json.Marshal(group)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -198,6 +217,7 @@ func (c *GroupsClient) Update(ctx context.Context, group Group) (int, error) {
 	if err != nil {
 		return status, fmt.Errorf("GroupsClient.BaseClient.Patch(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -214,6 +234,7 @@ func (c *GroupsClient) Delete(ctx context.Context, id string) (int, error) {
 	if err != nil {
 		return status, fmt.Errorf("GroupsClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -230,6 +251,7 @@ func (c *GroupsClient) DeletePermanently(ctx context.Context, id string) (int, e
 	if err != nil {
 		return status, fmt.Errorf("GroupsClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -247,6 +269,7 @@ func (c *GroupsClient) ListDeleted(ctx context.Context, query odata.Query) (*[]G
 	if err != nil {
 		return nil, status, err
 	}
+
 	defer resp.Body.Close()
 	respBody, _ := io.ReadAll(resp.Body)
 	var data struct {
@@ -255,6 +278,7 @@ func (c *GroupsClient) ListDeleted(ctx context.Context, query odata.Query) (*[]G
 	if err = json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, err
 	}
+
 	return &data.DeletedGroups, status, nil
 }
 
@@ -271,15 +295,18 @@ func (c *GroupsClient) RestoreDeleted(ctx context.Context, id string) (*Group, i
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var restoredGroup Group
 	if err = json.Unmarshal(respBody, &restoredGroup); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &restoredGroup, status, nil
 }
 
@@ -298,11 +325,13 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Members []struct {
 			Type string `json:"@odata.type"`
@@ -312,10 +341,12 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	ret := make([]string, len(data.Members))
 	for i, v := range data.Members {
 		ret[i] = v.Id
 	}
+
 	return &ret, status, nil
 }
 
@@ -335,11 +366,13 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Context string `json:"@odata.context"`
 		Type    string `json:"@odata.type"`
@@ -349,6 +382,7 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.Id, status, nil
 }
 
@@ -356,9 +390,11 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 // First populate the `members` field, then call this method
 func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error) {
 	var status int
+
 	if group.Members == nil || len(*group.Members) == 0 {
 		return status, fmt.Errorf("no members specified")
 	}
+
 	for _, member := range *group.Members {
 		// don't fail if an member already exists
 		checkMemberAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
@@ -376,6 +412,7 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
+
 		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
 			Body:                   body,
 			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -390,6 +427,7 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 			return status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 		}
 	}
+
 	return status, nil
 }
 
@@ -398,9 +436,11 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 // memberIds is a *[]string containing object IDs of members to remove.
 func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *[]string) (int, error) {
 	var status int
+
 	if memberIds == nil || len(*memberIds) == 0 {
 		return status, fmt.Errorf("no members specified")
 	}
+
 	for _, memberId := range *memberIds {
 		// check for membership before attempting deletion
 		if _, status, err := c.GetMember(ctx, id, memberId); err != nil {
@@ -432,6 +472,7 @@ func (c *GroupsClient) RemoveMembers(ctx context.Context, id string, memberIds *
 			return status, fmt.Errorf("GroupsClient.BaseClient.Delete(): %v", err)
 		}
 	}
+
 	return status, nil
 }
 
@@ -450,11 +491,13 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, in
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Owners []struct {
 			Type string `json:"@odata.type"`
@@ -464,10 +507,12 @@ func (c *GroupsClient) ListOwners(ctx context.Context, id string) (*[]string, in
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	ret := make([]string, len(data.Owners))
 	for i, v := range data.Owners {
 		ret[i] = v.Id
 	}
+
 	return &ret, status, nil
 }
 
@@ -487,11 +532,13 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 	if err != nil {
 		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Context string `json:"@odata.context"`
 		Type    string `json:"@odata.type"`
@@ -501,6 +548,7 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.Id, status, nil
 }
 
@@ -508,9 +556,11 @@ func (c *GroupsClient) GetOwner(ctx context.Context, groupId, ownerId string) (*
 // First populate the `owners` field, then call this method
 func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error) {
 	var status int
+
 	if group.Owners == nil || len(*group.Owners) == 0 {
 		return status, fmt.Errorf("no owners specified")
 	}
+
 	for _, owner := range *group.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
@@ -528,6 +578,7 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
+
 		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
 			Body:                   body,
 			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -542,6 +593,7 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 			return status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
 		}
 	}
+
 	return status, nil
 }
 
@@ -550,9 +602,11 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 // ownerIds is a *[]string containing object IDs of owners to remove.
 func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]string) (int, error) {
 	var status int
+
 	if ownerIds == nil || len(*ownerIds) == 0 {
 		return status, fmt.Errorf("no owners specified")
 	}
+
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
 		if _, status, err := c.GetOwner(ctx, id, ownerId); err != nil {
@@ -584,5 +638,6 @@ func (c *GroupsClient) RemoveOwners(ctx context.Context, id string, ownerIds *[]
 			return status, fmt.Errorf("GroupsClient.BaseClient.Delete(): %v", err)
 		}
 	}
+
 	return status, nil
 }

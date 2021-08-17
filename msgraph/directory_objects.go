@@ -37,21 +37,25 @@ func (c *DirectoryObjectsClient) Get(ctx context.Context, id string, query odata
 	if err != nil {
 		return nil, status, fmt.Errorf("DirectoryObjects.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var directoryObject DirectoryObject
 	if err := json.Unmarshal(respBody, &directoryObject); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &directoryObject, status, nil
 }
 
 // GetByIds retrieves multiple DirectoryObjects from a list of IDs.
 func (c *DirectoryObjectsClient) GetByIds(ctx context.Context, ids []string, types []odata.ShortType) (*[]DirectoryObject, int, error) {
 	var status int
+
 	body, err := json.Marshal(struct {
 		IDs   []string     `json:"ids"`
 		Types []odata.Type `json:"types"`
@@ -62,6 +66,7 @@ func (c *DirectoryObjectsClient) GetByIds(ctx context.Context, ids []string, typ
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -74,17 +79,20 @@ func (c *DirectoryObjectsClient) GetByIds(ctx context.Context, ids []string, typ
 	if err != nil {
 		return nil, status, fmt.Errorf("DirectoryObjects.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Objects []DirectoryObject `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.Objects, status, nil
 }
 
@@ -101,6 +109,7 @@ func (c *DirectoryObjectsClient) Delete(ctx context.Context, id string) (int, er
 	if err != nil {
 		return status, fmt.Errorf("DirectoryObjects.BaseClient.Get(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -108,6 +117,7 @@ func (c *DirectoryObjectsClient) Delete(ctx context.Context, id string) (int, er
 // id is the object ID of the directory object.
 func (c *DirectoryObjectsClient) GetMemberGroups(ctx context.Context, id string, securityEnabledOnly bool) (*[]DirectoryObject, int, error) {
 	var status int
+
 	body, err := json.Marshal(struct {
 		SecurityEnabledOnly bool `json:"securityEnabledOnly"`
 	}{
@@ -116,6 +126,7 @@ func (c *DirectoryObjectsClient) GetMemberGroups(ctx context.Context, id string,
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -128,11 +139,13 @@ func (c *DirectoryObjectsClient) GetMemberGroups(ctx context.Context, id string,
 	if err != nil {
 		return nil, status, fmt.Errorf("DirectoryObjectsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		IDs []string `json:"value"`
 	}
@@ -144,6 +157,7 @@ func (c *DirectoryObjectsClient) GetMemberGroups(ctx context.Context, id string,
 	for i, id := range data.IDs {
 		result[i].ID = utils.StringPtr(id)
 	}
+
 	return &result, status, nil
 }
 
@@ -151,6 +165,7 @@ func (c *DirectoryObjectsClient) GetMemberGroups(ctx context.Context, id string,
 // id is the object ID of the directory object.
 func (c *DirectoryObjectsClient) GetMemberObjects(ctx context.Context, id string, securityEnabledOnly bool) (*[]DirectoryObject, int, error) {
 	var status int
+
 	body, err := json.Marshal(struct {
 		SecurityEnabledOnly bool `json:"securityEnabledOnly"`
 	}{
@@ -159,6 +174,7 @@ func (c *DirectoryObjectsClient) GetMemberObjects(ctx context.Context, id string
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -171,11 +187,13 @@ func (c *DirectoryObjectsClient) GetMemberObjects(ctx context.Context, id string
 	if err != nil {
 		return nil, status, fmt.Errorf("DirectoryObjectsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		IDs []string `json:"value"`
 	}
@@ -187,5 +205,6 @@ func (c *DirectoryObjectsClient) GetMemberObjects(ctx context.Context, id string
 	for i, id := range data.IDs {
 		result[i].ID = utils.StringPtr(id)
 	}
+
 	return &result, status, nil
 }

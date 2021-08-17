@@ -35,17 +35,20 @@ func (c *ReportsClient) GetCredentialUserRegistrationCount(ctx context.Context, 
 	if err != nil {
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		CredentialUserRegistrationCount []CredentialUserRegistrationCount `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.CredentialUserRegistrationCount, status, nil
 }
 
@@ -62,17 +65,20 @@ func (c *ReportsClient) GetCredentialUserRegistrationDetails(ctx context.Context
 	if err != nil {
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		CredentialUserRegistrationDetails []CredentialUserRegistrationDetails `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.CredentialUserRegistrationDetails, status, nil
 }
 
@@ -89,17 +95,20 @@ func (c *ReportsClient) GetUserCredentialUsageDetails(ctx context.Context, query
 	if err != nil {
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		UserCredentialUsageDetails []UserCredentialUsageDetails `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.UserCredentialUsageDetails, status, nil
 }
 
@@ -116,17 +125,20 @@ func (c *ReportsClient) GetCredentialUsageSummary(ctx context.Context, period Cr
 	if err != nil {
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		CredentialUsageSummary []CredentialUsageSummary `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.CredentialUsageSummary, status, nil
 }
 
@@ -143,6 +155,7 @@ func (c *ReportsClient) GetAuthenticationMethodsUsersRegisteredByFeature(ctx con
 	if err != nil {
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -150,10 +163,10 @@ func (c *ReportsClient) GetAuthenticationMethodsUsersRegisteredByFeature(ctx con
 	}
 
 	var userRegistrationFeatureSummary UserRegistrationFeatureSummary
-
 	if err := json.Unmarshal(respBody, &userRegistrationFeatureSummary); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &userRegistrationFeatureSummary, status, nil
 }
 
@@ -170,6 +183,7 @@ func (c *ReportsClient) GetAuthenticationMethodsUsersRegisteredByMethod(ctx cont
 	if err != nil {
 		return nil, status, fmt.Errorf("ReportsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -177,9 +191,9 @@ func (c *ReportsClient) GetAuthenticationMethodsUsersRegisteredByMethod(ctx cont
 	}
 
 	var userRegistrationMethodSummary UserRegistrationMethodSummary
-
 	if err := json.Unmarshal(respBody, &userRegistrationMethodSummary); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &userRegistrationMethodSummary, status, nil
 }

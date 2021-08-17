@@ -33,7 +33,6 @@ func (c *DomainsClient) List(ctx context.Context, query odata.Query) (*[]Domain,
 			HasTenantId: true,
 		},
 	})
-
 	if err != nil {
 		return nil, status, fmt.Errorf("DomainsClient.BaseClient.Get(): %v", err)
 	}
@@ -47,7 +46,6 @@ func (c *DomainsClient) List(ctx context.Context, query odata.Query) (*[]Domain,
 	var data struct {
 		Domains []Domain `json:"value"`
 	}
-
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
@@ -58,6 +56,7 @@ func (c *DomainsClient) List(ctx context.Context, query odata.Query) (*[]Domain,
 // Get retrieves a Domain.
 func (c *DomainsClient) Get(ctx context.Context, id string, query odata.Query) (*Domain, int, error) {
 	var status int
+
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
@@ -70,14 +69,17 @@ func (c *DomainsClient) Get(ctx context.Context, id string, query odata.Query) (
 	if err != nil {
 		return nil, status, fmt.Errorf("DomainsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var domain Domain
 	if err := json.Unmarshal(respBody, &domain); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &domain, status, nil
 }

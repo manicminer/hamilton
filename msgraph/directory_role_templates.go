@@ -32,17 +32,20 @@ func (c *DirectoryRoleTemplatesClient) List(ctx context.Context) (*[]DirectoryRo
 	if err != nil {
 		return nil, status, fmt.Errorf("DirectoryRoleTemplatesClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		DirectoryRoleTemplates []DirectoryRoleTemplate `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.DirectoryRoleTemplates, status, nil
 }
 
@@ -59,14 +62,17 @@ func (c *DirectoryRoleTemplatesClient) Get(ctx context.Context, id string) (*Dir
 	if err != nil {
 		return nil, status, fmt.Errorf("DirectoryRoleTemplatesClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var dirRoleTemplate DirectoryRoleTemplate
 	if err := json.Unmarshal(respBody, &dirRoleTemplate); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &dirRoleTemplate, status, nil
 }

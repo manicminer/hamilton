@@ -37,27 +37,32 @@ func (c *ApplicationsClient) List(ctx context.Context, query odata.Query) (*[]Ap
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Applications []Application `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.Applications, status, nil
 }
 
 // Create creates a new Application.
 func (c *ApplicationsClient) Create(ctx context.Context, application Application) (*Application, int, error) {
 	var status int
+
 	body, err := json.Marshal(application)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
@@ -69,15 +74,18 @@ func (c *ApplicationsClient) Create(ctx context.Context, application Application
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var newApplication Application
 	if err := json.Unmarshal(respBody, &newApplication); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &newApplication, status, nil
 }
 
@@ -95,15 +103,18 @@ func (c *ApplicationsClient) Get(ctx context.Context, id string, query odata.Que
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var application Application
 	if err := json.Unmarshal(respBody, &application); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &application, status, nil
 }
 
@@ -122,28 +133,34 @@ func (c *ApplicationsClient) GetDeleted(ctx context.Context, id string, query od
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var application Application
 	if err := json.Unmarshal(respBody, &application); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &application, status, nil
 }
 
 // Update amends the manifest of an existing Application.
 func (c *ApplicationsClient) Update(ctx context.Context, application Application) (int, error) {
 	var status int
+
 	if application.ID == nil {
 		return status, errors.New("ApplicationsClient.Update(): cannot update application with nil ID")
 	}
+
 	body, err := json.Marshal(application)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -156,6 +173,7 @@ func (c *ApplicationsClient) Update(ctx context.Context, application Application
 	if err != nil {
 		return status, fmt.Errorf("ApplicationsClient.BaseClient.Patch(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -172,6 +190,7 @@ func (c *ApplicationsClient) Delete(ctx context.Context, id string) (int, error)
 	if err != nil {
 		return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -189,6 +208,7 @@ func (c *ApplicationsClient) DeletePermanently(ctx context.Context, id string) (
 	if err != nil {
 		return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -206,6 +226,7 @@ func (c *ApplicationsClient) ListDeleted(ctx context.Context, query odata.Query)
 	if err != nil {
 		return nil, status, err
 	}
+
 	defer resp.Body.Close()
 	respBody, _ := io.ReadAll(resp.Body)
 	var data struct {
@@ -214,6 +235,7 @@ func (c *ApplicationsClient) ListDeleted(ctx context.Context, query odata.Query)
 	if err = json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, err
 	}
+
 	return &data.DeletedApps, status, nil
 }
 
@@ -231,21 +253,25 @@ func (c *ApplicationsClient) RestoreDeleted(ctx context.Context, id string) (*Ap
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var restoredApplication Application
 	if err = json.Unmarshal(respBody, &restoredApplication); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &restoredApplication, status, nil
 }
 
 // AddPassword appends a new password credential to an Application.
 func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId string, passwordCredential PasswordCredential) (*PasswordCredential, int, error) {
 	var status int
+
 	body, err := json.Marshal(struct {
 		PwdCredential PasswordCredential `json:"passwordCredential"`
 	}{
@@ -254,6 +280,7 @@ func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId stri
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -266,21 +293,25 @@ func (c *ApplicationsClient) AddPassword(ctx context.Context, applicationId stri
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var newPasswordCredential PasswordCredential
 	if err := json.Unmarshal(respBody, &newPasswordCredential); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &newPasswordCredential, status, nil
 }
 
 // RemovePassword removes a password credential from an Application.
 func (c *ApplicationsClient) RemovePassword(ctx context.Context, applicationId string, keyId string) (int, error) {
 	var status int
+
 	body, err := json.Marshal(struct {
 		KeyId string `json:"keyId"`
 	}{
@@ -289,6 +320,7 @@ func (c *ApplicationsClient) RemovePassword(ctx context.Context, applicationId s
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -301,6 +333,7 @@ func (c *ApplicationsClient) RemovePassword(ctx context.Context, applicationId s
 	if err != nil {
 		return status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -319,11 +352,13 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Owners []struct {
 			Type string `json:"@odata.type"`
@@ -333,10 +368,12 @@ func (c *ApplicationsClient) ListOwners(ctx context.Context, id string) (*[]stri
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	ret := make([]string, len(data.Owners))
 	for i, v := range data.Owners {
 		ret[i] = v.Id
 	}
+
 	return &ret, status, nil
 }
 
@@ -356,11 +393,13 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		Context string `json:"@odata.context"`
 		Type    string `json:"@odata.type"`
@@ -370,6 +409,7 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.Id, status, nil
 }
 
@@ -377,12 +417,14 @@ func (c *ApplicationsClient) GetOwner(ctx context.Context, applicationId, ownerI
 // First populate the `owners` field, then call this method
 func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Application) (int, error) {
 	var status int
+
 	if application.ID == nil {
 		return status, errors.New("cannot update application with nil ID")
 	}
 	if application.Owners == nil {
 		return status, errors.New("cannot update application with nil Owners")
 	}
+
 	for _, owner := range *application.Owners {
 		// don't fail if an owner already exists
 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
@@ -396,6 +438,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
+
 		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
 			Body:                   body,
 			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -410,6 +453,7 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 			return status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 		}
 	}
+
 	return status, nil
 }
 
@@ -418,9 +462,11 @@ func (c *ApplicationsClient) AddOwners(ctx context.Context, application *Applica
 // ownerIds is a *[]string containing object IDs of owners to remove.
 func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId string, ownerIds *[]string) (int, error) {
 	var status int
+
 	if ownerIds == nil {
 		return status, errors.New("cannot remove, nil ownerIds")
 	}
+
 	for _, ownerId := range *ownerIds {
 		// check for ownership before attempting deletion
 		if _, status, err := c.GetOwner(ctx, applicationId, ownerId); err != nil {
@@ -452,6 +498,7 @@ func (c *ApplicationsClient) RemoveOwners(ctx context.Context, applicationId str
 			return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
 		}
 	}
+
 	return status, nil
 }
 
@@ -468,6 +515,7 @@ func (c *ApplicationsClient) ListExtensions(ctx context.Context, id string, quer
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.List(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -480,16 +528,19 @@ func (c *ApplicationsClient) ListExtensions(ctx context.Context, id string, quer
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.ApplicationExtension, status, nil
 }
 
 // Create creates a new ApplicationExtension.
 func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExtension ApplicationExtension, id string) (*ApplicationExtension, int, error) {
 	var status int
+
 	body, err := json.Marshal(applicationExtension)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
@@ -501,6 +552,7 @@ func (c *ApplicationsClient) CreateExtension(ctx context.Context, applicationExt
 	if err != nil {
 		return nil, status, fmt.Errorf("ApplicationsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
 	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -528,5 +580,6 @@ func (c *ApplicationsClient) DeleteExtension(ctx context.Context, applicationId,
 	if err != nil {
 		return status, fmt.Errorf("ApplicationsClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }
