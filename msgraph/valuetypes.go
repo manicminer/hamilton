@@ -1,6 +1,11 @@
 package msgraph
 
-import "encoding/json"
+import (
+	"encoding/json"
+	goerrors "errors"
+
+	"github.com/manicminer/hamilton/odata"
+)
 
 // StringNullWhenEmpty is a string type that marshals its JSON representation as null when set to its zero value.
 // Can be used with a pointer reference with the `omitempty` tag to omit a field when the pointer is nil, but send a
@@ -182,6 +187,54 @@ const (
 	KeyCredentialUsageSign   KeyCredentialUsage = "Sign"
 	KeyCredentialUsageVerify KeyCredentialUsage = "Verify"
 )
+
+type Members []DirectoryObject
+
+func (o Members) MarshalJSON() ([]byte, error) {
+	members := make([]odata.Id, len(o))
+	for i, v := range o {
+		if v.ODataId == nil {
+			return nil, goerrors.New("marshaling Members: encountered DirectoryObject with nil ODataId")
+		}
+		members[i] = *v.ODataId
+	}
+	return json.Marshal(members)
+}
+
+func (o *Members) UnmarshalJSON(data []byte) error {
+	var members []odata.Id
+	if err := json.Unmarshal(data, &members); err != nil {
+		return err
+	}
+	for _, v := range members {
+		*o = append(*o, DirectoryObject{ODataId: &v})
+	}
+	return nil
+}
+
+type Owners []DirectoryObject
+
+func (o Owners) MarshalJSON() ([]byte, error) {
+	owners := make([]odata.Id, len(o))
+	for i, v := range o {
+		if v.ODataId == nil {
+			return nil, goerrors.New("marshaling Owners: encountered DirectoryObject with nil ODataId")
+		}
+		owners[i] = *v.ODataId
+	}
+	return json.Marshal(owners)
+}
+
+func (o *Owners) UnmarshalJSON(data []byte) error {
+	var owners []odata.Id
+	if err := json.Unmarshal(data, &owners); err != nil {
+		return err
+	}
+	for _, v := range owners {
+		*o = append(*o, DirectoryObject{ODataId: &v})
+	}
+	return nil
+}
 
 type PermissionScopeType = string
 

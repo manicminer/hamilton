@@ -4,6 +4,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/manicminer/hamilton/odata"
+
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
@@ -35,7 +37,7 @@ func TestIdentityProvidersClient(t *testing.T) {
 	testIdentityProvidersClient_ListAvailableProviderTypes(t, c)
 
 	identityProvider := testIdentityProvidersClient_Create(t, c, msgraph.IdentityProvider{
-		ODataType:    utils.StringPtr("microsoft.graph.socialIdentityProvider"),
+		ODataType:    utils.StringPtr(odata.TypeSocialIdentityProvider),
 		Name:         utils.StringPtr("Login with Google"),
 		Type:         utils.StringPtr("Google"),
 		ClientId:     utils.StringPtr("56433757-cadd-4135-8431-2c9e3fd68ae8"),

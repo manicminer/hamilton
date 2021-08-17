@@ -62,9 +62,9 @@ func TestUsersClient(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *user.ID)
+	groupChild.Members = &msgraph.Members{user.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testUsersClient_ListGroupMemberships(t, c, *user.ID)
