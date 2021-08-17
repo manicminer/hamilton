@@ -3,6 +3,7 @@
 - When authenticating using Azure CLI, access tokens are now cached to avoid repeatedly invoking `az` to get the latest token ([#88](https://github.com/manicminer/hamilton/pull/88))
 - Support for [authentication methods usage reports](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-usage-insights-overview?view=graph-rest-beta) ([#85](https://github.com/manicminer/hamilton/pull/85))
 - Support for [generic directory objects](https://docs.microsoft.com/en-us/graph/api/resources/directoryobject?view=graph-rest-beta) ([#86](https://github.com/manicminer/hamilton/pull/86))
+- Add the `MemberOf` field to the `User` struct ([#84](https://github.com/manicminer/hamilton/pull/84))
 
 ⚠️ BREAKING CHANGES:
 
