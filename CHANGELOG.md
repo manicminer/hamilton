@@ -2,6 +2,14 @@
 
 - When authenticating using Azure CLI, access tokens are now cached to avoid repeatedly invoking `az` to get the latest token ([#88](https://github.com/manicminer/hamilton/pull/88))
 - Support for [authentication methods usage reports](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-usage-insights-overview?view=graph-rest-beta) ([#85](https://github.com/manicminer/hamilton/pull/85))
+- Support for [generic directory objects](https://docs.microsoft.com/en-us/graph/api/resources/directoryobject?view=graph-rest-beta) ([#86](https://github.com/manicminer/hamilton/pull/86))
+
+⚠️ BREAKING CHANGES:
+
+- The `ID` field of the `Application`, `DirectoryRole`, `Group`, `ServicePrincipal` and `User` models has been removed and is now a field of the embedded `DirectoryObject` struct ([#86](https://github.com/manicminer/hamilton/pull/86))
+- The `Members` and/or `Owners` fields of the `Application`, `DirectoryRole`, `Group` and `ServicePrincipal` models have changed from a `*[]string` to a `*Members` and `*Owners` respectively ([#86](https://github.com/manicminer/hamilton/pull/86))
+  - The `Members` and `Owners` types are based on `[]DirectoryObject` and have methods to marshal/unmarshal the `ODataId` fields of the contained `DirectoryObject`s
+- The `AppendMember()` and/or `AppendOwner()` methods of the `Application`, `Group` and `ServicePrincipal` models are no longer required and have been removed ([#86](https://github.com/manicminer/hamilton/pull/86))
 
 ## 0.23.1 (July 21, 2021)
 
