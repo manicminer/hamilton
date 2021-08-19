@@ -62,9 +62,9 @@ func TestUsersClient(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *user.ID)
+	groupChild.Members = &msgraph.Members{user.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testUsersClient_ListGroupMemberships(t, c, *user.ID)
@@ -107,7 +107,7 @@ func testUsersClient_Update(t *testing.T, c UsersClientTest, u msgraph.User) {
 }
 
 func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.User) {
-	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
+	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10, Expand: odata.Expand{Relationship: "memberOf"}})
 	if err != nil {
 		t.Fatalf("UsersClient.List(): %v", err)
 	}

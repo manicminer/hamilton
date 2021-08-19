@@ -42,14 +42,23 @@ func TestGroupsClient(t *testing.T) {
 	u.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
 	u.client.BaseClient.Authorizer = c.connection.Authorizer
 
+	o := DirectoryObjectsClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	o.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
+	o.client.BaseClient.Authorizer = o.connection.Authorizer
+
+	self := testDirectoryObjectsClient_Get(t, o, claims.ObjectId)
+
 	newGroup := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
+		Owners:          &msgraph.Owners{*self},
+		Members:         &msgraph.Members{*self},
 	}
-	newGroup.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, claims.ObjectId)
-	newGroup.AppendMember(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, claims.ObjectId)
 	group := testGroupsClient_Create(t, c, newGroup)
 	testGroupsClient_Get(t, c, *group.ID)
 
@@ -72,11 +81,11 @@ func TestGroupsClient(t *testing.T) {
 		},
 	})
 
-	group.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, *user.ID)
+	group.Owners = &msgraph.Owners{user.DirectoryObject}
 	testGroupsClient_AddOwners(t, c, group)
 	testGroupsClient_RemoveOwners(t, c, *group.ID, &([]string{claims.ObjectId}))
 
-	group.AppendMember(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, *user.ID)
+	group.Members = &msgraph.Members{user.DirectoryObject}
 	testGroupsClient_AddMembers(t, c, group)
 	testGroupsClient_RemoveMembers(t, c, *group.ID, &([]string{claims.ObjectId}))
 
