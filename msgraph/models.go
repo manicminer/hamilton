@@ -1235,7 +1235,7 @@ type VerifiedPublisher struct {
 
 type WindowsHelloForBusinessAuthenticationMethod struct {
 	CreatedDateTime *time.Time                       `json:"createdDateTime,omitempty"`
-	DisplayName     *string                          `json:"createdDateTime,omitempty"`
+	DisplayName     *string                          `json:"displayName,omitempty"`
 	ID              *string                          `json:"id,omitempty"`
-	keyStrength     *AuthenticationMethodKeyStrength `json:"authenticationMethodKeyStrength,omitempty"`
+	KeyStrength     *AuthenticationMethodKeyStrength `json:"authenticationMethodKeyStrength,omitempty"`
 }
