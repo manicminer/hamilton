@@ -332,9 +332,7 @@ type AuditActivityInitiator struct {
 	User *UserIdentity `json:"user,omitempty"`
 }
 
-type AuthenticationMethod struct {
-	ID *string `json:"id,omitempty"`
-}
+type AuthenticationMethod interface{}
 
 type BaseNamedLocation struct {
 	ODataType        *odata.Type `json:"@odata.type,omitempty"`
