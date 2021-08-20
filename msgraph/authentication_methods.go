@@ -3,6 +3,7 @@ package msgraph
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -18,7 +19,7 @@ type AuthenticationMethodsClient struct {
 // NewAuthenticationClient returns a new ApplicationsClient
 func NewAuthenticationMethodsClient(tenantId string) *AuthenticationMethodsClient {
 	return &AuthenticationMethodsClient{
-		BaseClient: NewClient(Version10, tenantId),
+		BaseClient: NewClient(VersionBeta, tenantId),
 	}
 }
 
@@ -445,4 +446,370 @@ func (c *AuthenticationMethodsClient) DeleteTempAccessPassMethod(ctx context.Con
 	}
 
 	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) ListPhoneMethods(ctx context.Context, userID string, query odata.Query) (*[]PhoneAuthenticationMethod, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods", userID),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		PhoneAuthenticationMethods []PhoneAuthenticationMethod `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &data.PhoneAuthenticationMethods, status, nil
+}
+
+func (c *AuthenticationMethodsClient) GetPhoneMethods(ctx context.Context, userID, id string, query odata.Query) (*PhoneAuthenticationMethod, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s", userID, id),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var phoneMethod PhoneAuthenticationMethod
+	if err := json.Unmarshal(respBody, &phoneMethod); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &phoneMethod, status, nil
+}
+
+func (c *AuthenticationMethodsClient) CreatePhoneMethod(ctx context.Context, userID string, phone PhoneAuthenticationMethod) (*PhoneAuthenticationMethod, int, error) {
+	var status int
+
+	body, err := json.Marshal(phone)
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods", userID),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Post(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newPhoneMethod PhoneAuthenticationMethod
+	if err := json.Unmarshal(respBody, &newPhoneMethod); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newPhoneMethod, status, nil
+}
+
+func (c *AuthenticationMethodsClient) DeletePhoneMethod(ctx context.Context, userID, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s", userID, id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Delete(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) UpdatePhoneMethod(ctx context.Context, userID string, phone PhoneAuthenticationMethod) (int, error) {
+	var status int
+
+	if phone.ID == nil {
+		return status, errors.New("AuthenticationMethodsClient.Update(): cannot update phone auth method with nil ID")
+	}
+
+	body, err := json.Marshal(phone)
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	_, status, _, err = c.BaseClient.Put(ctx, PutHttpRequestInput{
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s", userID, *phone.ID),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Patch(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) EnablePhoneSMS(ctx context.Context, userID, ID string) (int, error) {
+	var status int
+
+	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/enableSmsSignIn", userID, ID),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Patch(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) DisablePhoneSMS(ctx context.Context, userID, ID string) (int, error) {
+	var status int
+
+	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/disableSmsSignIn", userID, ID),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Patch(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) ListEmailMethods(ctx context.Context, userID string, query odata.Query) (*[]EmailAuthenticationMethod, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/emailMethods", userID),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		EmailAuthMethods []EmailAuthenticationMethod `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &data.EmailAuthMethods, status, nil
+}
+
+func (c *AuthenticationMethodsClient) GetEmailMethod(ctx context.Context, userID, id string, query odata.Query) (*EmailAuthenticationMethod, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/emailMethods/%s", userID, id),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var emailMethod EmailAuthenticationMethod
+	if err := json.Unmarshal(respBody, &emailMethod); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &emailMethod, status, nil
+}
+
+func (c *AuthenticationMethodsClient) UpdateEmailMethod(ctx context.Context, userID string, email EmailAuthenticationMethod) (int, error) {
+	var status int
+
+	if email.ID == nil {
+		return status, errors.New("AuthenticationMethodsClient.Update(): cannot update phone auth method with nil ID")
+	}
+
+	body, err := json.Marshal(email)
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	_, status, _, err = c.BaseClient.Put(ctx, PutHttpRequestInput{
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/emailMethods/%s", userID, *email.ID),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Patch(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) DeleteEmailMethod(ctx context.Context, userID, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/emailMethods/%s", userID, id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Delete(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *AuthenticationMethodsClient) CreateEmailMethod(ctx context.Context, userID string, email EmailAuthenticationMethod) (*EmailAuthenticationMethod, int, error) {
+	var status int
+
+	body, err := json.Marshal(email)
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/emailMethods", userID),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Post(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newEmailMethod EmailAuthenticationMethod
+	if err := json.Unmarshal(respBody, &newEmailMethod); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newEmailMethod, status, nil
+}
+
+func (c *AuthenticationMethodsClient) ListPasswordMethods(ctx context.Context, userID string, query odata.Query) (*[]PasswordAuthenticationMethod, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/passwordMethods", userID),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		PasswordMethods []PasswordAuthenticationMethod `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &data.PasswordMethods, status, nil
+}
+
+func (c *AuthenticationMethodsClient) GetPasswordMethod(ctx context.Context, userID, id string, query odata.Query) (*PasswordAuthenticationMethod, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/authentication/passwordMethods/%s", userID, id),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var passwordMethod PasswordAuthenticationMethod
+	if err := json.Unmarshal(respBody, &passwordMethod); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &passwordMethod, status, nil
 }
