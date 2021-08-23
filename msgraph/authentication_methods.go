@@ -222,7 +222,7 @@ func (c *AuthenticationMethodsClient) ListMicrosoftAuthenticatorMethods(ctx cont
 	return &data.MicrosoftAuthenticatorMethods, status, nil
 }
 
-func (c *AuthenticationMethodsClient) GetMSAuthenticatorMethod(ctx context.Context, userID, id string, query odata.Query) (*MicrosoftAuthenticatorAuthenticationMethod, int, error) {
+func (c *AuthenticationMethodsClient) GetMicrosoftAuthenticatorMethod(ctx context.Context, userID, id string, query odata.Query) (*MicrosoftAuthenticatorAuthenticationMethod, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
