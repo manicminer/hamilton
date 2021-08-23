@@ -398,7 +398,7 @@ func (c *AuthenticationMethodsClient) GetTemporaryAccessPassMethod(ctx context.C
 	return &temporaryAccessPassMethod, status, nil
 }
 
-func (c *AuthenticationMethodsClient) CreateTempAccessPassMethod(ctx context.Context, userID string, accessPass TemporaryAccessPassAuthenticationMethod) (*TemporaryAccessPassAuthenticationMethod, int, error) {
+func (c *AuthenticationMethodsClient) CreateTemporaryAccessPassMethod(ctx context.Context, userID string, accessPass TemporaryAccessPassAuthenticationMethod) (*TemporaryAccessPassAuthenticationMethod, int, error) {
 	var status int
 
 	body, err := json.Marshal(accessPass)
