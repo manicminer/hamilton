@@ -578,7 +578,7 @@ func (c *AuthenticationMethodsClient) UpdatePhoneMethod(ctx context.Context, use
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Patch(): %v", err)
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Put(): %v", err)
 	}
 
 	return status, nil
