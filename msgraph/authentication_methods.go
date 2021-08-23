@@ -370,7 +370,7 @@ func (c *AuthenticationMethodsClient) ListTemporaryAccessPassMethods(ctx context
 	return &data.TempAccessPassMethods, status, nil
 }
 
-func (c *AuthenticationMethodsClient) GetTempAccessPassMethod(ctx context.Context, userID, id string, query odata.Query) (*TemporaryAccessPassAuthenticationMethod, int, error) {
+func (c *AuthenticationMethodsClient) GetTemporaryAccessPassMethod(ctx context.Context, userID, id string, query odata.Query) (*TemporaryAccessPassAuthenticationMethod, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
