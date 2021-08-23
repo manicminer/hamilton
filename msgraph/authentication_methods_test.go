@@ -45,6 +45,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	})
 
 	listAllAuthMethods := testAuthMethods_List(t,c,user)
+	fido2Methods := testAuthMethods_ListFido2Methods(t,c,user)
 
 	
 }
@@ -60,8 +61,24 @@ func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msg
 		t.Fatalf("AuthenticationMethodsClientTest.List(): %v", err)
 	}
 
-	if signInLogs == nil {
+	if authMethods == nil {
 		t.Fatal("AuthenticationMethodsClientTest.List():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User)(fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
+	fido2Methods, status, err := c.client.List(c.connection.Context,u,odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.ListFido2Methods(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.ListFido2Methods(): %v", err)
+	}
+
+	if fido2Methods == nil {
+		t.Fatal("AuthenticationMethodsClientTest.ListFido2Methods():logs was nil")
 	}
 	return
 }
