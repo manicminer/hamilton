@@ -59,8 +59,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	_ = testAuthMethods_ListPhoneMethods(t, c, *user.ID)
 	phoneAuthMethod.PhoneNumber = utils.StringPtr("+44 07940123966")
 	testAuthMethods_UpdatePhoneMethod(t, c, *user.ID, *phoneAuthMethod)
-	//Disabling this test as the Preview feature is off by default in the testing tenant
-	//testAuthMethods_EnablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
+	testAuthMethods_EnablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
 	testAuthMethods_DisablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
 	testAuthMethods_DeletePhoneMethod(t, c, *user.ID, *phoneAuthMethod.ID)
 	emailAuthMethod := testAuthMethods_CreateEmailMethod(t, c, *user.ID)
@@ -269,17 +268,16 @@ func testAuthMethods_UpdatePhoneMethod(t *testing.T, c AuthenticationMethodsClie
 	}
 }
 
-//Disabled while this feature is disabled in testing tenant
-// func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
-// 	status, err := c.client.EnablePhoneSMS(c.connection.Context, userID, ID)
-// 	if status < 200 || status >= 300 {
-// 		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): invalid status: %d", status)
-// 	}
+func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+	status, err := c.client.EnablePhoneSMS(c.connection.Context, userID, ID)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): invalid status: %d", status)
+	}
 
-// 	if err != nil {
-// 		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): %v", err)
-// 	}
-// }
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): %v", err)
+	}
+}
 
 func testAuthMethods_DisablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
 	status, err := c.client.DisablePhoneSMS(c.connection.Context, userID, ID)
