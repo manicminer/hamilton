@@ -122,9 +122,10 @@ func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c AuthenticationMetho
 
 func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
 	startPassTime := time.Now().UTC()
+	startPassTime.AddDate(0, 0, 1)
 	tempPass := msgraph.TemporaryAccessPassAuthenticationMethod{
 		StartDateTime:     &startPassTime,
-		LifetimeInMinutes: utils.Int32Ptr(20),
+		LifetimeInMinutes: utils.Int32Ptr(60),
 		IsUsableOnce:      utils.BoolPtr(true),
 	}
 
