@@ -54,6 +54,14 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	_ = testAuthMethods_GetTemporaryAccessPassMethod(t, c, *user.ID, *tempAccessPass.ID)
 	_ = testAuthMethods_ListTemporaryAccessPassMethods(t, c, *user.ID)
 	testAuthMethods_DeleteTemporaryAccessPassMethod(t, c, *user.ID, *tempAccessPass.ID)
+	phoneAuthMethod := testAuthMethods_CreatePhoneMethod(t, c, *user.ID)
+	_ = testAuthMethods_GetPhoneMethod(t, c, *user.ID, *phoneAuthMethod.ID)
+	_ = testAuthMethods_ListPhoneMethods(t, c, *user.ID)
+	phoneAuthMethod.PhoneNumber = utils.StringPtr("+44 07940123966")
+	testAuthMethods_UpdatePhoneMethod(t, c, *user.ID, *phoneAuthMethod)
+	testAuthMethods_EnablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
+	testAuthMethods_DisablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
+	testAuthMethods_DeletePhoneMethod(t, c, *user.ID, *phoneAuthMethod.ID)
 }
 
 func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
@@ -159,6 +167,7 @@ func testAuthMethods_GetTemporaryAccessPassMethod(t *testing.T, c Authentication
 	}
 	return
 }
+
 func testAuthMethods_ListTemporaryAccessPassMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (tempAccessPasses *[]msgraph.TemporaryAccessPassAuthenticationMethod) {
 	tempAccessPasses, status, err := c.client.ListTemporaryAccessPassMethods(c.connection.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
@@ -184,5 +193,102 @@ func testAuthMethods_DeleteTemporaryAccessPassMethod(t *testing.T, c Authenticat
 
 	if err != nil {
 		t.Fatalf("AuthenticationMethodsClientTest.DeleteTemporaryAccessPassMethod(): %v", err)
+	}
+}
+
+func testAuthMethods_CreatePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
+	phoneType := msgraph.AuthenticationPhoneTypeMobile
+	phoneAuth := msgraph.PhoneAuthenticationMethod{
+		PhoneNumber: utils.StringPtr("+44 07986594233"),
+		PhoneType:   &phoneType,
+	}
+	phoneAuthMethod, status, err := c.client.CreatePhoneMethod(c.connection.Context, userID, phoneAuth)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.CreatePhoneMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.CreatePhoneMethod(): %v", err)
+	}
+
+	if phoneAuthMethod == nil {
+		t.Fatal("AuthenticationMethodsClientTest.CreatePhoneMethod():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_GetPhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
+	phoneAuthMethod, status, err := c.client.GetPhoneMethod(c.connection.Context, userID, ID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.GetPhoneMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.GetPhoneMethod(): %v", err)
+	}
+
+	if phoneAuthMethod == nil {
+		t.Fatal("AuthenticationMethodsClientTest.GetPhoneMethod():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_ListPhoneMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (phoneAuthMethods *[]msgraph.PhoneAuthenticationMethod) {
+	phoneAuthMethods, status, err := c.client.ListPhoneMethods(c.connection.Context, userID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.ListPhoneMethods(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.ListPhoneMethods(): %v", err)
+	}
+
+	if phoneAuthMethods == nil {
+		t.Fatal("AuthenticationMethodsClientTest.ListPhoneMethods():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_UpdatePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string, phone msgraph.PhoneAuthenticationMethod) {
+	status, err := c.client.UpdatePhoneMethod(c.connection.Context, userID, phone)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.UpdatePhoneMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.UpdatePhoneMethod(): %v", err)
+	}
+}
+
+func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+	status, err := c.client.EnablePhoneSMS(c.connection.Context, userID, ID)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): %v", err)
+	}
+}
+
+func testAuthMethods_DisablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+	status, err := c.client.DisablePhoneSMS(c.connection.Context, userID, ID)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.DisablePhoneSMS(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.DisablePhoneSMS(): %v", err)
+	}
+}
+
+func testAuthMethods_DeletePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+	status, err := c.client.DeletePhoneMethod(c.connection.Context, userID, ID)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.DeletePhoneMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.DeletePhoneMethod(): %v", err)
 	}
 }

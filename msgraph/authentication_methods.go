@@ -478,7 +478,7 @@ func (c *AuthenticationMethodsClient) ListPhoneMethods(ctx context.Context, user
 	return &data.PhoneAuthenticationMethods, status, nil
 }
 
-func (c *AuthenticationMethodsClient) GetPhoneMethods(ctx context.Context, userID, id string, query odata.Query) (*PhoneAuthenticationMethod, int, error) {
+func (c *AuthenticationMethodsClient) GetPhoneMethod(ctx context.Context, userID, id string, query odata.Query) (*PhoneAuthenticationMethod, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
