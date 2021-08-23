@@ -607,7 +607,7 @@ func (c *AuthenticationMethodsClient) DisablePhoneSMS(ctx context.Context, userI
 
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
-		ValidStatusCodes:       []int{http.StatusOK},
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/disableSmsSignIn", userID, id),
 			HasTenantId: true,
