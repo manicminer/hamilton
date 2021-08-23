@@ -432,7 +432,7 @@ func (c *AuthenticationMethodsClient) CreateTempAccessPassMethod(ctx context.Con
 	return &newTempAccessPassAuthMethod, status, nil
 }
 
-func (c *AuthenticationMethodsClient) DeleteTempAccessPassMethod(ctx context.Context, userID, id string) (int, error) {
+func (c *AuthenticationMethodsClient) DeleteTemporaryAccessPassMethod(ctx context.Context, userID, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
