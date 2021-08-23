@@ -596,7 +596,7 @@ func (c *AuthenticationMethodsClient) EnablePhoneSMS(ctx context.Context, userID
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Patch(): %v", err)
+		return status, fmt.Errorf("AuthenticationMethodsClient.BaseClient.Post(): %v", err)
 	}
 
 	return status, nil
