@@ -45,13 +45,15 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 		},
 	})
 
-	_ = testAuthMethods_List(t, c, *user)
-	_ = testAuthMethods_ListFido2Methods(t, c, *user)
+	_ = testAuthMethods_List(t, c, *user.ID)
+	_ = testAuthMethods_ListFido2Methods(t, c, *user.ID)
+	_ = testAuthMethods_ListMicrosoftAuthenticatorMethods(t, c, *user.ID)
+	_ = testAuthMethods_ListWindowsHelloMethods(t, c, *user.ID)
 
 }
 
-func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User) (authMethods *[]msgraph.AuthenticationMethod) {
-	authMethods, status, err := c.client.List(c.connection.Context, *u.ID, odata.Query{})
+func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
+	authMethods, status, err := c.client.List(c.connection.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.List(): invalid status: %d", status)
 	}
@@ -66,8 +68,8 @@ func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msg
 	return
 }
 
-func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User) (fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
-	fido2Methods, status, err := c.client.ListFido2Methods(c.connection.Context, *u.ID, odata.Query{})
+func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
+	fido2Methods, status, err := c.client.ListFido2Methods(c.connection.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListFido2Methods(): invalid status: %d", status)
 	}
@@ -78,6 +80,38 @@ func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClien
 
 	if fido2Methods == nil {
 		t.Fatal("AuthenticationMethodsClientTest.ListFido2Methods():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_ListMicrosoftAuthenticatorMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (msAuthMethods *[]msgraph.MicrosoftAuthenticatorAuthenticationMethod) {
+	msAuthMethods, status, err := c.client.ListMicrosoftAuthenticatorMethods(c.connection.Context, userID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.ListMicrosoftAuthenticatorMethods(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.ListMicrosoftAuthenticatorMethods(): %v", err)
+	}
+
+	if msAuthMethods == nil {
+		t.Fatal("AuthenticationMethodsClientTest.ListMicrosoftAuthenticatorMethods():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (windowsHelloMethods *[]msgraph.WindowsHelloForBusinessAuthenticationMethod) {
+	windowsHelloMethods, status, err := c.client.ListWindowsHelloMethods(c.connection.Context, userID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.ListWindowsHelloMethods(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.ListWindowsHelloMethods(): %v", err)
+	}
+
+	if windowsHelloMethods == nil {
+		t.Fatal("AuthenticationMethodsClientTest.ListWindowsHelloMethods():logs was nil")
 	}
 	return
 }
