@@ -11,12 +11,12 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
-// AuthenticationClient performs operations on the Authentications methods endpoint under Identity and Sign-in
+// AuthenticationMethodsClient performs operations on the Authentications methods endpoint under Identity and Sign-in
 type AuthenticationMethodsClient struct {
 	BaseClient Client
 }
 
-// NewAuthenticationClient returns a new ApplicationsClient
+// NewAuthenticationMethodsClient returns a new AuthenticationMethodsClient
 func NewAuthenticationMethodsClient(tenantId string) *AuthenticationMethodsClient {
 	return &AuthenticationMethodsClient{
 		BaseClient: NewClient(VersionBeta, tenantId),
