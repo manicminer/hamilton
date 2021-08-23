@@ -192,7 +192,7 @@ func (c *AuthenticationMethodsClient) DeleteFido2Method(ctx context.Context, use
 	return status, nil
 }
 
-func (c *AuthenticationMethodsClient) ListMSAuthenticatorMethods(ctx context.Context, userID string, query odata.Query) (*[]MicrosoftAuthenticatorAuthenticationMethod, int, error) {
+func (c *AuthenticationMethodsClient) ListMicrosoftAuthenticatorMethods(ctx context.Context, userID string, query odata.Query) (*[]MicrosoftAuthenticatorAuthenticationMethod, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
