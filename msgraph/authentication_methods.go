@@ -250,7 +250,7 @@ func (c *AuthenticationMethodsClient) GetMicrosoftAuthenticatorMethod(ctx contex
 	return &microsoftAuthenticatorMethod, status, nil
 }
 
-func (c *AuthenticationMethodsClient) DeleteMSAuthenticatorMethod(ctx context.Context, userID, id string) (int, error) {
+func (c *AuthenticationMethodsClient) DeleteMicrosoftAuthenticatorMethod(ctx context.Context, userID, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
