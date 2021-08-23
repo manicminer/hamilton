@@ -70,6 +70,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	testAuthMethods_UpdateEmailMethod(t, c, *user.ID, *emailAuthMethod)
 	testAuthMethods_DeleteEmailMethod(t, c, *user.ID, *emailAuthMethod.ID)
 	_ = testAuthMetods_ListPasswordMethods(t, c, *user.ID)
+	testUsersClient_Delete(t, u, *user.ID)
 }
 
 func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
