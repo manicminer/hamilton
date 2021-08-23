@@ -584,14 +584,14 @@ func (c *AuthenticationMethodsClient) UpdatePhoneMethod(ctx context.Context, use
 	return status, nil
 }
 
-func (c *AuthenticationMethodsClient) EnablePhoneSMS(ctx context.Context, userID, ID string) (int, error) {
+func (c *AuthenticationMethodsClient) EnablePhoneSMS(ctx context.Context, userID, id string) (int, error) {
 	var status int
 
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/enableSmsSignIn", userID, ID),
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/enableSmsSignIn", userID, id),
 			HasTenantId: true,
 		},
 	})
@@ -602,14 +602,14 @@ func (c *AuthenticationMethodsClient) EnablePhoneSMS(ctx context.Context, userID
 	return status, nil
 }
 
-func (c *AuthenticationMethodsClient) DisablePhoneSMS(ctx context.Context, userID, ID string) (int, error) {
+func (c *AuthenticationMethodsClient) DisablePhoneSMS(ctx context.Context, userID, id string) (int, error) {
 	var status int
 
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/disableSmsSignIn", userID, ID),
+			Entity:      fmt.Sprintf("/users/%s/authentication/phoneMethods/%s/disableSmsSignIn", userID, id),
 			HasTenantId: true,
 		},
 	})

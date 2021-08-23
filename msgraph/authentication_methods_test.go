@@ -59,9 +59,16 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	_ = testAuthMethods_ListPhoneMethods(t, c, *user.ID)
 	phoneAuthMethod.PhoneNumber = utils.StringPtr("+44 07940123966")
 	testAuthMethods_UpdatePhoneMethod(t, c, *user.ID, *phoneAuthMethod)
-	testAuthMethods_EnablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
+	//Disabling this test as the Preview feature is off by default in the testing tenant
+	//testAuthMethods_EnablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
 	testAuthMethods_DisablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
 	testAuthMethods_DeletePhoneMethod(t, c, *user.ID, *phoneAuthMethod.ID)
+	emailAuthMethod := testAuthMethods_CreateEmailMethod(t, c, *user.ID)
+	_ = testAuthMethods_GetEmailMethod(t, c, *user.ID, *emailAuthMethod.ID)
+	_ = testAuthMethods_ListEmailMethods(t, c, *user.ID)
+	emailAuthMethod.EmailAddress = utils.StringPtr("test-user-authenticationmethods@updateddomain.com")
+	testAuthMethods_UpdateEmailMethod(t, c, *user.ID, *emailAuthMethod)
+	testAuthMethods_DeleteEmailMethod(t, c, *user.ID, *emailAuthMethod.ID)
 }
 
 func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
@@ -260,16 +267,17 @@ func testAuthMethods_UpdatePhoneMethod(t *testing.T, c AuthenticationMethodsClie
 	}
 }
 
-func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
-	status, err := c.client.EnablePhoneSMS(c.connection.Context, userID, ID)
-	if status < 200 || status >= 300 {
-		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): invalid status: %d", status)
-	}
+//Disabled while this feature is disabled in testing tenant
+// func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+// 	status, err := c.client.EnablePhoneSMS(c.connection.Context, userID, ID)
+// 	if status < 200 || status >= 300 {
+// 		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): invalid status: %d", status)
+// 	}
 
-	if err != nil {
-		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): %v", err)
-	}
-}
+// 	if err != nil {
+// 		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): %v", err)
+// 	}
+// }
 
 func testAuthMethods_DisablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
 	status, err := c.client.DisablePhoneSMS(c.connection.Context, userID, ID)
@@ -290,5 +298,78 @@ func testAuthMethods_DeletePhoneMethod(t *testing.T, c AuthenticationMethodsClie
 
 	if err != nil {
 		t.Fatalf("AuthenticationMethodsClientTest.DeletePhoneMethod(): %v", err)
+	}
+}
+
+func testAuthMethods_CreateEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (emailMethod *msgraph.EmailAuthenticationMethod) {
+	email := msgraph.EmailAuthenticationMethod{
+		EmailAddress: utils.StringPtr("test-user-authenticationmethods@testdomain.com"),
+	}
+	emailMethod, status, err := c.client.CreateEmailMethod(c.connection.Context, userID, email)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.CreateEmailMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.CreateEmailMethod(): %v", err)
+	}
+
+	if emailMethod == nil {
+		t.Fatal("AuthenticationMethodsClientTest.CreateEmailMethod():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_GetEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) (emailMethod *msgraph.EmailAuthenticationMethod) {
+	emailMethod, status, err := c.client.GetEmailMethod(c.connection.Context, userID, ID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.GetEmailMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.GetEmailMethod(): %v", err)
+	}
+
+	if emailMethod == nil {
+		t.Fatal("AuthenticationMethodsClientTest.GetEmailMethod():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_ListEmailMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (emailMethods *[]msgraph.EmailAuthenticationMethod) {
+	emailMethods, status, err := c.client.ListEmailMethods(c.connection.Context, userID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.ListEmailMethods(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.ListEmailMethods(): %v", err)
+	}
+
+	if emailMethods == nil {
+		t.Fatal("AuthenticationMethodsClientTest.ListEmailMethods():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_UpdateEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string, email msgraph.EmailAuthenticationMethod) {
+	status, err := c.client.UpdateEmailMethod(c.connection.Context, userID, email)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.UpdateEmailMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.UpdateEmailMethod(): %v", err)
+	}
+}
+
+func testAuthMethods_DeleteEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+	status, err := c.client.DeleteEmailMethod(c.connection.Context, userID, ID)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.DeleteEmailMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.DeleteEmailMethod(): %v", err)
 	}
 }
