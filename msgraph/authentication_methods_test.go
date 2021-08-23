@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
@@ -12,7 +13,7 @@ import (
 
 type AuthenticationMethodsClientTest struct {
 	connection   *test.Connection
-	client       *msgraph.ApplicationsClient
+	client       *msgraph.AuthenticationMethodsClient
 	randomString string
 }
 
@@ -27,7 +28,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	u := UsersClientTest{
-		connection: test.NewConnection(auth.MsGraph, auth.TokenVersion2)
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
 
@@ -35,8 +36,8 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	u.client.BaseClient.Authorizer = u.connection.Authorizer
 
 	user := testUsersClient_Create(t, u, msgraph.User{
-		AccountEnabled: utils.BoolPtr(true),
-		DisplayName: utils.StringPtr("test-user-authenticationmethods"),
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-authenticationmethods"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-authenticationmethods-%s", c.randomString)),
 		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-authenticationmethods-%s@%s", c.randomString, c.connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
@@ -44,15 +45,13 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 		},
 	})
 
-	listAllAuthMethods := testAuthMethods_List(t,c,user)
-	fido2Methods := testAuthMethods_ListFido2Methods(t,c,user)
+	_ = testAuthMethods_List(t, c, *user)
+	_ = testAuthMethods_ListFido2Methods(t, c, *user)
 
-	
 }
 
-
-func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User) (authMethods *[]msgraph.AuthenticationMethod ) {
-	authMethods, status, err := c.client.List(c.connection.Context,u,odata.Query{})
+func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User) (authMethods *[]msgraph.AuthenticationMethod) {
+	authMethods, status, err := c.client.List(c.connection.Context, u, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.List(): invalid status: %d", status)
 	}
@@ -67,8 +66,8 @@ func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msg
 	return
 }
 
-func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User)(fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
-	fido2Methods, status, err := c.client.List(c.connection.Context,u,odata.Query{})
+func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User) (fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
+	fido2Methods, status, err := c.client.ListFido2Methods(c.connection.Context, *u.ID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListFido2Methods(): invalid status: %d", status)
 	}
