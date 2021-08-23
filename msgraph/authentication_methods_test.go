@@ -3,6 +3,7 @@ package msgraph_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
@@ -49,7 +50,10 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	_ = testAuthMethods_ListFido2Methods(t, c, *user.ID)
 	_ = testAuthMethods_ListMicrosoftAuthenticatorMethods(t, c, *user.ID)
 	_ = testAuthMethods_ListWindowsHelloMethods(t, c, *user.ID)
-
+	tempAccessPass := testAuthMethods_CreateTemporaryAccessPassMethod(t, c, *user.ID)
+	_ = testAuthMethods_GetTemporaryAccessPassMethod(t, c, *user.ID, *tempAccessPass.ID)
+	_ = testAuthMethods_ListTemporaryAccessPassMethods(t, c, *user.ID)
+	testAuthMethods_DeleteTemporaryAccessPassMethod(t, c, *user.ID, *tempAccessPass.ID)
 }
 
 func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
@@ -114,4 +118,70 @@ func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c AuthenticationMetho
 		t.Fatal("AuthenticationMethodsClientTest.ListWindowsHelloMethods():logs was nil")
 	}
 	return
+}
+
+func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
+	startPassTime := time.Now().UTC()
+	tempPass := msgraph.TemporaryAccessPassAuthenticationMethod{
+		StartDateTime:     &startPassTime,
+		LifetimeInMinutes: utils.Int32Ptr(20),
+		IsUsableOnce:      utils.BoolPtr(true),
+	}
+
+	tempAccessPass, status, err := c.client.CreateTemporaryAccessPassMethod(c.connection.Context, userID, tempPass)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.CreateTemporaryAccessPassMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.CreateTemporaryAccessPassMethod(): %v", err)
+	}
+
+	if tempAccessPass == nil {
+		t.Fatal("AuthenticationMethodsClientTest.CreateTemporaryAccessPassMethod():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_GetTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
+	tempAccessPass, status, err := c.client.GetTemporaryAccessPassMethod(c.connection.Context, userID, ID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.GetTemporaryAccessPassMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.GetTemporaryAccessPassMethod(): %v", err)
+	}
+
+	if tempAccessPass == nil {
+		t.Fatal("AuthenticationMethodsClientTest.GetTemporaryAccessPassMethod():logs was nil")
+	}
+	return
+}
+func testAuthMethods_ListTemporaryAccessPassMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (tempAccessPasses *[]msgraph.TemporaryAccessPassAuthenticationMethod) {
+	tempAccessPasses, status, err := c.client.ListTemporaryAccessPassMethods(c.connection.Context, userID, odata.Query{})
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.ListTemporaryAccessPassMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.ListTemporaryAccessPassMethod(): %v", err)
+	}
+
+	if tempAccessPasses == nil {
+		t.Fatal("AuthenticationMethodsClientTest.ListTemporaryAccessPassMethod():logs was nil")
+	}
+	return
+}
+
+func testAuthMethods_DeleteTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+
+	status, err := c.client.DeleteTemporaryAccessPassMethod(c.connection.Context, userID, ID)
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationMethodsClientTest.DeleteTemporaryAccessPassMethod(): invalid status: %d", status)
+	}
+
+	if err != nil {
+		t.Fatalf("AuthenticationMethodsClientTest.DeleteTemporaryAccessPassMethod(): %v", err)
+	}
 }
