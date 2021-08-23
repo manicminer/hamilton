@@ -23,7 +23,7 @@ func NewAuthenticationMethodsClient(tenantId string) *AuthenticationMethodsClien
 	}
 }
 
-//List all authentication methods
+// List all authentication methods
 func (c *AuthenticationMethodsClient) List(ctx context.Context, userID string, query odata.Query) (*[]AuthenticationMethod, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
