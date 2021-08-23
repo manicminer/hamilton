@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/manicminer/hamilton/odata"
 )
@@ -400,6 +401,13 @@ func (c *AuthenticationMethodsClient) GetTemporaryAccessPassMethod(ctx context.C
 
 func (c *AuthenticationMethodsClient) CreateTemporaryAccessPassMethod(ctx context.Context, userID string, accessPass TemporaryAccessPassAuthenticationMethod) (*TemporaryAccessPassAuthenticationMethod, int, error) {
 	var status int
+
+	rawStartTime := accessPass.StartDateTime
+	formattedTimeValue, err := time.Parse(time.RFC3339, rawStartTime.String())
+	if err != nil {
+		return nil, status, fmt.Errorf("AuthenticationMethodsClient.CreateTemporaryAccessPassMethod(), unable to parse startTime toRFC3339 format: %v", err)
+	}
+	accessPass.StartDateTime = &formattedTimeValue
 
 	body, err := json.Marshal(accessPass)
 	if err != nil {
