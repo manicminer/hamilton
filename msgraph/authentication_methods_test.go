@@ -51,7 +51,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 }
 
 func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, u msgraph.User) (authMethods *[]msgraph.AuthenticationMethod) {
-	authMethods, status, err := c.client.List(c.connection.Context, u, odata.Query{})
+	authMethods, status, err := c.client.List(c.connection.Context, *u.ID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.List(): invalid status: %d", status)
 	}
