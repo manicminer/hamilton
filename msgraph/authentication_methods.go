@@ -340,7 +340,7 @@ func (c *AuthenticationMethodsClient) DeleteWindowsHelloMethod(ctx context.Conte
 	return status, nil
 }
 
-func (c *AuthenticationMethodsClient) ListTempAccessPassMethods(ctx context.Context, userID string, query odata.Query) (*[]TemporaryAccessPassAuthenticationMethod, int, error) {
+func (c *AuthenticationMethodsClient) ListTemporaryAccessPassMethods(ctx context.Context, userID string, query odata.Query) (*[]TemporaryAccessPassAuthenticationMethod, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
