@@ -57,7 +57,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	phoneAuthMethod := testAuthMethods_CreatePhoneMethod(t, c, *user.ID)
 	_ = testAuthMethods_GetPhoneMethod(t, c, *user.ID, *phoneAuthMethod.ID)
 	_ = testAuthMethods_ListPhoneMethods(t, c, *user.ID)
-	phoneAuthMethod.PhoneNumber = utils.StringPtr("+44 07700900000")
+	phoneAuthMethod.PhoneNumber = utils.StringPtr("+44 07777777778")
 	testAuthMethods_UpdatePhoneMethod(t, c, *user.ID, *phoneAuthMethod)
 	testAuthMethods_EnablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
 	testAuthMethods_DisablePhoneSMS(t, c, *user.ID, *phoneAuthMethod.ID)
@@ -207,7 +207,7 @@ func testAuthMethods_DeleteTemporaryAccessPassMethod(t *testing.T, c Authenticat
 func testAuthMethods_CreatePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
 	phoneType := msgraph.AuthenticationPhoneTypeMobile
 	phoneAuth := msgraph.PhoneAuthenticationMethod{
-		PhoneNumber: utils.StringPtr("+44 07986594233"),
+		PhoneNumber: utils.StringPtr("+44 07777777777"),
 		PhoneType:   &phoneType,
 	}
 	phoneAuthMethod, status, err := c.client.CreatePhoneMethod(c.connection.Context, userID, phoneAuth)
