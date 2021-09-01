@@ -29,7 +29,7 @@ func (o *Id) UnmarshalJSON(data []byte) error {
 type ShortType = string
 
 const (
-	ShortTypeAccessPackage								 ShortType = "accessPackage"
+	ShortTypeAccessPackage                               ShortType = "accessPackage"
 	ShortTypeAccessPackageCatalog                        ShortType = "accessPackageCatalog"
 	ShortTypeAdministrativeUnit                          ShortType = "administrativeUnit"
 	ShortTypeApplication                                 ShortType = "application"

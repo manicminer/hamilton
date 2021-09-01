@@ -11,11 +11,9 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
-
 type AccessPackageCatalogClient struct {
 	BaseClient Client
 }
-
 
 func NewAccessPackageCatalogClient(tenantId string) *AccessPackageCatalogClient {
 	return &AccessPackageCatalogClient{

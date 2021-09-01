@@ -12,10 +12,10 @@ import (
 )
 
 type AccessPackageTest struct {
-	connection   *test.Connection
-	apClient *msgraph.AccessPackageClient //apClient
-	apCatalogClient *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required 
-	randomString string
+	connection      *test.Connection
+	apClient        *msgraph.AccessPackageClient        //apClient
+	apCatalogClient *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required
+	randomString    string
 }
 
 func TestAccessPackageClient(t *testing.T) {
@@ -36,12 +36,11 @@ func TestAccessPackageClient(t *testing.T) {
 
 	// Create AP
 	accessPackage := testAccessPackageClient_Create(t, c, msgraph.AccessPackage{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
-		CatalogId:       accessPackageCatalog.ID,
-		Description: utils.StringPtr("Test Access Package"),
-		IsHidden: utils.BoolPtr(false),
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
+		CatalogId:           accessPackageCatalog.ID,
+		Description:         utils.StringPtr("Test Access Package"),
+		IsHidden:            utils.BoolPtr(false),
 		IsRoleScopesVisible: utils.BoolPtr(false),
-		
 	})
 	//Update test
 	updateAccessPackage := msgraph.AccessPackage{
@@ -126,15 +125,13 @@ func testAccessPackageClient_Delete(t *testing.T, c AccessPackageTest, id string
 
 // AP Catalog
 
-
 func testapCatalog_Create(t *testing.T, c AccessPackageTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
 	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:       utils.StringPtr("UserManaged"),
-		CatalogStatus:     utils.StringPtr("Published"),
-		Description: utils.StringPtr("Test Access Catalog"),
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
+		CatalogType:         utils.StringPtr("UserManaged"),
+		CatalogStatus:       utils.StringPtr("Published"),
+		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
-		
 	})
 
 	if err != nil {

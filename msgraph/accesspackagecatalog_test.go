@@ -12,9 +12,9 @@ import (
 )
 
 type AccessPackageCatalogTest struct {
-	connection   *test.Connection
+	connection      *test.Connection
 	apCatalogClient *msgraph.AccessPackageCatalogClient
-	randomString string
+	randomString    string
 }
 
 func TestAccessPackageCatalogClient(t *testing.T) {
@@ -28,12 +28,11 @@ func TestAccessPackageCatalogClient(t *testing.T) {
 
 	// act
 	accessPackageCatalog := testAccessPackageCatalogClient_Create(t, c, msgraph.AccessPackageCatalog{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:       utils.StringPtr("UserManaged"),
-		CatalogStatus:     utils.StringPtr("Published"),
-		Description: utils.StringPtr("Test Access Catalog"),
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
+		CatalogType:         utils.StringPtr("UserManaged"),
+		CatalogStatus:       utils.StringPtr("Published"),
+		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
-		
 	})
 
 	updateAccessPackageCatalog := msgraph.AccessPackageCatalog{
@@ -45,7 +44,7 @@ func TestAccessPackageCatalogClient(t *testing.T) {
 
 	testAccessPackageCatalogClient_List(t, c)
 	testAccessPackageCatalogClient_Get(t, c, *accessPackageCatalog.ID)
-    testAccessPackageCatalogClient_Delete(t, c, *accessPackageCatalog.ID)
+	testAccessPackageCatalogClient_Delete(t, c, *accessPackageCatalog.ID)
 
 }
 
