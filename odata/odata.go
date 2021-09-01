@@ -29,6 +29,8 @@ func (o *Id) UnmarshalJSON(data []byte) error {
 type ShortType = string
 
 const (
+	ShortTypeAccessPackage								 ShortType = "accessPackage"
+	ShortTypeAccessPackageCatalog                        ShortType = "accessPackageCatalog"
 	ShortTypeAdministrativeUnit                          ShortType = "administrativeUnit"
 	ShortTypeApplication                                 ShortType = "application"
 	ShortTypeConditionalAccessPolicy                     ShortType = "conditionalAccessPolicy"
@@ -56,6 +58,8 @@ const (
 type Type = string
 
 const (
+	TypeAccessPackage                               Type = "#microsoft.graph.accessPackage"
+	TypeAccessPackageCatalog                        Type = "#microsoft.graph.accessPackageCatalog"
 	TypeAdministrativeUnit                          Type = "#microsoft.graph.administrativeUnit"
 	TypeApplication                                 Type = "#microsoft.graph.application"
 	TypeConditionalAccessPolicy                     Type = "#microsoft.graph.conditionalAccessPolicy"

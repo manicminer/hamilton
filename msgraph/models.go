@@ -13,6 +13,32 @@ import (
 	"github.com/manicminer/hamilton/errors"
 )
 
+type AccessPackage struct {
+	ID *string `json:"id,omitempty"`
+	CatalogId *string `json:"catalogId,omitempty"`
+	CreatedBy *string `json:"createdBy,omitempty"`
+	CreatedDateTime *time.Time  `json:"createdDateTime,omitempty"`
+	Description *string `json:"description,omitempty"`
+	DisplayName *string `json:"displayName,omitempty"`
+	IsHidden    *bool  `json:"isHidden,omitempty"`
+	IsRoleScopesVisible    *bool  `json:"isRoleScopesVisible,omitempty"`
+	ModifiedBy       *string `json:"modifiedBy,omitempty"`
+	ModifiedDateTime *time.Time  `json:"modifiedDateTime,omitempty"`
+}
+
+type AccessPackageCatalog struct {
+	ID *string `json:"id,omitempty"`
+	CatalogStatus *string `json:"catalogStatus,omitempty"`
+	CatalogType *string `json:"catalogType,omitempty"`
+	CreatedBy *string `json:"createdBy,omitempty"`
+	CreatedDateTime *time.Time  `json:"createdDateTime,omitempty"`
+	Description *string `json:"description,omitempty"`
+	DisplayName *string `json:"displayName,omitempty"`
+	IsExternallyVisible    *bool  `json:"isExternallyVisible,omitempty"`
+	ModifiedBy       *string `json:"modifiedBy,omitempty"`
+	ModifiedDateTime *time.Time  `json:"modifiedDateTime,omitempty"`
+}
+
 type AddIn struct {
 	ID         *string          `json:"id,omitempty"`
 	Properties *[]AddInKeyValue `json:"properties,omitempty"`
