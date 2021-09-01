@@ -1,4 +1,6 @@
-## 0.26.0 (Unreleased)
+## 0.27.0 (Unreleased)
+
+## 0.26.0 (September 1, 2021)
 
 - `auth.CachedAuthorizer` - export this type and its `Source` field so that consumers can inspect it ([#90](https://github.com/manicminer/hamilton/pull/90))
 - Bugfix: set the struct tag for `ServicePrincipal.Owners` field so it is marshaled correctly  ([#91](https://github.com/manicminer/hamilton/pull/91))
