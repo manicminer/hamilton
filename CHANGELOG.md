@@ -1,5 +1,7 @@
 ## 0.27.0 (Unreleased)
 
+- Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
+
 ## 0.26.0 (September 1, 2021)
 
 - `auth.CachedAuthorizer` - export this type and its `Source` field so that consumers can inspect it ([#90](https://github.com/manicminer/hamilton/pull/90))
