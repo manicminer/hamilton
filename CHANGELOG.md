@@ -1,4 +1,6 @@
-## 0.27.0 (Unreleased)
+## 0.28.0 (Unreleased)
+
+## 0.27.0 (September 2, 2022)
 
 - Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
 
