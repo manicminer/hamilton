@@ -73,10 +73,10 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	// testAccessPackageClient_List(t, c)
 	// testAccessPackageClient_Get(t, c, *accessPackage.ID)
 
-	// Cleanup
-	// testAccessPackageAssignmentPolicyClient_Delete(t, c, *accessPackageAssignmentPolicy.ID)
-	// testAp_Delete(t, c, *accessPackage.ID)
-	// testapCatalogpol_Delete(t, c, accessPackageCatalog)
+	//Cleanup
+	testAccessPackageAssignmentPolicyClient_Delete(t, c, *accessPackageAssignmentPolicy.ID)
+	testAp_Delete(t, c, *accessPackage.ID)
+	testapCatalogpol_Delete(t, c, accessPackageCatalog)
 
 }
 
