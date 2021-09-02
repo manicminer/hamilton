@@ -39,6 +39,82 @@ type AccessPackageCatalog struct {
 	ModifiedDateTime    *time.Time `json:"modifiedDateTime,omitempty"`
 }
 
+type AccessPackageAssignmentPolicy struct {
+	AccessPackageId         *string                   `json:"accessPackageId,omitempty"`
+	AccessReviewSettings    *AssignmentReviewSettings `json:"accessReviewSettings,omitempty"` //Type defined as assignmentReviewSettings
+	CanExtend               *bool                     `json:"canExtend,omitempty"`
+	CreatedBy               *string                   `json:"createdBy,omitempty"` //ReadOnly
+	CreatedDateTime         *time.Time                `json:"createdDateTime,omitempty"`
+	Description             *string                   `json:"description,omitempty"`
+	DisplayName             *string                   `json:"displayName,omitempty"`
+	DurationInDays          *int32                    `json:"durationInDays,omitempty"`
+	ExpirationDateTime      *time.Time                `json:"expirationDateTime,omitempty"`
+	ID                      *string                   `json:"id,omitempty"`         //ReadOnly
+	ModifiedBy              *string                   `json:"modifiedBy,omitempty"` //ReadOnly
+	ModifiedDateTime        *time.Time                `json:"modifiedDateTime,omitempty"`
+	RequestApprovalSettings *ApprovalSettings         `json:"requestApprovalSettings,omitempty"` //data type is named differently
+	RequestorSettings       *RequestorSettings        `json:"requestorSettings,omitempty"`
+	Questions               *[]AccessPackageQuestion  `json:"questions,omitempty"`
+}
+
+type AssignmentReviewSettings struct {
+	IsEnabled      *bool      `json:"isEnabled,omitempty"`
+	RecurrenceType *string    `json:"recurrenceType,omitempty`
+	ReviewerType   *string    `json:"reviewerType,omitempty`
+	StartDateTime  *time.Time `json:"startDateTime,omitempty`
+	DurationInDays *int32     `json:"durationInDays,omitempty"`
+	Reviewers      *[]UserSet `json:"reviewers,omitempty`
+}
+
+type UserSet struct { //This is not only limited to access packages
+	IsBackup    *bool   `json:"isBackup,omitempty"`
+	ID          *string `json:"id,omitempty"` //Either user or group ID
+	Description *string `json:"description,omitempty"`
+}
+
+type ApprovalSettings struct {
+	IsApprovalRequired               *bool            `json:"isApprovalRequired,omitempty"`
+	IsApprovalRequiredForExtension   *bool            `json:"isApprovalRequiredForExtension,omitempty"`
+	IsRequestorJustificationRequired *bool            `json:"isRequestorJustificationRequired,omitempty"`
+	ApprovalMode                     *string          `json:"approvalMode,omitempty"`
+	ApprovalStages                   *[]ApprovalStage `json:"approvalStages,omitempty"`
+}
+
+type ApprovalStage struct {
+	ApprovalStageTimeOutInDays      *int32     `json:"approvalStageTimeOutInDays,omitempty"`
+	IsApproverJustificationRequired *bool      `json:"isApproverJustificationRequired,omitempty"`
+	IsEscalationEnabled             *bool      `json:"isEscalationEnabled,omitempty"`
+	EscalationTimeInMinutes         *int32     `json:"escalationTimeInMinutes,omitempty"`
+	PrimaryApprovers                *[]UserSet `json:"primaryApprovers,omitempty"`
+	EscalationApprovers             *[]UserSet `json:"escalationApprovers,omitempty"`
+}
+
+type RequestorSettings struct {
+	ScopeType         *string    `json:"scopeType,omitempty"`
+	AcceptRequests    *bool      `json:"acceptRequests,omitempty"`
+	AllowedRequestors *[]UserSet `json:"allowedRequestors,omitempty"`
+}
+
+type AccessPackageQuestion struct {
+	//Some reason states it needs an Odata type in Example
+	ID         *string                        `json:"id,omitempty"`
+	IsRequired *bool                          `json:"isRequired,omitempty"`
+	Sequence   *int32                         `json:"sequence,omitempty"`
+	Text       *AccessPackageLocalizedContent `json:"text,omitempty"`
+}
+
+type AccessPackageLocalizedContent struct {
+	//Some reason states it needs an Odata type in Example
+	DefaultText    *string                        `json:"defaultText,omitempty"`
+	LocalizedTexts *[]AccessPackageLocalizedTexts `json:"localizedTexts,omitempty"`
+}
+
+type AccessPackageLocalizedTexts struct {
+	//Some reason states it needs an Odata type in example
+	Text         *string `json:"text,omitempty"`
+	LanguageCode *string `json:"languageCode,omitempty"`
+}
+
 type AddIn struct {
 	ID         *string          `json:"id,omitempty"`
 	Properties *[]AddInKeyValue `json:"properties,omitempty"`

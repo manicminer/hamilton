@@ -30,6 +30,7 @@ type ShortType = string
 
 const (
 	ShortTypeAccessPackage                               ShortType = "accessPackage"
+	ShortTypeAccessPackageAssignmentPolicy               ShortType = "accessPackageAssignmentPolicy"
 	ShortTypeAccessPackageCatalog                        ShortType = "accessPackageCatalog"
 	ShortTypeAdministrativeUnit                          ShortType = "administrativeUnit"
 	ShortTypeApplication                                 ShortType = "application"
@@ -59,6 +60,7 @@ type Type = string
 
 const (
 	TypeAccessPackage                               Type = "#microsoft.graph.accessPackage"
+	TypeAccessPackageAssignmentPolicy               Type = "#microsoft.graph.accessPackageAssignmentPolicy"
 	TypeAccessPackageCatalog                        Type = "#microsoft.graph.accessPackageCatalog"
 	TypeAdministrativeUnit                          Type = "#microsoft.graph.administrativeUnit"
 	TypeApplication                                 Type = "#microsoft.graph.application"
