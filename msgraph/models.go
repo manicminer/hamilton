@@ -59,11 +59,11 @@ type AccessPackageAssignmentPolicy struct {
 
 type AssignmentReviewSettings struct {
 	IsEnabled      *bool      `json:"isEnabled,omitempty"`
-	RecurrenceType *string    `json:"recurrenceType,omitempty`
-	ReviewerType   *string    `json:"reviewerType,omitempty`
-	StartDateTime  *time.Time `json:"startDateTime,omitempty`
+	RecurrenceType *string    `json:"recurrenceType,omitempty"`
+	ReviewerType   *string    `json:"reviewerType,omitempty"`
+	StartDateTime  *time.Time `json:"startDateTime,omitempty"`
 	DurationInDays *int32     `json:"durationInDays,omitempty"`
-	Reviewers      *[]UserSet `json:"reviewers,omitempty`
+	Reviewers      *[]UserSet `json:"reviewers,omitempty"`
 }
 
 type UserSet struct { //This is not only limited to access packages
