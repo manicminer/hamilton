@@ -1128,6 +1128,7 @@ type User struct {
 	UsageLocation                   *StringNullWhenEmpty     `json:"usageLocation,omitempty"`
 	UserPrincipalName               *string                  `json:"userPrincipalName,omitempty"`
 	UserType                        *string                  `json:"userType,omitempty"`
+	EmployeeOrgData                 *EmployeeOrgData         `json:"employeeOrgData,omitempty"`
 
 	SchemaExtensions *[]SchemaExtensionData `json:"-"`
 }
@@ -1238,4 +1239,9 @@ type WindowsHelloForBusinessAuthenticationMethod struct {
 	DisplayName     *string                          `json:"displayName,omitempty"`
 	ID              *string                          `json:"id,omitempty"`
 	KeyStrength     *AuthenticationMethodKeyStrength `json:"authenticationMethodKeyStrength,omitempty"`
+}
+
+type EmployeeOrgData struct {
+	CostCenter *string `json:"costCenter,omitempty"`
+	Division   *string `json:"division,omitempty"`
 }
