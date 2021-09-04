@@ -115,6 +115,53 @@ type AccessPackageLocalizedTexts struct {
 	LanguageCode *string `json:"languageCode,omitempty"`
 }
 
+type AccessPackageResourceRequest struct {
+	CatalogId         *string `json:"catalogId,omitempty"`
+	ExpirationDateTime         *time.Time `json:"expirationDateTime,omitempty"`
+	ID         *string                        `json:"id,omitempty"`
+	IsValidationOnly         *bool `json:"isValidationOnly,omitempty"`
+	Justification         *string `json:"justification,omitempty"`
+	RequestState         *string `json:"requestState,omitempty"`
+	RequestStatus         *string `json:"requestStatus,omitempty"`
+	RequestType         *string `json:"requestType,omitempty"`
+	AccessPackageResource         *AccessPackageResource `json:"accessPackageResource,omitempty"` //While this isnt in the main Info Page, its in the create call. Assume it exists
+	ExecuteImmediately *bool `json:"executeImmediately,omitempty"`
+}
+
+type AccessPackageResource struct {
+	AccessPackageResourceEnvironment         *AccessPackageResourceEnvironment `json:"accessPackageResourceEnvironment,omitempty"`
+	AddedBy         *string `json:"addedBy,omitempty"`
+	AddedOn         *time.Time                      `json:"addedOn,omitempty"`
+	Description         *bool `json:"displayName,omitempty"`
+	DisplayName         *string `json:"displayName,omitempty"`
+	ID         *string `json:"id,omitempty"`
+	IsPendingOnboarding         *bool `json:"isPendingOnboarding,omitempty"`
+	OriginId         *string `json:"originId,omitempty"`
+	OriginSystem         *string `json:"originSystem,omitempty"` //While this isnt in the main Info Page, its in the create call. Assume it exists
+	ResourceType *string `json:"resourceType,omitempty"`
+	Url *string `json:"url,omitempty"`
+	// Attributes as a returned [] Field but is not documented or used
+}
+
+type AccessPackageResourceEnvironment struct {
+	ConnectionInfo *ConnectionInfo `json:"connectionInfo,omitempty"`
+	CreatedBy *string `json:"createdBy,omitempty"`
+	CreatedDateTime *time.Time `json:"createdDateTime,omitempty"`
+	Description *string `json:"description,omitempty"`
+	DisplayName *string `json:"displayName,omitempty"`
+	ID         *string `json:"id,omitempty"`
+	IsDefaultEnvironment *bool `json:"isDefaultEnvironment,omitempty"`
+	ModifiedBy *string `json:"modifiedBy,omitempty"`
+	ModifiedDateTime *time.Time `json:"modifiedDateTime,omitempty"`
+	OriginId *string `json:"originId,omitempty"`
+	OriginSystem *string `json:"connectionInfo,omitempty"`
+}
+
+type ConnectionInfo struct {
+	// Has OData
+	Url *string `json:"url,omitempty"`
+}
+
 type AddIn struct {
 	ID         *string          `json:"id,omitempty"`
 	Properties *[]AddInKeyValue `json:"properties,omitempty"`
