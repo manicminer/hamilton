@@ -44,6 +44,7 @@ type Application struct {
 	AddIns                        *[]AddIn                  `json:"addIns,omitempty"`
 	Api                           *ApplicationApi           `json:"api,omitempty"`
 	AppId                         *string                   `json:"appId,omitempty"`
+	ApplicationTemplateId         *string                   `json:"applicationTemplateId,omitempty"`
 	AppRoles                      *[]AppRole                `json:"appRoles,omitempty"`
 	CreatedDateTime               *time.Time                `json:"createdDateTime,omitempty"`
 	DefaultRedirectUri            *string                   `json:"defaultRedirectUri,omitempty"`
