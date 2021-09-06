@@ -1,5 +1,7 @@
 ## 0.28.0 (Unreleased)
 
+- Support for [application templates](https://docs.microsoft.com/en-us/graph/api/resources/applicationtemplate?view=graph-rest-1.0) ([#95](https://github.com/manicminer/hamilton/pull/95))
+
 ## 0.27.0 (September 2, 2022)
 
 - Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
