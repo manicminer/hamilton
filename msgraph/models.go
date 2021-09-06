@@ -290,6 +290,21 @@ type ApplicationSpa struct {
 	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
 
+type ApplicationTemplate struct {
+	ID                         *string                        `json:"id,omitempty"`
+	Categories                 *[]ApplicationTemplateCategory `json:"categories,omitempty"`
+	Description                *string                        `json:"description,omitempty"`
+	DisplayName                *string                        `json:"displayName,omitempty"`
+	HomePageUrl                *string                        `json:"homePageUrl,omitempty"`
+	LogoUrl                    *string                        `json:"logoUrl,omitempty"`
+	Publisher                  *string                        `json:"publisher,omitempty"`
+	SupportedProvisioningTypes *[]string                      `json:"supportedProvisioningTypes,omitempty"`
+	SupportedSingleSignOnModes *[]string                      `json:"supportedSingleSignOnModes,omitempty"`
+
+	Application      *Application      `json:"application,omitempty"`
+	ServicePrincipal *ServicePrincipal `json:"servicePrincipal,omitempty"`
+}
+
 type ApplicationWeb struct {
 	HomePageUrl           *StringNullWhenEmpty   `json:"homePageUrl,omitempty"`
 	ImplicitGrantSettings *ImplicitGrantSettings `json:"implicitGrantSettings,omitempty"`
