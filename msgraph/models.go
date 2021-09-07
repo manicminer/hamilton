@@ -1293,7 +1293,7 @@ type User struct {
 	OnPremisesSyncEnabled           *bool                    `json:"onPremisesSyncEnabled,omitempty"`
 	OnPremisesUserPrincipalName     *string                  `json:"onPremisesUserPrincipalName,omitempty"`
 	OtherMails                      *[]string                `json:"otherMails,omitempty"`
-	PasswordPolicies                *string                  `json:"passwordPolicies,omitempty"`
+	PasswordPolicies                *StringNullWhenEmpty     `json:"passwordPolicies,omitempty"`
 	PasswordProfile                 *UserPasswordProfile     `json:"passwordProfile,omitempty"`
 	PastProjects                    *[]string                `json:"pastProjects,omitempty"`
 	PostalCode                      *StringNullWhenEmpty     `json:"postalCode,omitempty"`
