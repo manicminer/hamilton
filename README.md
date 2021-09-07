@@ -21,15 +21,13 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 var (
-	tenantId           = os.Getenv("TENANT_ID")
-	tenantDomain       = os.Getenv("TENANT_DOMAIN")
-	clientId           = os.Getenv("CLIENT_ID")
-	clientCertificate  = os.Getenv("CLIENT_CERTIFICATE")
-	clientCertPassword = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
-	clientSecret       = os.Getenv("CLIENT_SECRET")
+	tenantId     = os.Getenv("TENANT_ID")
+	clientId     = os.Getenv("CLIENT_ID")
+	clientSecret = os.Getenv("CLIENT_SECRET")
 )
 
 func main() {
@@ -51,14 +49,15 @@ func main() {
 	client := msgraph.NewUsersClient(tenantId)
 	client.BaseClient.Authorizer = authorizer
 
-	users, _, err := client.List(ctx, "")
+	users, _, err := client.List(ctx, odata.Query{})
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	if users == nil {
-		log.Fatalln("bad API response, nil result received")
+		log.Println("bad API response, nil result received")
+		return
 	}
-
 	for _, user := range *users {
 		fmt.Printf("%s: %s <%s>\n", *user.ID, *user.DisplayName, *user.UserPrincipalName)
 	}
@@ -73,11 +72,13 @@ Please raise a pull request on GitHub to submit contributions. Bug reports and f
 
 ## Testing
 
-Testing requires an Azure AD tenant and real credentials. You can authenticate with any supported method for the client
-tests, and the auth tests are split by authentication method.
+Testing requires an Azure AD tenant and real credentials. Note that some tests require an Azure AD Premium P2 license and/or an Office 365 license.
+You can authenticate with any supported method for the client tests, and the auth tests are split by authentication method.
 
 Note that each client generally has a single test that exercises all methods. This is to help ensure that test objects
-are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up manually.
+are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up separately.
+The [test-cleanup](https://github.com/manicminer/hamilton/tree/main/internal/cmd/test-cleanup) command can be used to
+delete leftover test objects.
 
 It's recommended to use an isolated tenant for testing and _not_ a production tenant.
 

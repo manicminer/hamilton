@@ -18,7 +18,7 @@ func TestOData(t *testing.T) {
 		{
 			response: `{
   "@odata.context": "https://graph.microsoft.com/beta/$metadata#servicePrincipals",
-  "@odata.nextLink": "https://graph.microsoft.com/beta/26e25406-6564-4a26-98ee-c71ba03235ad/servicePrincipals?$skiptoken=X%274453707402000100000035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D34336331643937353963313035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D3433633164393735396331300000000000000000000000%27",
+  "@odata.nextLink": "https://graph.microsoft.com/beta/1564a4be-0377-4d9b-8aff-5a2b564e177c/servicePrincipals?$skiptoken=X%274453707402000100000035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D34336331643937353963313035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D3433633164393735396331300000000000000000000000%27",
   "value": [
     {
       "id": "00000000-0000-0000-0000-000000000000",
@@ -30,13 +30,13 @@ func TestOData(t *testing.T) {
 }`,
 			expected: odata.OData{
 				Context:  utils.StringPtr("https://graph.microsoft.com/beta/$metadata#servicePrincipals"),
-				NextLink: utils.StringPtr("https://graph.microsoft.com/beta/26e25406-6564-4a26-98ee-c71ba03235ad/servicePrincipals?$skiptoken=X%274453707402000100000035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D34336331643937353963313035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D3433633164393735396331300000000000000000000000%27"),
-				Value: &[]json.RawMessage{[]byte(`{
-      "id": "00000000-0000-0000-0000-000000000000",
-      "deletedDateTime": null,
-      "accountEnabled": true,
-      "createdDateTime": "2020-07-08T01:22:29Z"
-    }`)},
+				NextLink: utils.StringPtr("https://graph.microsoft.com/beta/1564a4be-0377-4d9b-8aff-5a2b564e177c/servicePrincipals?$skiptoken=X%274453707402000100000035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D34336331643937353963313035536572766963655072696E636970616C5F31326430653134382D663634382D343233382D383566312D3433633164393735396331300000000000000000000000%27"),
+				Value: []interface{}{map[string]interface{}{
+					"id":              "00000000-0000-0000-0000-000000000000",
+					"deletedDateTime": nil,
+					"accountEnabled":  true,
+					"createdDateTime": "2020-07-08T01:22:29Z",
+				}},
 			},
 		},
 	}
@@ -86,6 +86,21 @@ func TestError(t *testing.T) {
   }
 }`,
 			expected: "Request_InvalidDataContractVersion: The specified api-version is invalid. The value must exactly match a supported version.",
+		},
+		{
+			response: `{
+  "error": {
+    "code": "BadRequest",
+    "message": "The server could not process the request because it is malformed or incorrect.",
+    "innerError": {
+      "message": "1034: Policy contains invalid applications: {\"499b84ac-1321-427f-aa17-267ca6975798\":\"ServicePrincipalNotFound\"}",
+      "date": "2021-06-23T21:54:16",
+      "request-id": "4486d728-c654-4a30-bf71-bd5035f008a4",
+      "client-request-id": "4486d728-c654-4a30-bf71-bd5035f008a4"
+    }
+  }
+}`,
+			expected: "BadRequest: The server could not process the request because it is malformed or incorrect.: 1034: Policy contains invalid applications: {\"499b84ac-1321-427f-aa17-267ca6975798\":\"ServicePrincipalNotFound\"}",
 		},
 	}
 

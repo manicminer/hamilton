@@ -5,17 +5,20 @@ import (
 	"log"
 	"os"
 
+	"github.com/manicminer/hamilton/internal/utils"
+
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
 )
 
 var (
-	tenantId           = os.Getenv("TENANT_ID")
-	tenantDomain       = os.Getenv("TENANT_DOMAIN")
-	clientId           = os.Getenv("CLIENT_ID")
-	clientCertificate  = os.Getenv("CLIENT_CERTIFICATE")
-	clientCertPassword = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
-	clientSecret       = os.Getenv("CLIENT_SECRET")
+	tenantId              = os.Getenv("TENANT_ID")
+	tenantDomain          = os.Getenv("TENANT_DOMAIN")
+	clientId              = os.Getenv("CLIENT_ID")
+	clientCertificate     = os.Getenv("CLIENT_CERTIFICATE")
+	clientCertificatePath = os.Getenv("CLIENT_CERTIFICATE_PATH")
+	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
+	clientSecret          = os.Getenv("CLIENT_SECRET")
 )
 
 type Connection struct {
@@ -33,7 +36,8 @@ func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
 			Version:                tokenVersion,
 			TenantID:               tenantId,
 			ClientID:               clientId,
-			ClientCertPath:         clientCertificate,
+			ClientCertData:         utils.Base64DecodeCertificate(clientCertificate),
+			ClientCertPath:         clientCertificatePath,
 			ClientCertPassword:     clientCertPassword,
 			ClientSecret:           clientSecret,
 			EnableClientCertAuth:   true,

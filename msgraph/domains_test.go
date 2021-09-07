@@ -6,6 +6,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type DomainsClientTest struct {
@@ -27,7 +28,7 @@ func TestDomainsClient(t *testing.T) {
 }
 
 func testDomainsClient_List(t *testing.T, c DomainsClientTest) (domains *[]msgraph.Domain) {
-	domains, _, err := c.client.List(c.connection.Context)
+	domains, _, err := c.client.List(c.connection.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("DomainsClient.List(): %v", err)
 	}
@@ -38,7 +39,7 @@ func testDomainsClient_List(t *testing.T, c DomainsClientTest) (domains *[]msgra
 }
 
 func testDomainsClient_Get(t *testing.T, c DomainsClientTest, id string) (domain *msgraph.Domain) {
-	domain, status, err := c.client.Get(c.connection.Context, id)
+	domain, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DomainsClient.Get(): %v", err)
 	}

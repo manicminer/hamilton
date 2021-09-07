@@ -1,7 +1,10 @@
 package msgraph_test
 
 import (
+	"strings"
 	"testing"
+
+	"github.com/manicminer/hamilton/odata"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
@@ -24,10 +27,17 @@ func TestIdentityProvidersClient(t *testing.T) {
 	c.client = msgraph.NewIdentityProvidersClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
+	providers := testIdentityProvidersClient_List(t, c)
+	for _, provider := range *providers {
+		if strings.EqualFold(*provider.Type, "Google") {
+			testIdentityProvidersClient_Delete(t, c, *provider.ID)
+		}
+	}
+
 	testIdentityProvidersClient_ListAvailableProviderTypes(t, c)
 
 	identityProvider := testIdentityProvidersClient_Create(t, c, msgraph.IdentityProvider{
-		ODataType:    utils.StringPtr("microsoft.graph.socialIdentityProvider"),
+		ODataType:    utils.StringPtr(odata.TypeSocialIdentityProvider),
 		Name:         utils.StringPtr("Login with Google"),
 		Type:         utils.StringPtr("Google"),
 		ClientId:     utils.StringPtr("56433757-cadd-4135-8431-2c9e3fd68ae8"),
@@ -97,9 +107,9 @@ func testIdentityProvidersClient_Get(t *testing.T, c IdentityProvidersClientTest
 		t.Fatal("IdentityProvidersClient.Get(): provider was nil")
 	}
 	if provider.ID == nil {
-		t.Fatal("IdentityProvidersClient.Create(): provider.ID was nil")
+		t.Fatal("IdentityProvidersClient.Get(): provider.ID was nil")
 	}
-		return
+	return
 }
 
 func testIdentityProvidersClient_Delete(t *testing.T, c IdentityProvidersClientTest, id string) {

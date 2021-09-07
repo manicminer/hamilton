@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
-	"net/url"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // ConditionalAccessPolicyClient performs operations on ConditionalAccessPolicy.
@@ -22,34 +23,34 @@ func NewConditionalAccessPolicyClient(tenantId string) *ConditionalAccessPolicyC
 	}
 }
 
-// List returns a list of ConditionalAccessPolicys, optionally filtered using OData.
-func (c *ConditionalAccessPolicyClient) List(ctx context.Context, filter string) (*[]ConditionalAccessPolicy, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
+// List returns a list of ConditionalAccessPolicy, optionally queried using OData.
+func (c *ConditionalAccessPolicyClient) List(ctx context.Context, query odata.Query) (*[]ConditionalAccessPolicy, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/identity/conditionalAccess/policies",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
 		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		ConditionalAccessPolicys []ConditionalAccessPolicy `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &data.ConditionalAccessPolicys, status, nil
 }
 
@@ -60,6 +61,7 @@ func (c *ConditionalAccessPolicyClient) Create(ctx context.Context, conditionalA
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
@@ -71,45 +73,54 @@ func (c *ConditionalAccessPolicyClient) Create(ctx context.Context, conditionalA
 	if err != nil {
 		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var newConditionalAccessPolicy ConditionalAccessPolicy
 	if err := json.Unmarshal(respBody, &newConditionalAccessPolicy); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &newConditionalAccessPolicy, status, nil
 }
 
-// Get retrieves an ConditionalAccessPolicy.
-func (c *ConditionalAccessPolicyClient) Get(ctx context.Context, id string) (*ConditionalAccessPolicy, int, error) {
+// Get retrieves a ConditionalAccessPolicy.
+func (c *ConditionalAccessPolicyClient) Get(ctx context.Context, id string, query odata.Query) (*ConditionalAccessPolicy, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/policies/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
 		return nil, status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var conditionalAccessPolicy ConditionalAccessPolicy
 	if err := json.Unmarshal(respBody, &conditionalAccessPolicy); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &conditionalAccessPolicy, status, nil
 }
 
 // Update amends an existing ConditionalAccessPolicy.
 func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalAccessPolicy ConditionalAccessPolicy) (int, error) {
 	var status int
+
 	if conditionalAccessPolicy.ID == nil {
 		return status, errors.New("cannot update conditionalAccessPolicy with nil ID")
 	}
@@ -118,9 +129,11 @@ func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalA
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/policies/%s", *conditionalAccessPolicy.ID),
 			HasTenantId: true,
@@ -129,13 +142,15 @@ func (c *ConditionalAccessPolicyClient) Update(ctx context.Context, conditionalA
 	if err != nil {
 		return status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Patch(): %v", err)
 	}
+
 	return status, nil
 }
 
 // Delete removes a ConditionalAccessPolicy.
 func (c *ConditionalAccessPolicyClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/policies/%s", id),
 			HasTenantId: true,
@@ -144,5 +159,6 @@ func (c *ConditionalAccessPolicyClient) Delete(ctx context.Context, id string) (
 	if err != nil {
 		return status, fmt.Errorf("ConditionalAccessPolicyClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }

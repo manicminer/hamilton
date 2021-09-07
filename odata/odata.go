@@ -4,29 +4,97 @@ import (
 	"encoding/json"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 const (
 	ErrorAddedObjectReferencesAlreadyExist   = "One or more added object references already exist"
 	ErrorConflictingObjectPresentInDirectory = "A conflicting object with one or more of the specified property values is present in the directory"
+	ErrorResourceDoesNotExist                = "Resource '.+' does not exist or one of its queried reference-property objects are not present"
 	ErrorRemovedObjectReferencesDoNotExist   = "One or more removed object references do not exist"
+	ErrorServicePrincipalInvalidAppId        = "The appId '.+' of the service principal does not reference a valid application object"
+)
+
+type Id string
+
+func (o *Id) UnmarshalJSON(data []byte) error {
+	var id string
+	if err := json.Unmarshal(data, &id); err != nil {
+		return err
+	}
+	*o = Id(regexp.MustCompile(`/v2/`).ReplaceAllString(id, `/v1.0/`))
+	return nil
+}
+
+type ShortType = string
+
+const (
+	ShortTypeAdministrativeUnit                          ShortType = "administrativeUnit"
+	ShortTypeApplication                                 ShortType = "application"
+	ShortTypeConditionalAccessPolicy                     ShortType = "conditionalAccessPolicy"
+	ShortTypeCountryNamedLocation                        ShortType = "countryNamedLocation"
+	ShortTypeDevice                                      ShortType = "device"
+	ShortTypeDirectoryRole                               ShortType = "directoryRole"
+	ShortTypeDirectoryRoleTemplate                       ShortType = "directoryRoleTemplate"
+	ShortTypeDomain                                      ShortType = "domain"
+	ShortTypeEmailAuthenticationMethod                   ShortType = "emailAuthenticationMethod"
+	ShortTypeFido2AuthenticationMethod                   ShortType = "fido2AuthenticationMethod"
+	ShortTypeGroup                                       ShortType = "group"
+	ShortTypeIpNamedLocation                             ShortType = "ipNamedLocation"
+	ShortTypeNamedLocation                               ShortType = "namedLocation"
+	ShortTypeMicrosoftAuthenticatorAuthenticationMethod  ShortType = "microsoftAuthenticatorAuthenticationMethod"
+	ShortTypeOrganization                                ShortType = "organization"
+	ShortTypePasswordAuthenticationMethod                ShortType = "passwordAuthenticationMethod"
+	ShortTypePhoneAuthenticationMethod                   ShortType = "phoneAuthenticationMethod"
+	ShortTypeServicePrincipal                            ShortType = "servicePrincipal"
+	ShortTypeSocialIdentityProvider                      ShortType = "socialIdentityProvider"
+	ShortTypeTemporaryAccessPassAuthenticationMethod     ShortType = "temporaryAccessPassAuthenticationMethod"
+	ShortTypeUser                                        ShortType = "user"
+	ShortTypeWindowsHelloForBusinessAuthenticationMethod ShortType = "windowsHelloForBusinessAuthenticationMethod"
+)
+
+type Type = string
+
+const (
+	TypeAdministrativeUnit                          Type = "#microsoft.graph.administrativeUnit"
+	TypeApplication                                 Type = "#microsoft.graph.application"
+	TypeConditionalAccessPolicy                     Type = "#microsoft.graph.conditionalAccessPolicy"
+	TypeCountryNamedLocation                        Type = "#microsoft.graph.countryNamedLocation"
+	TypeDevice                                      Type = "#microsoft.graph.device"
+	TypeDirectoryRole                               Type = "#microsoft.graph.directoryRole"
+	TypeDirectoryRoleTemplate                       Type = "#microsoft.graph.directoryRoleTemplate"
+	TypeDomain                                      Type = "#microsoft.graph.domain"
+	TypeEmailAuthenticationMethod                   Type = "#microsoft.graph.emailAuthenticationMethod"
+	TypeFido2AuthenticationMethod                   Type = "#microsoft.graph.fido2AuthenticationMethod"
+	TypeGroup                                       Type = "#microsoft.graph.group"
+	TypeIpNamedLocation                             Type = "#microsoft.graph.ipNamedLocation"
+	TypeNamedLocation                               Type = "#microsoft.graph.namedLocation"
+	TypeMicrosoftAuthenticatorAuthenticationMethod  Type = "#microsoft.graph.microsoftAuthenticatorAuthenticationMethod"
+	TypeOrganization                                Type = "#microsoft.graph.organization"
+	TypePasswordAuthenticationMethod                Type = "#microsoft.graph.passwordAuthenticationMethod"
+	TypePhoneAuthenticationMethod                   Type = "#microsoft.graph.phoneAuthenticationMethod"
+	TypeServicePrincipal                            Type = "#microsoft.graph.servicePrincipal"
+	TypeSocialIdentityProvider                      Type = "#microsoft.graph.socialIdentityProvider"
+	TypeTemporaryAccessPassAuthenticationMethod     Type = "#microsoft.graph.temporaryAccessPassAuthenticationMethod"
+	TypeUser                                        Type = "#microsoft.graph.user"
+	TypeWindowsHelloForBusinessAuthenticationMethod Type = "#microsoft.graph.windowsHelloForBusinessAuthenticationMethod"
 )
 
 // OData is used to unmarshall OData metadata from an API response.
 type OData struct {
 	Context      *string `json:"@odata.context"`
 	MetadataEtag *string `json:"@odata.metadataEtag"`
-	Type         *string `json:"@odata.type"`
+	Type         *Type   `json:"@odata.type"`
 	Count        *string `json:"@odata.count"`
 	NextLink     *string `json:"@odata.nextLink"`
 	Delta        *string `json:"@odata.delta"`
 	DeltaLink    *string `json:"@odata.deltaLink"`
-	Id           *string `json:"@odata.id"`
+	Id           *Id     `json:"@odata.id"`
 	Etag         *string `json:"@odata.etag"`
 
 	Error *Error `json:"-"`
 
-	Value *[]json.RawMessage `json:"value"`
+	Value interface{} `json:"value"`
 }
 
 func (o *OData) UnmarshalJSON(data []byte) error {
@@ -66,6 +134,11 @@ type Error struct {
 	RequestId       *string          `json:"request-id"`
 
 	InnerError *Error `json:"innerError"` // nested errors
+
+	Details *[]struct {
+		Code   *string `json:"code"`
+		Target *string `json:"target"`
+	} `json:"details"`
 
 	Values *[]struct {
 		Item  string `json:"item"`
@@ -108,14 +181,20 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Error) String() (s string) {
+func (e Error) String() string {
+	sl := make([]string, 0)
 	if e.Code != nil {
-		s = *e.Code
+		sl = append(sl, *e.Code)
 	}
 	if e.Message != nil {
-		s = fmt.Sprintf("%s: %s", s, *e.Message)
+		sl = append(sl, *e.Message)
 	}
-	return
+	if e.InnerError != nil {
+		if is := e.InnerError.String(); is != "" {
+			sl = append(sl, is)
+		}
+	}
+	return strings.Join(sl, ": ")
 }
 
 func (e Error) Match(errorText string) bool {

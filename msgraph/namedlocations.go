@@ -4,9 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/odata"
@@ -24,18 +23,14 @@ func NewNamedLocationsClient(tenantId string) *NamedLocationsClient {
 	}
 }
 
-// List returns a list of Named Locations, optionally filtered using OData.
-func (c *NamedLocationsClient) List(ctx context.Context, filter string) (*[]NamedLocation, int, error) {
-	params := url.Values{}
-	if filter != "" {
-		params.Add("$filter", filter)
-	}
-
+// List returns a list of Named Locations, optionally queried using OData.
+func (c *NamedLocationsClient) List(ctx context.Context, query odata.Query) (*[]NamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/identity/conditionalAccess/namedLocations",
-			Params:      params,
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -45,9 +40,9 @@ func (c *NamedLocationsClient) List(ctx context.Context, filter string) (*[]Name
 	}
 
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var data struct {
@@ -76,13 +71,13 @@ func (c *NamedLocationsClient) List(ctx context.Context, filter string) (*[]Name
 			continue
 		}
 		switch *o.Type {
-		case "#microsoft.graph.countryNamedLocation":
+		case odata.TypeCountryNamedLocation:
 			var loc CountryNamedLocation
 			if err := json.Unmarshal(namedLocation, &loc); err != nil {
 				return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 			}
 			ret = append(ret, loc)
-		case "#microsoft.graph.ipNamedLocation":
+		case odata.TypeIpNamedLocation:
 			var loc IPNamedLocation
 			if err := json.Unmarshal(namedLocation, &loc); err != nil {
 				return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
@@ -98,7 +93,8 @@ func (c *NamedLocationsClient) List(ctx context.Context, filter string) (*[]Name
 // Delete removes a Named Location.
 func (c *NamedLocationsClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
 			HasTenantId: true,
@@ -107,6 +103,7 @@ func (c *NamedLocationsClient) Delete(ctx context.Context, id string) (int, erro
 	if err != nil {
 		return status, fmt.Errorf("NamedLocationsClient.BaseClient.Delete(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -114,11 +111,12 @@ func (c *NamedLocationsClient) Delete(ctx context.Context, id string) (int, erro
 func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (*IPNamedLocation, int, error) {
 	var status int
 
-	ipNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.ipNamedLocation")
+	ipNamedLocation.ODataType = utils.StringPtr(odata.TypeIpNamedLocation)
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
@@ -130,15 +128,18 @@ func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPN
 	if err != nil {
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var newIPNamedLocation IPNamedLocation
 	if err := json.Unmarshal(respBody, &newIPNamedLocation); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &newIPNamedLocation, status, nil
 }
 
@@ -146,12 +147,12 @@ func (c *NamedLocationsClient) CreateIP(ctx context.Context, ipNamedLocation IPN
 func (c *NamedLocationsClient) CreateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (*CountryNamedLocation, int, error) {
 	var status int
 
-	countryNamedLocation.ODataType = utils.StringPtr("#microsoft.graph.countryNamedLocation")
-
+	countryNamedLocation.ODataType = utils.StringPtr(odata.TypeCountryNamedLocation)
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
@@ -163,63 +164,129 @@ func (c *NamedLocationsClient) CreateCountry(ctx context.Context, countryNamedLo
 	if err != nil {
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Post(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var newCountryNamedLocation CountryNamedLocation
 	if err := json.Unmarshal(respBody, &newCountryNamedLocation); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &newCountryNamedLocation, status, nil
 }
 
 // GetIP retrieves an IP Named Location.
-func (c *NamedLocationsClient) GetIP(ctx context.Context, id string) (*IPNamedLocation, int, error) {
+func (c *NamedLocationsClient) GetIP(ctx context.Context, id string, query odata.Query) (*IPNamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var ipNamedLocation IPNamedLocation
 	if err := json.Unmarshal(respBody, &ipNamedLocation); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &ipNamedLocation, status, nil
 }
 
-// GetCountry retrieves an Country Named Location.
-func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*CountryNamedLocation, int, error) {
+// Get retrieves a Named Location which can be type asserted back to IP or Country Named Location.
+func (c *NamedLocationsClient) Get(ctx context.Context, id string, query odata.Query) (*NamedLocation, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
+			Params:      query.Values(),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
 		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
+	var o odata.OData
+	if err := json.Unmarshal(respBody, &o); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	// The Graph API returns a mixture of types, this matches up the result to the appropriate model
+	var ret NamedLocation
+
+	if o.Type == nil {
+		// Treat this as no result
+		return &ret, status, nil
+	}
+
+	switch *o.Type {
+	case odata.TypeCountryNamedLocation:
+		var loc CountryNamedLocation
+		if err := json.Unmarshal(respBody, &loc); err != nil {
+			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+		}
+		ret = loc
+	case odata.TypeIpNamedLocation:
+		var loc IPNamedLocation
+		if err := json.Unmarshal(respBody, &loc); err != nil {
+			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+		}
+		ret = loc
+	}
+
+	return &ret, status, nil
+
+}
+
+// GetCountry retrieves an Country Named Location.
+func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string, query odata.Query) (*CountryNamedLocation, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", id),
+			Params:      query.Values(),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("NamedLocationsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
 	var countryNamedLocation CountryNamedLocation
 	if err := json.Unmarshal(respBody, &countryNamedLocation); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &countryNamedLocation, status, nil
 }
 
@@ -227,13 +294,16 @@ func (c *NamedLocationsClient) GetCountry(ctx context.Context, id string) (*Coun
 func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPNamedLocation) (int, error) {
 	var status int
 
+	ipNamedLocation.ODataType = utils.StringPtr(odata.TypeIpNamedLocation)
 	body, err := json.Marshal(ipNamedLocation)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", *ipNamedLocation.ID),
 			HasTenantId: true,
@@ -242,6 +312,7 @@ func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPN
 	if err != nil {
 		return status, fmt.Errorf("NamedLocationsClient.BaseClient.Patch(): %v", err)
 	}
+
 	return status, nil
 }
 
@@ -249,13 +320,16 @@ func (c *NamedLocationsClient) UpdateIP(ctx context.Context, ipNamedLocation IPN
 func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLocation CountryNamedLocation) (int, error) {
 	var status int
 
+	countryNamedLocation.ODataType = utils.StringPtr(odata.TypeCountryNamedLocation)
 	body, err := json.Marshal(countryNamedLocation)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identity/conditionalAccess/namedLocations/%s", *countryNamedLocation.ID),
 			HasTenantId: true,
@@ -264,5 +338,6 @@ func (c *NamedLocationsClient) UpdateCountry(ctx context.Context, countryNamedLo
 	if err != nil {
 		return status, fmt.Errorf("NamedLocationsClient.BaseClient.Patch(): %v", err)
 	}
+
 	return status, nil
 }

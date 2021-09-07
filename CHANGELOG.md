@@ -1,4 +1,184 @@
-## 0.15.0 (Unreleased)
+## 0.29.0 (Unreleased)
+
+## 0.28.0 (September 7, 2021)
+
+- Support for [application templates](https://docs.microsoft.com/en-us/graph/api/resources/applicationtemplate?view=graph-rest-1.0) ([#95](https://github.com/manicminer/hamilton/pull/95))
+
+## 0.27.0 (September 2, 2022)
+
+- Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
+
+## 0.26.0 (September 1, 2021)
+
+- `auth.CachedAuthorizer` - export this type and its `Source` field so that consumers can inspect it ([#90](https://github.com/manicminer/hamilton/pull/90))
+- Bugfix: set the struct tag for `ServicePrincipal.Owners` field so it is marshaled correctly  ([#91](https://github.com/manicminer/hamilton/pull/91))
+
+⚠️ BREAKING CHANGES:
+
+- The `auth.CachedAuthorizer()` function has been renamed to `auth.NewCachedAuthorizer()` ([#90](https://github.com/manicminer/hamilton/pull/90))
+
+## 0.25.0 (August 24, 2021)
+
+- Support for [authentication methods](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-overview?view=graph-rest-beta) ([#89](https://github.com/manicminer/hamilton/pull/89))
+
+## 0.24.0 (August 17, 2021)
+
+- When authenticating using Azure CLI, access tokens are now cached to avoid repeatedly invoking `az` to get the latest token ([#88](https://github.com/manicminer/hamilton/pull/88))
+- Support for [authentication methods usage reports](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-usage-insights-overview?view=graph-rest-beta) ([#85](https://github.com/manicminer/hamilton/pull/85))
+- Support for [generic directory objects](https://docs.microsoft.com/en-us/graph/api/resources/directoryobject?view=graph-rest-beta) ([#86](https://github.com/manicminer/hamilton/pull/86))
+- Add the `MemberOf` field to the `User` struct ([#84](https://github.com/manicminer/hamilton/pull/84))
+
+⚠️ BREAKING CHANGES:
+
+- The `ID` field of the `Application`, `DirectoryRole`, `Group`, `ServicePrincipal` and `User` models has been removed and is now a field of the embedded `DirectoryObject` struct ([#86](https://github.com/manicminer/hamilton/pull/86))
+- The `Members` and/or `Owners` fields of the `Application`, `DirectoryRole`, `Group` and `ServicePrincipal` models have changed from a `*[]string` to a `*Members` and `*Owners` respectively ([#86](https://github.com/manicminer/hamilton/pull/86))
+  - The `Members` and `Owners` types are based on `[]DirectoryObject` and have methods to marshal/unmarshal the `ODataId` fields of the contained `DirectoryObject`s
+- The `AppendMember()` and/or `AppendOwner()` methods of the `Application`, `Group` and `ServicePrincipal` models are no longer required and have been removed ([#86](https://github.com/manicminer/hamilton/pull/86))
+
+## 0.23.1 (July 21, 2021)
+
+- Disable the default logger for `retryablehttp.Client{}` ([#83](https://github.com/manicminer/hamilton/pull/83))
+
+## 0.23.0 (July 21, 2021)
+
+- Support for schema extension data for Groups and Users  ([#81](https://github.com/manicminer/hamilton/pull/81))
+  - Marshaling of schema extension data is handled automatically by the Group and User structs, enabling use of the existing `Update()` methods on the respective clients.
+  - Unmarshaling is handled by either the provided `msgraph.SchemaExtensionMap` type, or a custom type supplied by the caller. Such a custom type must have an explicit `UnmarshalJSON()` method to satisfy the `SchemaExtensionProperties` interface. Both approaches have examples in the `TestSchemaExtensionsClient()` test.
+- Support for injecting and sequencing middleware functions for manipulating and/or copying requests and responses ([#78](https://github.com/manicminer/hamilton/pull/78))
+  - See [example.go](https://github.com/manicminer/hamilton/blob/main/example/example.go) for an example that logs requests and responses
+- Request retry handling for rate limiting, server errors and replication delays is now handled by [go-retryablehttp](https://github.com/hashicorp/go-retryablehttp) ([#78](https://github.com/manicminer/hamilton/pull/78))
+- `msgraph.Client{}.HttpClient` is now exported so callers can supply their own `http.Client` ([#78](https://github.com/manicminer/hamilton/pull/78))
+
+⚠️ BREAKING CHANGES:
+
+- Support `odata.Query{}` in more client methods ([#80](https://github.com/manicminer/hamilton/pull/80))
+  - `ApplicationsClient{}.Get()`
+  - `ApplicationsClient{}.GetDeleted()`
+  - `ApplicationsClient{}.ListExtensions()`
+  - `ConditionalAccessPolicyClient{}.Get()`
+  - `DirectoryAuditReportsClient{}.Get()`
+  - `DomainsClient{}.List()`
+  - `DomainsClient{}.Get()`
+  - `GroupsClient{}.Get()`
+  - `GroupsClient{}.GetDeleted()`
+  - `MeClient{}.Get()`
+  - `MeClient{}.GetProfile()`
+  - `NamedLocationsClient{}.Get()`
+  - `NamedLocationsClient{}.GetCountry()`
+  - `NamedLocationsClient{}.GetIP()`
+  - `SchemaExtensionsClient{}.Get()`
+  - `ServicePrincipalsClient{}.Get()`
+  - `ServicePrincipalsClient{}.ListAppRoleAssignments()`
+  - `SignInReportsClient{}.Get()`
+  - `UsersClient{}.Get()`
+  - `UsersClient{}.GetDeleted()`
+
+## 0.22.0 (July 13, 2021)
+
+- `msgraph.ServicePrincipal{}` now supports the `Description` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}` now supports the `Notes` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}` now supports the `SamlMetadataUrl` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+
+⚠️ BREAKING CHANGES:
+
+- `environments.ApiAppId` is now a type alias
+- `msgraph.ServicePrincipal{}.LoginUrl` is now a `StringNullWhenEmpty` type ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}.PreferredSingleSignOnMode` is now a type alias pointer (formerly a string pointer) ([#77](https://github.com/manicminer/hamilton/pull/77))
+
+## 0.21.0 (July 6, 2021)
+
+- `msgraph.User{}` now supports the `AgeGroup` field ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}` now supports the `ConsentProvidedForMinor` field ([#76](https://github.com/manicminer/hamilton/pull/76))
+
+⚠️ BREAKING CHANGES:
+
+- `msgraph.Application{}.SignInAudience` is now a pointer reference ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ServicePrincipal{}.SignInAudience` is now a pointer reference ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.Group{}.ResourceBehaviorOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.ResourceProvisioningOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Theme` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Visibility` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.User{}.EmployeeId` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.FaxNumber` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.Mail` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.PreferredLanguage` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ApplicationExtensionTargetObject` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.AppRoleAllowedMemberType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.BodyType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ExtensionSchemaPropertyDataType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.GroupType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.GroupMembershipClaim` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.KeyCredentialType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.KeyCredentialUsage` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.PermissionScopeType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ResourceAccessType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.SignInAudience` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+
+## 0.20.0 (July 1, 2021)
+
+- Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
+
+## 0.19.0 (June 29, 2021)
+
+- Support for [schema extensions](https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-beta) ([#68](https://github.com/manicminer/hamilton/pull/68))
+- Support for retrieving `SignInActivity` for users ([#72](https://github.com/manicminer/hamilton/pull/72))
+
+⚠️ BREAKING CHANGES:
+
+- Support for passing the raw bytes of a PKCS#12 bundle when using client certificate authentication. This alters the method signature of `auth.NewClientCertificateAuthorizer()` but does not affect the use of a PFX file read from the filesystem. See [#65](https://github.com/manicminer/hamilton/pull/65) for details and example usage.
+
+## 0.18.0 (June 22, 2021)
+
+- Support for [application extensions](https://docs.microsoft.com/en-us/graph/api/resources/extensionproperty?view=graph-rest-beta) ([#61](https://github.com/manicminer/hamilton/pull/61))
+- Support for [directory audit and sign-in reports](https://docs.microsoft.com/en-us/graph/api/resources/azure-ad-auditlog-overview?view=graph-rest-beta) ([#61](https://github.com/manicminer/hamilton/pull/61))
+
+⚠️ BREAKING CHANGES:
+
+- This release introduces support for [OData query parameters](https://docs.microsoft.com/en-us/graph/query-parameters) via a new type `odata.Query{}`. Instead of accepting just a filter string, all clients now accept an instance of `odata.Query{}` on relevant List methods which encapsulates any combination of odata queries such as `$filter`, `$search`, `$top` etc. All documented parameters are supported and wrapped lightly where appropriate.  ([#63](https://github.com/manicminer/hamilton/pull/63))
+- Updating to this release will require changes to affected method calls, for example:
+  ```go
+  apps, status, err := appsClient.List(ctx, odata.Query{
+  	Filter: fmt.Sprintf("startsWith(displayName,'%s')", searchTerm),
+  	OrderBy: odata.OrderBy{
+  		Field:     "displayName",
+  		Direction: "asc",
+  	},
+  	Top: 10,
+  })
+  ```
+- Where an empty filter string was previously specified, it should be replaced with an empty `odata.Query{}` struct:
+  ```go
+  apps, status, err := appsClient.List(ctx, odata.Query{})
+  ```
+
+
+## 0.17.0 (June 15, 2021)
+
+- Support for [restoring deleted applications/users/groups](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-restore?view=graph-rest-1.0) ([#58](https://github.com/manicminer/hamilton/pull/58))
+- Support `PersonalMicrosoftAccount` for the `SignInAudience` field for Applications ([#59](https://github.com/manicminer/hamilton/pull/59))
+
+⚠️ BREAKING CHANGES:
+
+- This release adds a new type alias `StringNullWhenEmpty` which has replaced several existing field string types
+- It enables zeroing field values that don't accept empty strings. See ([#59](https://github.com/manicminer/hamilton/pull/59)) for details and example usage
+
+## 0.16.0 (June 08, 2021)
+
+BEHAVIORAL CHANGES:
+
+- This release implements a retry mechanism for some types of failed requests where the likely cause is indicated to be replication delays in Azure Active Directory ([#57](https://github.com/manicminer/hamilton/pull/57))
+- Client methods which retrieve, update or delete _single_, _mutable_ objects will all exert this retry mechanism, and may take up to 2 minutes to return (successfully or not)
+- To opt out of this behavior, simply set the `BaseClient.DisableRetries` field to `true` on your client(s), for example:
+  ```go
+  client := msgraph.NewApplicationsClient(tenantId)
+  client.BaseClient.DisableRetries = true
+  ```
+
+## 0.15.0 (June 01, 2021)
+
+- Bug fix: Set correct OData types when updating named locations ([#55](https://github.com/manicminer/hamilton/pull/55))
+- Support for [permanently deleting](https://docs.microsoft.com/en-us/graph/api/directory-deleteditems-delete?view=graph-rest-1.0&tabs=http) applications, groups and service principals ([#54](https://github.com/manicminer/hamilton/pull/54))
+- Add a `NamedLocationsClient{}.Get()` method ([#56](https://github.com/manicminer/hamilton/pull/56))
 
 ## 0.14.1 (May 28, 2021)
 

@@ -26,6 +26,7 @@ func TestInvitationsClient(t *testing.T) {
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 
 	testInvitationsClient_Create(t, c, msgraph.Invitation{
+		InvitedUserDisplayName:  utils.StringPtr("test-user-invited"),
 		InvitedUserEmailAddress: utils.StringPtr(fmt.Sprintf("test-user-%s@test.com", c.randomString)),
 		InviteRedirectURL:       utils.StringPtr(fmt.Sprintf("https://myapp-%s.contoso.com", c.randomString)),
 	})

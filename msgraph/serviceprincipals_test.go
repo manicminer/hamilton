@@ -10,6 +10,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 type ServicePrincipalsClientTest struct {
@@ -40,7 +41,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 	sp := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
 		AccountEnabled: utils.BoolPtr(true),
 		AppId:          app.AppId,
-		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    app.DisplayName,
 	})
 
 	appChild := testApplicationsClient_Create(t, a, msgraph.Application{
@@ -49,10 +50,10 @@ func TestServicePrincipalsClient(t *testing.T) {
 	spChild := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
 		AccountEnabled: utils.BoolPtr(true),
 		AppId:          appChild.AppId,
-		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-child%s", c.randomString)),
+		DisplayName:    appChild.DisplayName,
 	})
 
-	spChild.AppendOwner(string(c.client.BaseClient.Endpoint), string(c.client.BaseClient.ApiVersion), *sp.ID)
+	spChild.Owners = &msgraph.Owners{sp.DirectoryObject}
 	testServicePrincipalsClient_AddOwners(t, c, spChild)
 	testServicePrincipalsClient_ListOwners(t, c, *spChild.ID, []string{*sp.ID})
 	testServicePrincipalsClient_GetOwner(t, c, *spChild.ID, *sp.ID)
@@ -71,13 +72,13 @@ func TestServicePrincipalsClient(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Parent"),
+		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Child"),
+		DisplayName:     utils.StringPtr("test-group-servicePrincipal-child"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -85,9 +86,9 @@ func TestServicePrincipalsClient(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *sp.ID)
+	groupChild.Members = &msgraph.Members{sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
@@ -123,7 +124,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
 	// create a new test application with a test app role
 	app := testApplicationsClient_Create(t, a, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", a.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-appRoleAssignments-%s", a.randomString)),
 		AppRoles: &[]msgraph.AppRole{
 			{
 				ID:          utils.StringPtr(testResourceAppRoleId),
@@ -142,7 +143,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	sp := testServicePrincipalsClient_Create(t, c, msgraph.ServicePrincipal{
 		AccountEnabled: utils.BoolPtr(true),
 		AppId:          app.AppId,
-		DisplayName:    utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.randomString)),
+		DisplayName:    app.DisplayName,
 	})
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
@@ -157,13 +158,13 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
 	newGroupParent := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Parent"),
+		DisplayName:     utils.StringPtr("test-group-parent-servicePrincipals-appRoleAssignments"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroupChild := msgraph.Group{
-		DisplayName:     utils.StringPtr("Test Group Child"),
+		DisplayName:     utils.StringPtr("test-group-child-servicePrincipals-appRoleAssignments"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
@@ -171,9 +172,9 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 
 	groupParent := testGroupsClient_Create(t, g, newGroupParent)
 	groupChild := testGroupsClient_Create(t, g, newGroupChild)
-	groupParent.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *groupChild.ID)
+	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
-	groupChild.AppendMember(g.client.BaseClient.Endpoint, g.client.BaseClient.ApiVersion, *sp.ID)
+	groupChild.Members = &msgraph.Members{sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupChild)
 
 	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
@@ -225,7 +226,7 @@ func testServicePrincipalsClient_Update(t *testing.T, c ServicePrincipalsClientT
 }
 
 func testServicePrincipalsClient_List(t *testing.T, c ServicePrincipalsClientTest) (servicePrincipals *[]msgraph.ServicePrincipal) {
-	servicePrincipals, _, err := c.client.List(c.connection.Context, "")
+	servicePrincipals, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.List(): %v", err)
 	}
@@ -236,7 +237,7 @@ func testServicePrincipalsClient_List(t *testing.T, c ServicePrincipalsClientTes
 }
 
 func testServicePrincipalsClient_Get(t *testing.T, c ServicePrincipalsClientTest, id string) (servicePrincipal *msgraph.ServicePrincipal) {
-	servicePrincipal, status, err := c.client.Get(c.connection.Context, id)
+	servicePrincipal, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.Get(): %v", err)
 	}
@@ -260,7 +261,7 @@ func testServicePrincipalsClient_Delete(t *testing.T, c ServicePrincipalsClientT
 }
 
 func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePrincipalsClientTest, id string) (groups *[]msgraph.Group) {
-	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, "")
+	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListGroupMemberships(): %v", err)
 	}
@@ -277,9 +278,7 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c ServicePri
 }
 
 func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsClientTest, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
-	pwd := msgraph.PasswordCredential{
-		DisplayName: utils.StringPtr("test password"),
-	}
+	pwd := msgraph.PasswordCredential{}
 	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
@@ -289,9 +288,6 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c ServicePrincipalsCl
 	}
 	if newPwd.SecretText == nil || len(*newPwd.SecretText) == 0 {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): nil or empty secretText returned by API")
-	}
-	if *newPwd.DisplayName != *pwd.DisplayName {
-		t.Fatalf("ServicePrincipalsClient.AddPassword(): password names do not match")
 	}
 	return newPwd
 }
@@ -391,27 +387,27 @@ func testServicePrincipalsClient_RemoveOwners(t *testing.T, c ServicePrincipalsC
 func testServicePrincipalsClient_AssignAppRole(t *testing.T, c ServicePrincipalsClientTest, principalId, resourceId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
 	appRoleAssignment, status, err := c.client.AssignAppRoleForResource(c.connection.Context, principalId, resourceId, appRoleId)
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.Create(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.AssignAppRoleForResource(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ServicePrincipalsClient.Create(): invalid status: %d", status)
+		t.Fatalf("ServicePrincipalsClient.AssignAppRoleForResource(): invalid status: %d", status)
 	}
 	if appRoleAssignment == nil {
-		t.Fatal("ServicePrincipalsClient.Create(): appRoleAssignment was nil")
+		t.Fatal("ServicePrincipalsClient.AssignAppRoleForResource(): appRoleAssignment was nil")
 	}
 	if appRoleAssignment.Id == nil {
-		t.Fatal("ServicePrincipalsClient.Create(): appRoleAssignment.Id was nil")
+		t.Fatal("ServicePrincipalsClient.AssignAppRoleForResource(): appRoleAssignment.Id was nil")
 	}
 	return
 }
 
 func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c ServicePrincipalsClientTest, resourceId string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.client.ListAppRoleAssignments(c.connection.Context, resourceId)
+	appRoleAssignments, _, err := c.client.ListAppRoleAssignments(c.connection.Context, resourceId, odata.Query{})
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.List(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.ListAppRoleAssignments(): %v", err)
 	}
 	if appRoleAssignments == nil {
-		t.Fatal("ServicePrincipalsClient.List(): appRoleAssignments was nil")
+		t.Fatal("ServicePrincipalsClient.ListAppRoleAssignments(): appRoleAssignments was nil")
 	}
 	return
 }
@@ -419,9 +415,9 @@ func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c ServiceP
 func testServicePrincipalsClient_RemoveAppRoleAssignment(t *testing.T, c ServicePrincipalsClientTest, resourceId, appRoleAssignmentId string) {
 	status, err := c.client.RemoveAppRoleAssignment(c.connection.Context, resourceId, appRoleAssignmentId)
 	if err != nil {
-		t.Fatalf("ServicePrincipalsClient.Delete(): %v", err)
+		t.Fatalf("ServicePrincipalsClient.RemoveAppRoleAssignment(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("ServicePrincipalsClient.Delete(): invalid status: %d", status)
+		t.Fatalf("ServicePrincipalsClient.RemoveAppRoleAssignment(): invalid status: %d", status)
 	}
 }
