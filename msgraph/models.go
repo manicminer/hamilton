@@ -132,7 +132,7 @@ type AccessPackageResource struct {
 	AccessPackageResourceEnvironment         *AccessPackageResourceEnvironment `json:"accessPackageResourceEnvironment,omitempty"`
 	AddedBy         *string `json:"addedBy,omitempty"`
 	AddedOn         *time.Time                      `json:"addedOn,omitempty"`
-	Description         *bool `json:"displayName,omitempty"`
+	Description         *bool `json:"description,omitempty"`
 	DisplayName         *string `json:"displayName,omitempty"`
 	ID         *string `json:"id,omitempty"`
 	IsPendingOnboarding         *bool `json:"isPendingOnboarding,omitempty"`
@@ -154,7 +154,7 @@ type AccessPackageResourceEnvironment struct {
 	ModifiedBy *string `json:"modifiedBy,omitempty"`
 	ModifiedDateTime *time.Time `json:"modifiedDateTime,omitempty"`
 	OriginId *string `json:"originId,omitempty"`
-	OriginSystem *string `json:"connectionInfo,omitempty"`
+	OriginSystem *string `json:"originSystem,omitempty"`
 }
 
 type ConnectionInfo struct {
