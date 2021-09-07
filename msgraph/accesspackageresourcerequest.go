@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 	"log"
 
 	"github.com/manicminer/hamilton/odata"
@@ -56,7 +55,6 @@ func (c *AccessPackageResourceRequestClient) List(ctx context.Context, query oda
 
 // Create creates a new AccessPackageResourceRequest.
 func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessPackageResourceRequest AccessPackageResourceRequest) (*AccessPackageResourceRequest, int, error) {
-	time.Sleep(15 * time.Second) // There appears to be potential backend lag when creating new groups, AP then adding resources. For stability wait here for 15 seconds before continuing
 	var status int
 	body, err := json.Marshal(accessPackageResourceRequest)
 	jsonOutput := string(body[:])
@@ -65,8 +63,13 @@ func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessP
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
+	 ResourceDoesNotExist := func(resp *http.Response, o *odata.OData) bool {
+	 	return o != nil && o.Error != nil && o.Error.Match(odata.ErrorResourceDoesNotExist)
+	 }
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
+		ConsistencyFailureFunc: ResourceDoesNotExist,  // There appears to be potential backend lag when creating new groups, AP then adding resources. For stability wait here for 15 seconds before continuing
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
 			Entity:      "/identityGovernance/entitlementManagement/accessPackageResourceRequests",
