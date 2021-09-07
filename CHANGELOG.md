@@ -1,5 +1,11 @@
 ## 0.29.0 (Unreleased)
 
+## 0.28.1 (Unreleased)
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `User.PasswordPolicies` has changed from a `*string` to a `*StringNullWhenEmpty` ([#96](https://github.com/manicminer/hamilton/pull/96))
+
 ## 0.28.0 (September 7, 2021)
 
 - Support for [application templates](https://docs.microsoft.com/en-us/graph/api/resources/applicationtemplate?view=graph-rest-1.0) ([#95](https://github.com/manicminer/hamilton/pull/95))
