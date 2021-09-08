@@ -128,17 +128,17 @@ func (c *AccessPackageAssignmentPolicyClient) Update(ctx context.Context, access
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
-	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
+	_, status, _, err = c.BaseClient.Put(ctx, PutHttpRequestInput{ //This is usually a patch but this endpoint uses PUT
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
-		ValidStatusCodes:       []int{http.StatusNoContent},
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageAssignmentPolicies/%s", *accessPackageAssignmentPolicy.ID),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("AccessPackageAssignmentPolicyClient.BaseClient.Patch(): %v", err)
+		return status, fmt.Errorf("AccessPackageAssignmentPolicyClient.BaseClient.Put(): %v", err)
 	}
 
 	return status, nil

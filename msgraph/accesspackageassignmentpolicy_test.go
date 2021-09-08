@@ -63,18 +63,22 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	})
 
 	testAccessPackageAssignmentPolicyClient_Get(t, c, *accessPackageAssignmentPolicy.ID)
-	// //Update test
-	// updateAccessPackage := msgraph.AccessPackage{
-	// 	ID:          accessPackage.ID,
-	// 	DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-updated-%s", c.randomString)),
-	// }
-	// testAccessPackageClient_Update(t, c, updateAccessPackage)
-	// // Other operations
-	// testAccessPackageClient_List(t, c)
-	// testAccessPackageClient_Get(t, c, *accessPackage.ID)
+	// //Update test https://docs.microsoft.com/en-us/graph/api/accesspackageassignmentpolicy-update?view=graph-rest-beta&tabs=java
+	newaccessPackageAssignmentPolicy := msgraph.AccessPackageAssignmentPolicy{
+		ID: accessPackageAssignmentPolicy.ID,
+		AccessPackageId: accessPackageAssignmentPolicy.AccessPackageId, //Both the ID and AccessPackageID MUST Be specified. API Complains vaguely as just "the Id"
+		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-Updated-%s", c.randomString)),
+		Description:     utils.StringPtr("Test AP Policy Assignment Description Updated"),
+	}
 
+	testAccessPackageAssignmentPolicyClient_Update(t, c, newaccessPackageAssignmentPolicy)
+
+	//List
+	testAccessPackageAssignmentPolicyClient_List(t, c)
+	// Get
+	testAccessPackageAssignmentPolicyClient_Get(t, c, *newaccessPackageAssignmentPolicy.ID)
 	//Cleanup
-	testAccessPackageAssignmentPolicyClient_Delete(t, c, *accessPackageAssignmentPolicy.ID)
+	testAccessPackageAssignmentPolicyClient_Delete(t, c, *newaccessPackageAssignmentPolicy.ID)
 	testAp_Delete(t, c, *accessPackage.ID)
 	testapCatalogpol_Delete(t, c, accessPackageCatalog)
 

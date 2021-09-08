@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"log"
 	"github.com/manicminer/hamilton/odata"
 )
 
@@ -72,19 +71,15 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
-	log.Printf("Resp: %v", respBody)
 	var data struct {
 	AccessPackageResources []AccessPackageResource `json:"value"`
 	}
-
 
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	var accessPackageResource AccessPackageResource
-
-	accessPackageResource = data.AccessPackageResources[0]
+	accessPackageResource := data.AccessPackageResources[0]
 
 	return &accessPackageResource, status, nil
 }

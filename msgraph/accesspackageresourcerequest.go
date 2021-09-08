@@ -54,7 +54,7 @@ func (c *AccessPackageResourceRequestClient) List(ctx context.Context, query oda
 }
 
 // Create creates a new AccessPackageResourceRequest.
-func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessPackageResourceRequest AccessPackageResourceRequest) (*AccessPackageResourceRequest, int, error) {
+func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessPackageResourceRequest AccessPackageResourceRequest, pollForId bool) (*AccessPackageResourceRequest, int, error) {
 	var status int
 	body, err := json.Marshal(accessPackageResourceRequest)
 	jsonOutput := string(body[:])
@@ -95,6 +95,40 @@ func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessP
 	// The endpoint does not actually return the AccessPackageResources created which makes implementation impossible, workaround make sure to tag responses that 201 back with what we've just posted
 
 	newAccessPackageResourceRequest.AccessPackageResource = accessPackageResourceRequest.AccessPackageResource
+
+	// Poll For ID 
+
+	if pollForId {
+		resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+			ValidStatusCodes: []int{http.StatusOK},
+			Uri: Uri{
+				Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", *newAccessPackageResourceRequest.CatalogId), //Catalog ID Used in Request
+				Params:      odata.Query{Filter: fmt.Sprintf("startswith(originId,'%s')", *newAccessPackageResourceRequest.AccessPackageResource.OriginId)}.Values(), //The Resource we made a request to add
+				HasTenantId: true,
+			},
+		})
+		if err != nil {
+			return nil, status, fmt.Errorf("pollForId: AccessPackageResourceClient.BaseClient.Get(): %v", err)
+		}
+	
+		defer resp.Body.Close()
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+		}
+		var data struct {
+		AccessPackageResources []AccessPackageResource `json:"value"`
+		}
+	
+		if err := json.Unmarshal(respBody, &data); err != nil {
+			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+		}
+	
+		accessPackageResource := data.AccessPackageResources[0]
+
+		newAccessPackageResourceRequest.AccessPackageResource.ID = accessPackageResource.ID //Set resultant ID
+	}
 
 	return &newAccessPackageResourceRequest, status, nil
 }
@@ -137,7 +171,7 @@ func (c *AccessPackageResourceRequestClient) Get(ctx context.Context, id string)
 // There is no Delete Endpoint - Instead we create a request to delete a resource assignment. This is weird behavior but can be implemented, specific calls are needed
 // Implement downstream via Resources endpoint: See how this is preformed in Tests
 //https://docs.microsoft.com/en-us/graph/api/accesspackageresourcerequest-post?view=graph-rest-beta&tabs=http#example-5-create-an-accesspackageresourcerequest-for-removing-a-resource
-func (c *AccessPackageResourceRequestClient) Delete(ctx context.Context, accessPackageResourceRequest AccessPackageResourceRequest, accessPackageResource AccessPackageResource) (int, error) {
+func (c *AccessPackageResourceRequestClient) Delete(ctx context.Context, accessPackageResourceRequest AccessPackageResourceRequest) (int, error) {
 
 	var status int
 
@@ -147,7 +181,7 @@ func (c *AccessPackageResourceRequestClient) Delete(ctx context.Context, accessP
 		CatalogId: accessPackageResourceRequest.CatalogId,
 		RequestType: utils.StringPtr("AdminRemove"),
 		AccessPackageResource: &AccessPackageResource{
-			ID: accessPackageResource.ID,
+			ID: accessPackageResourceRequest.AccessPackageResource.ID, //This is known after CREATE and Pseudo Poll
 		},
 	}
 	
