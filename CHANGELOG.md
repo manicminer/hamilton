@@ -2,6 +2,8 @@
 
 ## 0.28.1 (Unreleased)
 
+- Bug fix: Use the correct base64 decoder when parsing token claims ([#97](https://github.com/manicminer/hamilton/pull/97))
+
 ⚠️ BREAKING CHANGES:
 
 - Bug fix: `User.PasswordPolicies` has changed from a `*string` to a `*StringNullWhenEmpty` ([#96](https://github.com/manicminer/hamilton/pull/96))
