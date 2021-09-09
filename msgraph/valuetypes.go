@@ -49,6 +49,35 @@ const (
 	ApplicationExtensionTargetObjectUser         ApplicationExtensionTargetObject = "User"
 )
 
+type ApplicationTemplateCategory = string
+
+const (
+	ApplicationTemplateCategoryCollaboration      ApplicationTemplateCategory = "Collaboration"
+	ApplicationTemplateCategoryBusinessManagement ApplicationTemplateCategory = "Business Management"
+	ApplicationTemplateCategoryConsumer           ApplicationTemplateCategory = "Consumer"
+	ApplicationTemplateCategoryContentManagement  ApplicationTemplateCategory = "Content management"
+	ApplicationTemplateCategoryCRM                ApplicationTemplateCategory = "CRM"
+	ApplicationTemplateCategoryDataServices       ApplicationTemplateCategory = "Data services"
+	ApplicationTemplateCategoryDeveloperServices  ApplicationTemplateCategory = "Developer services"
+	ApplicationTemplateCategoryECommerce          ApplicationTemplateCategory = "E-commerce"
+	ApplicationTemplateCategoryEducation          ApplicationTemplateCategory = "Education"
+	ApplicationTemplateCategoryERP                ApplicationTemplateCategory = "ERP"
+	ApplicationTemplateCategoryFinance            ApplicationTemplateCategory = "Finance"
+	ApplicationTemplateCategoryHealth             ApplicationTemplateCategory = "Health"
+	ApplicationTemplateCategoryHumanResources     ApplicationTemplateCategory = "Human resources"
+	ApplicationTemplateCategoryITInfrastructure   ApplicationTemplateCategory = "IT infrastructure"
+	ApplicationTemplateCategoryMail               ApplicationTemplateCategory = "Mail"
+	ApplicationTemplateCategoryManagement         ApplicationTemplateCategory = "Management"
+	ApplicationTemplateCategoryMarketing          ApplicationTemplateCategory = "Marketing"
+	ApplicationTemplateCategoryMedia              ApplicationTemplateCategory = "Media"
+	ApplicationTemplateCategoryProductivity       ApplicationTemplateCategory = "Productivity"
+	ApplicationTemplateCategoryProjectManagement  ApplicationTemplateCategory = "Project management"
+	ApplicationTemplateCategoryTelecommunications ApplicationTemplateCategory = "Telecommunications"
+	ApplicationTemplateCategoryTools              ApplicationTemplateCategory = "Tools"
+	ApplicationTemplateCategoryTravel             ApplicationTemplateCategory = "Travel"
+	ApplicationTemplateCategoryWebDesignHosting   ApplicationTemplateCategory = "Web design & hosting"
+)
+
 type AppRoleAllowedMemberType = string
 
 const (
@@ -111,6 +140,14 @@ const (
 	CredentialUsageSummaryPeriod30 CredentialUsageSummaryPeriod = "D30"
 	CredentialUsageSummaryPeriod7  CredentialUsageSummaryPeriod = "D7"
 	CredentialUsageSummaryPeriod1  CredentialUsageSummaryPeriod = "D1"
+)
+
+type ConditionalAccessPolicyState = string
+
+const (
+	ConditionalAccessPolicyStateEnabled                           ConditionalAccessPolicyState = "enabled"
+	ConditionalAccessPolicyStateDisabled                          ConditionalAccessPolicyState = "disabled"
+	ConditionalAccessPolicyStateEnabledForReportingButNotEnforced ConditionalAccessPolicyState = "enabledForReportingButNotEnforced"
 )
 
 type ExtensionSchemaTargetType = string
@@ -195,6 +232,13 @@ const (
 	GroupVisibilityHiddenMembership GroupVisibility = "Hiddenmembership"
 	GroupVisibilityPrivate          GroupVisibility = "Private"
 	GroupVisibilityPublic           GroupVisibility = "Public"
+)
+
+type InvitedUserType = string
+
+const (
+	InvitedUserTypeGuest  InvitedUserType = "Guest"
+	InvitedUserTypeMember InvitedUserType = "Member"
 )
 
 type KeyCredentialType = string

@@ -44,6 +44,7 @@ type Application struct {
 	AddIns                        *[]AddIn                  `json:"addIns,omitempty"`
 	Api                           *ApplicationApi           `json:"api,omitempty"`
 	AppId                         *string                   `json:"appId,omitempty"`
+	ApplicationTemplateId         *string                   `json:"applicationTemplateId,omitempty"`
 	AppRoles                      *[]AppRole                `json:"appRoles,omitempty"`
 	CreatedDateTime               *time.Time                `json:"createdDateTime,omitempty"`
 	DefaultRedirectUri            *string                   `json:"defaultRedirectUri,omitempty"`
@@ -290,6 +291,21 @@ type ApplicationSpa struct {
 	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
 
+type ApplicationTemplate struct {
+	ID                         *string                        `json:"id,omitempty"`
+	Categories                 *[]ApplicationTemplateCategory `json:"categories,omitempty"`
+	Description                *string                        `json:"description,omitempty"`
+	DisplayName                *string                        `json:"displayName,omitempty"`
+	HomePageUrl                *string                        `json:"homePageUrl,omitempty"`
+	LogoUrl                    *string                        `json:"logoUrl,omitempty"`
+	Publisher                  *string                        `json:"publisher,omitempty"`
+	SupportedProvisioningTypes *[]string                      `json:"supportedProvisioningTypes,omitempty"`
+	SupportedSingleSignOnModes *[]string                      `json:"supportedSingleSignOnModes,omitempty"`
+
+	Application      *Application      `json:"application,omitempty"`
+	ServicePrincipal *ServicePrincipal `json:"servicePrincipal,omitempty"`
+}
+
 type ApplicationWeb struct {
 	HomePageUrl           *StringNullWhenEmpty   `json:"homePageUrl,omitempty"`
 	ImplicitGrantSettings *ImplicitGrantSettings `json:"implicitGrantSettings,omitempty"`
@@ -389,7 +405,7 @@ type ConditionalAccessPolicy struct {
 	ID               *string                           `json:"id,omitempty"`
 	ModifiedDateTime *time.Time                        `json:"modifiedDateTime,omitempty"`
 	SessionControls  *ConditionalAccessSessionControls `json:"sessionControls,omitempty"`
-	State            *string                           `json:"state,omitempty"`
+	State            *ConditionalAccessPolicyState     `json:"state,omitempty"`
 }
 
 type ConditionalAccessSessionControls struct {
@@ -707,14 +723,14 @@ type InformationalUrl struct {
 
 // Invitation describes a Invitation object.
 type Invitation struct {
-	ID                      *string `json:"id,omitempty"`
-	InvitedUserDisplayName  *string `json:"invitedUserDisplayName,omitempty"`
-	InvitedUserEmailAddress *string `json:"invitedUserEmailAddress,omitempty"`
-	SendInvitationMessage   *bool   `json:"sendInvitationMessage,omitempty"`
-	InviteRedirectURL       *string `json:"inviteRedirectUrl,omitempty"`
-	InviteRedeemURL         *string `json:"inviteRedeemUrl,omitempty"`
-	Status                  *string `json:"status,omitempty"`
-	InvitedUserType         *string `json:"invitedUserType,omitempty"`
+	ID                      *string          `json:"id,omitempty"`
+	InvitedUserDisplayName  *string          `json:"invitedUserDisplayName,omitempty"`
+	InvitedUserEmailAddress *string          `json:"invitedUserEmailAddress,omitempty"`
+	SendInvitationMessage   *bool            `json:"sendInvitationMessage,omitempty"`
+	InviteRedirectURL       *string          `json:"inviteRedirectUrl,omitempty"`
+	InviteRedeemURL         *string          `json:"inviteRedeemUrl,omitempty"`
+	Status                  *string          `json:"status,omitempty"`
+	InvitedUserType         *InvitedUserType `json:"invitedUserType,omitempty"`
 
 	InvitedUserMessageInfo *InvitedUserMessageInfo `json:"invitedUserMessageInfo,omitempty"`
 	InvitedUser            *User                   `json:"invitedUser,omitempty"`
@@ -1107,7 +1123,7 @@ type User struct {
 	OnPremisesSyncEnabled           *bool                    `json:"onPremisesSyncEnabled,omitempty"`
 	OnPremisesUserPrincipalName     *string                  `json:"onPremisesUserPrincipalName,omitempty"`
 	OtherMails                      *[]string                `json:"otherMails,omitempty"`
-	PasswordPolicies                *string                  `json:"passwordPolicies,omitempty"`
+	PasswordPolicies                *StringNullWhenEmpty     `json:"passwordPolicies,omitempty"`
 	PasswordProfile                 *UserPasswordProfile     `json:"passwordProfile,omitempty"`
 	PastProjects                    *[]string                `json:"pastProjects,omitempty"`
 	PostalCode                      *StringNullWhenEmpty     `json:"postalCode,omitempty"`
