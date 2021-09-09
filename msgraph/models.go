@@ -1083,6 +1083,7 @@ type User struct {
 	DisplayName                     *string                  `json:"displayName,omitempty"`
 	EmployeeHireDate                *time.Time               `json:"employeeHireDate,omitempty"`
 	EmployeeId                      *StringNullWhenEmpty     `json:"employeeId,omitempty"`
+	EmployeeOrgData                 *EmployeeOrgData         `json:"employeeOrgData,omitempty"`
 	EmployeeType                    *string                  `json:"employeeType,omitempty"`
 	ExternalUserState               *string                  `json:"externalUserState,omitempty"`
 	FaxNumber                       *StringNullWhenEmpty     `json:"faxNumber,omitempty"`
@@ -1128,7 +1129,6 @@ type User struct {
 	UsageLocation                   *StringNullWhenEmpty     `json:"usageLocation,omitempty"`
 	UserPrincipalName               *string                  `json:"userPrincipalName,omitempty"`
 	UserType                        *string                  `json:"userType,omitempty"`
-	EmployeeOrgData                 *EmployeeOrgData         `json:"employeeOrgData,omitempty"`
 
 	SchemaExtensions *[]SchemaExtensionData `json:"-"`
 }
