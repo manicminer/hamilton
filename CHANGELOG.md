@@ -1,6 +1,9 @@
 ## 0.29.0 (Unreleased)
 
-## 0.28.1 (Unreleased)
+## 0.28.1 (September 9, 2021)
+
+- Bug fix: Try to detect when running in Azure Cloud Shell and avoid specifying the tenant ID for Azure CLI authentication ([#98](https://github.com/manicminer/hamilton/pull/98))
+- Bug fix: Use the correct base64 decoder when parsing token claims ([#97](https://github.com/manicminer/hamilton/pull/97))
 
 ⚠️ BREAKING CHANGES:
 
