@@ -1,4 +1,21 @@
-## 0.27.0 (Unreleased)
+## 0.29.0 (Unreleased)
+
+## 0.28.1 (September 9, 2021)
+
+- Bug fix: Try to detect when running in Azure Cloud Shell and avoid specifying the tenant ID for Azure CLI authentication ([#98](https://github.com/manicminer/hamilton/pull/98))
+- Bug fix: Use the correct base64 decoder when parsing token claims ([#97](https://github.com/manicminer/hamilton/pull/97))
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `User.PasswordPolicies` has changed from a `*string` to a `*StringNullWhenEmpty` ([#96](https://github.com/manicminer/hamilton/pull/96))
+
+## 0.28.0 (September 7, 2021)
+
+- Support for [application templates](https://docs.microsoft.com/en-us/graph/api/resources/applicationtemplate?view=graph-rest-1.0) ([#95](https://github.com/manicminer/hamilton/pull/95))
+
+## 0.27.0 (September 2, 2022)
+
+- Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
 
 ## 0.26.0 (September 1, 2021)
 
