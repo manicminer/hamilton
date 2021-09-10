@@ -1,5 +1,9 @@
 ## 0.29.0 (Unreleased)
 
+## 0.28.2 (September 10, 2021)
+
+- Bug fix: Correctly handle HTTP responses after retries have been exhausted for a request, so that the correct status and error can be returned ([#100](https://github.com/manicminer/hamilton/pull/100))
+
 ## 0.28.1 (September 9, 2021)
 
 - Bug fix: Try to detect when running in Azure Cloud Shell and avoid specifying the tenant ID for Azure CLI authentication ([#98](https://github.com/manicminer/hamilton/pull/98))
