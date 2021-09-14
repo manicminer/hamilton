@@ -161,9 +161,22 @@ func (c *ApplicationsClient) Update(ctx context.Context, application Application
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
+	checkApplicationConsistency := func(resp *http.Response, o *odata.OData) bool {
+		if resp == nil {
+			return false
+		}
+		if resp.StatusCode == http.StatusNotFound {
+			return true
+		}
+		if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
+			return o.Error.Match(odata.ErrorCannotDeleteOrUpdateEnabledEntitlement)
+		}
+		return false
+	}
+
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:                   body,
-		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ConsistencyFailureFunc: checkApplicationConsistency,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/applications/%s", *application.ID),
