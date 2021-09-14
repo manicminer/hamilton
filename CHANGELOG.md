@@ -1,5 +1,6 @@
 ## 0.29.0 (Unreleased)
 
+- Applications: add consistency check roles/scopes that may be in the process of being disabled ([#102](https://github.com/manicminer/hamilton/pull/102))
 - `User` model: support [EmployeeOrgData](https://docs.microsoft.com/en-us/graph/api/resources/employeeorgdata?view=graph-rest-beta) ([#99](https://github.com/manicminer/hamilton/pull/99))
 
 ## 0.28.2 (September 10, 2021)
