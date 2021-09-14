@@ -583,3 +583,24 @@ func (c *ApplicationsClient) DeleteExtension(ctx context.Context, applicationId,
 
 	return status, nil
 }
+
+// UploadLogo uploads the application logo which should be a gif, jpeg or png image
+func (c *ApplicationsClient) UploadLogo(ctx context.Context, applicationId, contentType string, logoData []byte) (int, error) {
+	var status int
+
+	_, status, _, err := c.BaseClient.Put(ctx, PutHttpRequestInput{
+		Body:                   logoData,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ContentType:            contentType,
+		ValidStatusCodes:       []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/applications/%s/logo", applicationId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("ApplicationsClient.BaseClient.Put(): %v", err)
+	}
+
+	return status, nil
+}
