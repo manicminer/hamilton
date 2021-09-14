@@ -133,17 +133,13 @@ func (c *DirectoryRolesClient) AddMembers(ctx context.Context, directoryRole *Di
 	for _, member := range *directoryRole.Members {
 		// don't fail if a member already exists
 		checkMemberAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-			if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
+			if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
 			}
 			return false
 		}
 
-		body, err := json.Marshal(struct {
-			Member odata.Id `json:"@odata.id"`
-		}{
-			Member: *member.ODataId,
-		})
+		body, err := json.Marshal(DirectoryObject{ODataId: member.ODataId})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}
@@ -242,7 +238,7 @@ func (c *DirectoryRolesClient) Activate(ctx context.Context, roleTemplateID stri
 
 	// don't fail if a role is already activated
 	checkRoleAlreadyActivated := func(resp *http.Response, o *odata.OData) bool {
-		if resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
+		if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 			return o.Error.Match(odata.ErrorConflictingObjectPresentInDirectory)
 		}
 		return false
