@@ -1,6 +1,7 @@
 ## 0.29.0 (Unreleased)
 
-- Applications: add consistency check roles/scopes that may be in the process of being disabled ([#102](https://github.com/manicminer/hamilton/pull/102))
+- Applications: add consistency check for roles/scopes that may be in the process of being disabled, when updating an application ([#102](https://github.com/manicminer/hamilton/pull/102))
+- Directory Roles: add the `DirectoryROlesClient{}.GetByTemplateId()` method for retrieving roles by their template ID ([#101](https://github.com/manicminer/hamilton/pull/101))
 - `User` model: support [EmployeeOrgData](https://docs.microsoft.com/en-us/graph/api/resources/employeeorgdata?view=graph-rest-beta) ([#99](https://github.com/manicminer/hamilton/pull/99))
 
 ## 0.28.2 (September 10, 2021)
