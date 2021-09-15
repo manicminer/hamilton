@@ -1,4 +1,6 @@
-## 0.29.0 (Unreleased)
+## 0.30.0 (Unreleased)
+
+## 0.29.0 (September 15, 2021)
 
 - Applications: add consistency check for roles/scopes that may be in the process of being disabled, when updating an application ([#102](https://github.com/manicminer/hamilton/pull/102))
 - Applications: support for uploading application logos via the `ApplicationsClient{}.UploadLogo()` method([#103](https://github.com/manicminer/hamilton/pull/103))
