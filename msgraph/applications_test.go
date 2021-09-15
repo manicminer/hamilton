@@ -2,6 +2,8 @@ package msgraph_test
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/manicminer/hamilton/auth"
@@ -91,6 +93,7 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_AddOwners(t, c, app)
 	pwd := testApplicationsClient_AddPassword(t, c, app)
 	testApplicationsClient_RemovePassword(t, c, app, pwd)
+	testApplicationsClient_UploadLogo(t, c, app)
 	testApplicationsClient_List(t, c)
 	testApplicationsClient_Delete(t, c, *app.ID)
 	testApplicationsClient_ListDeleted(t, c, *app.ID)
@@ -369,4 +372,18 @@ func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, 
 		t.Fatalf("ApplicationsClient.ListDeleted(): expected app ID %q in result", expectedId)
 	}
 	return
+}
+
+func testApplicationsClient_UploadLogo(t *testing.T, c ApplicationsClientTest, a *msgraph.Application) {
+	b, err := os.ReadFile(filepath.Join("..", "internal", "test", "testlogo.png"))
+	if err != nil {
+		t.Fatalf("reading testlogo.png: %v", err)
+	}
+	status, err := c.client.UploadLogo(c.connection.Context, *a.ID, "image/png", b)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.UploadLogo(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.UploadLogo(): invalid status: %d", status)
+	}
 }
