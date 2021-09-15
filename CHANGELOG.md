@@ -1,6 +1,7 @@
 ## 0.29.0 (Unreleased)
 
 - Applications: add consistency check for roles/scopes that may be in the process of being disabled, when updating an application ([#102](https://github.com/manicminer/hamilton/pull/102))
+- Applications: support for uploading application logos via the `ApplicationsClient{}.UploadLogo()` method([#103](https://github.com/manicminer/hamilton/pull/103))
 - Directory Roles: add the `DirectoryROlesClient{}.GetByTemplateId()` method for retrieving roles by their template ID ([#101](https://github.com/manicminer/hamilton/pull/101))
 - `User` model: support [EmployeeOrgData](https://docs.microsoft.com/en-us/graph/api/resources/employeeorgdata?view=graph-rest-beta) ([#99](https://github.com/manicminer/hamilton/pull/99))
 
