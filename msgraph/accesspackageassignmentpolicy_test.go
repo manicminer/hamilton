@@ -65,7 +65,7 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	testAccessPackageAssignmentPolicyClient_Get(t, c, *accessPackageAssignmentPolicy.ID)
 	// //Update test https://docs.microsoft.com/en-us/graph/api/accesspackageassignmentpolicy-update?view=graph-rest-beta&tabs=java
 	newaccessPackageAssignmentPolicy := msgraph.AccessPackageAssignmentPolicy{
-		ID: accessPackageAssignmentPolicy.ID,
+		ID:              accessPackageAssignmentPolicy.ID,
 		AccessPackageId: accessPackageAssignmentPolicy.AccessPackageId, //Both the ID and AccessPackageID MUST Be specified. API Complains vaguely as just "the Id"
 		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-Updated-%s", c.randomString)),
 		Description:     utils.StringPtr("Test AP Policy Assignment Description Updated"),

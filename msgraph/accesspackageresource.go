@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/manicminer/hamilton/odata"
 	"io"
 	"net/http"
-	"github.com/manicminer/hamilton/odata"
 )
 
 type AccessPackageResourceClient struct {
@@ -55,7 +55,7 @@ func (c *AccessPackageResourceClient) List(ctx context.Context, query odata.Quer
 func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string, originId string) (*AccessPackageResource, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
-		ValidStatusCodes: []int{http.StatusOK},
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
 			Params:      odata.Query{Filter: fmt.Sprintf("startswith(originId,'%s')", originId)}.Values(),
@@ -72,7 +72,7 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
-	AccessPackageResources []AccessPackageResource `json:"value"`
+		AccessPackageResources []AccessPackageResource `json:"value"`
 	}
 
 	if err := json.Unmarshal(respBody, &data); err != nil {

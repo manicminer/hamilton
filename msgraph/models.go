@@ -26,19 +26,6 @@ type AccessPackage struct {
 	ModifiedDateTime    *time.Time `json:"modifiedDateTime,omitempty"`
 }
 
-type AccessPackageCatalog struct {
-	ID                  *string    `json:"id,omitempty"`
-	CatalogStatus       *string    `json:"catalogStatus,omitempty"`
-	CatalogType         *string    `json:"catalogType,omitempty"`
-	CreatedBy           *string    `json:"createdBy,omitempty"`
-	CreatedDateTime     *time.Time `json:"createdDateTime,omitempty"`
-	Description         *string    `json:"description,omitempty"`
-	DisplayName         *string    `json:"displayName,omitempty"`
-	IsExternallyVisible *bool      `json:"isExternallyVisible,omitempty"`
-	ModifiedBy          *string    `json:"modifiedBy,omitempty"`
-	ModifiedDateTime    *time.Time `json:"modifiedDateTime,omitempty"`
-}
-
 type AccessPackageAssignmentPolicy struct {
 	AccessPackageId         *string                   `json:"accessPackageId,omitempty"`
 	AccessReviewSettings    *AssignmentReviewSettings `json:"accessReviewSettings,omitempty"` //Type defined as assignmentReviewSettings
@@ -57,6 +44,19 @@ type AccessPackageAssignmentPolicy struct {
 	Questions               *[]AccessPackageQuestion  `json:"questions,omitempty"`
 }
 
+type AccessPackageCatalog struct {
+	ID                  *string    `json:"id,omitempty"`
+	CatalogStatus       *string    `json:"catalogStatus,omitempty"`
+	CatalogType         *string    `json:"catalogType,omitempty"`
+	CreatedBy           *string    `json:"createdBy,omitempty"`
+	CreatedDateTime     *time.Time `json:"createdDateTime,omitempty"`
+	Description         *string    `json:"description,omitempty"`
+	DisplayName         *string    `json:"displayName,omitempty"`
+	IsExternallyVisible *bool      `json:"isExternallyVisible,omitempty"`
+	ModifiedBy          *string    `json:"modifiedBy,omitempty"`
+	ModifiedDateTime    *time.Time `json:"modifiedDateTime,omitempty"`
+}
+
 type AssignmentReviewSettings struct {
 	IsEnabled      *bool      `json:"isEnabled,omitempty"`
 	RecurrenceType *string    `json:"recurrenceType,omitempty"`
@@ -64,12 +64,6 @@ type AssignmentReviewSettings struct {
 	StartDateTime  *time.Time `json:"startDateTime,omitempty"`
 	DurationInDays *int32     `json:"durationInDays,omitempty"`
 	Reviewers      *[]UserSet `json:"reviewers,omitempty"`
-}
-
-type UserSet struct { //This is not only limited to access packages
-	IsBackup    *bool   `json:"isBackup,omitempty"`
-	ID          *string `json:"id,omitempty"` //Either user or group ID
-	Description *string `json:"description,omitempty"`
 }
 
 type ApprovalSettings struct {
@@ -95,66 +89,93 @@ type RequestorSettings struct {
 	AllowedRequestors *[]UserSet `json:"allowedRequestors,omitempty"`
 }
 
+type AccessPackageLocalizedContent struct {
+	DefaultText    *string                        `json:"defaultText,omitempty"`
+	LocalizedTexts *[]AccessPackageLocalizedTexts `json:"localizedTexts,omitempty"`
+}
+
+type AccessPackageLocalizedTexts struct {
+	Text         *string `json:"text,omitempty"`
+	LanguageCode *string `json:"languageCode,omitempty"`
+}
+
 type AccessPackageQuestion struct {
-	//Some reason states it needs an Odata type in Example
 	ID         *string                        `json:"id,omitempty"`
 	IsRequired *bool                          `json:"isRequired,omitempty"`
 	Sequence   *int32                         `json:"sequence,omitempty"`
 	Text       *AccessPackageLocalizedContent `json:"text,omitempty"`
 }
 
-type AccessPackageLocalizedContent struct {
-	//Some reason states it needs an Odata type in Example
-	DefaultText    *string                        `json:"defaultText,omitempty"`
-	LocalizedTexts *[]AccessPackageLocalizedTexts `json:"localizedTexts,omitempty"`
-}
-
-type AccessPackageLocalizedTexts struct {
-	//Some reason states it needs an Odata type in example
-	Text         *string `json:"text,omitempty"`
-	LanguageCode *string `json:"languageCode,omitempty"`
-}
-
 type AccessPackageResourceRequest struct {
-	CatalogId         *string `json:"catalogId,omitempty"`
-	ExpirationDateTime         *time.Time `json:"expirationDateTime,omitempty"`
-	ID         *string                        `json:"id,omitempty"`
-	IsValidationOnly         *bool `json:"isValidationOnly,omitempty"`
-	Justification         *string `json:"justification,omitempty"`
-	RequestState         *string `json:"requestState,omitempty"`
-	RequestStatus         *string `json:"requestStatus,omitempty"`
-	RequestType         *string `json:"requestType,omitempty"`
-	AccessPackageResource         *AccessPackageResource `json:"accessPackageResource,omitempty"` //While this isnt in the main Info Page, its in the create call. Assume it exists
-	ExecuteImmediately *bool `json:"executeImmediately,omitempty"`
+	CatalogId             *string                `json:"catalogId,omitempty"`
+	ExpirationDateTime    *time.Time             `json:"expirationDateTime,omitempty"`
+	ID                    *string                `json:"id,omitempty"`
+	IsValidationOnly      *bool                  `json:"isValidationOnly,omitempty"`
+	Justification         *string                `json:"justification,omitempty"`
+	RequestState          *string                `json:"requestState,omitempty"`
+	RequestStatus         *string                `json:"requestStatus,omitempty"`
+	RequestType           *string                `json:"requestType,omitempty"`
+	AccessPackageResource *AccessPackageResource `json:"accessPackageResource,omitempty"` //While this isnt in the main Info Page, its in the create call. Assume it exists
+	ExecuteImmediately    *bool                  `json:"executeImmediately,omitempty"`
 }
 
 type AccessPackageResource struct {
-	AccessPackageResourceEnvironment         *AccessPackageResourceEnvironment `json:"accessPackageResourceEnvironment,omitempty"`
-	AddedBy         *string `json:"addedBy,omitempty"`
-	AddedOn         *time.Time                      `json:"addedOn,omitempty"`
-	Description         *bool `json:"description,omitempty"`
-	DisplayName         *string `json:"displayName,omitempty"`
-	ID         *string `json:"id,omitempty"`
-	IsPendingOnboarding         *bool `json:"isPendingOnboarding,omitempty"`
-	OriginId         *string `json:"originId,omitempty"`
-	OriginSystem         *string `json:"originSystem,omitempty"` //While this isnt in the main Info Page, its in the create call. Assume it exists
-	ResourceType *string `json:"resourceType,omitempty"`
-	Url *string `json:"url,omitempty"`
+	AccessPackageResourceEnvironment *AccessPackageResourceEnvironment `json:"accessPackageResourceEnvironment,omitempty"`
+	AddedBy                          *string                           `json:"addedBy,omitempty"`
+	AddedOn                          *time.Time                        `json:"addedOn,omitempty"`
+	Description                      *bool                             `json:"description,omitempty"`
+	DisplayName                      *string                           `json:"displayName,omitempty"`
+	ID                               *string                           `json:"id,omitempty"`
+	IsPendingOnboarding              *bool                             `json:"isPendingOnboarding,omitempty"`
+	OriginId                         *string                           `json:"originId,omitempty"`
+	OriginSystem                     *string                           `json:"originSystem,omitempty"` //While this isnt in the main Info Page, its in the create call. Assume it exists
+	ResourceType                     *string                           `json:"resourceType,omitempty"`
+	Url                              *string                           `json:"url,omitempty"`
 	// Attributes as a returned [] Field but is not documented or used
 }
 
 type AccessPackageResourceEnvironment struct {
-	ConnectionInfo *ConnectionInfo `json:"connectionInfo,omitempty"`
-	CreatedBy *string `json:"createdBy,omitempty"`
-	CreatedDateTime *time.Time `json:"createdDateTime,omitempty"`
-	Description *string `json:"description,omitempty"`
-	DisplayName *string `json:"displayName,omitempty"`
-	ID         *string `json:"id,omitempty"`
-	IsDefaultEnvironment *bool `json:"isDefaultEnvironment,omitempty"`
-	ModifiedBy *string `json:"modifiedBy,omitempty"`
-	ModifiedDateTime *time.Time `json:"modifiedDateTime,omitempty"`
-	OriginId *string `json:"originId,omitempty"`
+	ConnectionInfo       *ConnectionInfo `json:"connectionInfo,omitempty"`
+	CreatedBy            *string         `json:"createdBy,omitempty"`
+	CreatedDateTime      *time.Time      `json:"createdDateTime,omitempty"`
+	Description          *string         `json:"description,omitempty"`
+	DisplayName          *string         `json:"displayName,omitempty"`
+	ID                   *string         `json:"id,omitempty"`
+	IsDefaultEnvironment *bool           `json:"isDefaultEnvironment,omitempty"`
+	ModifiedBy           *string         `json:"modifiedBy,omitempty"`
+	ModifiedDateTime     *time.Time      `json:"modifiedDateTime,omitempty"`
+	OriginId             *string         `json:"originId,omitempty"`
+	OriginSystem         *string         `json:"originSystem,omitempty"`
+}
+
+type AccessPackageResourceRoleScope struct {
+	AccessPackageId            *string                     `json:"-"` //Needs to be implemented so resource can hold its own state properly, but is passed via URL
+	ID                         *string                     `json:"id,omitempty"`
+	CreatedBy                  *string                     `json:"createdBy,omitempty"`
+	CreatedDateTime            *time.Time                  `json:"createdDateTime,omitempty"`
+	ModifiedBy                 *string                     `json:"modifiedBy,omitempty"`
+	ModifiedDateTime           *time.Time                  `json:"modifiedDateTime,omitempty"`
+	AccessPackageResourceRole  *AccessPackageResourceRole  `json:"accessPackageResourceRole,omitempty"`
+	AccessPackageResourceScope *AccessPackageResourceScope `json:"accessPackageResourceScope,omitempty"`
+}
+
+type AccessPackageResourceRole struct {
+	Description           *string                `json:"description"`
+	ID                    *string                `json:"id,omitempty"`
+	DisplayName           *string                `json:"displayName,omitempty"`
+	OriginId              *string                `json:"originId,omitempty"`
+	OriginSystem          *string                `json:"originSystem,omitempty"`
+	AccessPackageResource *AccessPackageResource `json:"accessPackageResource,omitempty"`
+}
+
+type AccessPackageResourceScope struct {
+	Url          *string `json:"url"`
+	ID           *string `json:"id,omitempty"`
+	DisplayName  *string `json:"displayName,omitempty"`
+	OriginId     *string `json:"originId,omitempty"`
 	OriginSystem *string `json:"originSystem,omitempty"`
+	Description  *string `json:"description,omitempty"`
+	IsRootScope  *bool   `json:"isRootScope,omitempty"`
 }
 
 type ConnectionInfo struct {
@@ -1364,6 +1385,12 @@ type UserRegistrationMethodSummary struct {
 	UserRegistrationMethodsCount *[]UserRegistrationMethodCount `json:"userRegistrationMethodCounts,omitempty"`
 	UerRoles                     IncludedUserRoles              `json:"userRoles,omitempty"`
 	UserTypes                    IncludedUserTypes              `json:"userTypes,omitempty"`
+}
+
+type UserSet struct {
+	IsBackup    *bool   `json:"isBackup,omitempty"`
+	ID          *string `json:"id,omitempty"` //Either user or group ID
+	Description *string `json:"description,omitempty"`
 }
 
 type UserCredentialUsageDetails struct {

@@ -12,13 +12,13 @@ import (
 )
 
 type AccessPackageResourceRequestTest struct {
-	connection      *test.Connection
-	apClient        *msgraph.AccessPackageClient        //apClient
-	apCatalogClient *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required
+	connection              *test.Connection
+	apClient                *msgraph.AccessPackageClient        //apClient
+	apCatalogClient         *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required
 	apResourceRequestClient *msgraph.AccessPackageResourceRequestClient
-	apResourceClient *msgraph.AccessPackageResourceClient
-	groupsClient *msgraph.GroupsClient
-	randomString    string
+	apResourceClient        *msgraph.AccessPackageResourceClient
+	groupsClient            *msgraph.GroupsClient
+	randomString            string
 }
 
 func TestAccessPackageResourceRequestClient(t *testing.T) {
@@ -81,17 +81,16 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 	pollForId := true
 
 	accessPackageResourceRequest := testAccessPackageResourceRequestClient_Create(t, c, msgraph.AccessPackageResourceRequest{
-		CatalogId: accessPackage.CatalogId,
+		CatalogId:   accessPackage.CatalogId,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
-			OriginId: aadGroup.ID,
+			OriginId:     aadGroup.ID,
 			OriginSystem: utils.StringPtr("AadGroup"),
 		},
 	}, pollForId)
 
-
 	// Figure out what the ResourceId is IF We haven't Polled for it below
-	
+
 	//accessPackageResource := testapresourcerequestResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId)
 	//accessPackageResourceRequest.AccessPackageResource.ID = accessPackageResource.ID
 
@@ -105,7 +104,7 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 	// Requests Client
 	testAccessPackageResourceRequestClient_List(t, c)
 	testAccessPackageResourceRequestClient_Get(t, c, *accessPackageResourceRequest.ID) //Req Exists
-	
+
 	testAccessPackageResourceRequestClient_Delete(t, c, accessPackageResourceRequest)
 	// Cleanup
 	testapresourcerequestAP_Delete(t, c, *accessPackage.ID)
@@ -134,7 +133,7 @@ func testAccessPackageResourceRequestClient_Create(t *testing.T, c AccessPackage
 }
 
 func testAccessPackageResourceRequestClient_Get(t *testing.T, c AccessPackageResourceRequestTest, id string) (accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
-	accessPackageResourceRequest, status, err := c.apResourceRequestClient.Get(c.connection.Context, id,)
+	accessPackageResourceRequest, status, err := c.apResourceRequestClient.Get(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Get(): %v", err)
 	}
@@ -167,8 +166,6 @@ func testAccessPackageResourceRequestClient_Delete(t *testing.T, c AccessPackage
 		t.Fatalf("AccessPackageResourceRequestClient.Delete(): invalid status: %d", status)
 	}
 }
-
-
 
 // AP
 
@@ -229,7 +226,7 @@ func testapresourcerequestGroup_Create(t *testing.T, c AccessPackageResourceRequ
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
-		Owners: &self,
+		Owners:          &self,
 	})
 
 	if err != nil {
@@ -245,10 +242,7 @@ func testapresourcerequestGroup_Delete(t *testing.T, c AccessPackageResourceRequ
 	}
 }
 
-
-
 //APResource
-
 
 func testapresourcerequestResource_Get(t *testing.T, c AccessPackageResourceRequestTest, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
 	accessPackageResource, status, err := c.apResourceClient.Get(c.connection.Context, catalogId, originId)
