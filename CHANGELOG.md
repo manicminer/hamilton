@@ -1,5 +1,7 @@
 ## 0.30.0 (Unreleased)
 
+- Bug fix: `odata.Odata{}` - the `Count` field is now a `*int` ([#105](https://github.com/manicminer/hamilton/pull/105))
+
 ## 0.29.0 (September 15, 2021)
 
 - Applications: add consistency check for roles/scopes that may be in the process of being disabled, when updating an application ([#102](https://github.com/manicminer/hamilton/pull/102))
