@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/manicminer/hamilton/odata"
+
 	"github.com/hashicorp/go-uuid"
 
 	"github.com/manicminer/hamilton/auth"
@@ -12,10 +14,152 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
+type AppRoleAssignedToClientTest struct {
+	connection   *test.Connection
+	client       *msgraph.AppRoleAssignedToClient
+	randomString string
+}
+
 type AppRoleAssignmentsClientTest struct {
 	connection   *test.Connection
 	client       *msgraph.AppRoleAssignmentsClient
 	randomString string
+}
+
+func TestAppRoleAssignedToClient(t *testing.T) {
+	rs := test.RandomString()
+
+	c := AppRoleAssignedToClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	c.client = msgraph.NewAppRoleAssignedToClient(c.connection.AuthConfig.TenantID)
+	c.client.BaseClient.Authorizer = c.connection.Authorizer
+
+	a := ApplicationsClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	a.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
+	a.client.BaseClient.Authorizer = c.connection.Authorizer
+
+	s := ServicePrincipalsClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	s.client = msgraph.NewServicePrincipalsClient(c.connection.AuthConfig.TenantID)
+	s.client.BaseClient.Authorizer = c.connection.Authorizer
+
+	g := GroupsClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	g.client = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
+	g.client.BaseClient.Authorizer = c.connection.Authorizer
+
+	u := UsersClientTest{
+		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
+		randomString: rs,
+	}
+	u.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
+	u.client.BaseClient.Authorizer = c.connection.Authorizer
+
+	// Scaffold the resource application
+	testResourceAppRoleId, _ := uuid.GenerateUUID()
+	resourceApp := testApplicationsClient_Create(t, a, msgraph.Application{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-appRoleAssignedTo-%s", a.randomString)),
+		AppRoles: &[]msgraph.AppRole{
+			{
+				ID:          utils.StringPtr(testResourceAppRoleId),
+				DisplayName: utils.StringPtr(fmt.Sprintf("test-resourceApp-role-%s", a.randomString)),
+				IsEnabled:   utils.BoolPtr(true),
+				Description: utils.StringPtr(fmt.Sprintf("test-resourceApp-role-description-%s", a.randomString)),
+				Value:       utils.StringPtr(fmt.Sprintf("test-resourceApp-role-value-%s", a.randomString)),
+				AllowedMemberTypes: &[]msgraph.AppRoleAllowedMemberType{
+					msgraph.AppRoleAllowedMemberTypeApplication,
+					msgraph.AppRoleAllowedMemberTypeUser,
+				},
+			},
+		},
+	})
+	resourceServicePrincipal := testServicePrincipalsClient_Create(t, s, msgraph.ServicePrincipal{
+		AccountEnabled:            utils.BoolPtr(true),
+		AppId:                     resourceApp.AppId,
+		AppRoleAssignmentRequired: utils.BoolPtr(true),
+		DisplayName:               resourceApp.DisplayName,
+	})
+
+	// Scaffold the group, user and service principal to assign roles to
+	group := testGroupsClient_Create(t, g, msgraph.Group{
+		DisplayName:     utils.StringPtr("test-group-appRoleAssignments"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", g.randomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+	})
+	user := testUsersClient_Create(t, u, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-appRoleAssignments"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", u.randomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", u.randomString, u.connection.DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", u.randomString)),
+		},
+	})
+	app := testApplicationsClient_Create(t, a, msgraph.Application{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-appRoleAssignments-2-%s", a.randomString)),
+		RequiredResourceAccess: &[]msgraph.RequiredResourceAccess{
+			{
+				ResourceAppId: resourceApp.AppId,
+				ResourceAccess: &[]msgraph.ResourceAccess{
+					{
+						ID:   (*resourceApp.AppRoles)[0].ID,
+						Type: msgraph.ResourceAccessTypeRole,
+					},
+				},
+			},
+		},
+	})
+	servicePrincipal := testServicePrincipalsClient_Create(t, s, msgraph.ServicePrincipal{
+		AccountEnabled: utils.BoolPtr(true),
+		AppId:          app.AppId,
+		DisplayName:    app.DisplayName,
+	})
+
+	// assign app role to group
+	groupAssignment := testAppRoleAssignedToClient_Assign(t, c, msgraph.AppRoleAssignment{
+		AppRoleId:   (*resourceApp.AppRoles)[0].ID,
+		PrincipalId: group.ID,
+		ResourceId:  resourceServicePrincipal.ID,
+	})
+
+	// assign app role to user
+	userAssignment := testAppRoleAssignedToClient_Assign(t, c, msgraph.AppRoleAssignment{
+		AppRoleId:   (*resourceApp.AppRoles)[0].ID,
+		PrincipalId: user.ID,
+		ResourceId:  resourceServicePrincipal.ID,
+	})
+
+	// assign app role to service principal
+	servicePrincipalAssignment := testAppRoleAssignedToClient_Assign(t, c, msgraph.AppRoleAssignment{
+		AppRoleId:   (*resourceApp.AppRoles)[0].ID,
+		PrincipalId: servicePrincipal.ID,
+		ResourceId:  resourceServicePrincipal.ID,
+	})
+
+	// list app roles assigned to resource service principal
+	testAppRoleAssignedToClient_List(t, c, *resourceServicePrincipal.ID)
+
+	// remove the assigned app roles
+	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID, *groupAssignment.Id)
+	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID, *userAssignment.Id)
+	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID, *servicePrincipalAssignment.Id)
+
+	// clean up
+	testGroupsClient_Delete(t, g, *group.ID)
+	testUsersClient_Delete(t, u, *user.ID)
+	testServicePrincipalsClient_Delete(t, s, *servicePrincipal.ID)
+	testServicePrincipalsClient_Delete(t, s, *resourceServicePrincipal.ID)
+	testApplicationsClient_Delete(t, a, *resourceApp.ID)
 }
 
 func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
@@ -332,4 +476,48 @@ func testAppRoleAssignmentsClient_Assign(t *testing.T, c AppRoleAssignmentsClien
 		t.Fatal("AppRoleAssignmentsClient.Assign(): appRoleAssignment.Id was nil")
 	}
 	return
+}
+
+func testAppRoleAssignedToClient_List(t *testing.T, c AppRoleAssignedToClientTest, resourceAppId string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
+	appRoleAssignments, status, err := c.client.List(c.connection.Context, resourceAppId, odata.Query{})
+	if err != nil {
+		t.Fatalf("AppRoleAssignedToClient.List(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AppRoleAssignedToClient.List(): invalid status: %d", status)
+	}
+	if appRoleAssignments == nil {
+		t.Fatal("AppRoleAssignedToClient.List(): appRoleAssignments was nil")
+	}
+	if len(*appRoleAssignments) == 0 {
+		t.Fatal("AppRoleAssignedToClient.List(): appRoleAssignments was empty")
+	}
+	return
+}
+
+func testAppRoleAssignedToClient_Assign(t *testing.T, c AppRoleAssignedToClientTest, appRoleAssignment msgraph.AppRoleAssignment) (newAppRoleAssignment *msgraph.AppRoleAssignment) {
+	newAppRoleAssignment, status, err := c.client.Assign(c.connection.Context, appRoleAssignment)
+	if err != nil {
+		t.Fatalf("AppRoleAssignedToClient.Assign(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AppRoleAssignedToClient.Assign(): invalid status: %d", status)
+	}
+	if newAppRoleAssignment == nil {
+		t.Fatal("AppRoleAssignedToClient.Assign(): newAppRoleAssignment was nil")
+	}
+	if newAppRoleAssignment.Id == nil {
+		t.Fatal("AppRoleAssignedToClient.Assign(): newAppRoleAssignment.Id was nil")
+	}
+	return
+}
+
+func testAppRoleAssignedToClient_Remove(t *testing.T, c AppRoleAssignedToClientTest, resourceAppId, appRoleAssignmentId string) {
+	status, err := c.client.Remove(c.connection.Context, resourceAppId, appRoleAssignmentId)
+	if err != nil {
+		t.Fatalf("AppRoleAssignedToClient.Remove(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AppRoleAssignedToClient.Remove(): invalid status: %d", status)
+	}
 }
