@@ -1,4 +1,6 @@
-## 0.30.0 (Unreleased)
+## 0.31.0 (Unreleased)
+
+## 0.30.0 (September 22, 2021)
 
 - Support for the [appRolesAssignedTo](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto?view=graph-rest-1.0) endpoint ([#107](https://github.com/manicminer/hamilton/pull/107))
 - Bug fix: `odata.Odata{}` - the `Count` field is now a `*int` ([#105](https://github.com/manicminer/hamilton/pull/105))
