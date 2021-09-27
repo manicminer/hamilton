@@ -14,7 +14,7 @@ const (
 	ErrorResourceDoesNotExist                   = "Resource '.+' does not exist or one of its queried reference-property objects are not present"
 	ErrorRemovedObjectReferencesDoNotExist      = "One or more removed object references do not exist"
 	ErrorServicePrincipalInvalidAppId           = "The appId '.+' of the service principal does not reference a valid application object"
-	ErrorUnknownError                           = "UnknownError: Unsupported Query"
+	ErrorUnknownUnsupportedQuery                = "UnknownError: Unsupported Query"
 )
 
 type Id string

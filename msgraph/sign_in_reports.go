@@ -27,7 +27,7 @@ func (c *SignInReportsClient) List(ctx context.Context, query odata.Query) (*[]S
 
 	unknownError := func(resp *http.Response, o *odata.OData) bool {
 		if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
-			return o.Error.Match(odata.ErrorUnknownError)
+			return o.Error.Match(odata.ErrorUnknownUnsupportedQuery)
 		}
 		return false
 	}
