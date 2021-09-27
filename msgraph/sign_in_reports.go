@@ -24,7 +24,6 @@ func NewSignInLogsClient(tenantId string) *SignInReportsClient {
 
 // List returns a list of Sign-in Reports, optionally queried using OData.
 func (c *SignInReportsClient) List(ctx context.Context, query odata.Query) (*[]SignInReport, int, error) {
-
 	unknownError := func(resp *http.Response, o *odata.OData) bool {
 		if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
 			return o.Error.Match(odata.ErrorUnknownUnsupportedQuery)
