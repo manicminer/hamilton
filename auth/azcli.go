@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"regexp"
 	"strings"
@@ -37,6 +38,7 @@ func (a AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 		Tenant      string `json:"tenant"`
 		TokenType   string `json:"tokenType"`
 	}
+
 	var resourceType string
 	switch a.conf.Api {
 	case MsGraph:
@@ -44,7 +46,16 @@ func (a AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 	case AadGraph:
 		resourceType = "aad-graph"
 	}
-	err := jsonUnmarshalAzCmd(&token, "account", "get-access-token", fmt.Sprintf("--resource-type=%s", resourceType), "--tenant", a.conf.TenantID)
+
+	azArgs := []string{"account", "get-access-token", fmt.Sprintf("--resource-type=%s", resourceType)}
+
+	// Try to detect if we're running in Cloud Shell
+	if cloudShell := os.Getenv("AZUREPS_HOST_ENVIRONMENT"); !strings.HasPrefix(cloudShell, "cloud-shell/") {
+		// Seemingly not, so we'll append the tenant ID to the az args
+		azArgs = append(azArgs, "--tenant", a.conf.TenantID)
+	}
+
+	err := jsonUnmarshalAzCmd(&token, azArgs...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +97,7 @@ func NewAzureCliConfig(api Api, tenantId string) (*AzureCliConfig, error) {
 // TokenSource provides a source for obtaining access tokens using AzureCliAuthorizer.
 func (c *AzureCliConfig) TokenSource(ctx context.Context) Authorizer {
 	// Cache access tokens internally to avoid unnecessary `az` invocations
-	return CachedAuthorizer(AzureCliAuthorizer{
+	return NewCachedAuthorizer(&AzureCliAuthorizer{
 		TenantID: c.TenantID,
 		ctx:      ctx,
 		conf:     c,

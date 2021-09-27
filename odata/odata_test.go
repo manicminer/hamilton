@@ -39,6 +39,44 @@ func TestOData(t *testing.T) {
 				}},
 			},
 		},
+		{
+			response: `{
+    "@odata.context": "https://graph.microsoft.us/beta/$metadata#identityGovernance/accessReviews/definitions",
+    "@odata.count": 4,
+    "value": [
+        {
+            "id": "00000000-0000-0000-0000-000000000000",
+            "displayName": "test",
+            "createdDateTime": "2020-07-08T01:22:29",
+            "lastModifiedDateTime": "2020-07-08T01:22:29",
+            "status": "InProgress",
+            "createdBy": {
+                "id": "11111111-0000-0000-0000-000000000000",
+                "displayName": "tester",
+                "type": null,
+                "userPrincipalName": "tester@contoso.us"
+            }
+        }
+    ]
+}`,
+			expected: odata.OData{
+				Context: utils.StringPtr("https://graph.microsoft.us/beta/$metadata#identityGovernance/accessReviews/definitions"),
+				Count:   utils.IntPtr(4),
+				Value: []interface{}{map[string]interface{}{
+					"id":                   "00000000-0000-0000-0000-000000000000",
+					"displayName":          "test",
+					"createdDateTime":      "2020-07-08T01:22:29",
+					"lastModifiedDateTime": "2020-07-08T01:22:29",
+					"status":               "InProgress",
+					"createdBy": map[string]interface{}{
+						"id":                "11111111-0000-0000-0000-000000000000",
+						"displayName":       "tester",
+						"type":              nil,
+						"userPrincipalName": "tester@contoso.us",
+					},
+				}},
+			},
+		},
 	}
 	for n, c := range testCases {
 		var o odata.OData

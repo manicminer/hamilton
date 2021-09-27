@@ -1,4 +1,50 @@
-## 0.25.0 (Unreleased)
+## 0.31.0 (Unreleased)
+
+## 0.30.0 (September 22, 2021)
+
+- Support for the [appRolesAssignedTo](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto?view=graph-rest-1.0) endpoint ([#107](https://github.com/manicminer/hamilton/pull/107))
+- Bug fix: `odata.Odata{}` - the `Count` field is now a `*int` ([#105](https://github.com/manicminer/hamilton/pull/105))
+
+## 0.29.0 (September 15, 2021)
+
+- Applications: add consistency check for roles/scopes that may be in the process of being disabled, when updating an application ([#102](https://github.com/manicminer/hamilton/pull/102))
+- Applications: support for uploading application logos via the `ApplicationsClient{}.UploadLogo()` method([#103](https://github.com/manicminer/hamilton/pull/103))
+- Directory Roles: add the `DirectoryROlesClient{}.GetByTemplateId()` method for retrieving roles by their template ID ([#101](https://github.com/manicminer/hamilton/pull/101))
+- `User` model: support [EmployeeOrgData](https://docs.microsoft.com/en-us/graph/api/resources/employeeorgdata?view=graph-rest-beta) ([#99](https://github.com/manicminer/hamilton/pull/99))
+
+## 0.28.2 (September 10, 2021)
+
+- Bug fix: Correctly handle HTTP responses after retries have been exhausted for a request, so that the correct status and error can be returned ([#100](https://github.com/manicminer/hamilton/pull/100))
+
+## 0.28.1 (September 9, 2021)
+
+- Bug fix: Try to detect when running in Azure Cloud Shell and avoid specifying the tenant ID for Azure CLI authentication ([#98](https://github.com/manicminer/hamilton/pull/98))
+- Bug fix: Use the correct base64 decoder when parsing token claims ([#97](https://github.com/manicminer/hamilton/pull/97))
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `User.PasswordPolicies` has changed from a `*string` to a `*StringNullWhenEmpty` ([#96](https://github.com/manicminer/hamilton/pull/96))
+
+## 0.28.0 (September 7, 2021)
+
+- Support for [application templates](https://docs.microsoft.com/en-us/graph/api/resources/applicationtemplate?view=graph-rest-1.0) ([#95](https://github.com/manicminer/hamilton/pull/95))
+
+## 0.27.0 (September 2, 2022)
+
+- Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
+
+## 0.26.0 (September 1, 2021)
+
+- `auth.CachedAuthorizer` - export this type and its `Source` field so that consumers can inspect it ([#90](https://github.com/manicminer/hamilton/pull/90))
+- Bugfix: set the struct tag for `ServicePrincipal.Owners` field so it is marshaled correctly  ([#91](https://github.com/manicminer/hamilton/pull/91))
+
+⚠️ BREAKING CHANGES:
+
+- The `auth.CachedAuthorizer()` function has been renamed to `auth.NewCachedAuthorizer()` ([#90](https://github.com/manicminer/hamilton/pull/90))
+
+## 0.25.0 (August 24, 2021)
+
+- Support for [authentication methods](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-overview?view=graph-rest-beta) ([#89](https://github.com/manicminer/hamilton/pull/89))
 
 ## 0.24.0 (August 17, 2021)
 

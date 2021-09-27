@@ -38,6 +38,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 	directoryRoles := testDirectoryRolesClient_List(t, dirRolesClient)
 	directoryRole := (*directoryRoles)[0]
 	testDirectoryRolesClient_Get(t, dirRolesClient, *directoryRole.ID)
+	testDirectoryRolesClient_GetByTemplateId(t, dirRolesClient, *directoryRole.RoleTemplateId)
 
 	// create a new test group which can be later assigned as a member of the previously listed directory role
 	newGroup := msgraph.Group{
@@ -77,6 +78,20 @@ func testDirectoryRolesClient_List(t *testing.T, c DirectoryRolesClientTest) (di
 
 func testDirectoryRolesClient_Get(t *testing.T, c DirectoryRolesClientTest, id string) (directoryRole *msgraph.DirectoryRole) {
 	directoryRole, status, err := c.client.Get(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("DirectoryRolesClient.Get(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("DirectoryRolesClient.Get(): invalid status: %d", status)
+	}
+	if directoryRole == nil {
+		t.Fatal("DirectoryRolesClient.Get(): directoryRole was nil")
+	}
+	return
+}
+
+func testDirectoryRolesClient_GetByTemplateId(t *testing.T, c DirectoryRolesClientTest, templateId string) (directoryRole *msgraph.DirectoryRole) {
+	directoryRole, status, err := c.client.GetByTemplateId(c.connection.Context, templateId)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.Get(): %v", err)
 	}
