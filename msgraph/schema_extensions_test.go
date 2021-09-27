@@ -125,7 +125,7 @@ func testSchemaExtensionsGroup(t *testing.T, g GroupsClientTest, schema *msgraph
 	if val, ok := m["property1"].(string); !ok || val != "my string value" {
 		t.Fatalf("Unexpected value for property1 returned: %+v", val)
 	}
-	if val, ok := m["property2"].(bool); !ok || val != true {
+	if val, ok := m["property2"].(bool); !ok || !val {
 		t.Fatalf("Unexpected value for property2 returned: %+v", val)
 	}
 
