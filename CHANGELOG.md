@@ -1,5 +1,7 @@
 ## 0.31.0 (Unreleased)
 
+- Sign-In Reports: Handle inconsistent 400 error when calling List with an OData filter ([#108](https://github.com/manicminer/hamilton/pull/108))
+
 ## 0.30.0 (September 22, 2021)
 
 - Support for the [appRolesAssignedTo](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto?view=graph-rest-1.0) endpoint ([#107](https://github.com/manicminer/hamilton/pull/107))
