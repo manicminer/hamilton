@@ -1,5 +1,9 @@
 ## 0.32.0 (Unreleased)
 
+## 0.31.1 (September 30, 2021)
+
+- Bug fix: `User{}.EmployeeType` is a nullable string ([#110](https://github.com/manicminer/hamilton/pull/110))
+
 ## 0.31.0 (September 30, 2021)
 
 - Add support for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-root?view=graph-rest-beta) (beta-only API) ([#93](https://github.com/manicminer/hamilton/pull/93))
