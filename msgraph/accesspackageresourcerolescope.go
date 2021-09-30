@@ -3,6 +3,7 @@ package msgraph
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -24,13 +25,12 @@ func NewAccessPackageResourceRoleScopeClient(tenantId string) *AccessPackageReso
 
 // List returns a list of AccessPackageResourceRoleScope(s)
 func (c *AccessPackageResourceRoleScopeClient) List(ctx context.Context, query odata.Query, accessPackageId string) (*[]AccessPackageResourceRoleScope, int, error) {
-	//Append Query with Expand required for endpoint
 	query.Expand = odata.Expand{
-		Relationship: "accessPackageResourceRoleScopes", Select: []string{"accessPackageResourceRole", "accessPackageResourceScope"},
+		Relationship: "accessPackageResourceRoleScopes",
+		Select:       []string{"accessPackageResourceRole", "accessPackageResourceScope"},
 	}
 
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		//DisablePaging:    query.Top > 0, Query is not a collection
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackages/%s", accessPackageId),
@@ -61,6 +61,11 @@ func (c *AccessPackageResourceRoleScopeClient) List(ctx context.Context, query o
 // Create creates a new AccessPackageResourceRoleScope.
 func (c *AccessPackageResourceRoleScopeClient) Create(ctx context.Context, accessPackageResourceRoleScope AccessPackageResourceRoleScope) (*AccessPackageResourceRoleScope, int, error) {
 	var status int
+
+	if accessPackageResourceRoleScope.AccessPackageId == nil {
+		return nil, status, errors.New("cannot create AccessPackageResourceRoleScope with nil AccessPackageId")
+	}
+
 	body, err := json.Marshal(accessPackageResourceRoleScope)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
@@ -89,11 +94,16 @@ func (c *AccessPackageResourceRoleScopeClient) Create(ctx context.Context, acces
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	accessPackageResourceRoleScope.ID = newAccessPackageResourceRoleScope.ID //Keep the rest of the information just set the ID is it does not return whole request
-	ids := strings.Split(*newAccessPackageResourceRoleScope.ID, "_")
-	// We can derive the IDs of the AccessPackageResourceRole & AccessPackageResourceScope out of the combined _ ID returned back
-	accessPackageResourceRoleScope.AccessPackageResourceRole.ID = utils.StringPtr(ids[0])
-	accessPackageResourceRoleScope.AccessPackageResourceScope.ID = utils.StringPtr(ids[1])
+	accessPackageResourceRoleScope.ID = newAccessPackageResourceRoleScope.ID // Only the ID is returned
+	if accessPackageResourceRoleScope.ID == nil {
+		return &accessPackageResourceRoleScope, status, fmt.Errorf("accessPackageResourceRoleScope returned with nil ID")
+	}
+
+	// We can derive the IDs of the AccessPackageResourceRole & AccessPackageResourceScope from the combined ID
+	if ids := strings.Split(*accessPackageResourceRoleScope.ID, "_"); len(ids) == 2 {
+		accessPackageResourceRoleScope.AccessPackageResourceRole.ID = utils.StringPtr(ids[0])
+		accessPackageResourceRoleScope.AccessPackageResourceScope.ID = utils.StringPtr(ids[1])
+	}
 
 	return &accessPackageResourceRoleScope, status, nil
 }
@@ -132,23 +142,18 @@ func (c *AccessPackageResourceRoleScopeClient) Get(ctx context.Context, accessPa
 	}
 
 	var accessPackageResourceRoleScope AccessPackageResourceRoleScope
-	// There is only a select and expand method on this endpoint - Instead foreach the list till we find it
 
+	// There is only a select and expand method on this endpoint, we iterate the result to find the RoleScope
 	for _, roleScope := range data.AccessPackageResourceRoleScopes {
-		if *roleScope.ID == id {
+		if roleScope.ID != nil && *roleScope.ID == id {
 			accessPackageResourceRoleScope = roleScope
-			accessPackageResourceRoleScope.AccessPackageId = &accessPackageId //Should probably also pass this back
+			accessPackageResourceRoleScope.AccessPackageId = &accessPackageId
 		}
 	}
 
-	if accessPackageResourceRoleScope.ID == nil { //Throw error if we cant find it
-		return nil, status, fmt.Errorf("AccessPackageResourceRoleScopeClient.BaseClient.Get(): Could not find accessPackageResourceRoleScope ID%v", err)
+	if accessPackageResourceRoleScope.ID == nil {
+		return nil, status, fmt.Errorf("AccessPackageResourceRoleScopeClient.BaseClient.Get(): Could not find accessPackageResourceRoleScope ID")
 	}
 
 	return &accessPackageResourceRoleScope, status, nil
 }
-
-// No Update Method
-
-// No Delete Method
-// Manage this downstream, intergrate into a accessPackage block and trigger a force replacement and recreate the AP & Role scope resources

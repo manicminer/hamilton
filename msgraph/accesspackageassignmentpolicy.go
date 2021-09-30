@@ -43,13 +43,13 @@ func (c *AccessPackageAssignmentPolicyClient) List(ctx context.Context, query od
 	}
 
 	var data struct {
-		AccessPackageAssignmentPolicys []AccessPackageAssignmentPolicy `json:"value"`
+		AccessPackageAssignmentPolicies []AccessPackageAssignmentPolicy `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	return &data.AccessPackageAssignmentPolicys, status, nil
+	return &data.AccessPackageAssignmentPolicies, status, nil
 }
 
 // Create creates a new AccessPackageAssignmentPolicy.

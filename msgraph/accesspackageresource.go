@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/manicminer/hamilton/odata"
 	"io"
 	"net/http"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 type AccessPackageResourceClient struct {
@@ -19,8 +20,8 @@ func NewAccessPackageResourceClient(tenantId string) *AccessPackageResourceClien
 	}
 }
 
-// List Method
-func (c *AccessPackageResourceClient) List(ctx context.Context, query odata.Query, catalogId string) (*[]AccessPackageResource, int, error) {
+// List retrieves a list of AccessPackageResources for the specified catalog
+func (c *AccessPackageResourceClient) List(ctx context.Context, catalogId string, query odata.Query) (*[]AccessPackageResource, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
@@ -50,15 +51,17 @@ func (c *AccessPackageResourceClient) List(ctx context.Context, query odata.Quer
 	return &data.AccessPackageResources, status, nil
 }
 
-//Pseudo Get Method via OData
-
+// Get retrieves an AccessPackageResource for the specified catalog
+// This uses OData Filter as there is no native Get method
 func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string, originId string) (*AccessPackageResource, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
-			Params:      odata.Query{Filter: fmt.Sprintf("startswith(originId,'%s')", originId)}.Values(),
+			Entity: fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
+			Params: odata.Query{
+				Filter: fmt.Sprintf("startswith(originId,'%s')", originId),
+			}.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -71,10 +74,10 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 	if err != nil {
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var data struct {
 		AccessPackageResources []AccessPackageResource `json:"value"`
 	}
-
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}

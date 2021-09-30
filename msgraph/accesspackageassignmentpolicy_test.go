@@ -36,20 +36,19 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	c.apAssignmentPolicyClient.BaseClient.Authorizer = c.connection.Authorizer
 
 	// Create test catalog
-	accessPackageCatalog := testapCatalogpol_Create(t, c)
+	accessPackageCatalog := testAccessPackageCatalog_Create(t, c)
 
 	// Create AP
-	accessPackage := testAp_Create(t, c, accessPackageCatalog)
+	accessPackage := testAccessPackage_Create(t, c, accessPackageCatalog)
 
 	// Create Assignment Policy
-
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
 		AccessPackageId: accessPackage.ID,
 		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.randomString)),
 		Description:     utils.StringPtr("Test AP Policy Assignment Description"),
 		//AccessReviewSettings: utils.BoolPtr()
 		RequestorSettings: &msgraph.RequestorSettings{
-			ScopeType:      utils.StringPtr("NoSubjects"),
+			ScopeType:      msgraph.RequestorSettingsScopeTypeNoSubjects,
 			AcceptRequests: utils.BoolPtr(true),
 			//AllowedRequestors: &msgraph.UserSet{}
 		},
@@ -57,31 +56,29 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 			IsApprovalRequired:               utils.BoolPtr(false),
 			IsApprovalRequiredForExtension:   utils.BoolPtr(false),
 			IsRequestorJustificationRequired: utils.BoolPtr(false),
-			ApprovalMode:                     utils.StringPtr("NoApproval"),
+			ApprovalMode:                     msgraph.ApprovalModeNoApproval,
 			//ApprovalStages: &msgraph.ApprovalStages{},
 		},
 	})
 
 	testAccessPackageAssignmentPolicyClient_Get(t, c, *accessPackageAssignmentPolicy.ID)
-	// //Update test https://docs.microsoft.com/en-us/graph/api/accesspackageassignmentpolicy-update?view=graph-rest-beta&tabs=java
-	newaccessPackageAssignmentPolicy := msgraph.AccessPackageAssignmentPolicy{
+
+	// Update test https://docs.microsoft.com/en-us/graph/api/accesspackageassignmentpolicy-update?view=graph-rest-beta
+	newAccessPackageAssignmentPolicy := msgraph.AccessPackageAssignmentPolicy{
 		ID:              accessPackageAssignmentPolicy.ID,
-		AccessPackageId: accessPackageAssignmentPolicy.AccessPackageId, //Both the ID and AccessPackageID MUST Be specified. API Complains vaguely as just "the Id"
+		AccessPackageId: accessPackageAssignmentPolicy.AccessPackageId, // Both the ID and AccessPackageId MUST Be specified. API complains vaguely as just "the Id"
 		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-Updated-%s", c.randomString)),
 		Description:     utils.StringPtr("Test AP Policy Assignment Description Updated"),
 	}
 
-	testAccessPackageAssignmentPolicyClient_Update(t, c, newaccessPackageAssignmentPolicy)
-
-	//List
+	testAccessPackageAssignmentPolicyClient_Update(t, c, newAccessPackageAssignmentPolicy)
 	testAccessPackageAssignmentPolicyClient_List(t, c)
-	// Get
-	testAccessPackageAssignmentPolicyClient_Get(t, c, *newaccessPackageAssignmentPolicy.ID)
-	//Cleanup
-	testAccessPackageAssignmentPolicyClient_Delete(t, c, *newaccessPackageAssignmentPolicy.ID)
-	testAp_Delete(t, c, *accessPackage.ID)
-	testapCatalogpol_Delete(t, c, accessPackageCatalog)
+	testAccessPackageAssignmentPolicyClient_Get(t, c, *newAccessPackageAssignmentPolicy.ID)
 
+	//Cleanup
+	testAccessPackageAssignmentPolicyClient_Delete(t, c, *newAccessPackageAssignmentPolicy.ID)
+	testAccessPackage_Delete(t, c, *accessPackage.ID)
+	testAccessPackageCatalog_Delete(t, c, accessPackageCatalog)
 }
 
 // AccessPackageAssignmentPolicy
@@ -148,9 +145,9 @@ func testAccessPackageAssignmentPolicyClient_Delete(t *testing.T, c AccessPackag
 	}
 }
 
-// AP
+// AccessPackage
 
-func testAp_Create(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageCatalog *msgraph.AccessPackageCatalog) (accessPackage *msgraph.AccessPackage) {
+func testAccessPackage_Create(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageCatalog *msgraph.AccessPackageCatalog) (accessPackage *msgraph.AccessPackage) {
 	accessPackage, _, err := c.apClient.Create(c.connection.Context, msgraph.AccessPackage{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
 		CatalogId:           accessPackageCatalog.ID,
@@ -165,20 +162,20 @@ func testAp_Create(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPack
 	return
 }
 
-func testAp_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, id string) {
+func testAccessPackage_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, id string) {
 	_, err := c.apClient.Delete(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Delete() - Could not delete test AccessPackage catalog")
 	}
 }
 
-//AP Catalog
+// AccessPackageCatalog
 
-func testapCatalogpol_Create(t *testing.T, c AccessPackageAssignmentPolicyTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
+func testAccessPackageCatalog_Create(t *testing.T, c AccessPackageAssignmentPolicyTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
 	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:         utils.StringPtr("UserManaged"),
-		CatalogStatus:       utils.StringPtr("Published"),
+		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
+		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
@@ -189,7 +186,7 @@ func testapCatalogpol_Create(t *testing.T, c AccessPackageAssignmentPolicyTest) 
 	return
 }
 
-func testapCatalogpol_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageCatalog *msgraph.AccessPackageCatalog) {
+func testAccessPackageCatalog_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageCatalog *msgraph.AccessPackageCatalog) {
 	_, err := c.apCatalogClient.Delete(c.connection.Context, *accessPackageCatalog.ID)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete() - Could not delete test AccessPackage catalog")

@@ -26,26 +26,23 @@ func TestAccessPackageCatalogClient(t *testing.T) {
 	c.apCatalogClient = msgraph.NewAccessPackageCatalogClient(c.connection.AuthConfig.TenantID)
 	c.apCatalogClient.BaseClient.Authorizer = c.connection.Authorizer
 
-	// act
 	accessPackageCatalog := testAccessPackageCatalogClient_Create(t, c, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:         utils.StringPtr("UserManaged"),
-		CatalogStatus:       utils.StringPtr("Published"),
+		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
+		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
 
-	updateAccessPackageCatalog := msgraph.AccessPackageCatalog{
+	testAccessPackageCatalogClient_Update(t, c, msgraph.AccessPackageCatalog{
 		ID:          accessPackageCatalog.ID,
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-catalog-updated-%s", c.randomString)),
 		Description: utils.StringPtr("Test Access Catalog"),
-	}
-	testAccessPackageCatalogClient_Update(t, c, updateAccessPackageCatalog)
+	})
 
 	testAccessPackageCatalogClient_List(t, c)
 	testAccessPackageCatalogClient_Get(t, c, *accessPackageCatalog.ID)
 	testAccessPackageCatalogClient_Delete(t, c, *accessPackageCatalog.ID)
-
 }
 
 func testAccessPackageCatalogClient_Create(t *testing.T, c AccessPackageCatalogTest, a msgraph.AccessPackageCatalog) (accessPackageCatalog *msgraph.AccessPackageCatalog) {

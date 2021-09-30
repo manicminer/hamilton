@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/manicminer/hamilton/internal/utils"
 	"io"
 	"net/http"
+
+	"github.com/manicminer/hamilton/internal/utils"
 
 	"github.com/manicminer/hamilton/odata"
 )
@@ -63,13 +64,13 @@ func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessP
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
-	ResourceDoesNotExist := func(resp *http.Response, o *odata.OData) bool {
+	resourceDoesNotExist := func(resp *http.Response, o *odata.OData) bool {
 		return o != nil && o.Error != nil && o.Error.Match(odata.ErrorResourceDoesNotExist)
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
-		ConsistencyFailureFunc: ResourceDoesNotExist, // There appears to be potential backend lag when creating new groups, AP then adding resources. For stability wait here for 15 seconds before continuing
+		ConsistencyFailureFunc: resourceDoesNotExist,
 		ValidStatusCodes:       []int{http.StatusCreated},
 		Uri: Uri{
 			Entity:      "/identityGovernance/entitlementManagement/accessPackageResourceRequests",
@@ -92,19 +93,30 @@ func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessP
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	// The endpoint does not actually return the AccessPackageResources created which makes implementation impossible, workaround make sure to tag responses that 201 back with what we've just posted
-
+	// The endpoint does not actually return the AccessPackageResources created which makes implementation impossible
+	// As workaround make sure to tag responses that 201 back with what we've just posted
 	newAccessPackageResourceRequest.AccessPackageResource = accessPackageResourceRequest.AccessPackageResource
 
-	// Poll For ID
+	if newAccessPackageResourceRequest.CatalogId == nil {
+		return &newAccessPackageResourceRequest, status, fmt.Errorf("response has no catalogId")
+	}
+	if newAccessPackageResourceRequest.AccessPackageResource == nil {
+		return &newAccessPackageResourceRequest, status, fmt.Errorf("response has no accessPackageResource")
+	}
+	if newAccessPackageResourceRequest.AccessPackageResource.OriginId == nil {
+		return &newAccessPackageResourceRequest, status, fmt.Errorf("response has no originId for accessPackageResource")
+	}
 
+	// Optionally poll For ID
 	if pollForId {
 		resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 			ValidStatusCodes:       []int{http.StatusOK},
 			Uri: Uri{
-				Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", *newAccessPackageResourceRequest.CatalogId), //Catalog ID Used in Request
-				Params:      odata.Query{Filter: fmt.Sprintf("startswith(originId,'%s')", *newAccessPackageResourceRequest.AccessPackageResource.OriginId)}.Values(),              //The Resource we made a request to add
+				Entity: fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", *newAccessPackageResourceRequest.CatalogId), //Catalog ID Used in Request
+				Params: odata.Query{
+					Filter: fmt.Sprintf("startswith(originId,'%s')", *newAccessPackageResourceRequest.AccessPackageResource.OriginId),
+				}.Values(), // The Resource we made a request to add
 				HasTenantId: true,
 			},
 		})
@@ -125,24 +137,29 @@ func (c *AccessPackageResourceRequestClient) Create(ctx context.Context, accessP
 			return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 		}
 
-		accessPackageResource := data.AccessPackageResources[0]
+		if len(data.AccessPackageResources) == 0 {
+			return &newAccessPackageResourceRequest, status, fmt.Errorf("failed to poll for new AccessPackageResource")
+		}
 
-		newAccessPackageResourceRequest.AccessPackageResource.ID = accessPackageResource.ID                     //Set resultant ID
+		accessPackageResource := data.AccessPackageResources[0]
+		newAccessPackageResourceRequest.AccessPackageResource.ID = accessPackageResource.ID                     // Set resultant ID
 		newAccessPackageResourceRequest.AccessPackageResource.ResourceType = accessPackageResource.ResourceType // Set resource type (is mandatory for role scopes)
 	}
 
 	return &newAccessPackageResourceRequest, status, nil
 }
 
-//Get retrieves a AccessPackageResourceRequest.
-//Pseudo Get via Odata - Note this downstream
+// Get retrieves an AccessPackageResourceRequest
+// This uses OData Filter as there is no native Get method
 func (c *AccessPackageResourceRequestClient) Get(ctx context.Context, id string) (*AccessPackageResourceRequest, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      "/identityGovernance/entitlementManagement/accessPackageResourceRequests",
-			Params:      odata.Query{Filter: fmt.Sprintf("startswith(id,'%s')", id)}.Values(),
+			Entity: "/identityGovernance/entitlementManagement/accessPackageResourceRequests",
+			Params: odata.Query{
+				Filter: fmt.Sprintf("startswith(id,'%s')", id),
+			}.Values(),
 			HasTenantId: true,
 		},
 	})
@@ -164,29 +181,24 @@ func (c *AccessPackageResourceRequestClient) Get(ctx context.Context, id string)
 	return &accessPackageResourceRequest, status, nil
 }
 
-// Update amends an existing AccessPackageResourceRequest.
-
-//There is no endpoint for this, implement force replacement in downstream providers
-
-// Delete removes a AccessPackageResourceRequest - Pseudo Delete
-// There is no Delete Endpoint - Instead we create a request to delete a resource assignment. This is weird behavior but can be implemented, specific calls are needed
-// Implement downstream via Resources endpoint: See how this is preformed in Tests
-//https://docs.microsoft.com/en-us/graph/api/accesspackageresourcerequest-post?view=graph-rest-beta&tabs=http#example-5-create-an-accesspackageresourcerequest-for-removing-a-resource
+// Delete removes a AccessPackageResourceRequest
+// This is a pseudo delete method because there is no Delete endpoint.
+// Instead, we construct and send a request to delete a resource assignment.
+// See tests for example usage.
+// Docs: https://docs.microsoft.com/en-us/graph/api/accesspackageresourcerequest-post?view=graph-rest-beta#example-5-create-an-accesspackageresourcerequest-for-removing-a-resource
 func (c *AccessPackageResourceRequestClient) Delete(ctx context.Context, accessPackageResourceRequest AccessPackageResourceRequest) (int, error) {
-
 	var status int
 
-	// Deletion Request based off resource that can be found out via List endpoint on APResources. Pass in APRequest Resources Origin ID w/ Catalog To find the resource ID
-	// See tests for examples
-	newaccessPackageResourceRequest := AccessPackageResourceRequest{
+	// Deletion request based off the initial resource request
+	newAccessPackageResourceRequest := AccessPackageResourceRequest{
 		CatalogId:   accessPackageResourceRequest.CatalogId,
 		RequestType: utils.StringPtr("AdminRemove"),
 		AccessPackageResource: &AccessPackageResource{
-			ID: accessPackageResourceRequest.AccessPackageResource.ID, //This is known after CREATE and Pseudo Poll
+			ID: accessPackageResourceRequest.AccessPackageResource.ID, // This is known after Create with poll
 		},
 	}
 
-	body, err := json.Marshal(newaccessPackageResourceRequest)
+	body, err := json.Marshal(newAccessPackageResourceRequest)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
@@ -204,10 +216,10 @@ func (c *AccessPackageResourceRequestClient) Delete(ctx context.Context, accessP
 	}
 
 	defer resp.Body.Close()
-	_, err2 := io.ReadAll(resp.Body)
-	if err2 != nil {
+	_, err = io.ReadAll(resp.Body)
+	if err != nil {
 		return status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	return status, nil //Expecting 201 Back
+	return status, nil
 }

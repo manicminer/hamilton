@@ -43,7 +43,6 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 	c.apResourceClient = msgraph.NewAccessPackageResourceClient(c.connection.AuthConfig.TenantID)
 	c.apResourceClient.BaseClient.Authorizer = c.connection.Authorizer
 
-	// make groups
 	token, err := c.connection.Authorizer.Token()
 	if err != nil {
 		t.Fatalf("could not acquire access token: %v", err)
@@ -59,16 +58,16 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 	}
 	o.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
 	o.client.BaseClient.Authorizer = o.connection.Authorizer
-
 	self := testDirectoryObjectsClient_Get(t, o, claims.ObjectId)
 
-	aadGroup := testapresourcerequestGroup_Create(t, c, msgraph.Owners{*self})
+	// Create group
+	aadGroup := testAccessPackageResourceRequestGroup_Create(t, c, msgraph.Owners{*self})
 
 	// Create test catalog
-	accessPackageCatalog := testapresourcerequestCatalog_Create(t, c)
+	accessPackageCatalog := testAccessPackageResourceRequestCatalog_Create(t, c)
 
-	// Create AP
-	accessPackage := testapresourcerequestAP_Create(t, c, msgraph.AccessPackage{
+	// Create access package
+	accessPackage := testAccessPackageResourceRequestAP_Create(t, c, msgraph.AccessPackage{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
 		CatalogId:           accessPackageCatalog.ID,
 		Description:         utils.StringPtr("Test Access Package"),
@@ -76,44 +75,32 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 		IsRoleScopesVisible: utils.BoolPtr(false),
 	})
 
-	// Create Resource Request AND Poll for ID
-
-	pollForId := true
-
+	// Create resource request and poll for ID
 	accessPackageResourceRequest := testAccessPackageResourceRequestClient_Create(t, c, msgraph.AccessPackageResourceRequest{
 		CatalogId:   accessPackage.CatalogId,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
 			OriginId:     aadGroup.ID,
-			OriginSystem: utils.StringPtr("AadGroup"),
+			OriginSystem: msgraph.AccessPackageResourceOriginSystemAadGroup,
 		},
-	}, pollForId)
+	}, true)
 
-	// Figure out what the ResourceId is IF We haven't Polled for it below
+	// Resource client
+	testAccessPackageResourceRequestResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId)
+	testAccessPackageResourceRequestResource_List(t, c, *accessPackageResourceRequest.CatalogId)
 
-	//accessPackageResource := testapresourcerequestResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId)
-	//accessPackageResourceRequest.AccessPackageResource.ID = accessPackageResource.ID
-
-	// There is no update tests here
-
-	// Tests
-
-	//Resource Client
-	testapresourcerequestResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId) //Resource we created from Request Exists
-	testapresourcerequestResource_List(t, c, *accessPackageResourceRequest.CatalogId)
-	// Requests Client
+	// Requests client
 	testAccessPackageResourceRequestClient_List(t, c)
-	testAccessPackageResourceRequestClient_Get(t, c, *accessPackageResourceRequest.ID) //Req Exists
-
+	testAccessPackageResourceRequestClient_Get(t, c, *accessPackageResourceRequest.ID)
 	testAccessPackageResourceRequestClient_Delete(t, c, accessPackageResourceRequest)
-	// Cleanup
-	testapresourcerequestAP_Delete(t, c, *accessPackage.ID)
-	testapresourcerequestCatalog_Delete(t, c, *accessPackageCatalog.ID)
-	testapresourcerequestGroup_Delete(t, c, aadGroup)
 
+	// Cleanup
+	testAccessPackageResourceRequestAP_Delete(t, c, *accessPackage.ID)
+	testAccessPackageResourceRequestCatalog_Delete(t, c, *accessPackageCatalog.ID)
+	testAccessPackageResourceRequestGroup_Delete(t, c, aadGroup)
 }
 
-// AP Resource Request
+// AccessPackageResourceRequest
 
 func testAccessPackageResourceRequestClient_Create(t *testing.T, c AccessPackageResourceRequestTest, a msgraph.AccessPackageResourceRequest, pollForId bool) (accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
 	accessPackageResourceRequest, status, err := c.apResourceRequestClient.Create(c.connection.Context, a, pollForId)
@@ -167,9 +154,9 @@ func testAccessPackageResourceRequestClient_Delete(t *testing.T, c AccessPackage
 	}
 }
 
-// AP
+// AccessPackage
 
-func testapresourcerequestAP_Create(t *testing.T, c AccessPackageResourceRequestTest, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
+func testAccessPackageResourceRequestAP_Create(t *testing.T, c AccessPackageResourceRequestTest, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
 	accessPackage, status, err := c.apClient.Create(c.connection.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Create(): %v", err)
@@ -186,7 +173,7 @@ func testapresourcerequestAP_Create(t *testing.T, c AccessPackageResourceRequest
 	return
 }
 
-func testapresourcerequestAP_Delete(t *testing.T, c AccessPackageResourceRequestTest, id string) {
+func testAccessPackageResourceRequestAP_Delete(t *testing.T, c AccessPackageResourceRequestTest, id string) {
 	status, err := c.apClient.Delete(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Delete(): %v", err)
@@ -196,13 +183,13 @@ func testapresourcerequestAP_Delete(t *testing.T, c AccessPackageResourceRequest
 	}
 }
 
-// AP Catalog
+// AccessPackageCatalog
 
-func testapresourcerequestCatalog_Create(t *testing.T, c AccessPackageResourceRequestTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
+func testAccessPackageResourceRequestCatalog_Create(t *testing.T, c AccessPackageResourceRequestTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
 	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:         utils.StringPtr("UserManaged"),
-		CatalogStatus:       utils.StringPtr("Published"),
+		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
+		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
@@ -213,20 +200,20 @@ func testapresourcerequestCatalog_Create(t *testing.T, c AccessPackageResourceRe
 	return
 }
 
-func testapresourcerequestCatalog_Delete(t *testing.T, c AccessPackageResourceRequestTest, id string) {
+func testAccessPackageResourceRequestCatalog_Delete(t *testing.T, c AccessPackageResourceRequestTest, id string) {
 	_, err := c.apCatalogClient.Delete(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete() - Could not delete test AccessPackage catalog")
 	}
 }
 
-func testapresourcerequestGroup_Create(t *testing.T, c AccessPackageResourceRequestTest, self msgraph.Owners) (group *msgraph.Group) {
+func testAccessPackageResourceRequestGroup_Create(t *testing.T, c AccessPackageResourceRequestTest, owners msgraph.Owners) (group *msgraph.Group) {
 	group, _, err := c.groupsClient.Create(c.connection.Context, msgraph.Group{
 		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.randomString)),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
-		Owners:          &self,
+		Owners:          &owners,
 	})
 
 	if err != nil {
@@ -235,16 +222,16 @@ func testapresourcerequestGroup_Create(t *testing.T, c AccessPackageResourceRequ
 	return
 }
 
-func testapresourcerequestGroup_Delete(t *testing.T, c AccessPackageResourceRequestTest, group *msgraph.Group) {
+func testAccessPackageResourceRequestGroup_Delete(t *testing.T, c AccessPackageResourceRequestTest, group *msgraph.Group) {
 	_, err := c.groupsClient.Delete(c.connection.Context, *group.ID)
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}
 }
 
-//APResource
+// AccessPackageResource
 
-func testapresourcerequestResource_Get(t *testing.T, c AccessPackageResourceRequestTest, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
+func testAccessPackageResourceRequestResource_Get(t *testing.T, c AccessPackageResourceRequestTest, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
 	accessPackageResource, status, err := c.apResourceClient.Get(c.connection.Context, catalogId, originId)
 
 	if err != nil {
@@ -260,8 +247,8 @@ func testapresourcerequestResource_Get(t *testing.T, c AccessPackageResourceRequ
 	return
 }
 
-func testapresourcerequestResource_List(t *testing.T, c AccessPackageResourceRequestTest, catalogId string) (accessPackageResources *[]msgraph.AccessPackageResource) {
-	accessPackageResources, status, err := c.apResourceClient.List(c.connection.Context, odata.Query{Top: 10}, catalogId)
+func testAccessPackageResourceRequestResource_List(t *testing.T, c AccessPackageResourceRequestTest, catalogId string) (accessPackageResources *[]msgraph.AccessPackageResource) {
+	accessPackageResources, status, err := c.apResourceClient.List(c.connection.Context, catalogId, odata.Query{Top: 10})
 
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Get(): %v", err)

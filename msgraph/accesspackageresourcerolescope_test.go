@@ -47,7 +47,6 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 	c.apResourceRoleScopeClient = msgraph.NewAccessPackageResourceRoleScopeClient(c.connection.AuthConfig.TenantID)
 	c.apResourceRoleScopeClient.BaseClient.Authorizer = c.connection.Authorizer
 
-	// make groups
 	token, err := c.connection.Authorizer.Token()
 	if err != nil {
 		t.Fatalf("could not acquire access token: %v", err)
@@ -63,16 +62,16 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 	}
 	o.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
 	o.client.BaseClient.Authorizer = o.connection.Authorizer
-
 	self := testDirectoryObjectsClient_Get(t, o, claims.ObjectId)
 
-	aadGroup := testapresourcerolescopeGroup_Create(t, c, msgraph.Owners{*self})
+	// Create group
+	aadGroup := testAccessPackageResourceRoleScopeGroup_Create(t, c, msgraph.Owners{*self})
 
 	// Create test catalog
-	accessPackageCatalog := testapresourcerolescopeCatalog_Create(t, c)
+	accessPackageCatalog := testAccessPackageResourceRoleScopeCatalog_Create(t, c)
 
-	// Create AP
-	accessPackage := testapresourcerolescopeAP_Create(t, c, msgraph.AccessPackage{
+	// Create access package
+	accessPackage := testAccessPackageResourceRoleScopeAP_Create(t, c, msgraph.AccessPackage{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
 		CatalogId:           accessPackageCatalog.ID,
 		Description:         utils.StringPtr("Test Access Package"),
@@ -80,21 +79,16 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 		IsRoleScopesVisible: utils.BoolPtr(false),
 	})
 
-	// Create Resource Request AND Poll for ID
-
-	pollForId := true
-
-	accessPackageResourceRequest := testapresourcerolescopeResourceRequest_Create(t, c, msgraph.AccessPackageResourceRequest{
+	// Create Resource Request and poll for ID
+	accessPackageResourceRequest := testAccessPackageResourceRoleScopeResourceRequest_Create(t, c, msgraph.AccessPackageResourceRequest{
 		CatalogId:   accessPackage.CatalogId,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
 			OriginId:     aadGroup.ID,
-			OriginSystem: utils.StringPtr("AadGroup"),
-			//ResourceType: utils.StringPtr("Security Group") - This is not mandatory for groups but is seen in sharepoint emails - Probably make mandatory downstream for sanity? Return on create method if we poll the resource regardless
+			OriginSystem: msgraph.AccessPackageResourceOriginSystemAadGroup,
+			//ResourceType: utils.StringPtr("Security Group") // This is not mandatory for groups but is seen in sharepoint emails
 		},
-	}, pollForId)
-
-	// Imagine can roll this into the AP Assignment as a block Needing the resource request
+	}, true)
 
 	accessPackageResourceRoleScope := testAccessPackageResourceRoleScopeClient_Create(t, c, msgraph.AccessPackageResourceRoleScope{
 		AccessPackageId: accessPackage.ID,
@@ -104,10 +98,10 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 			OriginId:     utils.StringPtr(fmt.Sprintf("Member_%s", *accessPackageResourceRequest.AccessPackageResource.OriginId)),
 			OriginSystem: accessPackageResourceRequest.AccessPackageResource.OriginSystem,
 			AccessPackageResource: &msgraph.AccessPackageResource{
-				ID:           accessPackageResourceRequest.AccessPackageResource.ID,           //Requires poll for id
-				ResourceType: accessPackageResourceRequest.AccessPackageResource.ResourceType, //requires poll for id
+				ID:           accessPackageResourceRequest.AccessPackageResource.ID,           //Requires poll for ID
+				ResourceType: accessPackageResourceRequest.AccessPackageResource.ResourceType, //requires poll for ID
 				OriginId:     accessPackageResourceRequest.AccessPackageResource.OriginId,
-				//OriginSystem: utils.StringPtr("AadGroup"),
+				//OriginSystem: msgraph.AccessPackageResourceOriginSystemAadGroup,
 			},
 		},
 		AccessPackageResourceScope: &msgraph.AccessPackageResourceScope{
@@ -116,16 +110,14 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 			OriginId:     accessPackageResourceRequest.AccessPackageResource.OriginId,
 		},
 	})
-	//Get tests
+
 	testAccessPackageResourceRoleScopeClient_Get(t, c, *accessPackageResourceRoleScope.AccessPackageId, *accessPackageResourceRoleScope.ID)
-	testapresourcerolescopeResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId)
-	// List tests
+	testAccessPackageResourceRoleScopeResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId)
 	testAccessPackageResourceRoleScopeClient_List(t, c, *accessPackageResourceRoleScope.AccessPackageId)
 
-	// Force replacement scenario
-
-	testapresourcerolescopeAP_Delete(t, c, *accessPackage.ID)
-	accessPackage = testapresourcerolescopeAP_Create(t, c, *accessPackage) //New ID
+	// Force-replacement scenario
+	testAccessPackageResourceRoleScopeAP_Delete(t, c, *accessPackage.ID)
+	accessPackage = testAccessPackageResourceRoleScopeAP_Create(t, c, *accessPackage) //New ID
 
 	testAccessPackageResourceRoleScopeClient_Create(t, c, msgraph.AccessPackageResourceRoleScope{
 		AccessPackageId: accessPackage.ID,
@@ -135,10 +127,10 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 			OriginId:     utils.StringPtr(fmt.Sprintf("Owner_%s", *accessPackageResourceRequest.AccessPackageResource.OriginId)),
 			OriginSystem: accessPackageResourceRequest.AccessPackageResource.OriginSystem,
 			AccessPackageResource: &msgraph.AccessPackageResource{
-				ID:           accessPackageResourceRequest.AccessPackageResource.ID,           //Requires poll for id
-				ResourceType: accessPackageResourceRequest.AccessPackageResource.ResourceType, //requires poll for id
+				ID:           accessPackageResourceRequest.AccessPackageResource.ID,           //Requires poll for ID
+				ResourceType: accessPackageResourceRequest.AccessPackageResource.ResourceType, //requires poll for ID
 				OriginId:     accessPackageResourceRequest.AccessPackageResource.OriginId,
-				//OriginSystem: utils.StringPtr("AadGroup"),
+				//OriginSystem: msgraph.AccessPackageResourceOriginSystemAadGroup,
 			},
 		},
 		AccessPackageResourceScope: &msgraph.AccessPackageResourceScope{
@@ -149,17 +141,16 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 	})
 
 	//testAccessPackageResourceRoleScopeClient_Delete(t, c, *accessPackageResourceRoleScope)
-
 	//testAccessPackageResourceRequestClient_Delete(t, c, accessPackageResourceRequest)
-	// Cleanup
-	testapresourcerolescopeAP_Delete(t, c, *accessPackage.ID)
-	testapresourcerolescopeResourceRequest_Delete(t, c, accessPackageResourceRequest)
-	testapresourcerolescopeCatalog_Delete(t, c, *accessPackageCatalog.ID)
-	testapresourcerolescopeGroup_Delete(t, c, aadGroup)
 
+	// Cleanup
+	testAccessPackageResourceRoleScopeAP_Delete(t, c, *accessPackage.ID)
+	testAccessPackageResourceRoleScopeResourceRequest_Delete(t, c, accessPackageResourceRequest)
+	testAccessPackageResourceRoleScopeCatalog_Delete(t, c, *accessPackageCatalog.ID)
+	testAccessPackageResourceRoleScopeGroup_Delete(t, c, aadGroup)
 }
 
-// AP Resource Scope
+// AccessPackageResourceScope
 
 func testAccessPackageResourceRoleScopeClient_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackageResourceRoleScope) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
 	accessPackageResourceRoleScope, status, err := c.apResourceRoleScopeClient.Create(c.connection.Context, a)
@@ -203,9 +194,9 @@ func testAccessPackageResourceRoleScopeClient_List(t *testing.T, c AccessPackage
 	return
 }
 
-// AP Resource
+// AccessPackageResourceRequest
 
-func testapresourcerolescopeResourceRequest_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackageResourceRequest, pollForId bool) (accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
+func testAccessPackageResourceRoleScopeResourceRequest_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackageResourceRequest, pollForId bool) (accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
 	accessPackageResourceRequest, status, err := c.apResourceRequestClient.Create(c.connection.Context, a, pollForId)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Create(): %v", err)
@@ -222,7 +213,7 @@ func testapresourcerolescopeResourceRequest_Create(t *testing.T, c AccessPackage
 	return
 }
 
-func testapresourcerolescopeResourceRequest_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
+func testAccessPackageResourceRoleScopeResourceRequest_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
 	status, err := c.apResourceRequestClient.Delete(c.connection.Context, *accessPackageResourceRequest)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Delete(): %v", err)
@@ -232,9 +223,9 @@ func testapresourcerolescopeResourceRequest_Delete(t *testing.T, c AccessPackage
 	}
 }
 
-// AP
+// AccessPackage
 
-func testapresourcerolescopeAP_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
+func testAccessPackageResourceRoleScopeAP_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
 	accessPackage, status, err := c.apClient.Create(c.connection.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Create(): %v", err)
@@ -251,7 +242,7 @@ func testapresourcerolescopeAP_Create(t *testing.T, c AccessPackageResourceRoleS
 	return
 }
 
-func testapresourcerolescopeAP_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, id string) {
+func testAccessPackageResourceRoleScopeAP_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, id string) {
 	status, err := c.apClient.Delete(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Delete(): %v", err)
@@ -261,13 +252,13 @@ func testapresourcerolescopeAP_Delete(t *testing.T, c AccessPackageResourceRoleS
 	}
 }
 
-// AP Catalog
+// AccessPackageCatalog
 
-func testapresourcerolescopeCatalog_Create(t *testing.T, c AccessPackageResourceRoleScopeTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
+func testAccessPackageResourceRoleScopeCatalog_Create(t *testing.T, c AccessPackageResourceRoleScopeTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
 	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:         utils.StringPtr("UserManaged"),
-		CatalogStatus:       utils.StringPtr("Published"),
+		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
+		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
@@ -278,14 +269,14 @@ func testapresourcerolescopeCatalog_Create(t *testing.T, c AccessPackageResource
 	return
 }
 
-func testapresourcerolescopeCatalog_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, id string) {
+func testAccessPackageResourceRoleScopeCatalog_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, id string) {
 	_, err := c.apCatalogClient.Delete(c.connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete() - Could not delete test AccessPackage catalog")
 	}
 }
 
-func testapresourcerolescopeGroup_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, self msgraph.Owners) (group *msgraph.Group) {
+func testAccessPackageResourceRoleScopeGroup_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, self msgraph.Owners) (group *msgraph.Group) {
 	group, _, err := c.groupsClient.Create(c.connection.Context, msgraph.Group{
 		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.randomString)),
 		MailEnabled:     utils.BoolPtr(false),
@@ -300,16 +291,16 @@ func testapresourcerolescopeGroup_Create(t *testing.T, c AccessPackageResourceRo
 	return
 }
 
-func testapresourcerolescopeGroup_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, group *msgraph.Group) {
+func testAccessPackageResourceRoleScopeGroup_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, group *msgraph.Group) {
 	_, err := c.groupsClient.Delete(c.connection.Context, *group.ID)
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}
 }
 
-//APResource
+// AccessPackageResource
 
-func testapresourcerolescopeResource_Get(t *testing.T, c AccessPackageResourceRoleScopeTest, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
+func testAccessPackageResourceRoleScopeResource_Get(t *testing.T, c AccessPackageResourceRoleScopeTest, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
 	accessPackageResource, status, err := c.apResourceClient.Get(c.connection.Context, catalogId, originId)
 
 	if err != nil {

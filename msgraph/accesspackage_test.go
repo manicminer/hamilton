@@ -42,21 +42,20 @@ func TestAccessPackageClient(t *testing.T) {
 		IsHidden:            utils.BoolPtr(false),
 		IsRoleScopesVisible: utils.BoolPtr(false),
 	})
-	//Update test
-	updateAccessPackage := msgraph.AccessPackage{
+
+	// Update test
+	testAccessPackageClient_Update(t, c, msgraph.AccessPackage{
 		ID:          accessPackage.ID,
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-updated-%s", c.randomString)),
-	}
-	testAccessPackageClient_Update(t, c, updateAccessPackage)
+	})
+
 	// Other operations
 	testAccessPackageClient_List(t, c)
 	testAccessPackageClient_Get(t, c, *accessPackage.ID)
-
 	testAccessPackageClient_Delete(t, c, *accessPackage.ID)
 
 	// Cleanup
 	testapCatalog_Delete(t, c, accessPackageCatalog)
-
 }
 
 // AP
@@ -128,8 +127,8 @@ func testAccessPackageClient_Delete(t *testing.T, c AccessPackageTest, id string
 func testapCatalog_Create(t *testing.T, c AccessPackageTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
 	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
-		CatalogType:         utils.StringPtr("UserManaged"),
-		CatalogStatus:       utils.StringPtr("Published"),
+		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
+		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
