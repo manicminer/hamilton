@@ -1,7 +1,9 @@
-## 0.31.0 (Unreleased)
+## 0.32.0 (Unreleased)
+
+## 0.31.0 (September 30, 2021)
 
 - Add support for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-root?view=graph-rest-beta) (beta-only API) ([#93](https://github.com/manicminer/hamilton/pull/93))
-- Bug fix: Handle inconsistent 400 error when listing sign-in reports with an OData filter ([#108](https://github.com/manicminer/hamilton/pull/108))
+- Bug fix: handle inconsistent 400 error when listing sign-in reports with an OData filter ([#108](https://github.com/manicminer/hamilton/pull/108))
 - Bug fix: work around an API consistency issue when creating service principals for new applications that have not fully replicated ([#109](https://github.com/manicminer/hamilton/pull/109))
 
 ## 0.30.0 (September 22, 2021)
