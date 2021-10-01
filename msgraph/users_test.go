@@ -40,6 +40,17 @@ func TestUsersClient(t *testing.T) {
 	testUsersClient_Update(t, c, *user)
 	testUsersClient_List(t, c)
 
+	manager := testUsersClient_Create(t, c, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-manager"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-manager-%s", c.randomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-manager-%s@%s", c.randomString, c.connection.DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+		},
+	})
+	testUsersClient_Get(t, c, *manager.ID)
+
 	g := GroupsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
@@ -70,6 +81,10 @@ func TestUsersClient(t *testing.T) {
 	testUsersClient_ListGroupMemberships(t, c, *user.ID)
 	testGroupsClient_Delete(t, g, *groupParent.ID)
 	testGroupsClient_Delete(t, g, *groupChild.ID)
+
+	testUsersClient_AssignManager(t, c, *user.ID, *manager)
+	testUsersClient_GetManager(t, c, *user.ID)
+	testUsersClient_Delete(t, c, *manager.ID)
 
 	testUsersClient_Delete(t, c, *user.ID)
 	testUsersClient_ListDeleted(t, c, *user.ID)
@@ -229,4 +244,28 @@ func testUsersClient_RestoreDeleted(t *testing.T, c UsersClientTest, id string) 
 	if *user.ID != id {
 		t.Fatal("UsersClient.RestoreDeleted(): user ids do not match")
 	}
+}
+
+func testUsersClient_AssignManager(t *testing.T, c UsersClientTest, id string, manager msgraph.User) {
+	status, err := c.client.AssignManager(c.connection.Context, id, manager)
+	if err != nil {
+		t.Fatalf("UsersClient.AssignManager(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.AssignManager(): invalid status: %d", status)
+	}
+}
+
+func testUsersClient_GetManager(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
+	user, status, err := c.client.GetManager(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("UsersClient.GetManager(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.GetManager(): invalid status: %d", status)
+	}
+	if user == nil {
+		t.Fatal("UsersClient.GetManager(): user was nil")
+	}
+	return
 }
