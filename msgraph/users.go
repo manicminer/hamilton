@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 
 	"github.com/manicminer/hamilton/odata"
@@ -375,7 +374,7 @@ func (c *UsersClient) GetManager(ctx context.Context, id string) (*User, int, er
 		return nil, status, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 	var manager User
 	if err := json.Unmarshal(respBody, &manager); err != nil {
 		return nil, status, err
