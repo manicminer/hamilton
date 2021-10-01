@@ -363,7 +363,7 @@ func (c *UsersClient) Sendmail(ctx context.Context, id string, message MailMessa
 	return status, nil
 }
 
-// Get retrieves an  user or organizational contact assigned as the user's manager.
+// GetManager retrieves an user or organizational contact assigned as the user's manager.
 func (c *UsersClient) GetManager(ctx context.Context, id string) (*User, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
