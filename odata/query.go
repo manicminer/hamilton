@@ -57,6 +57,7 @@ type Query struct {
 	Top int
 }
 
+// Headers returns an http.Header map containing OData specific headers, for use in requests
 func (q Query) Headers() http.Header {
 	// Take extra care over canonicalization of header names
 	headers := http.Header{
@@ -77,7 +78,11 @@ func (q Query) Headers() http.Header {
 	return headers
 }
 
+// AppendHeaders returns the provided http.Header map with OData specific headers appended, for use in requests
 func (q Query) AppendHeaders(header http.Header) http.Header {
+	if header == nil {
+		header = http.Header{}
+	}
 	for k, v := range q.Headers() {
 		if len(v) > 0 {
 			header.Set(k, v[0])
@@ -86,6 +91,7 @@ func (q Query) AppendHeaders(header http.Header) http.Header {
 	return header
 }
 
+// Values returns a url.Values map containing OData specific query parameters, for use in requests
 func (q Query) Values() url.Values {
 	p := url.Values{}
 	if q.Count {
@@ -116,6 +122,19 @@ func (q Query) Values() url.Values {
 		p.Add("$top", strconv.Itoa(q.Top))
 	}
 	return p
+}
+
+// AppendValues returns the provided url.Values map with OData specific query parameters appended, for use in requests
+func (q Query) AppendValues(values url.Values) url.Values {
+	if values == nil {
+		values = url.Values{}
+	}
+	for k, v := range q.Values() {
+		if len(v) > 0 {
+			values.Set(k, v[0])
+		}
+	}
+	return values
 }
 
 type Expand struct {

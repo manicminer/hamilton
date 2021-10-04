@@ -336,6 +336,9 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 	// Check for a raw uri, else build one from the Uri field
 	url := input.rawUri
 	if url == "" {
+		// Append odata query parameters
+		input.Uri.Params = input.OData.AppendValues(input.Uri.Params)
+
 		var err error
 		url, err = c.buildUri(input.Uri)
 		if err != nil {
