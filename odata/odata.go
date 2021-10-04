@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-const ODataVersion = "4.01"
+const ODataVersion = "4.0" // TODO: support 4.01 - https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#_Toc499720587
 
 type Id string
 
