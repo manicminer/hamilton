@@ -1,6 +1,7 @@
 package odata_test
 
 import (
+	"net/http"
 	"net/url"
 	"reflect"
 	"testing"
@@ -8,7 +9,47 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
-func TestQuery(t *testing.T) {
+func TestQueryHeaders(t *testing.T) {
+	type testCase struct {
+		query    odata.Query
+		expected http.Header
+	}
+	testCases := []testCase{
+		{
+			query: odata.Query{},
+			expected: http.Header{
+				"Accept":           []string{"application/json; charset=utf-8; IEEE754Compatible=false"},
+				"Odata-Maxversion": []string{odata.ODataVersion},
+				"Odata-Version":    []string{odata.ODataVersion},
+			},
+		},
+		{
+			query: odata.Query{
+				ConsistencyLevel: odata.ConsistencyLevelEventual,
+				Metadata:         odata.MetadataMinimal,
+			},
+			expected: http.Header{
+				"Accept":           []string{"application/json; charset=utf-8; IEEE754Compatible=false; odata.metadata=minimal"},
+				"Consistencylevel": []string{"eventual"},
+				"Odata-Maxversion": []string{odata.ODataVersion},
+				"Odata-Version":    []string{odata.ODataVersion},
+			},
+		},
+	}
+	for n, c := range testCases {
+		v := c.query.Headers()
+		if !reflect.DeepEqual(v, c.expected) {
+			t.Errorf("test case %d for %s: expected %#v, got %#v", n, "Headers()", c.expected, v)
+		}
+		c.expected.Set("Testing", "foo")
+		v = c.query.AppendHeaders(http.Header{"Testing": []string{"foo"}})
+		if !reflect.DeepEqual(v, c.expected) {
+			t.Errorf("test case %d for %s: expected %#v, got %#v", n, "AppendHeaders()", c.expected, v)
+		}
+	}
+}
+
+func TestQueryValues(t *testing.T) {
 	type testCase struct {
 		query    odata.Query
 		expected url.Values

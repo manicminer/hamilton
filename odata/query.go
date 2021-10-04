@@ -2,12 +2,33 @@ package odata
 
 import (
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 )
 
+type ConsistencyLevel string
+
+const (
+	ConsistencyLevelEventual ConsistencyLevel = "eventual"
+)
+
+type Metadata string
+
+const (
+	MetadataFull    Metadata = "full"
+	MetadataMinimal Metadata = "minimal"
+	MetadataNone    Metadata = "none"
+)
+
 type Query struct {
+	// ConsistencyLevel sets the corresponding http header
+	ConsistencyLevel ConsistencyLevel
+
+	// Metadata indicates how much control information is requested (services assume "minimal" when not specified)
+	Metadata Metadata
+
 	// Count includes a count of the total number of items in a collection alongside the page of data values
 	Count bool
 
@@ -34,6 +55,35 @@ type Query struct {
 
 	// Top specifies the page size of the result set
 	Top int
+}
+
+func (q Query) Headers() http.Header {
+	// Take extra care over canonicalization of header names
+	headers := http.Header{
+		"Odata-Maxversion": []string{ODataVersion},
+		"Odata-Version":    []string{ODataVersion},
+	}
+
+	accept := "application/json; charset=utf-8; IEEE754Compatible=false"
+	if q.Metadata != "" {
+		accept = fmt.Sprintf("%s; odata.metadata=%s", accept, q.Metadata)
+	}
+	headers.Set("Accept", accept)
+
+	if q.ConsistencyLevel != "" {
+		headers.Set("Consistencylevel", string(q.ConsistencyLevel))
+	}
+
+	return headers
+}
+
+func (q Query) AppendHeaders(header http.Header) http.Header {
+	for k, v := range q.Headers() {
+		if len(v) > 0 {
+			header.Set(k, v[0])
+		}
+	}
+	return header
 }
 
 func (q Query) Values() url.Values {

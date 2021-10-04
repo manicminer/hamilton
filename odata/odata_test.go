@@ -77,6 +77,21 @@ func TestOData(t *testing.T) {
 				}},
 			},
 		},
+		{
+			response: `{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#directoryObjects/$entity",
+  "@odata.type": "#microsoft.graph.servicePrincipal",
+  "@odata.id": "https://graph.microsoft.com/v2/1564a4be-0377-4d9b-8aff-5a2b564e177c/directoryObjects/11111111-0000-0000-0000-000000000000/Microsoft.DirectoryServices.ServicePrincipal",
+  "@odata.editLink": "https://graph.microsoft.com/v2/1564a4be-0377-4d9b-8aff-5a2b564e177c/directoryObjects/11111111-0000-0000-0000-000000000000/Microsoft.DirectoryServices.ServicePrincipal",
+  "id": "11111111-0000-0000-0000-000000000000"
+}`,
+			expected: odata.OData{
+				Context:  utils.StringPtr("https://graph.microsoft.com/v1.0/$metadata#directoryObjects/$entity"),
+				Type:     utils.StringPtr(odata.TypeServicePrincipal),
+				Id:       (*odata.Id)(utils.StringPtr("https://graph.microsoft.com/v1.0/1564a4be-0377-4d9b-8aff-5a2b564e177c/directoryObjects/11111111-0000-0000-0000-000000000000/Microsoft.DirectoryServices.ServicePrincipal")),
+				EditLink: (*odata.Link)(utils.StringPtr("https://graph.microsoft.com/v1.0/1564a4be-0377-4d9b-8aff-5a2b564e177c/directoryObjects/11111111-0000-0000-0000-000000000000/Microsoft.DirectoryServices.ServicePrincipal")),
+			},
+		},
 	}
 	for n, c := range testCases {
 		var o odata.OData
