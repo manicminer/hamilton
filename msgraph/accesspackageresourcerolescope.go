@@ -116,7 +116,6 @@ func (c *AccessPackageResourceRoleScopeClient) Get(ctx context.Context, accessPa
 				Relationship: "accessPackageResourceRoleScopes",
 				Select:       []string{"accessPackageResourceRole", "accessPackageResourceScope"},
 			},
-			//Filter: fmt.Sprintf("startswith(originId,'%s')", id),
 		}, //The Resource we made a request to add
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
