@@ -361,3 +361,53 @@ func (c *UsersClient) Sendmail(ctx context.Context, id string, message MailMessa
 
 	return status, nil
 }
+
+// GetManager retrieves an user or organizational contact assigned as the user's manager.
+func (c *UsersClient) GetManager(ctx context.Context, id string) (*User, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/users/%s/manager", id),
+		},
+	})
+	if err != nil {
+		return nil, status, err
+	}
+
+	defer resp.Body.Close()
+	respBody, _ := io.ReadAll(resp.Body)
+	var manager User
+	if err := json.Unmarshal(respBody, &manager); err != nil {
+		return nil, status, err
+	}
+
+	return &manager, status, nil
+}
+
+// AssignManager assigns a user's manager.
+func (c *UsersClient) AssignManager(ctx context.Context, id string, manager User) (int, error) {
+	var status int
+
+	body, err := json.Marshal(struct {
+		Manager odata.Id `json:"@odata.id"`
+	}{
+		Manager: *manager.ODataId,
+	})
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	_, status, _, err = c.BaseClient.Put(ctx, PutHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/users/%s/manager/$ref", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("UsersClient.BaseClient.Post(): %v", err)
+	}
+
+	return status, nil
+}
