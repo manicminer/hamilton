@@ -373,12 +373,14 @@ func (c *UsersClient) GetManager(ctx context.Context, id string) (*User, int, er
 	if err != nil {
 		return nil, status, err
 	}
+
 	defer resp.Body.Close()
 	respBody, _ := io.ReadAll(resp.Body)
 	var manager User
 	if err := json.Unmarshal(respBody, &manager); err != nil {
 		return nil, status, err
 	}
+
 	return &manager, status, nil
 }
 
