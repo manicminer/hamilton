@@ -1,5 +1,6 @@
 ## 0.32.0 (Unreleased)
 
+- Support for [assigning](https://docs.microsoft.com/en-us/graph/api/user-post-manager?view=graph-rest-beta&tabs=http) and [retrieving](https://docs.microsoft.com/en-us/graph/api/user-list-manager?view=graph-rest-beta&tabs=http) a user's manager ([#111](https://github.com/manicminer/hamilton/pull/111))
 - Add application ID for "Azure VPN" to environments package ([#113](https://github.com/manicminer/hamilton/pull/113))
 
 ## 0.31.1 (September 30, 2021)
