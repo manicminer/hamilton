@@ -1,5 +1,7 @@
 ## 0.32.0 (Unreleased)
 
+- Add application ID for "Azure VPN" to environments package ([#113](https://github.com/manicminer/hamilton/pull/113))
+
 ## 0.31.1 (September 30, 2021)
 
 - Bug fix: `User{}.EmployeeType` is a nullable string ([#110](https://github.com/manicminer/hamilton/pull/110))
