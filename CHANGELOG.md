@@ -1,4 +1,6 @@
-## 0.32.0 (Unreleased)
+## 0.33.0 (Unreleased)
+
+## 0.32.0 (October 6, 2021)
 
 - Support for setting OData-related HTTP headers
   - Implement a new way to pass the entire `odata.Query` object as part of request inputs
