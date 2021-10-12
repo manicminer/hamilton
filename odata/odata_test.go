@@ -9,11 +9,57 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
+func TestODataId(t *testing.T) {
+	type testCase struct {
+		input    odata.Id
+		expected []byte
+	}
+
+	testCases := []testCase{
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/00000000-0000-0000-0000-000000000000/directoryObjects/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`https://graph.microsoft.com/v1.0/00000000-0000-0000-0000-000000000000/directoryObjects/11111111-1111-1111-1111-111111111111`),
+		},
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/00000000-0000-0000-0000-000000000000/directoryObjects/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`https://graph.microsoft.com/v2/00000000-0000-0000-0000-000000000000/directoryObjects/11111111-1111-1111-1111-111111111111`),
+		},
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/directoryObjects/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`https://graph.microsoft.com/v1.0/directoryObjects/11111111-1111-1111-1111-111111111111`),
+		},
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/directoryObjects/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`https://graph.microsoft.com/v2/directoryObjects/11111111-1111-1111-1111-111111111111`),
+		},
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/directoryObjects/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`directoryObjects('11111111-1111-1111-1111-111111111111')`),
+		},
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/users/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`users('11111111-1111-1111-1111-111111111111')`),
+		},
+	}
+
+	for n, c := range testCases {
+		id, err := json.Marshal(c.input)
+		if err != nil {
+			t.Errorf("test case %d: JSON marshaling failed: %v", n, err)
+			continue
+		}
+		if !reflect.DeepEqual(id, c.expected) {
+			t.Errorf("test case %d: expected %#v, got %#v", n, string(c.expected), string(id))
+		}
+	}
+}
+
 func TestOData(t *testing.T) {
 	type testCase struct {
 		response string
 		expected odata.OData
 	}
+
 	testCases := []testCase{
 		{
 			response: `{
@@ -93,11 +139,12 @@ func TestOData(t *testing.T) {
 			},
 		},
 	}
+
 	for n, c := range testCases {
 		var o odata.OData
 		err := json.Unmarshal([]byte(c.response), &o)
 		if err != nil {
-			t.Errorf("test case %d: JSON unmarshalling failed: %v", n, err)
+			t.Errorf("test case %d: JSON unmarshaling failed: %v", n, err)
 			continue
 		}
 		if !reflect.DeepEqual(o, c.expected) {
@@ -111,6 +158,7 @@ func TestError(t *testing.T) {
 		response string
 		expected string
 	}
+
 	testCases := []testCase{
 		{
 			response: `{
@@ -161,7 +209,7 @@ func TestError(t *testing.T) {
 		var o odata.OData
 		err := json.Unmarshal([]byte(c.response), &o)
 		if err != nil {
-			t.Errorf("test case %d: JSON unmarshalling failed: %v", n, err)
+			t.Errorf("test case %d: JSON unmarshaling failed: %v", n, err)
 			continue
 		}
 		if o.Error == nil {

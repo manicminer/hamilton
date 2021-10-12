@@ -63,7 +63,10 @@ func (c *UsersClient) Create(ctx context.Context, user User) (*User, int, error)
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
+		Body: body,
+		OData: odata.Query{
+			Metadata: odata.MetadataFull,
+		},
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
 			Entity:      "/users",
