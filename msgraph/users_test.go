@@ -58,21 +58,19 @@ func TestUsersClient(t *testing.T) {
 	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
 
-	newGroupParent := msgraph.Group{
+	groupParent := testGroupsClient_Create(t, g, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
-	}
-	newGroupChild := msgraph.Group{
+	})
+	groupChild := testGroupsClient_Create(t, g, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-child-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
 		SecurityEnabled: utils.BoolPtr(true),
-	}
+	})
 
-	groupParent := testGroupsClient_Create(t, g, newGroupParent)
-	groupChild := testGroupsClient_Create(t, g, newGroupChild)
 	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
 	testGroupsClient_AddMembers(t, g, groupParent)
 	groupChild.Members = &msgraph.Members{user.DirectoryObject}
@@ -84,6 +82,7 @@ func TestUsersClient(t *testing.T) {
 
 	testUsersClient_AssignManager(t, c, *user.ID, *manager)
 	testUsersClient_GetManager(t, c, *user.ID)
+	testUsersClient_DeleteManager(t, c, *user.ID)
 	testUsersClient_Delete(t, c, *manager.ID)
 
 	testUsersClient_Delete(t, c, *user.ID)
@@ -266,6 +265,17 @@ func testUsersClient_GetManager(t *testing.T, c UsersClientTest, id string) (use
 	}
 	if user == nil {
 		t.Fatal("UsersClient.GetManager(): user was nil")
+	}
+	return
+}
+
+func testUsersClient_DeleteManager(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
+	status, err := c.client.DeleteManager(c.connection.Context, id)
+	if err != nil {
+		t.Fatalf("UsersClient.DeleteManager(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.DeleteManager(): invalid status: %d", status)
 	}
 	return
 }

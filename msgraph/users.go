@@ -414,3 +414,18 @@ func (c *UsersClient) AssignManager(ctx context.Context, id string, manager User
 
 	return status, nil
 }
+
+// DeleteManager removes a user's manager assignment.
+func (c *UsersClient) DeleteManager(ctx context.Context, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/users/%s/manager/$ref", id),
+		},
+	})
+	if err != nil {
+		return status, err
+	}
+
+	return status, nil
+}
