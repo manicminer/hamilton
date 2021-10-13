@@ -27,6 +27,10 @@ type MsiAuthorizer struct {
 
 // Token returns an access token acquired from the metadata endpoint.
 func (a *MsiAuthorizer) Token() (*oauth2.Token, error) {
+	if a.conf == nil {
+		return nil, fmt.Errorf("could not request token: conf is nil")
+	}
+
 	query := url.Values{
 		"api-version": []string{a.conf.MsiApiVersion},
 		"resource":    []string{a.conf.Resource},
