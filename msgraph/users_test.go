@@ -25,6 +25,7 @@ func TestUsersClient(t *testing.T) {
 	}
 	c.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
@@ -57,6 +58,7 @@ func TestUsersClient(t *testing.T) {
 	}
 	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
+	g.client.BaseClient.Endpoint = g.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	groupParent := testGroupsClient_Create(t, g, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-users"),

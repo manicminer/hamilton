@@ -25,6 +25,7 @@ func TestGroupsClient(t *testing.T) {
 	}
 	c.client = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	token, err := c.connection.Authorizer.Token()
 	if err != nil {
@@ -39,15 +40,17 @@ func TestGroupsClient(t *testing.T) {
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	u.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
-	u.client.BaseClient.Authorizer = c.connection.Authorizer
+	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
+	u.client.BaseClient.Authorizer = u.connection.Authorizer
+	u.client.BaseClient.Endpoint = u.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	o := DirectoryObjectsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	o.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
+	o.client = msgraph.NewDirectoryObjectsClient(o.connection.AuthConfig.TenantID)
 	o.client.BaseClient.Authorizer = o.connection.Authorizer
+	o.client.BaseClient.Endpoint = o.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	self := testDirectoryObjectsClient_Get(t, o, claims.ObjectId)
 

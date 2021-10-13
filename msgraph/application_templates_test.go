@@ -27,6 +27,7 @@ func TestApplicationTemplatesClient(t *testing.T) {
 	}
 	c.client = msgraph.NewApplicationTemplatesClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	testApplicationTemplatesClient_List(t, c, odata.Query{})
 	testApplicationTemplatesClient_List(t, c, odata.Query{Filter: fmt.Sprintf("categories/any(c:contains(c, '%s'))", msgraph.ApplicationTemplateCategoryEducation)})
@@ -40,8 +41,9 @@ func TestApplicationTemplatesClient(t *testing.T) {
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	s.client = msgraph.NewServicePrincipalsClient(c.connection.AuthConfig.TenantID)
-	s.client.BaseClient.Authorizer = c.connection.Authorizer
+	s.client = msgraph.NewServicePrincipalsClient(s.connection.AuthConfig.TenantID)
+	s.client.BaseClient.Authorizer = s.connection.Authorizer
+	s.client.BaseClient.Endpoint = s.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	testServicePrincipalsClient_Delete(t, s, *app.ServicePrincipal.ID)
 
@@ -49,8 +51,9 @@ func TestApplicationTemplatesClient(t *testing.T) {
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	a.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
-	a.client.BaseClient.Authorizer = c.connection.Authorizer
+	a.client = msgraph.NewApplicationsClient(a.connection.AuthConfig.TenantID)
+	a.client.BaseClient.Authorizer = a.connection.Authorizer
+	a.client.BaseClient.Endpoint = a.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	testApplicationsClient_Delete(t, a, *app.Application.ID)
 	testApplicationsClient_DeletePermanently(t, a, *app.Application.ID)

@@ -25,6 +25,7 @@ func TestAccessPackageCatalogClient(t *testing.T) {
 
 	c.apCatalogClient = msgraph.NewAccessPackageCatalogClient(c.connection.AuthConfig.TenantID)
 	c.apCatalogClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.apCatalogClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	accessPackageCatalog := testAccessPackageCatalogClient_Create(t, c, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),

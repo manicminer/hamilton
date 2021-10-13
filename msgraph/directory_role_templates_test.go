@@ -24,6 +24,7 @@ func TestDirectoryRoleTemplatesClient(t *testing.T) {
 	}
 	dirRoleTemplatesClient.client = msgraph.NewDirectoryRoleTemplatesClient(dirRoleTemplatesClient.connection.AuthConfig.TenantID)
 	dirRoleTemplatesClient.client.BaseClient.Authorizer = dirRoleTemplatesClient.connection.Authorizer
+	dirRoleTemplatesClient.client.BaseClient.Endpoint = dirRoleTemplatesClient.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	// set up directory roles test client
 	dirRolesClient := DirectoryRolesClientTest{

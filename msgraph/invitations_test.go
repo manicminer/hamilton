@@ -24,6 +24,7 @@ func TestInvitationsClient(t *testing.T) {
 	}
 	c.client = msgraph.NewInvitationsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	testInvitationsClient_Create(t, c, msgraph.Invitation{
 		InvitedUserDisplayName:  utils.StringPtr("test-user-invited"),

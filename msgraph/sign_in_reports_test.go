@@ -20,6 +20,7 @@ func TestSignInReportsTest(t *testing.T) {
 	}
 	c.client = msgraph.NewSignInLogsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	signInLogs := testSignInReports_List(t, c)
 	if *signInLogs != nil && len(*signInLogs) > 0 {

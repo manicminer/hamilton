@@ -25,20 +25,23 @@ func TestDirectoryObjectsClient(t *testing.T) {
 	}
 	c.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	g := GroupsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	g.client = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
-	g.client.BaseClient.Authorizer = c.connection.Authorizer
+	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
+	g.client.BaseClient.Authorizer = g.connection.Authorizer
+	g.client.BaseClient.Endpoint = g.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	u := UsersClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	u.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
-	u.client.BaseClient.Authorizer = c.connection.Authorizer
+	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
+	u.client.BaseClient.Authorizer = u.connection.Authorizer
+	u.client.BaseClient.Endpoint = u.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	user := testUsersClient_Create(t, u, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),

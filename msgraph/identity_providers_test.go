@@ -26,6 +26,7 @@ func TestIdentityProvidersClient(t *testing.T) {
 	}
 	c.client = msgraph.NewIdentityProvidersClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	providers := testIdentityProvidersClient_List(t, c)
 	for _, provider := range *providers {

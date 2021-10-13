@@ -19,6 +19,7 @@ var (
 	clientCertificatePath = os.Getenv("CLIENT_CERTIFICATE_PATH")
 	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
 	clientSecret          = os.Getenv("CLIENT_SECRET")
+	environment           = os.Getenv("AZURE_ENVIRONMENT")
 )
 
 type Connection struct {
@@ -30,9 +31,22 @@ type Connection struct {
 
 // NewConnection configures and returns a Connection for use in tests.
 func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
+	env := environments.Global
+	switch environment {
+	case "usgovernment", "usgovernmentl4":
+		env = environments.USGovernmentL4
+	case "dod", "usgovernmentl5":
+		env = environments.USGovernmentL5
+	case "canary":
+		env = environments.Canary
+	case "china":
+		env = environments.China
+	case "germany":
+		env = environments.Germany
+	}
 	t := Connection{
 		AuthConfig: &auth.Config{
-			Environment:            environments.Global,
+			Environment:            env,
 			Version:                tokenVersion,
 			TenantID:               tenantId,
 			ClientID:               clientId,
