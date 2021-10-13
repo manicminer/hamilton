@@ -1,4 +1,26 @@
-## 0.31.0 (Unreleased)
+## 0.33.0 (Unreleased)
+
+## 0.32.0 (October 6, 2021)
+
+- Support for setting OData-related HTTP headers
+  - Implement a new way to pass the entire `odata.Query` object as part of request inputs
+  - Update all existing clients to pass `odata.Query` in full
+    - The existing method of passing a `url.Values`map still works, maintains compatibility and can be used for passing non-odata related query parameters
+  - Support setting [OData-related HTTP headers](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358856) including `OData-Version` / `OData-MaxVersion`, [odata-json parameters](https://docs.oasis-open.org/odata/odata-json-format/v4.01/odata-json-format-v4.01.html#_Toc38457724) on the `Accept` header, and [the `ConsistencyLevel` header](https://developer.microsoft.com/en-us/identity/blogs/microsoft-graph-advanced-queries-for-directory-objects-are-now-generally-available/) which isn't strictly in the odata 'standard' but heavily related
+  - Set the `odata.metadata` parameter to `full` when retrieving directory objects to [ensure the `@odata.id` field is returned](https://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766619)
+    - This dramatically increases the payload volume so we don't default it everywhere
+- Support for [assigning](https://docs.microsoft.com/en-us/graph/api/user-post-manager?view=graph-rest-beta&tabs=http) and [retrieving](https://docs.microsoft.com/en-us/graph/api/user-list-manager?view=graph-rest-beta&tabs=http) a user's manager ([#111](https://github.com/manicminer/hamilton/pull/111))
+- Add application ID for "Azure VPN" to environments package ([#113](https://github.com/manicminer/hamilton/pull/113))
+
+## 0.31.1 (September 30, 2021)
+
+- Bug fix: `User{}.EmployeeType` is a nullable string ([#110](https://github.com/manicminer/hamilton/pull/110))
+
+## 0.31.0 (September 30, 2021)
+
+- Add support for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-root?view=graph-rest-beta) (beta-only API) ([#93](https://github.com/manicminer/hamilton/pull/93))
+- Bug fix: handle inconsistent 400 error when listing sign-in reports with an OData filter ([#108](https://github.com/manicminer/hamilton/pull/108))
+- Bug fix: work around an API consistency issue when creating service principals for new applications that have not fully replicated ([#109](https://github.com/manicminer/hamilton/pull/109))
 
 ## 0.30.0 (September 22, 2021)
 
