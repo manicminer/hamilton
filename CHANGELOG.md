@@ -1,5 +1,11 @@
 ## 0.33.0 (Unreleased)
 
+- Support for specifying the client ID when using managed identity authentication ([#115](https://github.com/manicminer/hamilton/pull/115))
+
+⚠️ BREAKING CHANGES:
+
+- The signatures for the `auth.NewMsiAuthorizer()` and `auth.NewMsiConfig()` functions have changed to accommodate the client ID ([#115](https://github.com/manicminer/hamilton/pull/115))
+
 ## 0.32.0 (October 6, 2021)
 
 - Support for setting OData-related HTTP headers
