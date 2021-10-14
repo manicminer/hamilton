@@ -7,7 +7,18 @@ support for services and objects in Azure Active Directory.
 
 See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
 
-## Example Usage
+## Features
+
+- Automatic retries for failed requests and handling of eventual consistency on writes due to propagation delays
+- Automatic paging of results
+- Native model structs for marshaling and unmarshaling
+- Support for national clouds including US Government (L4 and L5), China and Germany
+- Support for both the v1.0 and beta API endpoints
+- Ability to inject middleware functions for logging etc
+- OData parsing in API responses and support for OData queries such as filters, sorting, searching, expand and select
+- Built-in authentication support using methods including client credentials (both client secret and client certificate), obtaining access tokens via Azure CLI, and managed identity via the Azure Metadata Service
+
+## Getting Started
 
 ```go
 package main
@@ -64,11 +75,57 @@ func main() {
 }
 ```
 
+## Configure retry limit for all failed requests
+
+```go
+client := msgraph.NewUsersClient(tenantId)
+client.BaseClient.Authorizer = authorizer
+client.BaseClient.RetryableClient.RetryMax = 8
+```
+
+## Disable eventual consistency handling
+
+_Note: this does **not** disable auto-retries for failed requests (e.g. HTTP 429 or 500 responses)_
+
+```go
+client := msgraph.NewUsersClient(tenantId)
+client.BaseClient.Authorizer = authorizer
+client.BaseClient.DisableRetries = true
+```
+
+## Log requests and responses
+
+```go
+requestLogger := func(req *http.Request) (*http.Request, error) {
+	if req != nil {
+		if dump, err := httputil.DumpRequestOut(req, true); err == nil {
+			log.Printf("%s\n", dump)
+		}
+	}
+	return req, nil
+}
+
+responseLogger := func(req *http.Request, resp *http.Response) (*http.Response, error) {
+	if resp != nil {
+		if dump, err := httputil.DumpResponse(resp, true); err == nil {
+			log.Printf("%s\n", dump)
+		}
+	}
+	return resp, nil
+}
+
+client := msgraph.NewUsersClient(tenantId)
+client.BaseClient.Authorizer = authorizer
+client.BaseClient.DisableRetries = true
+client.BaseClient.RequestMiddlewares = &[]msgraph.RequestMiddleware{requestLogger}
+client.BaseClient.ResponseMiddlewares = &[]msgraph.ResponseMiddleware{responseLogger}
+```
+
 ## Contributing
 
 Contributions are welcomed! Please note that clients must have tests that cover all methods where feasible.
 
-Please raise a pull request on GitHub to submit contributions. Bug reports and feature requests are happily received.
+Please raise a pull request [on GitHub][gh-project] to submit contributions. Bug reports and feature requests are happily received.
 
 ## Testing
 
@@ -78,7 +135,7 @@ You can authenticate with any supported method for the client tests, and the aut
 Note that each client generally has a single test that exercises all methods. This is to help ensure that test objects
 are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up separately.
 The [test-cleanup](https://github.com/manicminer/hamilton/tree/main/internal/cmd/test-cleanup) command can be used to
-delete leftover test objects.
+delete leftover test objects in the event of test failure.
 
 It's recommended to use an isolated tenant for testing and _not_ a production tenant.
 
@@ -87,4 +144,5 @@ To run all the tests:
 $ make test
 ```
 
+[gh-project]: https://github.com/manicminer/hamilton
 [ms-graph-docs]: https://docs.microsoft.com/en-us/graph/overview
