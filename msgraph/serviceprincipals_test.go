@@ -27,13 +27,15 @@ func TestServicePrincipalsClient(t *testing.T) {
 	}
 	c.client = msgraph.NewServicePrincipalsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	a := ApplicationsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	a.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
-	a.client.BaseClient.Authorizer = c.connection.Authorizer
+	a.client = msgraph.NewApplicationsClient(a.connection.AuthConfig.TenantID)
+	a.client.BaseClient.Authorizer = a.connection.Authorizer
+	a.client.BaseClient.Endpoint = a.connection.AuthConfig.Environment.MsGraph.Endpoint
 	app := testApplicationsClient_Create(t, a, msgraph.Application{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", a.randomString)),
 	})
@@ -70,6 +72,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 	}
 	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
+	g.client.BaseClient.Endpoint = g.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
@@ -113,13 +116,16 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	}
 	c.client = msgraph.NewServicePrincipalsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	a := ApplicationsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
 		randomString: rs,
 	}
-	a.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
-	a.client.BaseClient.Authorizer = c.connection.Authorizer
+	a.client = msgraph.NewApplicationsClient(a.connection.AuthConfig.TenantID)
+	a.client.BaseClient.Authorizer = a.connection.Authorizer
+	a.client.BaseClient.Endpoint = a.connection.AuthConfig.Environment.MsGraph.Endpoint
+
 	// pre-generate uuid for a test app role
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
 	// create a new test application with a test app role
@@ -156,6 +162,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	}
 	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
+	g.client.BaseClient.Endpoint = g.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-servicePrincipals-appRoleAssignments"),

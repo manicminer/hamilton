@@ -20,6 +20,7 @@ func TestDirectoryAuditReportsTest(t *testing.T) {
 	}
 	c.client = msgraph.NewDirectoryAuditReportsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	auditLogs := testDirectoryAuditReports_List(t, c)
 	testDirectoryAuditReports_Get(t, c, *(*auditLogs)[0].Id)

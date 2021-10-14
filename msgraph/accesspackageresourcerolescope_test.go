@@ -31,21 +31,27 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 	// Init clients
 	c.apClient = msgraph.NewAccessPackageClient(c.connection.AuthConfig.TenantID)
 	c.apClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.apClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.apCatalogClient = msgraph.NewAccessPackageCatalogClient(c.connection.AuthConfig.TenantID)
 	c.apCatalogClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.apCatalogClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.groupsClient = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
 	c.groupsClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.groupsClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.apResourceRequestClient = msgraph.NewAccessPackageResourceRequestClient(c.connection.AuthConfig.TenantID)
 	c.apResourceRequestClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.apResourceRequestClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.apResourceClient = msgraph.NewAccessPackageResourceClient(c.connection.AuthConfig.TenantID)
 	c.apResourceClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.apResourceClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.apResourceRoleScopeClient = msgraph.NewAccessPackageResourceRoleScopeClient(c.connection.AuthConfig.TenantID)
 	c.apResourceRoleScopeClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.apResourceRoleScopeClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	token, err := c.connection.Authorizer.Token()
 	if err != nil {

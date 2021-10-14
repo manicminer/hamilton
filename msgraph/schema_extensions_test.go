@@ -38,6 +38,7 @@ func TestSchemaExtensionsClient(t *testing.T) {
 	}
 	c.client = msgraph.NewSchemaExtensionsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	g := GroupsClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
@@ -45,6 +46,7 @@ func TestSchemaExtensionsClient(t *testing.T) {
 	}
 	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
 	g.client.BaseClient.Authorizer = g.connection.Authorizer
+	g.client.BaseClient.Endpoint = g.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	u := UsersClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
@@ -52,6 +54,7 @@ func TestSchemaExtensionsClient(t *testing.T) {
 	}
 	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
 	u.client.BaseClient.Authorizer = u.connection.Authorizer
+	u.client.BaseClient.Endpoint = u.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	property1 := msgraph.ExtensionSchemaProperty{
 		Name: utils.StringPtr("property1"),

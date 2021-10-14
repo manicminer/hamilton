@@ -25,6 +25,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 	}
 	groupsClient.client = msgraph.NewGroupsClient(groupsClient.connection.AuthConfig.TenantID)
 	groupsClient.client.BaseClient.Authorizer = groupsClient.connection.Authorizer
+	groupsClient.client.BaseClient.Endpoint = groupsClient.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	// set up directory roles test client
 	dirRolesClient := DirectoryRolesClientTest{
@@ -33,6 +34,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 	}
 	dirRolesClient.client = msgraph.NewDirectoryRolesClient(dirRolesClient.connection.AuthConfig.TenantID)
 	dirRolesClient.client.BaseClient.Authorizer = dirRolesClient.connection.Authorizer
+	dirRolesClient.client.BaseClient.Endpoint = dirRolesClient.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	// list directory roles; usually at least few directory roles are activated within a tenant
 	directoryRoles := testDirectoryRolesClient_List(t, dirRolesClient)

@@ -22,6 +22,7 @@ func TestDomainsClient(t *testing.T) {
 	}
 	c.client = msgraph.NewDomainsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	domains := testDomainsClient_List(t, c)
 	testDomainsClient_Get(t, c, *(*domains)[0].ID)

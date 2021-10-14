@@ -28,12 +28,15 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 
 	c.policyClient = msgraph.NewConditionalAccessPolicyClient(c.connection.AuthConfig.TenantID)
 	c.policyClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.policyClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.groupsClient = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
 	c.groupsClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.groupsClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	c.usersClient = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
 	c.usersClient.BaseClient.Authorizer = c.connection.Authorizer
+	c.usersClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	testAppId := string(environments.PublishedApis["Office365ExchangeOnline"])
 	testIncGroup := testGroup_Create(t, c, "test-conditionalAccessPolicy-inc")

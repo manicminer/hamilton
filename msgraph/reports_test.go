@@ -20,6 +20,8 @@ func TestReports(t *testing.T) {
 	}
 	c.client = msgraph.NewReportsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
+
 	testReports_GetAuthenticationMethodsUsersRegisteredByFeature(t, c)
 	testReports_GetCredentialUserRegistrationCount(t, c)
 	testReports_GetCredentialUserRegistrationDetails(t, c)

@@ -27,6 +27,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 
 	c.client = msgraph.NewAuthenticationMethodsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	u := UsersClientTest{
 		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
@@ -35,6 +36,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 
 	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
 	u.client.BaseClient.Authorizer = u.connection.Authorizer
+	u.client.BaseClient.Endpoint = u.connection.AuthConfig.Environment.MsGraph.Endpoint
 
 	user := testUsersClient_Create(t, u, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
