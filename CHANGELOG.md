@@ -5,6 +5,7 @@
   - If `@odata.id` is returned in the form `objectType('GUID')` (i.e. not a valid URI), then attempt to reconstruct a URI
   - This currently hardcodes the `graph.microsoft.com` host in the generated URI but this does not appear to be a problem for other clouds
   - This field is exported in all structs that reference it, so it's possible to override this if necessary
+- Support for running `msgraph` tests in national clouds ([#114](https://github.com/manicminer/hamilton/pull/114))
 
 ⚠️ BREAKING CHANGES:
 
