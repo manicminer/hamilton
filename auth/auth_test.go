@@ -122,7 +122,7 @@ func TestMsiAuthorizer(t *testing.T) {
 			done <- true
 		}()
 	}
-	auth, err := auth.NewMsiAuthorizer(ctx, environments.Global, auth.MsGraph, msiEndpoint)
+	auth, err := auth.NewMsiAuthorizer(ctx, environments.Global, auth.MsGraph, msiEndpoint, clientId)
 	if err != nil {
 		t.Fatalf("NewMsiAuthorizer(): %v", err)
 	}
