@@ -1,4 +1,6 @@
-## 0.33.0 (Unreleased)
+## 0.34.0 (Unreleased)
+
+## 0.33.0 (October 14, 2021)
 
 - Support for specifying the client ID when using managed identity authentication ([#115](https://github.com/manicminer/hamilton/pull/115))
 - Mitigation for breaking API changes around the `@odata.id` field ([#114](https://github.com/manicminer/hamilton/pull/114))
