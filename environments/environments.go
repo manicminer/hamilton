@@ -1,5 +1,7 @@
 package environments
 
+import "fmt"
+
 // Environment represents a set of API configurations for a particular cloud.
 type Environment struct {
 	// The Azure AD endpoint for acquiring access tokens.
@@ -48,3 +50,22 @@ var (
 		MsGraph:         MsGraphCanary,
 	}
 )
+
+func EnvironmentFromString(env string) (Environment, error) {
+	switch env {
+	case "", "public", "global":
+		return Global, nil
+	case "usgovernment", "usgovernmentl4":
+		return USGovernmentL4, nil
+	case "dod", "usgovernmentl5":
+		return USGovernmentL5, nil
+	case "canary":
+		return Canary, nil
+	case "china":
+		return China, nil
+	case "germany":
+		return Germany, nil
+	}
+
+	return Environment{}, fmt.Errorf("invalid environment specified: %s", env)
+}

@@ -20,6 +20,7 @@ var (
 	clientCertificatePath = os.Getenv("CLIENT_CERTIFICATE_PATH")
 	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
 	clientSecret          = os.Getenv("CLIENT_SECRET")
+	environment           = os.Getenv("AZURE_ENVIRONMENT")
 	msiEndpoint           = os.Getenv("MSI_ENDPOINT")
 	msiToken              = os.Getenv("MSI_TOKEN")
 )
@@ -35,14 +36,21 @@ func TestClientCertificateAuthorizerV2(t *testing.T) {
 }
 
 func testClientCertificateAuthorizer(ctx context.Context, t *testing.T, tokenVersion auth.TokenVersion) (token *oauth2.Token) {
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	pfx := utils.Base64DecodeCertificate(clientCertificate)
-	auth, err := auth.NewClientCertificateAuthorizer(ctx, environments.Global, auth.MsGraph, tokenVersion, tenantId, clientId, pfx, clientCertificatePath, clientCertPassword)
+
+	auth, err := auth.NewClientCertificateAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, clientId, pfx, clientCertificatePath, clientCertPassword)
 	if err != nil {
 		t.Fatalf("NewClientCertificateAuthorizer(): %v", err)
 	}
 	if auth == nil {
 		t.Fatal("auth is nil, expected Authorizer")
 	}
+
 	token, err = auth.Token()
 	if err != nil {
 		t.Fatalf("auth.Token(): %v", err)
@@ -53,6 +61,7 @@ func testClientCertificateAuthorizer(ctx context.Context, t *testing.T, tokenVer
 	if token.AccessToken == "" {
 		t.Fatal("token.AccessToken was empty")
 	}
+
 	return
 }
 
@@ -67,13 +76,19 @@ func TestClientSecretAuthorizerV2(t *testing.T) {
 }
 
 func testClientSecretAuthorizer(ctx context.Context, t *testing.T, tokenVersion auth.TokenVersion) (token *oauth2.Token) {
-	auth, err := auth.NewClientSecretAuthorizer(ctx, environments.Global, auth.MsGraph, tokenVersion, tenantId, clientId, clientSecret)
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	auth, err := auth.NewClientSecretAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, clientId, clientSecret)
 	if err != nil {
 		t.Fatalf("NewClientSecretAuthorizer(): %v", err)
 	}
 	if auth == nil {
 		t.Fatal("auth is nil, expected Authorizer")
 	}
+
 	token, err = auth.Token()
 	if err != nil {
 		t.Fatalf("auth.Token(): %v", err)
@@ -84,6 +99,7 @@ func testClientSecretAuthorizer(ctx context.Context, t *testing.T, tokenVersion 
 	if token.AccessToken == "" {
 		t.Fatalf("token.AccessToken was empty")
 	}
+
 	return
 }
 
@@ -100,6 +116,7 @@ func testAzureCliAuthorizer(ctx context.Context, t *testing.T) (token *oauth2.To
 	if auth == nil {
 		t.Fatal("auth is nil, expected Authorizer")
 	}
+
 	token, err = auth.Token()
 	if err != nil {
 		t.Fatalf("auth.Token(): %v", err)
@@ -110,6 +127,7 @@ func testAzureCliAuthorizer(ctx context.Context, t *testing.T) (token *oauth2.To
 	if token.AccessToken == "" {
 		t.Fatalf("token.AccessToken was empty")
 	}
+
 	return
 }
 
@@ -122,7 +140,13 @@ func TestMsiAuthorizer(t *testing.T) {
 			done <- true
 		}()
 	}
-	auth, err := auth.NewMsiAuthorizer(ctx, environments.Global, auth.MsGraph, msiEndpoint, clientId)
+
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	auth, err := auth.NewMsiAuthorizer(ctx, env, auth.MsGraph, msiEndpoint, clientId)
 	if err != nil {
 		t.Fatalf("NewMsiAuthorizer(): %v", err)
 	}

@@ -31,19 +31,11 @@ type Connection struct {
 
 // NewConnection configures and returns a Connection for use in tests.
 func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
-	env := environments.Global
-	switch environment {
-	case "usgovernment", "usgovernmentl4":
-		env = environments.USGovernmentL4
-	case "dod", "usgovernmentl5":
-		env = environments.USGovernmentL5
-	case "canary":
-		env = environments.Canary
-	case "china":
-		env = environments.China
-	case "germany":
-		env = environments.Germany
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		log.Fatal(err)
 	}
+
 	t := Connection{
 		AuthConfig: &auth.Config{
 			Environment:            env,
@@ -62,7 +54,6 @@ func NewConnection(api auth.Api, tokenVersion auth.TokenVersion) *Connection {
 		DomainName: tenantDomain,
 	}
 
-	var err error
 	t.Authorizer, err = t.AuthConfig.NewAuthorizer(t.Context, api)
 	if err != nil {
 		log.Fatal(err)
