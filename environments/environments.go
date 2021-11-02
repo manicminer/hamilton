@@ -1,6 +1,9 @@
 package environments
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // Environment represents a set of API configurations for a particular cloud.
 type Environment struct {
@@ -52,7 +55,7 @@ var (
 )
 
 func EnvironmentFromString(env string) (Environment, error) {
-	switch env {
+	switch strings.ToLower(env) {
 	case "", "public", "global":
 		return Global, nil
 	case "usgovernment", "usgovernmentl4":
