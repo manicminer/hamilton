@@ -1,6 +1,7 @@
 ## 0.34.0 (Unreleased)
 
 - Remove a surplus configuration check when using Managed Identity authentication, which improves compatibility with Azure Cloud Shell ([#119](https://github.com/manicminer/hamilton/pull/119))
+- Add a new authorizer `AutorestAuthorizerWrapper` which supports obtaining tokens from go-autorest via `autorest.BearerAuthorizer` ([#120](https://github.com/manicminer/hamilton/pull/120))
 
 ## 0.33.0 (October 14, 2021)
 
