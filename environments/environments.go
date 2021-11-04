@@ -15,6 +15,9 @@ type Environment struct {
 
 	// The Azure Active Directory Graph configuration for an environment.
 	AadGraph Api
+
+	// The Azure Resource Manager configuration for an environment.
+	ResourceManager Api
 }
 
 var (
@@ -22,30 +25,35 @@ var (
 		AzureADEndpoint: AzureADGlobal,
 		MsGraph:         MsGraphGlobal,
 		AadGraph:        AadGraphGlobal,
+		ResourceManager: ResourceManagerPublic,
 	}
 
 	Germany = Environment{
 		AzureADEndpoint: AzureADGermany,
 		MsGraph:         MsGraphGermany,
 		AadGraph:        AadGraphGermany,
+		ResourceManager: ResourceManagerGermany,
 	}
 
 	China = Environment{
 		AzureADEndpoint: AzureADChina,
 		MsGraph:         MsGraphChina,
 		AadGraph:        AadGraphChina,
+		ResourceManager: ResourceManagerChina,
 	}
 
 	USGovernmentL4 = Environment{
 		AzureADEndpoint: AzureADUSGov,
 		MsGraph:         MsGraphUSGovL4,
 		AadGraph:        AadGraphUSGov,
+		ResourceManager: ResourceManagerUSGov,
 	}
 
 	USGovernmentL5 = Environment{
 		AzureADEndpoint: AzureADUSGov,
 		MsGraph:         MsGraphUSGovL5,
 		AadGraph:        AadGraphUSGov,
+		ResourceManager: ResourceManagerUSGov,
 	}
 
 	Canary = Environment{

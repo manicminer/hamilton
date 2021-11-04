@@ -14,7 +14,7 @@ type AutorestAuthorizerWrapper struct {
 }
 
 // Token returns an access token using an autorest.BearerAuthorizer struct
-func (a AutorestAuthorizerWrapper) Token() (*oauth2.Token, error) {
+func (a *AutorestAuthorizerWrapper) Token() (*oauth2.Token, error) {
 	tokenProvider := a.bearerAuthorizer.TokenProvider()
 	if refresher, ok := tokenProvider.(adal.Refresher); ok {
 		if err := refresher.EnsureFresh(); err != nil {

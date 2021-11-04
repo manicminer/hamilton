@@ -1,8 +1,11 @@
 package auth
 
 import (
+	"fmt"
+	"net/http"
 	"sync"
 
+	"github.com/Azure/go-autorest/autorest"
 	"golang.org/x/oauth2"
 )
 
@@ -32,6 +35,22 @@ func (c *CachedAuthorizer) Token() (*oauth2.Token, error) {
 	}
 
 	return c.token, nil
+}
+
+func (c *CachedAuthorizer) WithAuthorization() autorest.PrepareDecorator {
+	return func(p autorest.Preparer) autorest.Preparer {
+		return autorest.PreparerFunc(func(req *http.Request) (*http.Request, error) {
+			req, err := p.Prepare(req)
+			if err == nil {
+				token, err := c.Token()
+				if err != nil {
+					return nil, err
+				}
+				return autorest.Prepare(req, autorest.WithHeader("Authorization", fmt.Sprintf("Bearer %s", token.AccessToken)))
+			}
+			return req, err
+		})
+	}
 }
 
 // NewCachedAuthorizer returns an Authorizer that caches an access token for the duration of its validity.

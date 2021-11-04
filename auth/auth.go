@@ -25,6 +25,10 @@ type Api int
 const (
 	MsGraph Api = iota
 	AadGraph
+	ResourceManager
+	Batch
+	DataLake
+	OSSRDBMS
 )
 
 // NewAuthorizer returns a suitable Authorizer depending on what is defined in the Config
@@ -90,7 +94,7 @@ func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error)
 
 // NewAutorestAuthorizerWrapper returns an Authorizer that sources tokens from a supplied autorest.BearerAuthorizer
 func NewAutorestAuthorizerWrapper(bearerAuthorizer *autorest.BearerAuthorizer) (Authorizer, error) {
-	return AutorestAuthorizerWrapper{bearerAuthorizer: bearerAuthorizer}, nil
+	return &AutorestAuthorizerWrapper{bearerAuthorizer: bearerAuthorizer}, nil
 }
 
 // NewAzureCliAuthorizer returns an Authorizer which authenticates using the Azure CLI.
@@ -175,6 +179,8 @@ func scopes(env environments.Environment, api Api) (s []string) {
 	case MsGraph:
 		s = []string{fmt.Sprintf("%s/.default", env.MsGraph.Endpoint)}
 	case AadGraph:
+		s = []string{fmt.Sprintf("%s/.default", env.AadGraph.Endpoint)}
+	case ResourceManager:
 		s = []string{fmt.Sprintf("%s/.default", env.AadGraph.Endpoint)}
 	}
 	return
