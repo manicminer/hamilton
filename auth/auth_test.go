@@ -45,7 +45,7 @@ func testClientCertificateAuthorizer(ctx context.Context, t *testing.T, tokenVer
 
 	pfx := utils.Base64DecodeCertificate(clientCertificate)
 
-	auth, err := auth.NewClientCertificateAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, clientId, pfx, clientCertificatePath, clientCertPassword)
+	auth, err := auth.NewClientCertificateAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, []string{}, clientId, pfx, clientCertificatePath, clientCertPassword)
 	if err != nil {
 		t.Fatalf("NewClientCertificateAuthorizer(): %v", err)
 	}
@@ -83,7 +83,7 @@ func testClientSecretAuthorizer(ctx context.Context, t *testing.T, tokenVersion 
 		t.Fatal(err)
 	}
 
-	auth, err := auth.NewClientSecretAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, clientId, clientSecret)
+	auth, err := auth.NewClientSecretAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, []string{}, clientId, clientSecret)
 	if err != nil {
 		t.Fatalf("NewClientSecretAuthorizer(): %v", err)
 	}

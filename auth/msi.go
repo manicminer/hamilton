@@ -82,6 +82,11 @@ func (a *MsiAuthorizer) Token() (*oauth2.Token, error) {
 	return token, nil
 }
 
+// AuxiliaryTokens returns additional tokens for auxiliary tenant IDs, for use in multi-tenant scenarios
+func (a *MsiAuthorizer) AuxiliaryTokens() ([]*oauth2.Token, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
 // MsiConfig configures an MsiAuthorizer.
 type MsiConfig struct {
 	// ClientID is optionally used to determine which application to assume when a resource has multiple managed identities

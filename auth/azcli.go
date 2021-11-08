@@ -71,6 +71,11 @@ func (a *AzureCliAuthorizer) Token() (*oauth2.Token, error) {
 	}, nil
 }
 
+// AuxiliaryTokens returns additional tokens for auxiliary tenant IDs, for use in multi-tenant scenarios
+func (a *AzureCliAuthorizer) AuxiliaryTokens() ([]*oauth2.Token, error) {
+	return nil, fmt.Errorf("not implemented")
+}
+
 // AzureCliConfig configures an AzureCliAuthorizer.
 type AzureCliConfig struct {
 	Api      Api
