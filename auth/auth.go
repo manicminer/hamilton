@@ -94,8 +94,8 @@ func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error)
 }
 
 // NewAutorestAuthorizerWrapper returns an Authorizer that sources tokens from a supplied autorest.BearerAuthorizer
-func NewAutorestAuthorizerWrapper(bearerAuthorizer *autorest.BearerAuthorizer) (Authorizer, error) {
-	return &AutorestAuthorizerWrapper{authorizer: bearerAuthorizer}, nil
+func NewAutorestAuthorizerWrapper(autorestAuthorizer autorest.Authorizer) (Authorizer, error) {
+	return &AutorestAuthorizerWrapper{authorizer: autorestAuthorizer}, nil
 }
 
 // NewAzureCliAuthorizer returns an Authorizer which authenticates using the Azure CLI.

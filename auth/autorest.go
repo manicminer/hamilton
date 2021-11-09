@@ -3,6 +3,8 @@ package auth
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
 
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/adal"
@@ -10,22 +12,74 @@ import (
 )
 
 // AutorestAuthorizerWrapper is an Authorizer which sources tokens from an autorest.Authorizer
-// Currently supports only:
+// Fully supports:
 // - autorest.BearerAuthorizer
 // - autorest.MultiTenantBearerAuthorizer
+// For other types that satisfy autorest.Authorizer, the Authorization and X-Ms-Authorization-Auxiliary headers
+// are parsed for access token values, but additional metadata such as refresh tokens and expiry are not provided.
 type AutorestAuthorizerWrapper struct {
-	authorizer interface{}
+	authorizer autorest.Authorizer
+}
+
+type servicePrincipalTokenWrapper struct {
+	tokenType  string
+	tokenValue string
+}
+
+func (s *servicePrincipalTokenWrapper) OAuthToken() string {
+	return s.tokenValue
+}
+
+func (s *servicePrincipalTokenWrapper) Token() adal.Token {
+	return adal.Token{
+		AccessToken: s.tokenValue,
+		Type:        s.tokenType,
+	}
+}
+
+type ServicePrincipalToken interface {
+	Token() adal.Token
 }
 
 func (a *AutorestAuthorizerWrapper) tokenProviders() (tokenProviders []adal.OAuthTokenProvider, err error) {
 	if authorizer, ok := a.authorizer.(*autorest.BearerAuthorizer); ok && authorizer != nil {
+		// autorest.BearerAuthorizer provides a single token for the specified tenant
 		tokenProviders = append(tokenProviders, authorizer.TokenProvider())
 	} else if authorizer, ok := a.authorizer.(*autorest.MultiTenantBearerAuthorizer); ok && authorizer != nil {
+		// autorest.MultiTenantBearerAuthorizer provides tokens for the primary specified
+		// tenant plus any specified auxiliary tenants
 		if multiTokenProvider := authorizer.TokenProvider(); multiTokenProvider != nil {
 			if m, ok := multiTokenProvider.(*adal.MultiTenantServicePrincipalToken); ok && m != nil {
 				tokenProviders = append(tokenProviders, m.PrimaryToken)
 				for _, aux := range m.AuxiliaryTokens {
 					tokenProviders = append(tokenProviders, aux)
+				}
+			}
+		}
+	} else {
+		// a generic autorest.Authorizer only supplies HTTP headers, so we'll have
+		// to parse those to obtain a token
+		req, err := autorest.Prepare(&http.Request{}, a.authorizer.WithAuthorization())
+		if err != nil {
+			return nil, err
+		}
+
+		// first parse out the Authorization header to get a token type and value
+		if authorization := strings.SplitN(req.Header.Get("Authorization"), " ", 2); len(authorization) == 2 {
+			tokenProviders = append(tokenProviders, &servicePrincipalTokenWrapper{
+				tokenType:  authorization[0],
+				tokenValue: authorization[1],
+			})
+		}
+
+		// next parse out any comma-separated auxiliary tokens to get their token type and value
+		if authorizationAux := strings.Split(req.Header.Get("X-Ms-Authorization-Auxiliary"), ","); len(authorizationAux) > 0 {
+			for _, authorizationRaw := range authorizationAux {
+				if authorization := strings.SplitN(strings.TrimSpace(authorizationRaw), " ", 2); len(authorization) == 2 {
+					tokenProviders = append(tokenProviders, &servicePrincipalTokenWrapper{
+						tokenType:  authorization[0],
+						tokenValue: authorization[1],
+					})
 				}
 			}
 		}
@@ -57,7 +111,7 @@ func (a *AutorestAuthorizerWrapper) Token() (*oauth2.Token, error) {
 	}
 
 	var adalToken adal.Token
-	if spToken, ok := tokenProviders[0].(*adal.ServicePrincipalToken); ok && spToken != nil {
+	if spToken, ok := tokenProviders[0].(ServicePrincipalToken); ok && spToken != nil {
 		adalToken = spToken.Token()
 	}
 	if adalToken.AccessToken == "" {
@@ -84,7 +138,7 @@ func (a *AutorestAuthorizerWrapper) AuxiliaryTokens() ([]*oauth2.Token, error) {
 	for i := 1; i < len(tokenProviders); i++ {
 		var adalToken adal.Token
 
-		if spToken, ok := tokenProviders[i].(*adal.ServicePrincipalToken); ok && spToken != nil {
+		if spToken, ok := tokenProviders[i].(ServicePrincipalToken); ok && spToken != nil {
 			adalToken = spToken.Token()
 		}
 
