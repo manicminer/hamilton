@@ -12,7 +12,7 @@ See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
 - Automatic retries for failed requests and handling of eventual consistency on writes due to propagation delays
 - Automatic paging of results
 - Native model structs for marshaling and unmarshaling
-- Support for national clouds including US Government (L4 and L5), China and Germany
+- Support for national clouds including US Government (L4 and L5) and China
 - Support for both the v1.0 and beta API endpoints
 - Ability to inject middleware functions for logging etc
 - OData parsing in API responses and support for OData queries such as filters, sorting, searching, expand and select

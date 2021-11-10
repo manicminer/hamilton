@@ -15,11 +15,6 @@ var (
 		Endpoint: MsGraphGlobalEndpoint,
 	}
 
-	MsGraphGermany = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		Endpoint: MsGraphGermanyEndpoint,
-	}
-
 	MsGraphChina = Api{
 		AppId:    PublishedApis["MicrosoftGraph"],
 		Endpoint: MsGraphChinaEndpoint,
@@ -45,11 +40,6 @@ var (
 		Endpoint: AadGraphGlobalEndpoint,
 	}
 
-	AadGraphGermany = Api{
-		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
-		Endpoint: AadGraphGermanyEndpoint,
-	}
-
 	AadGraphChina = Api{
 		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
 		Endpoint: AadGraphChinaEndpoint,
@@ -65,11 +55,6 @@ var (
 		Endpoint: ResourceManagerPublicEndpoint,
 	}
 
-	ResourceManagerGermany = Api{
-		AppId:    PublishedApis["AzureServiceManagement"],
-		Endpoint: ResourceManagerGermanyEndpoint,
-	}
-
 	ResourceManagerChina = Api{
 		AppId:    PublishedApis["AzureServiceManagement"],
 		Endpoint: ResourceManagerChinaEndpoint,
@@ -83,11 +68,6 @@ var (
 	BatchManagementPublic = Api{
 		AppId:    PublishedApis["AzureBatch"],
 		Endpoint: BatchManagementPublicEndpoint,
-	}
-
-	BatchManagementGermany = Api{
-		AppId:    PublishedApis["AzureBatch"],
-		Endpoint: BatchManagementGermanyEndpoint,
 	}
 
 	BatchManagementChina = Api{
@@ -108,11 +88,6 @@ var (
 	KeyVaultPublic = Api{
 		AppId:    PublishedApis["AzureBatch"],
 		Endpoint: KeyVaultPublicEndpoint,
-	}
-
-	KeyVaultGermany = Api{
-		AppId:    PublishedApis["AzureBatch"],
-		Endpoint: KeyVaultGermanyEndpoint,
 	}
 
 	KeyVaultChina = Api{
@@ -140,11 +115,6 @@ var (
 		Endpoint: OSSRDBMSPublicEndpoint,
 	}
 
-	OSSRDBMSGermany = Api{
-		AppId:    PublishedApis["OssRdbms"],
-		Endpoint: OSSRDBMSGermanyEndpoint,
-	}
-
 	OSSRDBMSChina = Api{
 		AppId:    PublishedApis["OssRdbms"],
 		Endpoint: OSSRDBMSChinaEndpoint,
@@ -158,11 +128,6 @@ var (
 	ServiceBusPublic = Api{
 		AppId:    PublishedApis["AzureServiceBus"],
 		Endpoint: ServiceBusPublicEndpoint,
-	}
-
-	ServiceBusGermany = Api{
-		AppId:    PublishedApis["AzureServiceBus"],
-		Endpoint: ServiceBusGermanyEndpoint,
 	}
 
 	ServiceBusChina = Api{
@@ -180,11 +145,6 @@ var (
 		Endpoint: ServiceManagementPublicEndpoint,
 	}
 
-	ServiceManagementGermany = Api{
-		AppId:    PublishedApis["AzureServiceManagement"],
-		Endpoint: ServiceManagementGermanyEndpoint,
-	}
-
 	ServiceManagementChina = Api{
 		AppId:    PublishedApis["AzureServiceManagement"],
 		Endpoint: ServiceManagementChinaEndpoint,
@@ -198,11 +158,6 @@ var (
 	SQLDatabasePublic = Api{
 		AppId:    PublishedApis["AzureSqlDatabase"],
 		Endpoint: SQLDatabasePublicEndpoint,
-	}
-
-	SQLDatabaseGermany = Api{
-		AppId:    PublishedApis["AzureSqlDatabase"],
-		Endpoint: SQLDatabaseGermanyEndpoint,
 	}
 
 	SQLDatabaseChina = Api{

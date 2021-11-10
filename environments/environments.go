@@ -44,19 +44,6 @@ var (
 		Synapse:             SynapsePublic,
 	}
 
-	Germany = Environment{
-		AzureADEndpoint:   AzureADGermany,
-		MsGraph:           MsGraphGermany,
-		AadGraph:          AadGraphGermany,
-		ResourceManager:   ResourceManagerGermany,
-		BatchManagement:   BatchManagementGermany,
-		KeyVault:          KeyVaultGermany,
-		OSSRDBMS:          OSSRDBMSGermany,
-		ServiceBus:        ServiceBusGermany,
-		ServiceManagement: ServiceManagementGermany,
-		SQLDatabase:       SQLDatabaseGermany,
-	}
-
 	China = Environment{
 		AzureADEndpoint:   AzureADChina,
 		MsGraph:           MsGraphChina,
@@ -116,8 +103,6 @@ func EnvironmentFromString(env string) (Environment, error) {
 		return Canary, nil
 	case "china":
 		return China, nil
-	case "germany":
-		return Germany, nil
 	}
 
 	return Environment{}, fmt.Errorf("invalid environment specified: %s", env)
