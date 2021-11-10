@@ -23,15 +23,17 @@ var (
 func main() {
 	ctx := context.Background()
 
+	environment := environments.Global
+
 	authConfig := &auth.Config{
-		Environment:            environments.Global,
+		Environment:            environment,
 		TenantID:               tenantId,
 		ClientID:               clientId,
 		ClientSecret:           clientSecret,
 		EnableClientSecretAuth: true,
 	}
 
-	authorizer, err := authConfig.NewAuthorizer(ctx, auth.MsGraph)
+	authorizer, err := authConfig.NewAuthorizer(ctx, environment.MsGraph)
 	if err != nil {
 		log.Fatal(err)
 	}

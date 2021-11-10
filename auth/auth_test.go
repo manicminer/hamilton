@@ -45,7 +45,7 @@ func testClientCertificateAuthorizer(ctx context.Context, t *testing.T, tokenVer
 
 	pfx := utils.Base64DecodeCertificate(clientCertificate)
 
-	auth, err := auth.NewClientCertificateAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, []string{}, clientId, pfx, clientCertificatePath, clientCertPassword)
+	auth, err := auth.NewClientCertificateAuthorizer(ctx, env, env.MsGraph, tokenVersion, tenantId, []string{}, clientId, pfx, clientCertificatePath, clientCertPassword)
 	if err != nil {
 		t.Fatalf("NewClientCertificateAuthorizer(): %v", err)
 	}
@@ -83,7 +83,7 @@ func testClientSecretAuthorizer(ctx context.Context, t *testing.T, tokenVersion 
 		t.Fatal(err)
 	}
 
-	auth, err := auth.NewClientSecretAuthorizer(ctx, env, auth.MsGraph, tokenVersion, tenantId, []string{}, clientId, clientSecret)
+	auth, err := auth.NewClientSecretAuthorizer(ctx, env, env.MsGraph, tokenVersion, tenantId, []string{}, clientId, clientSecret)
 	if err != nil {
 		t.Fatalf("NewClientSecretAuthorizer(): %v", err)
 	}
@@ -111,7 +111,12 @@ func TestAzureCliAuthorizer(t *testing.T) {
 }
 
 func testAzureCliAuthorizer(ctx context.Context, t *testing.T) (token *oauth2.Token) {
-	auth, err := auth.NewAzureCliAuthorizer(ctx, auth.MsGraph, tenantId)
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	auth, err := auth.NewAzureCliAuthorizer(ctx, env.MsGraph, tenantId)
 	if err != nil {
 		t.Fatalf("NewAzureCliAuthorizer(): %v", err)
 	}
@@ -148,7 +153,7 @@ func TestMsiAuthorizer(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	auth, err := auth.NewMsiAuthorizer(ctx, env, auth.MsGraph, msiEndpoint, clientId)
+	auth, err := auth.NewMsiAuthorizer(ctx, env.MsGraph, msiEndpoint, clientId)
 	if err != nil {
 		t.Fatalf("NewMsiAuthorizer(): %v", err)
 	}

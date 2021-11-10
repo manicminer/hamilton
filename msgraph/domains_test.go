@@ -3,33 +3,20 @@ package msgraph_test
 import (
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type DomainsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.DomainsClient
-	randomString string
-}
-
 func TestDomainsClient(t *testing.T) {
-	c := DomainsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-	c.client = msgraph.NewDomainsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
-	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
+	c := test.NewTest()
 
 	domains := testDomainsClient_List(t, c)
 	testDomainsClient_Get(t, c, *(*domains)[0].ID)
 }
 
-func testDomainsClient_List(t *testing.T, c DomainsClientTest) (domains *[]msgraph.Domain) {
-	domains, _, err := c.client.List(c.connection.Context, odata.Query{})
+func testDomainsClient_List(t *testing.T, c *test.Test) (domains *[]msgraph.Domain) {
+	domains, _, err := c.DomainsClient.List(c.Connection.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("DomainsClient.List(): %v", err)
 	}
@@ -39,8 +26,8 @@ func testDomainsClient_List(t *testing.T, c DomainsClientTest) (domains *[]msgra
 	return
 }
 
-func testDomainsClient_Get(t *testing.T, c DomainsClientTest, id string) (domain *msgraph.Domain) {
-	domain, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
+func testDomainsClient_Get(t *testing.T, c *test.Test, id string) (domain *msgraph.Domain) {
+	domain, status, err := c.DomainsClient.Get(c.Connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DomainsClient.Get(): %v", err)
 	}

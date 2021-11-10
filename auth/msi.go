@@ -104,7 +104,7 @@ type MsiConfig struct {
 
 // NewMsiConfig returns a new MsiConfig with a configured metadata endpoint and resource.
 // clientId and objectId can be left blank when a single managed identity is available
-func NewMsiConfig(ctx context.Context, resource, msiEndpoint, clientId string) (*MsiConfig, error) {
+func NewMsiConfig(resource, msiEndpoint, clientId string) (*MsiConfig, error) {
 	endpoint := msiDefaultEndpoint
 	if msiEndpoint != "" {
 		endpoint = msiEndpoint

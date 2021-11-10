@@ -16,9 +16,10 @@ type ApplicationRefsClientTest struct {
 
 func TestApplicationRefsClient(t *testing.T) {
 	c := ApplicationRefsClientTest{
-		connection:   test.NewConnection(auth.AadGraph, auth.TokenVersion1),
+		connection:   test.NewConnection(auth.TokenVersion1),
 		randomString: test.RandomString(),
 	}
+	c.connection.Authorize(c.connection.AuthConfig.Environment.MsGraph)
 	c.client = aadgraph.NewApplicationRefsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 

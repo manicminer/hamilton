@@ -21,17 +21,6 @@ type Authorizer interface {
 	AuxiliaryTokens() ([]*oauth2.Token, error)
 }
 
-type Api int
-
-const (
-	MsGraph Api = iota
-	AadGraph
-	ResourceManager
-	Batch
-	DataLake
-	OSSRDBMS
-)
-
 // NewAuthorizer returns a suitable Authorizer depending on what is defined in the Config
 // Authorizers are selected for authentication methods in the following preferential order:
 // - Client certificate authentication
@@ -49,7 +38,7 @@ const (
 // It's recommended to only enable the mechanisms you have configured and are known to work in the execution
 // environment. If any authentication mechanism fails due to misconfiguration or some other error, the function
 // will return (nil, error) and later mechanisms will not be attempted.
-func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error) {
+func (c *Config) NewAuthorizer(ctx context.Context, api environments.Api) (Authorizer, error) {
 	if c.EnableClientCertAuth && strings.TrimSpace(c.TenantID) != "" && strings.TrimSpace(c.ClientID) != "" && (len(c.ClientCertData) > 0 || strings.TrimSpace(c.ClientCertPath) != "") {
 		a, err := NewClientCertificateAuthorizer(ctx, c.Environment, api, c.Version, c.TenantID, c.AuxiliaryTenantIDs, c.ClientID, c.ClientCertData, c.ClientCertPath, c.ClientCertPassword)
 		if err != nil {
@@ -71,7 +60,7 @@ func (c *Config) NewAuthorizer(ctx context.Context, api Api) (Authorizer, error)
 	}
 
 	if c.EnableMsiAuth {
-		a, err := NewMsiAuthorizer(ctx, c.Environment, api, c.MsiEndpoint, c.ClientID)
+		a, err := NewMsiAuthorizer(ctx, api, c.MsiEndpoint, c.ClientID)
 		if err != nil {
 			return nil, fmt.Errorf("could not configure MSI Authorizer: %s", err)
 		}
@@ -99,7 +88,7 @@ func NewAutorestAuthorizerWrapper(autorestAuthorizer autorest.Authorizer) (Autho
 }
 
 // NewAzureCliAuthorizer returns an Authorizer which authenticates using the Azure CLI.
-func NewAzureCliAuthorizer(ctx context.Context, api Api, tenantId string) (Authorizer, error) {
+func NewAzureCliAuthorizer(ctx context.Context, api environments.Api, tenantId string) (Authorizer, error) {
 	conf, err := NewAzureCliConfig(api, tenantId)
 	if err != nil {
 		return nil, err
@@ -108,8 +97,8 @@ func NewAzureCliAuthorizer(ctx context.Context, api Api, tenantId string) (Autho
 }
 
 // NewMsiAuthorizer returns an authorizer which uses managed service identity to for authentication.
-func NewMsiAuthorizer(ctx context.Context, environment environments.Environment, api Api, msiEndpoint, clientId string) (Authorizer, error) {
-	conf, err := NewMsiConfig(ctx, resource(environment, api), msiEndpoint, clientId)
+func NewMsiAuthorizer(ctx context.Context, api environments.Api, msiEndpoint, clientId string) (Authorizer, error) {
+	conf, err := NewMsiConfig(resource(api), msiEndpoint, clientId)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +106,7 @@ func NewMsiAuthorizer(ctx context.Context, environment environments.Environment,
 }
 
 // NewClientCertificateAuthorizer returns an authorizer which uses client certificate authentication.
-func NewClientCertificateAuthorizer(ctx context.Context, environment environments.Environment, api Api, tokenVersion TokenVersion, tenantId string, auxTenantIds []string, clientId string, pfxData []byte, pfxPath, pfxPass string) (Authorizer, error) {
+func NewClientCertificateAuthorizer(ctx context.Context, environment environments.Environment, api environments.Api, tokenVersion TokenVersion, tenantId string, auxTenantIds []string, clientId string, pfxData []byte, pfxPath, pfxPass string) (Authorizer, error) {
 	if len(pfxData) == 0 {
 		var err error
 		pfxData, err = ioutil.ReadFile(pfxPath)
@@ -143,8 +132,8 @@ func NewClientCertificateAuthorizer(ctx context.Context, environment environment
 		ClientID:           clientId,
 		PrivateKey:         x509.MarshalPKCS1PrivateKey(priv),
 		Certificate:        cert.Raw,
-		Resource:           resource(environment, api),
-		Scopes:             scopes(environment, api),
+		Resource:           resource(api),
+		Scopes:             scopes(api),
 		TokenVersion:       tokenVersion,
 	}
 
@@ -152,15 +141,15 @@ func NewClientCertificateAuthorizer(ctx context.Context, environment environment
 }
 
 // NewClientSecretAuthorizer returns an authorizer which uses client secret authentication.
-func NewClientSecretAuthorizer(ctx context.Context, environment environments.Environment, api Api, tokenVersion TokenVersion, tenantId string, auxTenantIds []string, clientId, clientSecret string) (Authorizer, error) {
+func NewClientSecretAuthorizer(ctx context.Context, environment environments.Environment, api environments.Api, tokenVersion TokenVersion, tenantId string, auxTenantIds []string, clientId, clientSecret string) (Authorizer, error) {
 	conf := ClientCredentialsConfig{
 		Environment:        environment,
 		TenantID:           tenantId,
 		AuxiliaryTenantIDs: auxTenantIds,
 		ClientID:           clientId,
 		ClientSecret:       clientSecret,
-		Resource:           resource(environment, api),
-		Scopes:             scopes(environment, api),
+		Resource:           resource(api),
+		Scopes:             scopes(api),
 		TokenVersion:       tokenVersion,
 	}
 
@@ -179,24 +168,10 @@ func TokenEndpoint(endpoint environments.AzureADEndpoint, tenant string, version
 	return
 }
 
-func scopes(env environments.Environment, api Api) (s []string) {
-	switch api {
-	case MsGraph:
-		s = []string{fmt.Sprintf("%s/.default", env.MsGraph.Endpoint)}
-	case AadGraph:
-		s = []string{fmt.Sprintf("%s/.default", env.AadGraph.Endpoint)}
-	case ResourceManager:
-		s = []string{fmt.Sprintf("%s/.default", env.AadGraph.Endpoint)}
-	}
-	return
+func scopes(api environments.Api) (s []string) {
+	return []string{fmt.Sprintf("%s/.default", api.Endpoint)}
 }
 
-func resource(env environments.Environment, api Api) (r string) {
-	switch api {
-	case MsGraph:
-		r = fmt.Sprintf("%s/", env.MsGraph.Endpoint)
-	case AadGraph:
-		r = fmt.Sprintf("%s/", env.AadGraph.Endpoint)
-	}
-	return
+func resource(api environments.Api) (r string) {
+	return fmt.Sprintf("%s/", api.Endpoint)
 }

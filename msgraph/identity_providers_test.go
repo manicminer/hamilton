@@ -4,29 +4,14 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/manicminer/hamilton/odata"
-
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
-type IdentityProvidersClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.IdentityProvidersClient
-	randomString string
-}
-
 func TestIdentityProvidersClient(t *testing.T) {
-	rs := test.RandomString()
-	c := IdentityProvidersClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	c.client = msgraph.NewIdentityProvidersClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
-	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
+	c := test.NewTest()
 
 	providers := testIdentityProvidersClient_List(t, c)
 	for _, provider := range *providers {
@@ -58,8 +43,8 @@ func TestIdentityProvidersClient(t *testing.T) {
 	testIdentityProvidersClient_Delete(t, c, *identityProvider.ID)
 }
 
-func testIdentityProvidersClient_Create(t *testing.T, c IdentityProvidersClientTest, p msgraph.IdentityProvider) (provider *msgraph.IdentityProvider) {
-	provider, status, err := c.client.Create(c.connection.Context, p)
+func testIdentityProvidersClient_Create(t *testing.T, c *test.Test, p msgraph.IdentityProvider) (provider *msgraph.IdentityProvider) {
+	provider, status, err := c.IdentityProvidersClient.Create(c.Connection.Context, p)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Create(): %v", err)
 	}
@@ -75,8 +60,8 @@ func testIdentityProvidersClient_Create(t *testing.T, c IdentityProvidersClientT
 	return
 }
 
-func testIdentityProvidersClient_Update(t *testing.T, c IdentityProvidersClientTest, p msgraph.IdentityProvider) {
-	status, err := c.client.Update(c.connection.Context, p)
+func testIdentityProvidersClient_Update(t *testing.T, c *test.Test, p msgraph.IdentityProvider) {
+	status, err := c.IdentityProvidersClient.Update(c.Connection.Context, p)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Update(): %v", err)
 	}
@@ -85,8 +70,8 @@ func testIdentityProvidersClient_Update(t *testing.T, c IdentityProvidersClientT
 	}
 }
 
-func testIdentityProvidersClient_List(t *testing.T, c IdentityProvidersClientTest) (providers *[]msgraph.IdentityProvider) {
-	providers, _, err := c.client.List(c.connection.Context)
+func testIdentityProvidersClient_List(t *testing.T, c *test.Test) (providers *[]msgraph.IdentityProvider) {
+	providers, _, err := c.IdentityProvidersClient.List(c.Connection.Context)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.List(): %v", err)
 	}
@@ -96,8 +81,8 @@ func testIdentityProvidersClient_List(t *testing.T, c IdentityProvidersClientTes
 	return
 }
 
-func testIdentityProvidersClient_Get(t *testing.T, c IdentityProvidersClientTest, id string) (provider *msgraph.IdentityProvider) {
-	provider, status, err := c.client.Get(c.connection.Context, id)
+func testIdentityProvidersClient_Get(t *testing.T, c *test.Test, id string) (provider *msgraph.IdentityProvider) {
+	provider, status, err := c.IdentityProvidersClient.Get(c.Connection.Context, id)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Get(): %v", err)
 	}
@@ -113,8 +98,8 @@ func testIdentityProvidersClient_Get(t *testing.T, c IdentityProvidersClientTest
 	return
 }
 
-func testIdentityProvidersClient_Delete(t *testing.T, c IdentityProvidersClientTest, id string) {
-	status, err := c.client.Delete(c.connection.Context, id)
+func testIdentityProvidersClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.IdentityProvidersClient.Delete(c.Connection.Context, id)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Delete(): %v", err)
 	}
@@ -123,8 +108,8 @@ func testIdentityProvidersClient_Delete(t *testing.T, c IdentityProvidersClientT
 	}
 }
 
-func testIdentityProvidersClient_ListAvailableProviderTypes(t *testing.T, c IdentityProvidersClientTest) {
-	availableIdentityProviders, _, err := c.client.ListAvailableProviderTypes(c.connection.Context)
+func testIdentityProvidersClient_ListAvailableProviderTypes(t *testing.T, c *test.Test) {
+	availableIdentityProviders, _, err := c.IdentityProvidersClient.ListAvailableProviderTypes(c.Connection.Context)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.ListAvailableProviderTypes(): %v", err)
 	}

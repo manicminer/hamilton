@@ -10,50 +10,92 @@ type Environment struct {
 	// The Azure AD endpoint for acquiring access tokens.
 	AzureADEndpoint AzureADEndpoint
 
-	// The Microsoft Graph configuration for an environment.
-	MsGraph Api
-
-	// The Azure Active Directory Graph configuration for an environment.
-	AadGraph Api
-
-	// The Azure Resource Manager configuration for an environment.
-	ResourceManager Api
+	// Management plane API definitions
+	MsGraph             Api
+	AadGraph            Api
+	ResourceManager     Api
+	BatchManagement     Api
+	DataLake            Api
+	KeyVault            Api
+	OperationalInsights Api
+	OSSRDBMS            Api
+	ServiceBus          Api
+	ServiceManagement   Api
+	SQLDatabase         Api
+	Storage             Api
+	Synapse             Api
 }
 
 var (
 	Global = Environment{
-		AzureADEndpoint: AzureADGlobal,
-		MsGraph:         MsGraphGlobal,
-		AadGraph:        AadGraphGlobal,
-		ResourceManager: ResourceManagerPublic,
+		AzureADEndpoint:     AzureADGlobal,
+		MsGraph:             MsGraphGlobal,
+		AadGraph:            AadGraphGlobal,
+		ResourceManager:     ResourceManagerPublic,
+		BatchManagement:     BatchManagementPublic,
+		DataLake:            DataLakePublic,
+		KeyVault:            KeyVaultPublic,
+		OperationalInsights: OperationalInsightsPublic,
+		OSSRDBMS:            OSSRDBMSPublic,
+		ServiceBus:          ServiceBusPublic,
+		ServiceManagement:   ServiceManagementPublic,
+		SQLDatabase:         SQLDatabasePublic,
+		Storage:             StoragePublic,
+		Synapse:             SynapsePublic,
 	}
 
 	Germany = Environment{
-		AzureADEndpoint: AzureADGermany,
-		MsGraph:         MsGraphGermany,
-		AadGraph:        AadGraphGermany,
-		ResourceManager: ResourceManagerGermany,
+		AzureADEndpoint:   AzureADGermany,
+		MsGraph:           MsGraphGermany,
+		AadGraph:          AadGraphGermany,
+		ResourceManager:   ResourceManagerGermany,
+		BatchManagement:   BatchManagementGermany,
+		KeyVault:          KeyVaultGermany,
+		OSSRDBMS:          OSSRDBMSGermany,
+		ServiceBus:        ServiceBusGermany,
+		ServiceManagement: ServiceManagementGermany,
+		SQLDatabase:       SQLDatabaseGermany,
 	}
 
 	China = Environment{
-		AzureADEndpoint: AzureADChina,
-		MsGraph:         MsGraphChina,
-		AadGraph:        AadGraphChina,
-		ResourceManager: ResourceManagerChina,
+		AzureADEndpoint:   AzureADChina,
+		MsGraph:           MsGraphChina,
+		AadGraph:          AadGraphChina,
+		ResourceManager:   ResourceManagerChina,
+		BatchManagement:   BatchManagementChina,
+		KeyVault:          KeyVaultChina,
+		OSSRDBMS:          OSSRDBMSChina,
+		ServiceBus:        ServiceBusChina,
+		ServiceManagement: ServiceManagementChina,
+		SQLDatabase:       SQLDatabaseChina,
 	}
 
 	USGovernmentL4 = Environment{
-		AzureADEndpoint: AzureADUSGov,
-		MsGraph:         MsGraphUSGovL4,
-		AadGraph:        AadGraphUSGov,
-		ResourceManager: ResourceManagerUSGov,
+		AzureADEndpoint:     AzureADUSGov,
+		MsGraph:             MsGraphUSGovL4,
+		AadGraph:            AadGraphUSGov,
+		ResourceManager:     ResourceManagerUSGov,
+		BatchManagement:     BatchManagementUSGov,
+		KeyVault:            KeyVaultUSGov,
+		OperationalInsights: OperationalInsightsUSGov,
+		OSSRDBMS:            OSSRDBMSUSGov,
+		ServiceBus:          ServiceBusUSGov,
+		ServiceManagement:   ServiceManagementUSGov,
+		SQLDatabase:         SQLDatabaseUSGov,
 	}
 
 	USGovernmentL5 = Environment{
-		AzureADEndpoint: AzureADUSGov,
-		MsGraph:         MsGraphUSGovL5,
-		AadGraph:        AadGraphUSGov,
-		ResourceManager: ResourceManagerUSGov,
+		AzureADEndpoint:     AzureADUSGov,
+		MsGraph:             MsGraphUSGovL5,
+		AadGraph:            AadGraphUSGov,
+		ResourceManager:     ResourceManagerUSGov,
+		BatchManagement:     BatchManagementUSGov,
+		KeyVault:            KeyVaultUSGov,
+		OperationalInsights: OperationalInsightsUSGov,
+		OSSRDBMS:            OSSRDBMSUSGov,
+		ServiceBus:          ServiceBusUSGov,
+		ServiceManagement:   ServiceManagementUSGov,
+		SQLDatabase:         SQLDatabaseUSGov,
 	}
 
 	Canary = Environment{

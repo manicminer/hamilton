@@ -4,39 +4,14 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type AccessPackageAssignmentPolicyTest struct {
-	connection               *test.Connection
-	apClient                 *msgraph.AccessPackageClient        //apClient
-	apCatalogClient          *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required
-	apAssignmentPolicyClient *msgraph.AccessPackageAssignmentPolicyClient
-	randomString             string
-}
-
 func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
-	c := AccessPackageAssignmentPolicyTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-
-	// Init clients
-	c.apClient = msgraph.NewAccessPackageClient(c.connection.AuthConfig.TenantID)
-	c.apClient.BaseClient.Authorizer = c.connection.Authorizer
-	c.apClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
-
-	c.apCatalogClient = msgraph.NewAccessPackageCatalogClient(c.connection.AuthConfig.TenantID)
-	c.apCatalogClient.BaseClient.Authorizer = c.connection.Authorizer
-	c.apCatalogClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
-
-	c.apAssignmentPolicyClient = msgraph.NewAccessPackageAssignmentPolicyClient(c.connection.AuthConfig.TenantID)
-	c.apAssignmentPolicyClient.BaseClient.Authorizer = c.connection.Authorizer
-	c.apAssignmentPolicyClient.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
+	c := test.NewTest()
 
 	// Create test catalog
 	accessPackageCatalog := testAccessPackageCatalog_Create(t, c)
@@ -47,7 +22,7 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
 		AccessPackageId: accessPackage.ID,
-		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.randomString)),
+		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.RandomString)),
 		Description:     utils.StringPtr("Test AP Policy Assignment Description"),
 		//AccessReviewSettings: utils.BoolPtr()
 		RequestorSettings: &msgraph.RequestorSettings{
@@ -70,7 +45,7 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	newAccessPackageAssignmentPolicy := msgraph.AccessPackageAssignmentPolicy{
 		ID:              accessPackageAssignmentPolicy.ID,
 		AccessPackageId: accessPackageAssignmentPolicy.AccessPackageId, // Both the ID and AccessPackageId MUST Be specified. API complains vaguely as just "the Id"
-		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-Updated-%s", c.randomString)),
+		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-Updated-%s", c.RandomString)),
 		Description:     utils.StringPtr("Test AP Policy Assignment Description Updated"),
 	}
 
@@ -86,8 +61,8 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 
 // AccessPackageAssignmentPolicy
 
-func testAccessPackageAssignmentPolicyClient_Create(t *testing.T, c AccessPackageAssignmentPolicyTest, a msgraph.AccessPackageAssignmentPolicy) (accessPackageAssignmentPolicy *msgraph.AccessPackageAssignmentPolicy) {
-	accessPackageAssignmentPolicy, status, err := c.apAssignmentPolicyClient.Create(c.connection.Context, a)
+func testAccessPackageAssignmentPolicyClient_Create(t *testing.T, c *test.Test, a msgraph.AccessPackageAssignmentPolicy) (accessPackageAssignmentPolicy *msgraph.AccessPackageAssignmentPolicy) {
+	accessPackageAssignmentPolicy, status, err := c.AccessPackageAssignmentPolicyClient.Create(c.Connection.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentPolicyClient.Create(): %v", err)
 	}
@@ -103,8 +78,8 @@ func testAccessPackageAssignmentPolicyClient_Create(t *testing.T, c AccessPackag
 	return
 }
 
-func testAccessPackageAssignmentPolicyClient_Get(t *testing.T, c AccessPackageAssignmentPolicyTest, id string) (accessPackageAssignmentPolicy *msgraph.AccessPackageAssignmentPolicy) {
-	accessPackageAssignmentPolicy, status, err := c.apAssignmentPolicyClient.Get(c.connection.Context, id, odata.Query{})
+func testAccessPackageAssignmentPolicyClient_Get(t *testing.T, c *test.Test, id string) (accessPackageAssignmentPolicy *msgraph.AccessPackageAssignmentPolicy) {
+	accessPackageAssignmentPolicy, status, err := c.AccessPackageAssignmentPolicyClient.Get(c.Connection.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentPolicyClient.Get(): %v", err)
 	}
@@ -117,8 +92,8 @@ func testAccessPackageAssignmentPolicyClient_Get(t *testing.T, c AccessPackageAs
 	return
 }
 
-func testAccessPackageAssignmentPolicyClient_Update(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageAssignmentPolicy msgraph.AccessPackageAssignmentPolicy) {
-	status, err := c.apAssignmentPolicyClient.Update(c.connection.Context, accessPackageAssignmentPolicy)
+func testAccessPackageAssignmentPolicyClient_Update(t *testing.T, c *test.Test, accessPackageAssignmentPolicy msgraph.AccessPackageAssignmentPolicy) {
+	status, err := c.AccessPackageAssignmentPolicyClient.Update(c.Connection.Context, accessPackageAssignmentPolicy)
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentPolicyClient.Update(): %v", err)
 	}
@@ -127,8 +102,8 @@ func testAccessPackageAssignmentPolicyClient_Update(t *testing.T, c AccessPackag
 	}
 }
 
-func testAccessPackageAssignmentPolicyClient_List(t *testing.T, c AccessPackageAssignmentPolicyTest) (accessPackageAssignmentPolicys *[]msgraph.AccessPackageAssignmentPolicy) {
-	accessPackageAssignmentPolicys, _, err := c.apAssignmentPolicyClient.List(c.connection.Context, odata.Query{Top: 10})
+func testAccessPackageAssignmentPolicyClient_List(t *testing.T, c *test.Test) (accessPackageAssignmentPolicys *[]msgraph.AccessPackageAssignmentPolicy) {
+	accessPackageAssignmentPolicys, _, err := c.AccessPackageAssignmentPolicyClient.List(c.Connection.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentPolicyClient.List(): %v", err)
 	}
@@ -138,8 +113,8 @@ func testAccessPackageAssignmentPolicyClient_List(t *testing.T, c AccessPackageA
 	return
 }
 
-func testAccessPackageAssignmentPolicyClient_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, id string) {
-	status, err := c.apAssignmentPolicyClient.Delete(c.connection.Context, id)
+func testAccessPackageAssignmentPolicyClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.AccessPackageAssignmentPolicyClient.Delete(c.Connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentPolicyClient.Delete(): %v", err)
 	}
@@ -150,9 +125,9 @@ func testAccessPackageAssignmentPolicyClient_Delete(t *testing.T, c AccessPackag
 
 // AccessPackage
 
-func testAccessPackage_Create(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageCatalog *msgraph.AccessPackageCatalog) (accessPackage *msgraph.AccessPackage) {
-	accessPackage, _, err := c.apClient.Create(c.connection.Context, msgraph.AccessPackage{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
+func testAccessPackage_Create(t *testing.T, c *test.Test, accessPackageCatalog *msgraph.AccessPackageCatalog) (accessPackage *msgraph.AccessPackage) {
+	accessPackage, _, err := c.AccessPackageClient.Create(c.Connection.Context, msgraph.AccessPackage{
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
 		CatalogId:           accessPackageCatalog.ID,
 		Description:         utils.StringPtr("Test Access Package"),
 		IsHidden:            utils.BoolPtr(false),
@@ -165,8 +140,8 @@ func testAccessPackage_Create(t *testing.T, c AccessPackageAssignmentPolicyTest,
 	return
 }
 
-func testAccessPackage_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, id string) {
-	_, err := c.apClient.Delete(c.connection.Context, id)
+func testAccessPackage_Delete(t *testing.T, c *test.Test, id string) {
+	_, err := c.AccessPackageClient.Delete(c.Connection.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Delete() - Could not delete test AccessPackage catalog")
 	}
@@ -174,9 +149,9 @@ func testAccessPackage_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest,
 
 // AccessPackageCatalog
 
-func testAccessPackageCatalog_Create(t *testing.T, c AccessPackageAssignmentPolicyTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
+func testAccessPackageCatalog_Create(t *testing.T, c *test.Test) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
+	accessPackageCatalog, _, err := c.AccessPackageCatalogClient.Create(c.Connection.Context, msgraph.AccessPackageCatalog{
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
 		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
 		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
@@ -189,8 +164,8 @@ func testAccessPackageCatalog_Create(t *testing.T, c AccessPackageAssignmentPoli
 	return
 }
 
-func testAccessPackageCatalog_Delete(t *testing.T, c AccessPackageAssignmentPolicyTest, accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	_, err := c.apCatalogClient.Delete(c.connection.Context, *accessPackageCatalog.ID)
+func testAccessPackageCatalog_Delete(t *testing.T, c *test.Test, accessPackageCatalog *msgraph.AccessPackageCatalog) {
+	_, err := c.AccessPackageCatalogClient.Delete(c.Connection.Context, *accessPackageCatalog.ID)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete() - Could not delete test AccessPackage catalog")
 	}

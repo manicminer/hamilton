@@ -1,68 +1,229 @@
 package environments
 
-type ApiEndpoint string
+// API represent an API configuration for Microsoft Graph or Azure Active Directory Graph.
+type Api struct {
+	// The Application ID for the API.
+	AppId ApiAppId
 
-const (
-	MsGraphGlobalEndpoint  ApiEndpoint = "https://graph.microsoft.com"
-	MsGraphGermanyEndpoint ApiEndpoint = "https://graph.microsoft.de"
-	MsGraphChinaEndpoint   ApiEndpoint = "https://microsoftgraph.chinacloudapi.cn"
-	MsGraphUSGovL4Endpoint ApiEndpoint = "https://graph.microsoft.us"
-	MsGraphUSGovL5Endpoint ApiEndpoint = "https://dod-graph.microsoft.us"
-	MsGraphCanaryEndpoint  ApiEndpoint = "https://canary.graph.microsoft.com"
+	// The endpoint for the API, including scheme.
+	Endpoint ApiEndpoint
+}
 
-	AadGraphGlobalEndpoint  ApiEndpoint = "https://graph.windows.net"
-	AadGraphGermanyEndpoint ApiEndpoint = "https://graph.cloudapi.de"
-	AadGraphChinaEndpoint   ApiEndpoint = "https://graph.chinacloudapi.cn"
-	AadGraphUSGovEndpoint   ApiEndpoint = "https://graph.microsoftazure.us"
+var (
+	MsGraphGlobal = Api{
+		AppId:    PublishedApis["MicrosoftGraph"],
+		Endpoint: MsGraphGlobalEndpoint,
+	}
 
-	ResourceManagerPublicEndpoint  ApiEndpoint = "https://management.azure.com"
-	ResourceManagerGermanyEndpoint ApiEndpoint = "https://management.microsoftazure.de"
-	ResourceManagerChinaEndpoint   ApiEndpoint = "https://management.chinacloudapi.cn"
-	ResourceManagerUSGovEndpoint   ApiEndpoint = "https://management.usgovcloudapi.net"
+	MsGraphGermany = Api{
+		AppId:    PublishedApis["MicrosoftGraph"],
+		Endpoint: MsGraphGermanyEndpoint,
+	}
 
-	BatchManagementPublicEndpoint  ApiEndpoint = "https://batch.core.windows.net"
-	BatchManagementGermanyEndpoint ApiEndpoint = "https://batch.cloudapi.de"
-	BatchManagementChinaEndpoint   ApiEndpoint = "https://batch.chinacloudapi.cn"
-	BatchManagementUSGovEndpoint   ApiEndpoint = "https://batch.core.usgovcloudapi.net"
+	MsGraphChina = Api{
+		AppId:    PublishedApis["MicrosoftGraph"],
+		Endpoint: MsGraphChinaEndpoint,
+	}
 
-	DataLakePublicEndpoint ApiEndpoint = "https://datalake.azure.net"
+	MsGraphUSGovL4 = Api{
+		AppId:    PublishedApis["MicrosoftGraph"],
+		Endpoint: MsGraphUSGovL4Endpoint,
+	}
 
-	GalleryPublicEndpoint  ApiEndpoint = "https://gallery.azure.com"
-	GalleryGermanyEndpoint ApiEndpoint = "https://gallery.cloudapi.de"
-	GalleryChinaEndpoint   ApiEndpoint = "https://gallery.chinacloudapi.cn"
-	GalleryUSGovEndpoint   ApiEndpoint = "https://gallery.usgovcloudapi.net"
+	MsGraphUSGovL5 = Api{
+		AppId:    PublishedApis["MicrosoftGraph"],
+		Endpoint: MsGraphUSGovL5Endpoint,
+	}
 
-	KeyVaultPublicEndpoint  ApiEndpoint = "https://vault.azure.net"
-	KeyVaultGermanyEndpoint ApiEndpoint = "https://vault.azure.net"
-	KeyVaultChinaEndpoint   ApiEndpoint = "https://vault.azure.cn"
-	KeyVaultUSGovEndpoint   ApiEndpoint = "https://vault.microsoftazure.de"
+	MsGraphCanary = Api{
+		AppId:    PublishedApis["MicrosoftGraph"],
+		Endpoint: MsGraphCanaryEndpoint,
+	}
 
-	OperationalInsightsPublicEndpoint ApiEndpoint = "https://api.loganalytics.io"
-	OperationalInsightsUSGovEndpoint  ApiEndpoint = "https://api.loganalytics.us"
+	AadGraphGlobal = Api{
+		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
+		Endpoint: AadGraphGlobalEndpoint,
+	}
 
-	OSSRDBMSPublicEndpoint  ApiEndpoint = "https://ossrdbms-aad.database.windows.net"
-	OSSRDBMSGermanyEndpoint ApiEndpoint = "https://ossrdbms-aad.database.cloudapi.de"
-	OSSRDBMSChinaEndpoint   ApiEndpoint = "https://ossrdbms-aad.database.chinacloudapi.cn"
-	OSSRDBMSUSGovEndpoint   ApiEndpoint = "https://ossrdbms-aad.database.usgovcloudapi.net"
+	AadGraphGermany = Api{
+		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
+		Endpoint: AadGraphGermanyEndpoint,
+	}
 
-	ServiceBusPublicEndpoint  ApiEndpoint = "https://servicebus.windows.net"
-	ServiceBusGermanyEndpoint ApiEndpoint = "https://servicebus.cloudapi.de"
-	ServiceBusChinaEndpoint   ApiEndpoint = "https://servicebus.chinacloudapi.cn"
-	ServiceBusUSGovEndpoint   ApiEndpoint = "https://servicebus.usgovcloudapi.net"
+	AadGraphChina = Api{
+		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
+		Endpoint: AadGraphChinaEndpoint,
+	}
 
-	ServiceManagementPublicEndpoint  ApiEndpoint = "https://management.core.windows.net"
-	ServiceManagementGermanyEndpoint ApiEndpoint = "https://management.core.cloudapi.de"
-	ServiceManagementChinaEndpoint   ApiEndpoint = "https://management.core.chinacloudapi.cn"
-	ServiceManagementUSGovEndpoint   ApiEndpoint = "https://management.core.usgovcloudapi.net"
+	AadGraphUSGov = Api{
+		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
+		Endpoint: AadGraphUSGovEndpoint,
+	}
 
-	SQLDatabasePublicEndpoint  ApiEndpoint = "https://database.windows.net"
-	SQLDatabaseGermanyEndpoint ApiEndpoint = "https://database.cloudapi.de"
-	SQLDatabaseChinaEndpoint   ApiEndpoint = "https://database.chinacloudapi.cn"
-	SQLDatabaseUSGovEndpoint   ApiEndpoint = "https://database.usgovcloudapi.net"
+	ResourceManagerPublic = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ResourceManagerPublicEndpoint,
+	}
 
-	StoragePublicEndpoint ApiEndpoint = "https://storage.azure.com"
+	ResourceManagerGermany = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ResourceManagerGermanyEndpoint,
+	}
 
-	SynapsePublicEndpoint ApiEndpoint = "https://dev.azuresynapse.net"
+	ResourceManagerChina = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ResourceManagerChinaEndpoint,
+	}
+
+	ResourceManagerUSGov = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ResourceManagerUSGovEndpoint,
+	}
+
+	BatchManagementPublic = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: BatchManagementPublicEndpoint,
+	}
+
+	BatchManagementGermany = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: BatchManagementGermanyEndpoint,
+	}
+
+	BatchManagementChina = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: BatchManagementChinaEndpoint,
+	}
+
+	BatchManagementUSGov = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: BatchManagementUSGovEndpoint,
+	}
+
+	DataLakePublic = Api{
+		AppId:    PublishedApis["AzureDataLake"],
+		Endpoint: DataLakePublicEndpoint,
+	}
+
+	KeyVaultPublic = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: KeyVaultPublicEndpoint,
+	}
+
+	KeyVaultGermany = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: KeyVaultGermanyEndpoint,
+	}
+
+	KeyVaultChina = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: KeyVaultChinaEndpoint,
+	}
+
+	KeyVaultUSGov = Api{
+		AppId:    PublishedApis["AzureBatch"],
+		Endpoint: KeyVaultUSGovEndpoint,
+	}
+
+	OperationalInsightsPublic = Api{
+		AppId:    PublishedApis["LogAnalytics"],
+		Endpoint: OperationalInsightsPublicEndpoint,
+	}
+
+	OperationalInsightsUSGov = Api{
+		AppId:    PublishedApis["LogAnalytics"],
+		Endpoint: OperationalInsightsUSGovEndpoint,
+	}
+
+	OSSRDBMSPublic = Api{
+		AppId:    PublishedApis["OssRdbms"],
+		Endpoint: OSSRDBMSPublicEndpoint,
+	}
+
+	OSSRDBMSGermany = Api{
+		AppId:    PublishedApis["OssRdbms"],
+		Endpoint: OSSRDBMSGermanyEndpoint,
+	}
+
+	OSSRDBMSChina = Api{
+		AppId:    PublishedApis["OssRdbms"],
+		Endpoint: OSSRDBMSChinaEndpoint,
+	}
+
+	OSSRDBMSUSGov = Api{
+		AppId:    PublishedApis["OssRdbms"],
+		Endpoint: OSSRDBMSUSGovEndpoint,
+	}
+
+	ServiceBusPublic = Api{
+		AppId:    PublishedApis["AzureServiceBus"],
+		Endpoint: ServiceBusPublicEndpoint,
+	}
+
+	ServiceBusGermany = Api{
+		AppId:    PublishedApis["AzureServiceBus"],
+		Endpoint: ServiceBusGermanyEndpoint,
+	}
+
+	ServiceBusChina = Api{
+		AppId:    PublishedApis["AzureServiceBus"],
+		Endpoint: ServiceBusChinaEndpoint,
+	}
+
+	ServiceBusUSGov = Api{
+		AppId:    PublishedApis["AzureServiceBus"],
+		Endpoint: ServiceBusUSGovEndpoint,
+	}
+
+	ServiceManagementPublic = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ServiceManagementPublicEndpoint,
+	}
+
+	ServiceManagementGermany = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ServiceManagementGermanyEndpoint,
+	}
+
+	ServiceManagementChina = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ServiceManagementChinaEndpoint,
+	}
+
+	ServiceManagementUSGov = Api{
+		AppId:    PublishedApis["AzureServiceManagement"],
+		Endpoint: ServiceManagementUSGovEndpoint,
+	}
+
+	SQLDatabasePublic = Api{
+		AppId:    PublishedApis["AzureSqlDatabase"],
+		Endpoint: SQLDatabasePublicEndpoint,
+	}
+
+	SQLDatabaseGermany = Api{
+		AppId:    PublishedApis["AzureSqlDatabase"],
+		Endpoint: SQLDatabaseGermanyEndpoint,
+	}
+
+	SQLDatabaseChina = Api{
+		AppId:    PublishedApis["AzureSqlDatabase"],
+		Endpoint: SQLDatabaseChinaEndpoint,
+	}
+
+	SQLDatabaseUSGov = Api{
+		AppId:    PublishedApis["AzureSqlDatabase"],
+		Endpoint: SQLDatabaseUSGovEndpoint,
+	}
+
+	StoragePublic = Api{
+		AppId:    PublishedApis["AzureStorage"],
+		Endpoint: StoragePublicEndpoint,
+	}
+
+	SynapsePublic = Api{
+		AppId:    PublishedApis["AzureSynapseGateway"],
+		Endpoint: SynapsePublicEndpoint,
+	}
 )
 
 type ApiCliName string
@@ -74,102 +235,4 @@ const (
 	BatchCliName           ApiCliName = "batch"
 	DataLakeCliName        ApiCliName = "data-lake"
 	OSSRDBMSCliName        ApiCliName = "oss-rdbms"
-)
-
-// API represent an API configuration for Microsoft Graph or Azure Active Directory Graph.
-type Api struct {
-	// The Application ID for the API.
-	AppId ApiAppId
-
-	// The Azure CLI codename for the API. Used with `az account get-access-token`.
-	CliName ApiCliName
-
-	// The endpoint for the API, including scheme.
-	Endpoint ApiEndpoint
-}
-
-var (
-	MsGraphGlobal = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		CliName:  MsGraphCliName,
-		Endpoint: MsGraphGlobalEndpoint,
-	}
-
-	MsGraphGermany = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		CliName:  MsGraphCliName,
-		Endpoint: MsGraphGermanyEndpoint,
-	}
-
-	MsGraphChina = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		CliName:  MsGraphCliName,
-		Endpoint: MsGraphChinaEndpoint,
-	}
-
-	MsGraphUSGovL4 = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		CliName:  MsGraphCliName,
-		Endpoint: MsGraphUSGovL4Endpoint,
-	}
-
-	MsGraphUSGovL5 = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		CliName:  MsGraphCliName,
-		Endpoint: MsGraphUSGovL5Endpoint,
-	}
-
-	MsGraphCanary = Api{
-		AppId:    PublishedApis["MicrosoftGraph"],
-		CliName:  MsGraphCliName,
-		Endpoint: MsGraphCanaryEndpoint,
-	}
-
-	AadGraphGlobal = Api{
-		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
-		CliName:  AadGraphCliName,
-		Endpoint: AadGraphGlobalEndpoint,
-	}
-
-	AadGraphGermany = Api{
-		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
-		CliName:  AadGraphCliName,
-		Endpoint: AadGraphGermanyEndpoint,
-	}
-
-	AadGraphChina = Api{
-		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
-		CliName:  AadGraphCliName,
-		Endpoint: AadGraphChinaEndpoint,
-	}
-
-	AadGraphUSGov = Api{
-		AppId:    PublishedApis["AzureActiveDirectoryGraph"],
-		CliName:  AadGraphCliName,
-		Endpoint: AadGraphUSGovEndpoint,
-	}
-
-	ResourceManagerPublic = Api{
-		AppId:    PublishedApis["AzureServiceManagement"],
-		CliName:  ResourceManagerCliName,
-		Endpoint: ResourceManagerPublicEndpoint,
-	}
-
-	ResourceManagerGermany = Api{
-		AppId:    PublishedApis["AzureServiceManagement"],
-		CliName:  ResourceManagerCliName,
-		Endpoint: ResourceManagerGermanyEndpoint,
-	}
-
-	ResourceManagerChina = Api{
-		AppId:    PublishedApis["AzureServiceManagement"],
-		CliName:  ResourceManagerCliName,
-		Endpoint: ResourceManagerChinaEndpoint,
-	}
-
-	ResourceManagerUSGov = Api{
-		AppId:    PublishedApis["AzureServiceManagement"],
-		CliName:  ResourceManagerCliName,
-		Endpoint: ResourceManagerUSGovEndpoint,
-	}
 )

@@ -42,7 +42,7 @@ func init() {
 	}
 
 	var err error
-	authorizer, err = authConfig.NewAuthorizer(ctx, auth.MsGraph)
+	authorizer, err = authConfig.NewAuthorizer(ctx, environments.Global.MsGraph)
 	if err != nil {
 		log.Fatalln(err)
 	}
