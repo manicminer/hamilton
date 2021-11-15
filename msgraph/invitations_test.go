@@ -10,7 +10,8 @@ import (
 )
 
 func TestInvitationsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	testInvitationsClient_Create(t, c, msgraph.Invitation{
 		InvitedUserDisplayName:  utils.StringPtr("test-user-invited"),
@@ -20,7 +21,7 @@ func TestInvitationsClient(t *testing.T) {
 }
 
 func testInvitationsClient_Create(t *testing.T, c *test.Test, i msgraph.Invitation) (invitation *msgraph.Invitation) {
-	invitation, status, err := c.InvitationsClient.Create(c.Connection.Context, i)
+	invitation, status, err := c.InvitationsClient.Create(c.Context, i)
 	if err != nil {
 		t.Fatalf("InvitationsClient.Create(): %v", err)
 	}

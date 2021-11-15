@@ -11,7 +11,8 @@ import (
 )
 
 func TestIdentityProvidersClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	providers := testIdentityProvidersClient_List(t, c)
 	for _, provider := range *providers {
@@ -44,7 +45,7 @@ func TestIdentityProvidersClient(t *testing.T) {
 }
 
 func testIdentityProvidersClient_Create(t *testing.T, c *test.Test, p msgraph.IdentityProvider) (provider *msgraph.IdentityProvider) {
-	provider, status, err := c.IdentityProvidersClient.Create(c.Connection.Context, p)
+	provider, status, err := c.IdentityProvidersClient.Create(c.Context, p)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Create(): %v", err)
 	}
@@ -61,7 +62,7 @@ func testIdentityProvidersClient_Create(t *testing.T, c *test.Test, p msgraph.Id
 }
 
 func testIdentityProvidersClient_Update(t *testing.T, c *test.Test, p msgraph.IdentityProvider) {
-	status, err := c.IdentityProvidersClient.Update(c.Connection.Context, p)
+	status, err := c.IdentityProvidersClient.Update(c.Context, p)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Update(): %v", err)
 	}
@@ -71,7 +72,7 @@ func testIdentityProvidersClient_Update(t *testing.T, c *test.Test, p msgraph.Id
 }
 
 func testIdentityProvidersClient_List(t *testing.T, c *test.Test) (providers *[]msgraph.IdentityProvider) {
-	providers, _, err := c.IdentityProvidersClient.List(c.Connection.Context)
+	providers, _, err := c.IdentityProvidersClient.List(c.Context)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.List(): %v", err)
 	}
@@ -82,7 +83,7 @@ func testIdentityProvidersClient_List(t *testing.T, c *test.Test) (providers *[]
 }
 
 func testIdentityProvidersClient_Get(t *testing.T, c *test.Test, id string) (provider *msgraph.IdentityProvider) {
-	provider, status, err := c.IdentityProvidersClient.Get(c.Connection.Context, id)
+	provider, status, err := c.IdentityProvidersClient.Get(c.Context, id)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Get(): %v", err)
 	}
@@ -99,7 +100,7 @@ func testIdentityProvidersClient_Get(t *testing.T, c *test.Test, id string) (pro
 }
 
 func testIdentityProvidersClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.IdentityProvidersClient.Delete(c.Connection.Context, id)
+	status, err := c.IdentityProvidersClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.Delete(): %v", err)
 	}
@@ -109,7 +110,7 @@ func testIdentityProvidersClient_Delete(t *testing.T, c *test.Test, id string) {
 }
 
 func testIdentityProvidersClient_ListAvailableProviderTypes(t *testing.T, c *test.Test) {
-	availableIdentityProviders, _, err := c.IdentityProvidersClient.ListAvailableProviderTypes(c.Connection.Context)
+	availableIdentityProviders, _, err := c.IdentityProvidersClient.ListAvailableProviderTypes(c.Context)
 	if err != nil {
 		t.Fatalf("IdentityProvidersClient.ListAvailableProviderTypes(): %v", err)
 	}

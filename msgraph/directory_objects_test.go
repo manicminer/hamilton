@@ -11,7 +11,8 @@ import (
 )
 
 func TestDirectoryObjectsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
@@ -53,7 +54,7 @@ func TestDirectoryObjectsClient(t *testing.T) {
 }
 
 func testDirectoryObjectsClient_Get(t *testing.T, c *test.Test, id string) (directoryObject *msgraph.DirectoryObject) {
-	directoryObject, status, err := c.DirectoryObjectsClient.Get(c.Connection.Context, id, odata.Query{})
+	directoryObject, status, err := c.DirectoryObjectsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.Get(): %v", err)
 	}
@@ -70,7 +71,7 @@ func testDirectoryObjectsClient_Get(t *testing.T, c *test.Test, id string) (dire
 }
 
 func testDirectoryObjectsClient_GetByIds(t *testing.T, c *test.Test, ids []string, types []odata.ShortType) (directoryObjects *[]msgraph.DirectoryObject) {
-	directoryObjects, status, err := c.DirectoryObjectsClient.GetByIds(c.Connection.Context, ids, types)
+	directoryObjects, status, err := c.DirectoryObjectsClient.GetByIds(c.Context, ids, types)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.GetByIds(): %v", err)
 	}
@@ -87,7 +88,7 @@ func testDirectoryObjectsClient_GetByIds(t *testing.T, c *test.Test, ids []strin
 }
 
 func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c *test.Test, id string, securityEnabledOnly bool, expected []string) (directoryObjects *[]msgraph.DirectoryObject) {
-	directoryObjects, status, err := c.DirectoryObjectsClient.GetMemberGroups(c.Connection.Context, id, securityEnabledOnly)
+	directoryObjects, status, err := c.DirectoryObjectsClient.GetMemberGroups(c.Context, id, securityEnabledOnly)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.GetMemberGroups(): %v", err)
 	}
@@ -120,7 +121,7 @@ func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c *test.Test, id s
 }
 
 func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c *test.Test, id string, securityEnabledOnly bool, expected []string) (directoryObjects *[]msgraph.DirectoryObject) {
-	directoryObjects, status, err := c.DirectoryObjectsClient.GetMemberObjects(c.Connection.Context, id, securityEnabledOnly)
+	directoryObjects, status, err := c.DirectoryObjectsClient.GetMemberObjects(c.Context, id, securityEnabledOnly)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.GetMemberObjects(): %v", err)
 	}
@@ -153,7 +154,7 @@ func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c *test.Test, id 
 }
 
 func testDirectoryObjectsClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.DirectoryObjectsClient.Delete(c.Connection.Context, id)
+	status, err := c.DirectoryObjectsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.Delete(): %v", err)
 	}

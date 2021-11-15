@@ -9,7 +9,8 @@ import (
 )
 
 func TestDirectoryRoleTemplatesClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// list all directory roles available in the tenant
 	directoryRoleTemplates := testDirectoryRoleTemplatesClient_List(t, c)
@@ -27,7 +28,7 @@ func TestDirectoryRoleTemplatesClient(t *testing.T) {
 }
 
 func testDirectoryRoleTemplatesClient_List(t *testing.T, c *test.Test) (directoryRoleTemplates *[]msgraph.DirectoryRoleTemplate) {
-	directoryRoleTemplates, _, err := c.DirectoryRoleTemplatesClient.List(c.Connection.Context)
+	directoryRoleTemplates, _, err := c.DirectoryRoleTemplatesClient.List(c.Context)
 	if err != nil {
 		t.Fatalf("DirectoryRoleTemplatesClient.List(): %v", err)
 	}
@@ -38,7 +39,7 @@ func testDirectoryRoleTemplatesClient_List(t *testing.T, c *test.Test) (director
 }
 
 func testDirectoryRoleTemplatesClient_Get(t *testing.T, c *test.Test, id string) (directoryRoleTemplate *msgraph.DirectoryRoleTemplate) {
-	directoryRoleTemplate, status, err := c.DirectoryRoleTemplatesClient.Get(c.Connection.Context, id)
+	directoryRoleTemplate, status, err := c.DirectoryRoleTemplatesClient.Get(c.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryRoleTemplatesClient.Get(): %v", err)
 	}
@@ -53,7 +54,7 @@ func testDirectoryRoleTemplatesClient_Get(t *testing.T, c *test.Test, id string)
 
 func testDirectoryRolesClient_Activate(t *testing.T, c *test.Test, roleTemplateId string) (directoryRole *msgraph.DirectoryRole) {
 	// list all activated directory roles in the tenant
-	directoryRoles, _, err := c.DirectoryRolesClient.List(c.Connection.Context)
+	directoryRoles, _, err := c.DirectoryRolesClient.List(c.Context)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.List(): %v", err)
 	}
@@ -74,7 +75,7 @@ func testDirectoryRolesClient_Activate(t *testing.T, c *test.Test, roleTemplateI
 
 	// attempt to activate directory role if not already present in the directory
 	if dirRole := findDirRoleByRoleTemplateId(*directoryRoles, roleTemplateId); dirRole == nil {
-		directoryRole, status, err := c.DirectoryRolesClient.Activate(c.Connection.Context, roleTemplateId)
+		directoryRole, status, err := c.DirectoryRolesClient.Activate(c.Context, roleTemplateId)
 		if err != nil {
 			t.Fatalf("DirectoryRolesClient.Activate(): %v", err)
 		}
@@ -87,7 +88,7 @@ func testDirectoryRolesClient_Activate(t *testing.T, c *test.Test, roleTemplateI
 	}
 
 	// attempt to activate directory role a second time to test the API error handling
-	directoryRole, status, err := c.DirectoryRolesClient.Activate(c.Connection.Context, roleTemplateId)
+	directoryRole, status, err := c.DirectoryRolesClient.Activate(c.Context, roleTemplateId)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.Activate() [attempt 2]: %v", err)
 	}

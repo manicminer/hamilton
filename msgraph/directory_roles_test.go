@@ -10,7 +10,8 @@ import (
 )
 
 func TestDirectoryRolesClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// list directory roles; usually at least few directory roles are activated within a tenant
 	directoryRoles := testDirectoryRolesClient_List(t, c)
@@ -44,7 +45,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 }
 
 func testDirectoryRolesClient_List(t *testing.T, c *test.Test) (directoryRoles *[]msgraph.DirectoryRole) {
-	directoryRoles, _, err := c.DirectoryRolesClient.List(c.Connection.Context)
+	directoryRoles, _, err := c.DirectoryRolesClient.List(c.Context)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.List(): %v", err)
 	}
@@ -55,7 +56,7 @@ func testDirectoryRolesClient_List(t *testing.T, c *test.Test) (directoryRoles *
 }
 
 func testDirectoryRolesClient_Get(t *testing.T, c *test.Test, id string) (directoryRole *msgraph.DirectoryRole) {
-	directoryRole, status, err := c.DirectoryRolesClient.Get(c.Connection.Context, id)
+	directoryRole, status, err := c.DirectoryRolesClient.Get(c.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.Get(): %v", err)
 	}
@@ -69,7 +70,7 @@ func testDirectoryRolesClient_Get(t *testing.T, c *test.Test, id string) (direct
 }
 
 func testDirectoryRolesClient_GetByTemplateId(t *testing.T, c *test.Test, templateId string) (directoryRole *msgraph.DirectoryRole) {
-	directoryRole, status, err := c.DirectoryRolesClient.GetByTemplateId(c.Connection.Context, templateId)
+	directoryRole, status, err := c.DirectoryRolesClient.GetByTemplateId(c.Context, templateId)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.Get(): %v", err)
 	}
@@ -83,7 +84,7 @@ func testDirectoryRolesClient_GetByTemplateId(t *testing.T, c *test.Test, templa
 }
 
 func testDirectoryRolesClient_ListMembers(t *testing.T, c *test.Test, id string) (members *[]string) {
-	members, status, err := c.DirectoryRolesClient.ListMembers(c.Connection.Context, id)
+	members, status, err := c.DirectoryRolesClient.ListMembers(c.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.ListMembers(): %v", err)
 	}
@@ -100,7 +101,7 @@ func testDirectoryRolesClient_ListMembers(t *testing.T, c *test.Test, id string)
 }
 
 func testDirectoryRolesClient_GetMember(t *testing.T, c *test.Test, dirRoleId string, memberId string) (member *string) {
-	member, status, err := c.DirectoryRolesClient.GetMember(c.Connection.Context, dirRoleId, memberId)
+	member, status, err := c.DirectoryRolesClient.GetMember(c.Context, dirRoleId, memberId)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.GetMember(): %v", err)
 	}
@@ -114,7 +115,7 @@ func testDirectoryRolesClient_GetMember(t *testing.T, c *test.Test, dirRoleId st
 }
 
 func testDirectoryRolesClient_RemoveMembers(t *testing.T, c *test.Test, dirRoleId string, memberIds *[]string) {
-	status, err := c.DirectoryRolesClient.RemoveMembers(c.Connection.Context, dirRoleId, memberIds)
+	status, err := c.DirectoryRolesClient.RemoveMembers(c.Context, dirRoleId, memberIds)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.RemoveMembers(): %v", err)
 	}
@@ -124,7 +125,7 @@ func testDirectoryRolesClient_RemoveMembers(t *testing.T, c *test.Test, dirRoleI
 }
 
 func testDirectoryRolesClient_AddMembers(t *testing.T, c *test.Test, dirRole *msgraph.DirectoryRole) {
-	status, err := c.DirectoryRolesClient.AddMembers(c.Connection.Context, dirRole)
+	status, err := c.DirectoryRolesClient.AddMembers(c.Context, dirRole)
 	if err != nil {
 		t.Fatalf("DirectoryRolesClient.AddMembers(): %v", err)
 	}

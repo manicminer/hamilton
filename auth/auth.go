@@ -98,7 +98,7 @@ func NewAzureCliAuthorizer(ctx context.Context, api environments.Api, tenantId s
 
 // NewMsiAuthorizer returns an authorizer which uses managed service identity to for authentication.
 func NewMsiAuthorizer(ctx context.Context, api environments.Api, msiEndpoint, clientId string) (Authorizer, error) {
-	conf, err := NewMsiConfig(resource(api), msiEndpoint, clientId)
+	conf, err := NewMsiConfig(api.Resource(), msiEndpoint, clientId)
 	if err != nil {
 		return nil, err
 	}
@@ -132,8 +132,8 @@ func NewClientCertificateAuthorizer(ctx context.Context, environment environment
 		ClientID:           clientId,
 		PrivateKey:         x509.MarshalPKCS1PrivateKey(priv),
 		Certificate:        cert.Raw,
-		Resource:           resource(api),
-		Scopes:             scopes(api),
+		Resource:           api.Resource(),
+		Scopes:             []string{api.DefaultScope()},
 		TokenVersion:       tokenVersion,
 	}
 
@@ -148,8 +148,8 @@ func NewClientSecretAuthorizer(ctx context.Context, environment environments.Env
 		AuxiliaryTenantIDs: auxTenantIds,
 		ClientID:           clientId,
 		ClientSecret:       clientSecret,
-		Resource:           resource(api),
-		Scopes:             scopes(api),
+		Resource:           api.Resource(),
+		Scopes:             []string{api.DefaultScope()},
 		TokenVersion:       tokenVersion,
 	}
 
@@ -166,12 +166,4 @@ func TokenEndpoint(endpoint environments.AzureADEndpoint, tenant string, version
 	}
 	e = fmt.Sprintf("%s/token", e)
 	return
-}
-
-func scopes(api environments.Api) (s []string) {
-	return []string{fmt.Sprintf("%s/.default", api.Endpoint)}
-}
-
-func resource(api environments.Api) (r string) {
-	return fmt.Sprintf("%s/", api.Endpoint)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"testing"
 
 	"golang.org/x/oauth2"
 
@@ -28,7 +29,6 @@ var (
 type Connection struct {
 	AuthConfig *auth.Config
 	Authorizer auth.Authorizer
-	Context    context.Context
 	DomainName string
 }
 
@@ -53,7 +53,6 @@ func NewConnection(tokenVersion auth.TokenVersion) *Connection {
 			EnableClientSecretAuth: true,
 			EnableAzureCliToken:    true,
 		},
-		Context:    context.Background(),
 		DomainName: tenantDomain,
 	}
 
@@ -61,15 +60,17 @@ func NewConnection(tokenVersion auth.TokenVersion) *Connection {
 }
 
 // Authorize configures an Authorizer for the Connection
-func (c *Connection) Authorize(api environments.Api) {
+func (c *Connection) Authorize(ctx context.Context, api environments.Api) {
 	var err error
-	c.Authorizer, err = c.AuthConfig.NewAuthorizer(c.Context, api)
+	c.Authorizer, err = c.AuthConfig.NewAuthorizer(ctx, api)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
 type Test struct {
+	Context      context.Context
+	CancelFunc   context.CancelFunc
 	Connection   *Connection
 	RandomString string
 
@@ -107,27 +108,32 @@ type Test struct {
 	UsersClient                               *msgraph.UsersClient
 }
 
-func NewTest() (c *Test) {
-	c = &Test{}
-	c.setup()
-	return
-}
+func NewTest(t *testing.T) (c *Test) {
+	ctx := context.Background()
+	var cancel context.CancelFunc
 
-func (c *Test) setup() {
+	if deadline, ok := t.Deadline(); ok {
+		ctx, cancel = context.WithDeadline(context.Background(), deadline)
+	}
+
+	c = &Test{
+		Context:      ctx,
+		CancelFunc:   cancel,
+		RandomString: RandomString(),
+	}
+
 	c.Connection = NewConnection(auth.TokenVersion2)
-	c.RandomString = RandomString()
-
-	c.Connection.Authorize(c.Connection.AuthConfig.Environment.MsGraph)
+	c.Connection.Authorize(ctx, c.Connection.AuthConfig.Environment.MsGraph)
 
 	var err error
 	c.Token, err = c.Connection.Authorizer.Token()
 	if err != nil {
-		log.Fatalf("could not acquire access token: %v", err)
+		t.Fatalf("could not acquire access token: %v", err)
 	}
 
 	c.Claims, err = auth.ParseClaims(c.Token)
 	if err != nil {
-		log.Fatalf("could not parse claims: %v", err)
+		t.Fatalf("could not parse claims: %v", err)
 	}
 
 	c.AccessPackageAssignmentPolicyClient = msgraph.NewAccessPackageAssignmentPolicyClient(c.Connection.AuthConfig.TenantID)
@@ -245,4 +251,6 @@ func (c *Test) setup() {
 	c.UsersClient = msgraph.NewUsersClient(c.Connection.AuthConfig.TenantID)
 	c.UsersClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.UsersClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+
+	return
 }

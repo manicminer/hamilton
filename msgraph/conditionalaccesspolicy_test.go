@@ -12,7 +12,8 @@ import (
 )
 
 func TestConditionalAccessPolicyClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	testAppId := environments.PublishedApis["Office365ExchangeOnline"]
 	testIncGroup := testGroup_Create(t, c, "test-conditionalAccessPolicy-inc")
@@ -60,7 +61,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 }
 
 func testConditionalAccessPolicysClient_Create(t *testing.T, c *test.Test, a msgraph.ConditionalAccessPolicy) (conditionalAccessPolicy *msgraph.ConditionalAccessPolicy) {
-	conditionalAccessPolicy, status, err := c.ConditionalAccessPoliciesClient.Create(c.Connection.Context, a)
+	conditionalAccessPolicy, status, err := c.ConditionalAccessPoliciesClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Create(): %v", err)
 	}
@@ -77,7 +78,7 @@ func testConditionalAccessPolicysClient_Create(t *testing.T, c *test.Test, a msg
 }
 
 func testConditionalAccessPolicysClient_Get(t *testing.T, c *test.Test, id string) (policy *msgraph.ConditionalAccessPolicy) {
-	policy, status, err := c.ConditionalAccessPoliciesClient.Get(c.Connection.Context, id, odata.Query{})
+	policy, status, err := c.ConditionalAccessPoliciesClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Get(): %v", err)
 	}
@@ -91,7 +92,7 @@ func testConditionalAccessPolicysClient_Get(t *testing.T, c *test.Test, id strin
 }
 
 func testConditionalAccessPolicysClient_Update(t *testing.T, c *test.Test, policy msgraph.ConditionalAccessPolicy) {
-	status, err := c.ConditionalAccessPoliciesClient.Update(c.Connection.Context, policy)
+	status, err := c.ConditionalAccessPoliciesClient.Update(c.Context, policy)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Update(): %v", err)
 	}
@@ -101,7 +102,7 @@ func testConditionalAccessPolicysClient_Update(t *testing.T, c *test.Test, polic
 }
 
 func testConditionalAccessPolicysClient_List(t *testing.T, c *test.Test) (policies *[]msgraph.ConditionalAccessPolicy) {
-	policies, _, err := c.ConditionalAccessPoliciesClient.List(c.Connection.Context, odata.Query{Top: 10})
+	policies, _, err := c.ConditionalAccessPoliciesClient.List(c.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.List(): %v", err)
 	}
@@ -112,7 +113,7 @@ func testConditionalAccessPolicysClient_List(t *testing.T, c *test.Test) (polici
 }
 
 func testConditionalAccessPolicysClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.ConditionalAccessPoliciesClient.Delete(c.Connection.Context, id)
+	status, err := c.ConditionalAccessPoliciesClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("ConditionalAccessPolicyClient.Delete(): %v", err)
 	}
@@ -122,7 +123,7 @@ func testConditionalAccessPolicysClient_Delete(t *testing.T, c *test.Test, id st
 }
 
 func testGroup_Create(t *testing.T, c *test.Test, prefix string) (group *msgraph.Group) {
-	group, _, err := c.GroupsClient.Create(c.Connection.Context, msgraph.Group{
+	group, _, err := c.GroupsClient.Create(c.Context, msgraph.Group{
 		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", prefix, c.RandomString)),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", prefix, c.RandomString)),
@@ -136,14 +137,14 @@ func testGroup_Create(t *testing.T, c *test.Test, prefix string) (group *msgraph
 }
 
 func testGroup_Delete(t *testing.T, c *test.Test, group *msgraph.Group) {
-	_, err := c.GroupsClient.Delete(c.Connection.Context, *group.ID)
+	_, err := c.GroupsClient.Delete(c.Context, *group.ID)
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}
 }
 
 func testUser_Create(t *testing.T, c *test.Test) (user *msgraph.User) {
-	user, _, err := c.UsersClient.Create(c.Connection.Context, msgraph.User{
+	user, _, err := c.UsersClient.Create(c.Context, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user-conditionalAccessPolicy"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.RandomString)),
@@ -160,7 +161,7 @@ func testUser_Create(t *testing.T, c *test.Test) (user *msgraph.User) {
 }
 
 func testUser_Delete(t *testing.T, c *test.Test, user *msgraph.User) {
-	_, err := c.UsersClient.Delete(c.Connection.Context, *user.ID)
+	_, err := c.UsersClient.Delete(c.Context, *user.ID)
 	if err != nil {
 		t.Fatalf("UsersClient.Delete() - Could not delete test user: %v", err)
 	}

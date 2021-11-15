@@ -13,7 +13,8 @@ import (
 )
 
 func TestAppRoleAssignedToClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// Scaffold the resource application
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
@@ -114,7 +115,8 @@ func TestAppRoleAssignedToClient(t *testing.T) {
 }
 
 func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// create a new test group
 	newGroup := msgraph.Group{
@@ -172,7 +174,8 @@ func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
 }
 
 func TestUsersAppRoleAssignmentsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// create a new test user
 	newUser := msgraph.User{
@@ -233,7 +236,8 @@ func TestUsersAppRoleAssignmentsClient(t *testing.T) {
 }
 
 func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// pre-generate uuid for a test resourceApp role
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
@@ -307,7 +311,7 @@ func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
 }
 
 func testGroupsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.GroupsAppRoleAssignmentsClient.List(c.Connection.Context, id)
+	appRoleAssignments, _, err := c.GroupsAppRoleAssignmentsClient.List(c.Context, id)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.List(): %v", err)
 	}
@@ -318,7 +322,7 @@ func testGroupsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id stri
 }
 
 func testServicePrincipalsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.ServicePrincipalsAppRoleAssignmentsClient.List(c.Connection.Context, id)
+	appRoleAssignments, _, err := c.ServicePrincipalsAppRoleAssignmentsClient.List(c.Context, id)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.List(): %v", err)
 	}
@@ -329,7 +333,7 @@ func testServicePrincipalsAppRoleAssignmentsClient_List(t *testing.T, c *test.Te
 }
 
 func testUsersAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.UsersAppRoleAssignmentsClient.List(c.Connection.Context, id)
+	appRoleAssignments, _, err := c.UsersAppRoleAssignmentsClient.List(c.Context, id)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.List(): %v", err)
 	}
@@ -340,7 +344,7 @@ func testUsersAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id strin
 }
 
 func testGroupsAppRoleAssignmentsClient_Remove(t *testing.T, c *test.Test, id, appRoleAssignmentId string) {
-	status, err := c.GroupsAppRoleAssignmentsClient.Remove(c.Connection.Context, id, appRoleAssignmentId)
+	status, err := c.GroupsAppRoleAssignmentsClient.Remove(c.Context, id, appRoleAssignmentId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.Remove(): %v", err)
 	}
@@ -350,7 +354,7 @@ func testGroupsAppRoleAssignmentsClient_Remove(t *testing.T, c *test.Test, id, a
 }
 
 func testServicePrincipalsAppRoleAssignmentsClient_Remove(t *testing.T, c *test.Test, id, appRoleAssignmentId string) {
-	status, err := c.ServicePrincipalsAppRoleAssignmentsClient.Remove(c.Connection.Context, id, appRoleAssignmentId)
+	status, err := c.ServicePrincipalsAppRoleAssignmentsClient.Remove(c.Context, id, appRoleAssignmentId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.Remove(): %v", err)
 	}
@@ -360,7 +364,7 @@ func testServicePrincipalsAppRoleAssignmentsClient_Remove(t *testing.T, c *test.
 }
 
 func testUsersAppRoleAssignmentsClient_Remove(t *testing.T, c *test.Test, id, appRoleAssignmentId string) {
-	status, err := c.UsersAppRoleAssignmentsClient.Remove(c.Connection.Context, id, appRoleAssignmentId)
+	status, err := c.UsersAppRoleAssignmentsClient.Remove(c.Context, id, appRoleAssignmentId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.Remove(): %v", err)
 	}
@@ -370,7 +374,7 @@ func testUsersAppRoleAssignmentsClient_Remove(t *testing.T, c *test.Test, id, ap
 }
 
 func testGroupsAppRoleAssignmentsClient_Assign(t *testing.T, c *test.Test, principalId, resourceServicePrincipalId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
-	appRoleAssignment, status, err := c.GroupsAppRoleAssignmentsClient.Assign(c.Connection.Context, principalId, resourceServicePrincipalId, appRoleId)
+	appRoleAssignment, status, err := c.GroupsAppRoleAssignmentsClient.Assign(c.Context, principalId, resourceServicePrincipalId, appRoleId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.Assign(): %v", err)
 	}
@@ -387,7 +391,7 @@ func testGroupsAppRoleAssignmentsClient_Assign(t *testing.T, c *test.Test, princ
 }
 
 func testServicePrincipalsAppRoleAssignmentsClient_Assign(t *testing.T, c *test.Test, principalId, resourceServicePrincipalId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
-	appRoleAssignment, status, err := c.ServicePrincipalsAppRoleAssignmentsClient.Assign(c.Connection.Context, principalId, resourceServicePrincipalId, appRoleId)
+	appRoleAssignment, status, err := c.ServicePrincipalsAppRoleAssignmentsClient.Assign(c.Context, principalId, resourceServicePrincipalId, appRoleId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.Assign(): %v", err)
 	}
@@ -404,7 +408,7 @@ func testServicePrincipalsAppRoleAssignmentsClient_Assign(t *testing.T, c *test.
 }
 
 func testUsersAppRoleAssignmentsClient_Assign(t *testing.T, c *test.Test, principalId, resourceServicePrincipalId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
-	appRoleAssignment, status, err := c.UsersAppRoleAssignmentsClient.Assign(c.Connection.Context, principalId, resourceServicePrincipalId, appRoleId)
+	appRoleAssignment, status, err := c.UsersAppRoleAssignmentsClient.Assign(c.Context, principalId, resourceServicePrincipalId, appRoleId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.Assign(): %v", err)
 	}
@@ -421,7 +425,7 @@ func testUsersAppRoleAssignmentsClient_Assign(t *testing.T, c *test.Test, princi
 }
 
 func testAppRoleAssignedToClient_List(t *testing.T, c *test.Test, resourceAppId string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, status, err := c.AppRoleAssignedToClient.List(c.Connection.Context, resourceAppId, odata.Query{})
+	appRoleAssignments, status, err := c.AppRoleAssignedToClient.List(c.Context, resourceAppId, odata.Query{})
 	if err != nil {
 		t.Fatalf("AppRoleAssignedToClient.List(): %v", err)
 	}
@@ -438,7 +442,7 @@ func testAppRoleAssignedToClient_List(t *testing.T, c *test.Test, resourceAppId 
 }
 
 func testAppRoleAssignedToClient_Assign(t *testing.T, c *test.Test, appRoleAssignment msgraph.AppRoleAssignment) (newAppRoleAssignment *msgraph.AppRoleAssignment) {
-	newAppRoleAssignment, status, err := c.AppRoleAssignedToClient.Assign(c.Connection.Context, appRoleAssignment)
+	newAppRoleAssignment, status, err := c.AppRoleAssignedToClient.Assign(c.Context, appRoleAssignment)
 	if err != nil {
 		t.Fatalf("AppRoleAssignedToClient.Assign(): %v", err)
 	}
@@ -455,7 +459,7 @@ func testAppRoleAssignedToClient_Assign(t *testing.T, c *test.Test, appRoleAssig
 }
 
 func testAppRoleAssignedToClient_Remove(t *testing.T, c *test.Test, resourceAppId, appRoleAssignmentId string) {
-	status, err := c.AppRoleAssignedToClient.Remove(c.Connection.Context, resourceAppId, appRoleAssignmentId)
+	status, err := c.AppRoleAssignedToClient.Remove(c.Context, resourceAppId, appRoleAssignmentId)
 	if err != nil {
 		t.Fatalf("AppRoleAssignedToClient.Remove(): %v", err)
 	}

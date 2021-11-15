@@ -9,14 +9,15 @@ import (
 )
 
 func TestDomainsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	domains := testDomainsClient_List(t, c)
 	testDomainsClient_Get(t, c, *(*domains)[0].ID)
 }
 
 func testDomainsClient_List(t *testing.T, c *test.Test) (domains *[]msgraph.Domain) {
-	domains, _, err := c.DomainsClient.List(c.Connection.Context, odata.Query{})
+	domains, _, err := c.DomainsClient.List(c.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("DomainsClient.List(): %v", err)
 	}
@@ -27,7 +28,7 @@ func testDomainsClient_List(t *testing.T, c *test.Test) (domains *[]msgraph.Doma
 }
 
 func testDomainsClient_Get(t *testing.T, c *test.Test, id string) (domain *msgraph.Domain) {
-	domain, status, err := c.DomainsClient.Get(c.Connection.Context, id, odata.Query{})
+	domain, status, err := c.DomainsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DomainsClient.Get(): %v", err)
 	}

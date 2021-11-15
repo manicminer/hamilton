@@ -24,7 +24,8 @@ func (e *MyExtensionProperties) UnmarshalJSON(data []byte) error {
 }
 
 func TestSchemaExtensionsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	property1 := msgraph.ExtensionSchemaProperty{
 		Name: utils.StringPtr("property1"),
@@ -137,7 +138,7 @@ func testSchemaExtensionsGroup_Get(t *testing.T, c *test.Test, id string, schema
 	for _, s := range schemaExtensions {
 		sel = append(sel, s.ID)
 	}
-	group, status, err := c.GroupsClient.GetWithSchemaExtensions(c.Connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
+	group, status, err := c.GroupsClient.GetWithSchemaExtensions(c.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
 		t.Fatalf("GroupsClient.Get(): %v", err)
 	}
@@ -228,7 +229,7 @@ func testSchemaExtensionsUser_Get(t *testing.T, c *test.Test, id string, schemaE
 	for _, s := range schemaExtensions {
 		sel = append(sel, s.ID)
 	}
-	user, status, err := c.UsersClient.GetWithSchemaExtensions(c.Connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
+	user, status, err := c.UsersClient.GetWithSchemaExtensions(c.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
 		t.Fatalf("UsersClient.Get(): %v", err)
 	}
@@ -248,7 +249,7 @@ func testSchemaExtensionsUser_Get(t *testing.T, c *test.Test, id string, schemaE
 }
 
 func testSchemaExtensionsClient_Create(t *testing.T, c *test.Test, s msgraph.SchemaExtension) (schema *msgraph.SchemaExtension) {
-	schema, status, err := c.SchemaExtensionsClient.Create(c.Connection.Context, s)
+	schema, status, err := c.SchemaExtensionsClient.Create(c.Context, s)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Create(): %v", err)
 	}
@@ -265,7 +266,7 @@ func testSchemaExtensionsClient_Create(t *testing.T, c *test.Test, s msgraph.Sch
 }
 
 func testSchemaExtensionsClient_Get(t *testing.T, c *test.Test, id string) (schema *msgraph.SchemaExtension) {
-	schema, status, err := c.SchemaExtensionsClient.Get(c.Connection.Context, id, odata.Query{})
+	schema, status, err := c.SchemaExtensionsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Get(): %v", err)
 	}
@@ -279,7 +280,7 @@ func testSchemaExtensionsClient_Get(t *testing.T, c *test.Test, id string) (sche
 }
 
 func testSchemaExtensionsClient_Update(t *testing.T, c *test.Test, s msgraph.SchemaExtension) {
-	status, err := c.SchemaExtensionsClient.Update(c.Connection.Context, s)
+	status, err := c.SchemaExtensionsClient.Update(c.Context, s)
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Update(): %v", err)
 	}
@@ -289,7 +290,7 @@ func testSchemaExtensionsClient_Update(t *testing.T, c *test.Test, s msgraph.Sch
 }
 
 func testSchemaExtensionsClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.SchemaExtensionsClient.Delete(c.Connection.Context, id)
+	status, err := c.SchemaExtensionsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Delete(): %v", err)
 	}

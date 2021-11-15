@@ -11,7 +11,8 @@ import (
 )
 
 func TestAccessPackageCatalogClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	accessPackageCatalog := testAccessPackageCatalogClient_Create(t, c, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
@@ -33,7 +34,7 @@ func TestAccessPackageCatalogClient(t *testing.T) {
 }
 
 func testAccessPackageCatalogClient_Create(t *testing.T, c *test.Test, a msgraph.AccessPackageCatalog) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	accessPackageCatalog, status, err := c.AccessPackageCatalogClient.Create(c.Connection.Context, a)
+	accessPackageCatalog, status, err := c.AccessPackageCatalogClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Create(): %v", err)
 	}
@@ -50,7 +51,7 @@ func testAccessPackageCatalogClient_Create(t *testing.T, c *test.Test, a msgraph
 }
 
 func testAccessPackageCatalogClient_Get(t *testing.T, c *test.Test, id string) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	accessPackageCatalog, status, err := c.AccessPackageCatalogClient.Get(c.Connection.Context, id, odata.Query{})
+	accessPackageCatalog, status, err := c.AccessPackageCatalogClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Get(): %v", err)
 	}
@@ -64,7 +65,7 @@ func testAccessPackageCatalogClient_Get(t *testing.T, c *test.Test, id string) (
 }
 
 func testAccessPackageCatalogClient_Update(t *testing.T, c *test.Test, accessPackageCatalog msgraph.AccessPackageCatalog) {
-	status, err := c.AccessPackageCatalogClient.Update(c.Connection.Context, accessPackageCatalog)
+	status, err := c.AccessPackageCatalogClient.Update(c.Context, accessPackageCatalog)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Update(): %v", err)
 	}
@@ -74,7 +75,7 @@ func testAccessPackageCatalogClient_Update(t *testing.T, c *test.Test, accessPac
 }
 
 func testAccessPackageCatalogClient_List(t *testing.T, c *test.Test) (accessPackageCatalogs *[]msgraph.AccessPackageCatalog) {
-	accessPackageCatalogs, _, err := c.AccessPackageCatalogClient.List(c.Connection.Context, odata.Query{Top: 10})
+	accessPackageCatalogs, _, err := c.AccessPackageCatalogClient.List(c.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.List(): %v", err)
 	}
@@ -85,7 +86,7 @@ func testAccessPackageCatalogClient_List(t *testing.T, c *test.Test) (accessPack
 }
 
 func testAccessPackageCatalogClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.AccessPackageCatalogClient.Delete(c.Connection.Context, id)
+	status, err := c.AccessPackageCatalogClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete(): %v", err)
 	}

@@ -11,7 +11,8 @@ import (
 )
 
 func TestGroupsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	self := testDirectoryObjectsClient_Get(t, c, c.Claims.ObjectId)
 
@@ -74,7 +75,7 @@ func TestGroupsClient(t *testing.T) {
 }
 
 func testGroupsClient_Create(t *testing.T, c *test.Test, g msgraph.Group) (group *msgraph.Group) {
-	group, status, err := c.GroupsClient.Create(c.Connection.Context, g)
+	group, status, err := c.GroupsClient.Create(c.Context, g)
 	if err != nil {
 		t.Fatalf("GroupsClient.Create(): %v", err)
 	}
@@ -91,7 +92,7 @@ func testGroupsClient_Create(t *testing.T, c *test.Test, g msgraph.Group) (group
 }
 
 func testGroupsClient_Update(t *testing.T, c *test.Test, g msgraph.Group) {
-	status, err := c.GroupsClient.Update(c.Connection.Context, g)
+	status, err := c.GroupsClient.Update(c.Context, g)
 	if err != nil {
 		t.Fatalf("GroupsClient.Update(): %v", err)
 	}
@@ -101,7 +102,7 @@ func testGroupsClient_Update(t *testing.T, c *test.Test, g msgraph.Group) {
 }
 
 func testGroupsClient_List(t *testing.T, c *test.Test) (groups *[]msgraph.Group) {
-	groups, _, err := c.GroupsClient.List(c.Connection.Context, odata.Query{Top: 10})
+	groups, _, err := c.GroupsClient.List(c.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("GroupsClient.List(): %v", err)
 	}
@@ -112,7 +113,7 @@ func testGroupsClient_List(t *testing.T, c *test.Test) (groups *[]msgraph.Group)
 }
 
 func testGroupsClient_Get(t *testing.T, c *test.Test, id string) (group *msgraph.Group) {
-	group, status, err := c.GroupsClient.Get(c.Connection.Context, id, odata.Query{})
+	group, status, err := c.GroupsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("GroupsClient.Get(): %v", err)
 	}
@@ -126,7 +127,7 @@ func testGroupsClient_Get(t *testing.T, c *test.Test, id string) (group *msgraph
 }
 
 func testGroupsClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.GroupsClient.Delete(c.Connection.Context, id)
+	status, err := c.GroupsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete(): %v", err)
 	}
@@ -136,7 +137,7 @@ func testGroupsClient_Delete(t *testing.T, c *test.Test, id string) {
 }
 
 func testGroupsClient_DeletePermanently(t *testing.T, c *test.Test, id string) {
-	status, err := c.GroupsClient.DeletePermanently(c.Connection.Context, id)
+	status, err := c.GroupsClient.DeletePermanently(c.Context, id)
 	if err != nil {
 		t.Fatalf("GroupsClient.DeletePermanently(): %v", err)
 	}
@@ -146,7 +147,7 @@ func testGroupsClient_DeletePermanently(t *testing.T, c *test.Test, id string) {
 }
 
 func testGroupsClient_ListOwners(t *testing.T, c *test.Test, id string) (owners *[]string) {
-	owners, status, err := c.GroupsClient.ListOwners(c.Connection.Context, id)
+	owners, status, err := c.GroupsClient.ListOwners(c.Context, id)
 	if err != nil {
 		t.Fatalf("GroupsClient.ListOwners(): %v", err)
 	}
@@ -163,7 +164,7 @@ func testGroupsClient_ListOwners(t *testing.T, c *test.Test, id string) (owners 
 }
 
 func testGroupsClient_GetOwner(t *testing.T, c *test.Test, groupId string, ownerId string) (owner *string) {
-	owner, status, err := c.GroupsClient.GetOwner(c.Connection.Context, groupId, ownerId)
+	owner, status, err := c.GroupsClient.GetOwner(c.Context, groupId, ownerId)
 	if err != nil {
 		t.Fatalf("GroupsClient.GetOwner(): %v", err)
 	}
@@ -177,7 +178,7 @@ func testGroupsClient_GetOwner(t *testing.T, c *test.Test, groupId string, owner
 }
 
 func testGroupsClient_AddOwners(t *testing.T, c *test.Test, g *msgraph.Group) {
-	status, err := c.GroupsClient.AddOwners(c.Connection.Context, g)
+	status, err := c.GroupsClient.AddOwners(c.Context, g)
 	if err != nil {
 		t.Fatalf("GroupsClient.AddOwners(): %v", err)
 	}
@@ -187,7 +188,7 @@ func testGroupsClient_AddOwners(t *testing.T, c *test.Test, g *msgraph.Group) {
 }
 
 func testGroupsClient_RemoveOwners(t *testing.T, c *test.Test, groupId string, ownerIds *[]string) {
-	status, err := c.GroupsClient.RemoveOwners(c.Connection.Context, groupId, ownerIds)
+	status, err := c.GroupsClient.RemoveOwners(c.Context, groupId, ownerIds)
 	if err != nil {
 		t.Fatalf("GroupsClient.RemoveOwners(): %v", err)
 	}
@@ -197,7 +198,7 @@ func testGroupsClient_RemoveOwners(t *testing.T, c *test.Test, groupId string, o
 }
 
 func testGroupsClient_ListMembers(t *testing.T, c *test.Test, id string) (members *[]string) {
-	members, status, err := c.GroupsClient.ListMembers(c.Connection.Context, id)
+	members, status, err := c.GroupsClient.ListMembers(c.Context, id)
 	if err != nil {
 		t.Fatalf("GroupsClient.ListMembers(): %v", err)
 	}
@@ -214,7 +215,7 @@ func testGroupsClient_ListMembers(t *testing.T, c *test.Test, id string) (member
 }
 
 func testGroupsClient_GetMember(t *testing.T, c *test.Test, groupId string, memberId string) (member *string) {
-	member, status, err := c.GroupsClient.GetMember(c.Connection.Context, groupId, memberId)
+	member, status, err := c.GroupsClient.GetMember(c.Context, groupId, memberId)
 	if err != nil {
 		t.Fatalf("GroupsClient.GetMember(): %v", err)
 	}
@@ -228,7 +229,7 @@ func testGroupsClient_GetMember(t *testing.T, c *test.Test, groupId string, memb
 }
 
 func testGroupsClient_AddMembers(t *testing.T, c *test.Test, g *msgraph.Group) {
-	status, err := c.GroupsClient.AddMembers(c.Connection.Context, g)
+	status, err := c.GroupsClient.AddMembers(c.Context, g)
 	if err != nil {
 		t.Fatalf("GroupsClient.AddMembers(): %v", err)
 	}
@@ -238,7 +239,7 @@ func testGroupsClient_AddMembers(t *testing.T, c *test.Test, g *msgraph.Group) {
 }
 
 func testGroupsClient_RemoveMembers(t *testing.T, c *test.Test, groupId string, memberIds *[]string) {
-	status, err := c.GroupsClient.RemoveMembers(c.Connection.Context, groupId, memberIds)
+	status, err := c.GroupsClient.RemoveMembers(c.Context, groupId, memberIds)
 	if err != nil {
 		t.Fatalf("GroupsClient.RemoveMembers(): %v", err)
 	}
@@ -248,7 +249,7 @@ func testGroupsClient_RemoveMembers(t *testing.T, c *test.Test, groupId string, 
 }
 
 func testGroupsClient_GetDeleted(t *testing.T, c *test.Test, id string) (group *msgraph.Group) {
-	group, status, err := c.GroupsClient.GetDeleted(c.Connection.Context, id, odata.Query{})
+	group, status, err := c.GroupsClient.GetDeleted(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("GroupsClient.GetDeleted(): %v", err)
 	}
@@ -262,7 +263,7 @@ func testGroupsClient_GetDeleted(t *testing.T, c *test.Test, id string) (group *
 }
 
 func testGroupsClient_ListDeleted(t *testing.T, c *test.Test, expectedId string) (deletedGroups *[]msgraph.Group) {
-	deletedGroups, status, err := c.GroupsClient.ListDeleted(c.Connection.Context, odata.Query{
+	deletedGroups, status, err := c.GroupsClient.ListDeleted(c.Context, odata.Query{
 		Filter: fmt.Sprintf("id eq '%s'", expectedId),
 		Top:    10,
 	})
@@ -292,7 +293,7 @@ func testGroupsClient_ListDeleted(t *testing.T, c *test.Test, expectedId string)
 }
 
 func testGroupsClient_RestoreDeleted(t *testing.T, c *test.Test, id string) {
-	group, status, err := c.GroupsClient.RestoreDeleted(c.Connection.Context, id)
+	group, status, err := c.GroupsClient.RestoreDeleted(c.Context, id)
 	if err != nil {
 		t.Fatalf("GroupsClient.RestoreDeleted(): %v", err)
 	}

@@ -84,7 +84,7 @@ func (a *MsiAuthorizer) Token() (*oauth2.Token, error) {
 
 // AuxiliaryTokens returns additional tokens for auxiliary tenant IDs, for use in multi-tenant scenarios
 func (a *MsiAuthorizer) AuxiliaryTokens() ([]*oauth2.Token, error) {
-	return nil, fmt.Errorf("not implemented")
+	return nil, fmt.Errorf("auxiliary tokens are not supported with MSI authentication")
 }
 
 // MsiConfig configures an MsiAuthorizer.

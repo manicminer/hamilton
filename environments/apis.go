@@ -1,5 +1,9 @@
 package environments
 
+import (
+	"fmt"
+)
+
 // API represent an API configuration for Microsoft Graph or Azure Active Directory Graph.
 type Api struct {
 	// The Application ID for the API.
@@ -7,6 +11,14 @@ type Api struct {
 
 	// The endpoint for the API, including scheme.
 	Endpoint ApiEndpoint
+}
+
+func (a *Api) DefaultScope() string {
+	return fmt.Sprintf("%s/.default", a.Endpoint)
+}
+
+func (a *Api) Resource() string {
+	return fmt.Sprintf("%s/", a.Endpoint)
 }
 
 var (

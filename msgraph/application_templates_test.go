@@ -13,7 +13,8 @@ import (
 const testApplicationTemplateId = "4601ed45-8ff3-4599-8377-b6649007e876" // Marketo
 
 func TestApplicationTemplatesClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	testApplicationTemplatesClient_List(t, c, odata.Query{})
 	testApplicationTemplatesClient_List(t, c, odata.Query{Filter: fmt.Sprintf("categories/any(c:contains(c, '%s'))", msgraph.ApplicationTemplateCategoryEducation)})
@@ -30,7 +31,7 @@ func TestApplicationTemplatesClient(t *testing.T) {
 }
 
 func testApplicationTemplatesClient_List(t *testing.T, c *test.Test, o odata.Query) (applicationTemplates []msgraph.ApplicationTemplate) {
-	result, _, err := c.ApplicationTemplatesClient.List(c.Connection.Context, o)
+	result, _, err := c.ApplicationTemplatesClient.List(c.Context, o)
 	if err != nil {
 		t.Fatalf("ApplicationTemplatesClient.List(): %v", err)
 	}
@@ -48,7 +49,7 @@ func testApplicationTemplatesClient_List(t *testing.T, c *test.Test, o odata.Que
 }
 
 func testApplicationTemplatesClient_Get(t *testing.T, c *test.Test, id string) (applicationTemplate *msgraph.ApplicationTemplate) {
-	applicationTemplate, status, err := c.ApplicationTemplatesClient.Get(c.Connection.Context, id, odata.Query{})
+	applicationTemplate, status, err := c.ApplicationTemplatesClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationTemplatesClient.Get(): %v", err)
 	}
@@ -65,7 +66,7 @@ func testApplicationTemplatesClient_Get(t *testing.T, c *test.Test, id string) (
 }
 
 func testApplicationTemplatesClient_Instantiate(t *testing.T, c *test.Test, a msgraph.ApplicationTemplate) (applicationTemplate *msgraph.ApplicationTemplate) {
-	applicationTemplate, status, err := c.ApplicationTemplatesClient.Instantiate(c.Connection.Context, a)
+	applicationTemplate, status, err := c.ApplicationTemplatesClient.Instantiate(c.Context, a)
 	if err != nil {
 		t.Fatalf("ApplicationTemplatesClient.Instantiate(): %v", err)
 	}

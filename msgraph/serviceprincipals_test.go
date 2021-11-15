@@ -13,7 +13,8 @@ import (
 )
 
 func TestServicePrincipalsClient(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-serviceprincipal-%s", c.RandomString)),
@@ -80,7 +81,8 @@ func TestServicePrincipalsClient(t *testing.T) {
 }
 
 func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// pre-generate uuid for a test app role
 	testResourceAppRoleId, _ := uuid.GenerateUUID()
@@ -153,7 +155,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 }
 
 func testServicePrincipalsClient_Create(t *testing.T, c *test.Test, sp msgraph.ServicePrincipal) (servicePrincipal *msgraph.ServicePrincipal) {
-	servicePrincipal, status, err := c.ServicePrincipalsClient.Create(c.Connection.Context, sp)
+	servicePrincipal, status, err := c.ServicePrincipalsClient.Create(c.Context, sp)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.Create(): %v", err)
 	}
@@ -170,7 +172,7 @@ func testServicePrincipalsClient_Create(t *testing.T, c *test.Test, sp msgraph.S
 }
 
 func testServicePrincipalsClient_Update(t *testing.T, c *test.Test, sp msgraph.ServicePrincipal) (servicePrincipal *msgraph.ServicePrincipal) {
-	status, err := c.ServicePrincipalsClient.Update(c.Connection.Context, sp)
+	status, err := c.ServicePrincipalsClient.Update(c.Context, sp)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.Update(): %v", err)
 	}
@@ -181,7 +183,7 @@ func testServicePrincipalsClient_Update(t *testing.T, c *test.Test, sp msgraph.S
 }
 
 func testServicePrincipalsClient_List(t *testing.T, c *test.Test) (servicePrincipals *[]msgraph.ServicePrincipal) {
-	servicePrincipals, _, err := c.ServicePrincipalsClient.List(c.Connection.Context, odata.Query{Top: 10})
+	servicePrincipals, _, err := c.ServicePrincipalsClient.List(c.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.List(): %v", err)
 	}
@@ -192,7 +194,7 @@ func testServicePrincipalsClient_List(t *testing.T, c *test.Test) (servicePrinci
 }
 
 func testServicePrincipalsClient_Get(t *testing.T, c *test.Test, id string) (servicePrincipal *msgraph.ServicePrincipal) {
-	servicePrincipal, status, err := c.ServicePrincipalsClient.Get(c.Connection.Context, id, odata.Query{})
+	servicePrincipal, status, err := c.ServicePrincipalsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.Get(): %v", err)
 	}
@@ -206,7 +208,7 @@ func testServicePrincipalsClient_Get(t *testing.T, c *test.Test, id string) (ser
 }
 
 func testServicePrincipalsClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.ServicePrincipalsClient.Delete(c.Connection.Context, id)
+	status, err := c.ServicePrincipalsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.Delete(): %v", err)
 	}
@@ -216,7 +218,7 @@ func testServicePrincipalsClient_Delete(t *testing.T, c *test.Test, id string) {
 }
 
 func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c *test.Test, id string) (groups *[]msgraph.Group) {
-	groups, _, err := c.ServicePrincipalsClient.ListGroupMemberships(c.Connection.Context, id, odata.Query{})
+	groups, _, err := c.ServicePrincipalsClient.ListGroupMemberships(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListGroupMemberships(): %v", err)
 	}
@@ -234,7 +236,7 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c *test.Test
 
 func testServicePrincipalsClient_AddPassword(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
 	pwd := msgraph.PasswordCredential{}
-	newPwd, status, err := c.ServicePrincipalsClient.AddPassword(c.Connection.Context, *a.ID, pwd)
+	newPwd, status, err := c.ServicePrincipalsClient.AddPassword(c.Context, *a.ID, pwd)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
 	}
@@ -248,7 +250,7 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c *test.Test, a *msgr
 }
 
 func testServicePrincipalsClient_RemovePassword(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal, p *msgraph.PasswordCredential) {
-	status, err := c.ServicePrincipalsClient.RemovePassword(c.Connection.Context, *a.ID, *p.KeyId)
+	status, err := c.ServicePrincipalsClient.RemovePassword(c.Context, *a.ID, *p.KeyId)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemovePassword(): %v", err)
 	}
@@ -258,7 +260,7 @@ func testServicePrincipalsClient_RemovePassword(t *testing.T, c *test.Test, a *m
 }
 
 func testServicePrincipalsClient_AddOwners(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal) {
-	status, err := c.ServicePrincipalsClient.AddOwners(c.Connection.Context, sp)
+	status, err := c.ServicePrincipalsClient.AddOwners(c.Context, sp)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddOwners(): %v", err)
 	}
@@ -268,7 +270,7 @@ func testServicePrincipalsClient_AddOwners(t *testing.T, c *test.Test, sp *msgra
 }
 
 func testServicePrincipalsClient_ListOwnedObjects(t *testing.T, c *test.Test, id string) (ownedObjects *[]string) {
-	ownedObjects, _, err := c.ServicePrincipalsClient.ListOwnedObjects(c.Connection.Context, id)
+	ownedObjects, _, err := c.ServicePrincipalsClient.ListOwnedObjects(c.Context, id)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListOwnedObjects(): %v", err)
 	}
@@ -284,7 +286,7 @@ func testServicePrincipalsClient_ListOwnedObjects(t *testing.T, c *test.Test, id
 }
 
 func testServicePrincipalsClient_ListOwners(t *testing.T, c *test.Test, id string, expected []string) (owners *[]string) {
-	owners, status, err := c.ServicePrincipalsClient.ListOwners(c.Connection.Context, id)
+	owners, status, err := c.ServicePrincipalsClient.ListOwners(c.Context, id)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListOwners(): %v", err)
 	}
@@ -317,7 +319,7 @@ func testServicePrincipalsClient_ListOwners(t *testing.T, c *test.Test, id strin
 }
 
 func testServicePrincipalsClient_GetOwner(t *testing.T, c *test.Test, spId, ownerId string) (owner *string) {
-	owner, status, err := c.ServicePrincipalsClient.GetOwner(c.Connection.Context, spId, ownerId)
+	owner, status, err := c.ServicePrincipalsClient.GetOwner(c.Context, spId, ownerId)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.GetOwner(): %v", err)
 	}
@@ -333,14 +335,14 @@ func testServicePrincipalsClient_GetOwner(t *testing.T, c *test.Test, spId, owne
 }
 
 func testServicePrincipalsClient_RemoveOwners(t *testing.T, c *test.Test, spId string, ownerIds []string) {
-	_, err := c.ServicePrincipalsClient.RemoveOwners(c.Connection.Context, spId, &ownerIds)
+	_, err := c.ServicePrincipalsClient.RemoveOwners(c.Context, spId, &ownerIds)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemoveOwners(): %v", err)
 	}
 }
 
 func testServicePrincipalsClient_AssignAppRole(t *testing.T, c *test.Test, principalId, resourceId, appRoleId string) (appRoleAssignment *msgraph.AppRoleAssignment) {
-	appRoleAssignment, status, err := c.ServicePrincipalsClient.AssignAppRoleForResource(c.Connection.Context, principalId, resourceId, appRoleId)
+	appRoleAssignment, status, err := c.ServicePrincipalsClient.AssignAppRoleForResource(c.Context, principalId, resourceId, appRoleId)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AssignAppRoleForResource(): %v", err)
 	}
@@ -357,7 +359,7 @@ func testServicePrincipalsClient_AssignAppRole(t *testing.T, c *test.Test, princ
 }
 
 func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c *test.Test, resourceId string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.ServicePrincipalsClient.ListAppRoleAssignments(c.Connection.Context, resourceId, odata.Query{})
+	appRoleAssignments, _, err := c.ServicePrincipalsClient.ListAppRoleAssignments(c.Context, resourceId, odata.Query{})
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.ListAppRoleAssignments(): %v", err)
 	}
@@ -368,7 +370,7 @@ func testServicePrincipalsClient_ListAppRoleAssignments(t *testing.T, c *test.Te
 }
 
 func testServicePrincipalsClient_RemoveAppRoleAssignment(t *testing.T, c *test.Test, resourceId, appRoleAssignmentId string) {
-	status, err := c.ServicePrincipalsClient.RemoveAppRoleAssignment(c.Connection.Context, resourceId, appRoleAssignmentId)
+	status, err := c.ServicePrincipalsClient.RemoveAppRoleAssignment(c.Context, resourceId, appRoleAssignmentId)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemoveAppRoleAssignment(): %v", err)
 	}

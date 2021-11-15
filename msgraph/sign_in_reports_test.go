@@ -9,7 +9,8 @@ import (
 )
 
 func TestSignInReportsTest(t *testing.T) {
-	c := test.NewTest()
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	signInLogs := testSignInReports_List(t, c)
 	if *signInLogs != nil && len(*signInLogs) > 0 {
@@ -18,7 +19,7 @@ func TestSignInReportsTest(t *testing.T) {
 }
 
 func testSignInReports_List(t *testing.T, c *test.Test) (signInLogs *[]msgraph.SignInReport) {
-	signInLogs, status, err := c.SignInReportsClient.List(c.Connection.Context, odata.Query{Top: 10})
+	signInLogs, status, err := c.SignInReportsClient.List(c.Context, odata.Query{Top: 10})
 
 	if status < 200 || status >= 300 {
 		t.Fatalf("SignInReportsClient.List(): invalid status: %d", status)
@@ -35,7 +36,7 @@ func testSignInReports_List(t *testing.T, c *test.Test) (signInLogs *[]msgraph.S
 }
 
 func testSignInReports_Get(t *testing.T, c *test.Test, id string) (signInLog *msgraph.SignInReport) {
-	signInLog, status, err := c.SignInReportsClient.Get(c.Connection.Context, id, odata.Query{})
+	signInLog, status, err := c.SignInReportsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("SignInReportsClient.Get(): %v", err)
 	}
