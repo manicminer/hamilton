@@ -1,5 +1,40 @@
 ## 0.35.0 (Unreleased)
 
+- Auth package refactoring:
+  - Remove the `auth.Api` type and instead use `environments.Api` directly
+  - Use the resource URI instead of the friendly name for Azure CLI auth tokens
+
+- Add the `AuxiliaryTokens()` method to the `auth.Authorizer` interface to support obtaining tokens for additional tenants
+- Expand support in `auth.AutorestAuthorizerWrapper` to support any `autorest.Authorizer`
+  - `autorest.BearerAuthorizer` and `autorest.MultiTenantBearerAuthorizer` are fully supported with access tokens, refresh tokens and expiry
+  - Other authorizers can supply access tokens only
+- Support auxiliary tenants with client secret and client certificate authorizers
+
+- Implement the `autorest.Authorizer` interface with `auth.CachedAuthorizer` (which wraps all supported Authorizers)
+  - This allows authorizers to be used with https://github.com/Azure/go-autorest, with multi-tenant support, with the exception of `auth.MsiAuthorizer`
+
+- Export environment configs for more management plane APIs:
+  - Resource Manager
+  - Batch Management
+  - Data Lake
+  - Gallery
+  - KeyVault
+  - Operational Insights
+  - OSS RDBMS
+  - Service Bus
+  - Service Management (Azure Classic)
+  - SQL Database
+  - Storage
+  - Synapse
+
+- Refactor and tidy up tests for the `msgraph` package
+
+- Say goodbye to Azure Germany 🇩🇪 
+
+⚠️ BREAKING CHANGES:
+
+- The signatures for `auth.NewClientCertificateAuthorizer`, `auth.NewClientSecretAuthorizer` and `auth.NewAzureCliAuthorizer` have changed to accommodate passing additional tenant IDs for multi-tenant authorization.
+
 ## 0.34.0 (November 12, 2021)
 
 - Remove a surplus configuration check when using Managed Identity authentication, which improves compatibility with Azure Cloud Shell ([#119](https://github.com/manicminer/hamilton/pull/119))
