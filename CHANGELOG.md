@@ -1,4 +1,6 @@
-## 0.35.0 (Unreleased)
+## 0.36.0 (Unreleased)
+
+## 0.35.0 (November 16, 2021)
 
 - Auth package refactoring ([#123](https://github.com/manicminer/hamilton/pull/123))
   - Remove the `auth.Api` type and instead use `environments.Api` directly
