@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strconv"
 	"testing"
 
 	"golang.org/x/oauth2"
@@ -14,6 +15,13 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
+func envDefault(envVarName, defaultValue string) string {
+	if v := os.Getenv(envVarName); v != "" {
+		return v
+	}
+	return defaultValue
+}
+
 var (
 	tenantId              = os.Getenv("TENANT_ID")
 	tenantDomain          = os.Getenv("TENANT_DOMAIN")
@@ -23,6 +31,7 @@ var (
 	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
 	clientSecret          = os.Getenv("CLIENT_SECRET")
 	environment           = os.Getenv("AZURE_ENVIRONMENT")
+	retryMax              = envDefault("RETRY_MAX", "9")
 )
 
 type Connection struct {
@@ -109,7 +118,7 @@ type Test struct {
 
 func NewTest(t *testing.T) (c *Test) {
 	ctx := context.Background()
-	var cancel context.CancelFunc
+	var cancel context.CancelFunc = func() {}
 
 	if deadline, ok := t.Deadline(); ok {
 		ctx, cancel = context.WithDeadline(context.Background(), deadline)
@@ -135,121 +144,155 @@ func NewTest(t *testing.T) (c *Test) {
 		t.Fatalf("could not parse claims: %v", err)
 	}
 
+	retry, err := strconv.Atoi(retryMax)
+	if err != nil {
+		t.Fatalf("invalid retry count %q: %v", retryMax, err)
+	}
+
 	c.AccessPackageAssignmentPolicyClient = msgraph.NewAccessPackageAssignmentPolicyClient(c.Connection.AuthConfig.TenantID)
 	c.AccessPackageAssignmentPolicyClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AccessPackageAssignmentPolicyClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageAssignmentPolicyClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageCatalogClient = msgraph.NewAccessPackageCatalogClient(c.Connection.AuthConfig.TenantID)
 	c.AccessPackageCatalogClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AccessPackageCatalogClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageCatalogClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageClient = msgraph.NewAccessPackageClient(c.Connection.AuthConfig.TenantID)
 	c.AccessPackageClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AccessPackageClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageResourceClient = msgraph.NewAccessPackageResourceClient(c.Connection.AuthConfig.TenantID)
 	c.AccessPackageResourceClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AccessPackageResourceClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageResourceClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageResourceRequestClient = msgraph.NewAccessPackageResourceRequestClient(c.Connection.AuthConfig.TenantID)
 	c.AccessPackageResourceRequestClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AccessPackageResourceRequestClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageAssignmentPolicyClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageResourceRoleScopeClient = msgraph.NewAccessPackageResourceRoleScopeClient(c.Connection.AuthConfig.TenantID)
 	c.AccessPackageResourceRoleScopeClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AccessPackageResourceRoleScopeClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageResourceRoleScopeClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ApplicationTemplatesClient = msgraph.NewApplicationTemplatesClient(c.Connection.AuthConfig.TenantID)
 	c.ApplicationTemplatesClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ApplicationTemplatesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ApplicationTemplatesClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ApplicationsClient = msgraph.NewApplicationsClient(c.Connection.AuthConfig.TenantID)
 	c.ApplicationsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ApplicationsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ApplicationsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AppRoleAssignedToClient = msgraph.NewAppRoleAssignedToClient(c.Connection.AuthConfig.TenantID)
 	c.AppRoleAssignedToClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AppRoleAssignedToClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AppRoleAssignedToClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AuthenticationMethodsClient = msgraph.NewAuthenticationMethodsClient(c.Connection.AuthConfig.TenantID)
 	c.AuthenticationMethodsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AuthenticationMethodsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.AuthenticationMethodsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ConditionalAccessPoliciesClient = msgraph.NewConditionalAccessPoliciesClient(c.Connection.AuthConfig.TenantID)
 	c.ConditionalAccessPoliciesClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ConditionalAccessPoliciesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ConditionalAccessPoliciesClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DirectoryAuditReportsClient = msgraph.NewDirectoryAuditReportsClient(c.Connection.AuthConfig.TenantID)
 	c.DirectoryAuditReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.DirectoryAuditReportsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.DirectoryAuditReportsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DirectoryObjectsClient = msgraph.NewDirectoryObjectsClient(c.Connection.AuthConfig.TenantID)
 	c.DirectoryObjectsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.DirectoryObjectsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.DirectoryObjectsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DirectoryRoleTemplatesClient = msgraph.NewDirectoryRoleTemplatesClient(c.Connection.AuthConfig.TenantID)
 	c.DirectoryRoleTemplatesClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.DirectoryRoleTemplatesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.DirectoryRoleTemplatesClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DirectoryRolesClient = msgraph.NewDirectoryRolesClient(c.Connection.AuthConfig.TenantID)
 	c.DirectoryRolesClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.DirectoryRolesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.DirectoryRolesClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DomainsClient = msgraph.NewDomainsClient(c.Connection.AuthConfig.TenantID)
 	c.DomainsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.DomainsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.DomainsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.GroupsAppRoleAssignmentsClient = msgraph.NewGroupsAppRoleAssignmentsClient(c.Connection.AuthConfig.TenantID)
 	c.GroupsAppRoleAssignmentsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.GroupsAppRoleAssignmentsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.GroupsAppRoleAssignmentsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.GroupsClient = msgraph.NewGroupsClient(c.Connection.AuthConfig.TenantID)
 	c.GroupsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.GroupsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.GroupsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.IdentityProvidersClient = msgraph.NewIdentityProvidersClient(c.Connection.AuthConfig.TenantID)
 	c.IdentityProvidersClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.IdentityProvidersClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.IdentityProvidersClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.InvitationsClient = msgraph.NewInvitationsClient(c.Connection.AuthConfig.TenantID)
 	c.InvitationsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.InvitationsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.InvitationsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.MeClient = msgraph.NewMeClient(c.Connection.AuthConfig.TenantID)
 	c.MeClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.MeClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.MeClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.NamedLocationsClient = msgraph.NewNamedLocationsClient(c.Connection.AuthConfig.TenantID)
 	c.NamedLocationsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.NamedLocationsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.NamedLocationsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ReportsClient = msgraph.NewReportsClient(c.Connection.AuthConfig.TenantID)
 	c.ReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ReportsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ReportsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.SchemaExtensionsClient = msgraph.NewSchemaExtensionsClient(c.Connection.AuthConfig.TenantID)
 	c.SchemaExtensionsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.SchemaExtensionsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.SchemaExtensionsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ServicePrincipalsAppRoleAssignmentsClient = msgraph.NewServicePrincipalsAppRoleAssignmentsClient(c.Connection.AuthConfig.TenantID)
 	c.ServicePrincipalsAppRoleAssignmentsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ServicePrincipalsAppRoleAssignmentsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ServicePrincipalsAppRoleAssignmentsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ServicePrincipalsClient = msgraph.NewServicePrincipalsClient(c.Connection.AuthConfig.TenantID)
 	c.ServicePrincipalsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ServicePrincipalsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ServicePrincipalsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.SignInReportsClient = msgraph.NewSignInReportsClient(c.Connection.AuthConfig.TenantID)
 	c.SignInReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.SignInReportsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.SignInReportsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.UsersAppRoleAssignmentsClient = msgraph.NewUsersAppRoleAssignmentsClient(c.Connection.AuthConfig.TenantID)
 	c.UsersAppRoleAssignmentsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.UsersAppRoleAssignmentsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.UsersAppRoleAssignmentsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.UsersClient = msgraph.NewUsersClient(c.Connection.AuthConfig.TenantID)
 	c.UsersClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.UsersClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.UsersClient.BaseClient.RetryableClient.RetryMax = retry
 
 	return
 }
