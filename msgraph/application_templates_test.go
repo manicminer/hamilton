@@ -4,63 +4,34 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type ApplicationTemplatesClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.ApplicationTemplatesClient
-	randomString string
-}
-
 const testApplicationTemplateId = "4601ed45-8ff3-4599-8377-b6649007e876" // Marketo
 
 func TestApplicationTemplatesClient(t *testing.T) {
-	rs := test.RandomString()
-	c := ApplicationTemplatesClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	c.client = msgraph.NewApplicationTemplatesClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
-	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	testApplicationTemplatesClient_List(t, c, odata.Query{})
 	testApplicationTemplatesClient_List(t, c, odata.Query{Filter: fmt.Sprintf("categories/any(c:contains(c, '%s'))", msgraph.ApplicationTemplateCategoryEducation)})
 	template := testApplicationTemplatesClient_Get(t, c, testApplicationTemplateId)
 	app := testApplicationTemplatesClient_Instantiate(t, c, msgraph.ApplicationTemplate{
 		ID:          template.ID,
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-applicationTemplate-%s", c.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-applicationTemplate-%s", c.RandomString)),
 	})
 
-	s := ServicePrincipalsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	s.client = msgraph.NewServicePrincipalsClient(s.connection.AuthConfig.TenantID)
-	s.client.BaseClient.Authorizer = s.connection.Authorizer
-	s.client.BaseClient.Endpoint = s.connection.AuthConfig.Environment.MsGraph.Endpoint
+	testServicePrincipalsClient_Delete(t, c, *app.ServicePrincipal.ID)
 
-	testServicePrincipalsClient_Delete(t, s, *app.ServicePrincipal.ID)
-
-	a := ApplicationsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	a.client = msgraph.NewApplicationsClient(a.connection.AuthConfig.TenantID)
-	a.client.BaseClient.Authorizer = a.connection.Authorizer
-	a.client.BaseClient.Endpoint = a.connection.AuthConfig.Environment.MsGraph.Endpoint
-
-	testApplicationsClient_Delete(t, a, *app.Application.ID)
-	testApplicationsClient_DeletePermanently(t, a, *app.Application.ID)
+	testApplicationsClient_Delete(t, c, *app.Application.ID)
+	testApplicationsClient_DeletePermanently(t, c, *app.Application.ID)
 }
 
-func testApplicationTemplatesClient_List(t *testing.T, c ApplicationTemplatesClientTest, o odata.Query) (applicationTemplates []msgraph.ApplicationTemplate) {
-	result, _, err := c.client.List(c.connection.Context, o)
+func testApplicationTemplatesClient_List(t *testing.T, c *test.Test, o odata.Query) (applicationTemplates []msgraph.ApplicationTemplate) {
+	result, _, err := c.ApplicationTemplatesClient.List(c.Context, o)
 	if err != nil {
 		t.Fatalf("ApplicationTemplatesClient.List(): %v", err)
 	}
@@ -77,8 +48,8 @@ func testApplicationTemplatesClient_List(t *testing.T, c ApplicationTemplatesCli
 	return
 }
 
-func testApplicationTemplatesClient_Get(t *testing.T, c ApplicationTemplatesClientTest, id string) (applicationTemplate *msgraph.ApplicationTemplate) {
-	applicationTemplate, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
+func testApplicationTemplatesClient_Get(t *testing.T, c *test.Test, id string) (applicationTemplate *msgraph.ApplicationTemplate) {
+	applicationTemplate, status, err := c.ApplicationTemplatesClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationTemplatesClient.Get(): %v", err)
 	}
@@ -94,8 +65,8 @@ func testApplicationTemplatesClient_Get(t *testing.T, c ApplicationTemplatesClie
 	return
 }
 
-func testApplicationTemplatesClient_Instantiate(t *testing.T, c ApplicationTemplatesClientTest, a msgraph.ApplicationTemplate) (applicationTemplate *msgraph.ApplicationTemplate) {
-	applicationTemplate, status, err := c.client.Instantiate(c.connection.Context, a)
+func testApplicationTemplatesClient_Instantiate(t *testing.T, c *test.Test, a msgraph.ApplicationTemplate) (applicationTemplate *msgraph.ApplicationTemplate) {
+	applicationTemplate, status, err := c.ApplicationTemplatesClient.Instantiate(c.Context, a)
 	if err != nil {
 		t.Fatalf("ApplicationTemplatesClient.Instantiate(): %v", err)
 	}

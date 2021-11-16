@@ -1,6 +1,7 @@
 package aadgraph_test
 
 import (
+	"context"
 	"testing"
 
 	"github.com/manicminer/hamilton/aadgraph"
@@ -15,10 +16,18 @@ type ApplicationRefsClientTest struct {
 }
 
 func TestApplicationRefsClient(t *testing.T) {
+	ctx := context.Background()
+	var cancel context.CancelFunc
+	if deadline, ok := t.Deadline(); ok {
+		ctx, cancel = context.WithDeadline(context.Background(), deadline)
+		defer cancel()
+	}
+
 	c := ApplicationRefsClientTest{
-		connection:   test.NewConnection(auth.AadGraph, auth.TokenVersion1),
+		connection:   test.NewConnection(auth.TokenVersion1),
 		randomString: test.RandomString(),
 	}
+	c.connection.Authorize(ctx, c.connection.AuthConfig.Environment.MsGraph)
 	c.client = aadgraph.NewApplicationRefsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 

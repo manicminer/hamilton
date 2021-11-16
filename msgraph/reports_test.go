@@ -3,24 +3,14 @@ package msgraph_test
 import (
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type ReportsClientTest struct {
-	connection *test.Connection
-	client     *msgraph.ReportsClient
-}
-
 func TestReports(t *testing.T) {
-	c := ReportsClientTest{
-		connection: test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-	}
-	c.client = msgraph.NewReportsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
-	c.client.BaseClient.Endpoint = c.connection.AuthConfig.Environment.MsGraph.Endpoint
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	testReports_GetAuthenticationMethodsUsersRegisteredByFeature(t, c)
 	testReports_GetCredentialUserRegistrationCount(t, c)
@@ -31,8 +21,8 @@ func TestReports(t *testing.T) {
 
 }
 
-func testReports_GetAuthenticationMethodsUsersRegisteredByFeature(t *testing.T, c ReportsClientTest) (report *msgraph.UserRegistrationFeatureSummary) {
-	report, status, err := c.client.GetAuthenticationMethodsUsersRegisteredByFeature(c.connection.Context, odata.Query{})
+func testReports_GetAuthenticationMethodsUsersRegisteredByFeature(t *testing.T, c *test.Test) (report *msgraph.UserRegistrationFeatureSummary) {
+	report, status, err := c.ReportsClient.GetAuthenticationMethodsUsersRegisteredByFeature(c.Context, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("ReportsClient.GetAuthenticationMethodsUsersRegisteredByFeature(): invalid status: %d", status)
 	}
@@ -47,8 +37,8 @@ func testReports_GetAuthenticationMethodsUsersRegisteredByFeature(t *testing.T, 
 	return
 }
 
-func testReports_GetCredentialUserRegistrationCount(t *testing.T, c ReportsClientTest) (report *[]msgraph.CredentialUserRegistrationCount) {
-	report, status, err := c.client.GetCredentialUserRegistrationCount(c.connection.Context, odata.Query{})
+func testReports_GetCredentialUserRegistrationCount(t *testing.T, c *test.Test) (report *[]msgraph.CredentialUserRegistrationCount) {
+	report, status, err := c.ReportsClient.GetCredentialUserRegistrationCount(c.Context, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("ReportsClient.GetCredentialUserRegistrationCount(): invalid status: %d", status)
 	}
@@ -63,8 +53,8 @@ func testReports_GetCredentialUserRegistrationCount(t *testing.T, c ReportsClien
 	return
 }
 
-func testReports_GetCredentialUserRegistrationDetails(t *testing.T, c ReportsClientTest) (report *[]msgraph.CredentialUserRegistrationDetails) {
-	report, status, err := c.client.GetCredentialUserRegistrationDetails(c.connection.Context, odata.Query{})
+func testReports_GetCredentialUserRegistrationDetails(t *testing.T, c *test.Test) (report *[]msgraph.CredentialUserRegistrationDetails) {
+	report, status, err := c.ReportsClient.GetCredentialUserRegistrationDetails(c.Context, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("ReportsClient.GetCredentialUserRegistrationDetails(): invalid status: %d", status)
 	}
@@ -79,8 +69,8 @@ func testReports_GetCredentialUserRegistrationDetails(t *testing.T, c ReportsCli
 	return
 }
 
-func testReports_GetUserCredentialUsageDetails(t *testing.T, c ReportsClientTest) (report *[]msgraph.UserCredentialUsageDetails) {
-	report, status, err := c.client.GetUserCredentialUsageDetails(c.connection.Context, odata.Query{})
+func testReports_GetUserCredentialUsageDetails(t *testing.T, c *test.Test) (report *[]msgraph.UserCredentialUsageDetails) {
+	report, status, err := c.ReportsClient.GetUserCredentialUsageDetails(c.Context, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("ReportsClient.GetUserCredentialUsageDetails(): invalid status: %d", status)
 	}
@@ -95,8 +85,8 @@ func testReports_GetUserCredentialUsageDetails(t *testing.T, c ReportsClientTest
 	return
 }
 
-func testReports_GetCredentialUsageSummary(t *testing.T, c ReportsClientTest) (report *[]msgraph.CredentialUsageSummary) {
-	report, status, err := c.client.GetCredentialUsageSummary(c.connection.Context, msgraph.CredentialUsageSummaryPeriod1, odata.Query{})
+func testReports_GetCredentialUsageSummary(t *testing.T, c *test.Test) (report *[]msgraph.CredentialUsageSummary) {
+	report, status, err := c.ReportsClient.GetCredentialUsageSummary(c.Context, msgraph.CredentialUsageSummaryPeriod1, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("ReportsClient.GetCredentialUsageSummary(): invalid status: %d", status)
 	}
@@ -111,8 +101,8 @@ func testReports_GetCredentialUsageSummary(t *testing.T, c ReportsClientTest) (r
 	return
 }
 
-func testReports_GetAuthenticationMethodsUsersRegisteredByMethod(t *testing.T, c ReportsClientTest) (report *msgraph.UserRegistrationMethodSummary) {
-	report, status, err := c.client.GetAuthenticationMethodsUsersRegisteredByMethod(c.connection.Context, odata.Query{})
+func testReports_GetAuthenticationMethodsUsersRegisteredByMethod(t *testing.T, c *test.Test) (report *msgraph.UserRegistrationMethodSummary) {
+	report, status, err := c.ReportsClient.GetAuthenticationMethodsUsersRegisteredByMethod(c.Context, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("ReportsClient.GetAuthenticationMethodsUsersRegisteredByMethod(): invalid status: %d", status)
 	}

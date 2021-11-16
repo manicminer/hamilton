@@ -12,7 +12,7 @@ See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
 - Automatic retries for failed requests and handling of eventual consistency on writes due to propagation delays
 - Automatic paging of results
 - Native model structs for marshaling and unmarshaling
-- Support for national clouds including US Government (L4 and L5), China and Germany
+- Support for national clouds including US Government (L4 and L5) and China
 - Support for both the v1.0 and beta API endpoints
 - Ability to inject middleware functions for logging etc
 - OData parsing in API responses and support for OData queries such as filters, sorting, searching, expand and select
@@ -27,6 +27,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/http"
+	"net/http/httputil"
 	"os"
 
 	"github.com/manicminer/hamilton/auth"
@@ -44,21 +46,45 @@ var (
 func main() {
 	ctx := context.Background()
 
+	environment := environments.Global
+
 	authConfig := &auth.Config{
-		Environment:            environments.Global,
+		Environment:            environment,
 		TenantID:               tenantId,
 		ClientID:               clientId,
 		ClientSecret:           clientSecret,
 		EnableClientSecretAuth: true,
 	}
 
-	authorizer, err := authConfig.NewAuthorizer(ctx, auth.MsGraph)
+	authorizer, err := authConfig.NewAuthorizer(ctx, environment.MsGraph)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	requestLogger := func(req *http.Request) (*http.Request, error) {
+		if req != nil {
+			dmp, err := httputil.DumpRequestOut(req, true)
+			if err == nil {
+				log.Printf("REQUEST: %s", dmp)
+			}
+		}
+		return req, nil
+	}
+
+	responseLogger := func(req *http.Request, resp *http.Response) (*http.Response, error) {
+		if resp != nil {
+			dmp, err := httputil.DumpResponse(resp, true)
+			if err == nil {
+				log.Printf("RESPONSE: %s", dmp)
+			}
+		}
+		return resp, nil
+	}
+
 	client := msgraph.NewUsersClient(tenantId)
 	client.BaseClient.Authorizer = authorizer
+	client.BaseClient.RequestMiddlewares = &[]msgraph.RequestMiddleware{requestLogger}
+	client.BaseClient.ResponseMiddlewares = &[]msgraph.ResponseMiddleware{responseLogger}
 
 	users, _, err := client.List(ctx, odata.Query{})
 	if err != nil {
