@@ -8,11 +8,10 @@ import (
 
 	"golang.org/x/oauth2"
 
-	"github.com/manicminer/hamilton/msgraph"
-
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/internal/utils"
+	"github.com/manicminer/hamilton/msgraph"
 )
 
 var (
