@@ -31,7 +31,7 @@ var (
 	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
 	clientSecret          = os.Getenv("CLIENT_SECRET")
 	environment           = os.Getenv("AZURE_ENVIRONMENT")
-	retryMax              = envDefault("RETRY_MAX", "9")
+	retryMax              = envDefault("RETRY_MAX", "14")
 )
 
 type Connection struct {
