@@ -50,6 +50,7 @@ func init() {
 
 func main() {
 	log.Println("Starting test cleanup...")
+	cleanupAdministrativeUnits()
 	cleanupConditionalAccessPolicies()
 	cleanupNamedLocations()
 	cleanupServicePrincipals()

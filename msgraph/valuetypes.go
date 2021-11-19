@@ -7,6 +7,9 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
+// NullableString returns a pointer to a StringNullWhenEmpty for use in model structs
+func NullableString(s StringNullWhenEmpty) *StringNullWhenEmpty { return &s }
+
 // StringNullWhenEmpty is a string type that marshals its JSON representation as null when set to its zero value.
 // Can be used with a pointer reference with the `omitempty` tag to omit a field when the pointer is nil, but send a
 // JSON null value when the string is empty.
@@ -58,6 +61,13 @@ type AccessPackageResourceType = string
 const (
 	AccessPackageResourceTypeApplication          AccessPackageResourceType = "Application"
 	AccessPackageResourceTypeSharePointOnlineSite AccessPackageResourceType = "SharePoint Online Site"
+)
+
+type AdministrativeUnitVisibility = string
+
+const (
+	AdministrativeUnitVisibilityHiddenMembership AdministrativeUnitVisibility = "HiddenMembership"
+	AdministrativeUnitVisibilityPublic           AdministrativeUnitVisibility = "Public"
 )
 
 type AgeGroup = StringNullWhenEmpty

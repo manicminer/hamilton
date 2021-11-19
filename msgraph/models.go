@@ -157,6 +157,13 @@ type AddInKeyValue struct {
 	Value *string `json:"value,omitempty"`
 }
 
+type AdministrativeUnit struct {
+	Description *StringNullWhenEmpty          `json:"description,omitempty"`
+	DisplayName *string                       `json:"displayName,omitempty"`
+	ID          *string                       `json:"id,omitempty"`
+	Visibility  *AdministrativeUnitVisibility `json:"visibility,omitempty"`
+}
+
 type ApiPreAuthorizedApplication struct {
 	AppId         *string   `json:"appId,omitempty"`
 	PermissionIds *[]string `json:"permissionIds,omitempty"`
@@ -862,6 +869,12 @@ type GroupOnPremisesProvisioningError struct {
 	Value                *string   `json:"value,omitempty"`
 }
 
+type Identity struct {
+	DisplayName *string `json:"displayName,omitempty"`
+	Id          *string `json:"id,omitempty"`
+	TenantId    *string `json:"tenantId,omitempty"`
+}
+
 type IdentityProvider struct {
 	ODataType    *odata.Type `json:"@odata.type,omitempty"`
 	ID           *string     `json:"id,omitempty"`
@@ -1127,6 +1140,13 @@ func (se SchemaExtensionData) MarshalJSON() ([]byte, error) {
 		se.ID: se.Properties,
 	}
 	return json.Marshal(in)
+}
+
+type ScopedRoleMembership struct {
+	AdministrativeUnitId *string   `json:"administrativeUnitId,omitempty"`
+	Id                   *string   `json:"id,omitempty"`
+	RoleId               *string   `json:"roleId,omitempty"`
+	RoleMemberInfo       *Identity `json:"roleMemberInfo"`
 }
 
 // ServicePrincipal describes a Service Principal object.
