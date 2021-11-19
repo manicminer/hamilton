@@ -1,6 +1,6 @@
 ## 0.36.0 (Unreleased)
 
-- Support for [administrative units](https://docs.microsoft.com/en-us/graph/api/resources/administrativeunit?view=graph-rest-beta) ((#124)[https://github.com/manicminer/hamilton/pull/124])
+- Support for [administrative units](https://docs.microsoft.com/en-us/graph/api/resources/administrativeunit?view=graph-rest-beta) ([#124](https://github.com/manicminer/hamilton/pull/124))
 
 ## 0.35.0 (November 16, 2021)
 
