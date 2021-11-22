@@ -212,6 +212,18 @@ const (
 	ConditionalAccessClientAppTypeOther                       ConditionalAccessClientAppType = "other"
 )
 
+type ConditionalAccessDevicePlatform = string
+
+const (
+	ConditionalAccessDevicePlatformAll                ConditionalAccessDevicePlatform = "All"
+	ConditionalAccessDevicePlatformAndroid            ConditionalAccessDevicePlatform = "android"
+	ConditionalAccessDevicePlatformIos                ConditionalAccessDevicePlatform = "iOS"
+	ConditionalAccessDevicePlatformMacOs              ConditionalAccessDevicePlatform = "macOS"
+	ConditionalAccessDevicePlatformUnknownFutureValue ConditionalAccessDevicePlatform = "unknownFutureValue"
+	ConditionalAccessDevicePlatformWindows            ConditionalAccessDevicePlatform = "windows"
+	ConditionalAccessDevicePlatformWindowsPhone       ConditionalAccessDevicePlatform = "windowsPhone"
+)
+
 type ConditionalAccessDeviceStatesInclude = string
 
 const (
