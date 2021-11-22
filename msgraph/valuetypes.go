@@ -201,6 +201,17 @@ const (
 	CredentialUsageSummaryPeriod1  CredentialUsageSummaryPeriod = "D1"
 )
 
+type ConditionalAccessClientAppType = string
+
+const (
+	ConditionalAccessClientAppTypeAll                         ConditionalAccessClientAppType = "all"
+	ConditionalAccessClientAppTypeBrowser                     ConditionalAccessClientAppType = "browser"
+	ConditionalAccessClientAppTypeEasSupported                ConditionalAccessClientAppType = "easSupported"
+	ConditionalAccessClientAppTypeExchangeActiveSync          ConditionalAccessClientAppType = "exchangeActiveSync"
+	ConditionalAccessClientAppTypeMobileAppsAndDesktopClients ConditionalAccessClientAppType = "mobileAppsAndDesktopClients"
+	ConditionalAccessClientAppTypeOther                       ConditionalAccessClientAppType = "other"
+)
+
 type ConditionalAccessDeviceStatesInclude = string
 
 const (

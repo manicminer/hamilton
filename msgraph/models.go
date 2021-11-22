@@ -536,15 +536,15 @@ type ConditionalAccessApplications struct {
 }
 
 type ConditionalAccessConditionSet struct {
-	Applications     *ConditionalAccessApplications `json:"applications,omitempty"`
-	ClientAppTypes   *[]string                      `json:"clientAppTypes,omitempty"`
-	Devices          *ConditionalAccessDevices      `json:"devices,omitempty"`
-	DeviceStates     *ConditionalAccessDeviceStates `json:"deviceStates,omitempty"`
-	Locations        *ConditionalAccessLocations    `json:"locations,omitempty"`
-	Platforms        *ConditionalAccessPlatforms    `json:"platforms,omitempty"`
-	SignInRiskLevels *[]string                      `json:"signInRiskLevels,omitempty"`
-	UserRiskLevels   *[]string                      `json:"userRiskLevels,omitempty"`
-	Users            *ConditionalAccessUsers        `json:"users,omitempty"`
+	Applications     *ConditionalAccessApplications    `json:"applications,omitempty"`
+	ClientAppTypes   *[]ConditionalAccessClientAppType `json:"clientAppTypes,omitempty"`
+	Devices          *ConditionalAccessDevices         `json:"devices,omitempty"`
+	DeviceStates     *ConditionalAccessDeviceStates    `json:"deviceStates,omitempty"`
+	Locations        *ConditionalAccessLocations       `json:"locations,omitempty"`
+	Platforms        *ConditionalAccessPlatforms       `json:"platforms,omitempty"`
+	SignInRiskLevels *[]string                         `json:"signInRiskLevels,omitempty"`
+	UserRiskLevels   *[]string                         `json:"userRiskLevels,omitempty"`
+	Users            *ConditionalAccessUsers           `json:"users,omitempty"`
 }
 
 type ConditionalAccessDevices struct {
