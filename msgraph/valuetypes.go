@@ -212,6 +212,15 @@ const (
 	ConditionalAccessClientAppTypeOther                       ConditionalAccessClientAppType = "other"
 )
 
+type ConditionalAccessCloudAppSecuritySessionControlType = string
+
+const (
+	ConditionalAccessCloudAppSecuritySessionControlTypeBlockDownloads     ConditionalAccessCloudAppSecuritySessionControlType = "blockDownloads"
+	ConditionalAccessCloudAppSecuritySessionControlTypeMcasConfigured     ConditionalAccessCloudAppSecuritySessionControlType = "mcasConfigured"
+	ConditionalAccessCloudAppSecuritySessionControlTypeMonitorOnly        ConditionalAccessCloudAppSecuritySessionControlType = "monitorOnly"
+	ConditionalAccessCloudAppSecuritySessionControlTypeUnknownFutureValue ConditionalAccessCloudAppSecuritySessionControlType = "unknownFutureValue"
+)
+
 type ConditionalAccessDevicePlatform = string
 
 const (

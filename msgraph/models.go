@@ -525,8 +525,8 @@ type BaseNamedLocation struct {
 }
 
 type CloudAppSecurityControl struct {
-	IsEnabled            *bool   `json:"isEnabled,omitempty"`
-	CloudAppSecurityType *string `json:"cloudAppSecurityType,omitempty"`
+	IsEnabled            *bool                                                `json:"isEnabled,omitempty"`
+	CloudAppSecurityType *ConditionalAccessCloudAppSecuritySessionControlType `json:"cloudAppSecurityType,omitempty"`
 }
 
 type ConditionalAccessApplications struct {
