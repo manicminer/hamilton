@@ -244,6 +244,19 @@ const (
 	ConditionalAccessFilterModeInclude ConditionalAccessFilterMode = "include"
 )
 
+type ConditionalAccessGrantControl = string
+
+const (
+	ConditionalAccessGrantControlApprovedApplication  ConditionalAccessGrantControl = "approvedApplication"
+	ConditionalAccessGrantControlBlock                ConditionalAccessGrantControl = "block"
+	ConditionalAccessGrantControlCompliantApplication ConditionalAccessGrantControl = "compliantApplication"
+	ConditionalAccessGrantControlCompliantDevice      ConditionalAccessGrantControl = "compliantDevice"
+	ConditionalAccessGrantControlDomainJoinedDevice   ConditionalAccessGrantControl = "domainJoinedDevice"
+	ConditionalAccessGrantControlMfa                  ConditionalAccessGrantControl = "mfa"
+	ConditionalAccessGrantControlPasswordChange       ConditionalAccessGrantControl = "passwordChange"
+	ConditionalAccessGrantControlUnknownFutureValue   ConditionalAccessGrantControl = "unknownFutureValue"
+)
+
 type ConditionalAccessPolicyState = string
 
 const (

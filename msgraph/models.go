@@ -564,10 +564,10 @@ type ConditionalAccessFilter struct {
 }
 
 type ConditionalAccessGrantControls struct {
-	Operator                    *string   `json:"operator,omitempty"`
-	BuiltInControls             *[]string `json:"builtInControls,omitempty"`
-	CustomAuthenticationFactors *[]string `json:"customAuthenticationFactors,omitempty"`
-	TermsOfUse                  *[]string `json:"termsOfUse,omitempty"`
+	Operator                    *string                          `json:"operator,omitempty"`
+	BuiltInControls             *[]ConditionalAccessGrantControl `json:"builtInControls,omitempty"`
+	CustomAuthenticationFactors *[]string                        `json:"customAuthenticationFactors,omitempty"`
+	TermsOfUse                  *[]string                        `json:"termsOfUse,omitempty"`
 }
 
 type ConditionalAccessLocations struct {
