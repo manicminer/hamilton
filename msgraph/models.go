@@ -537,12 +537,30 @@ type ConditionalAccessApplications struct {
 
 type ConditionalAccessConditionSet struct {
 	Applications     *ConditionalAccessApplications `json:"applications,omitempty"`
-	Users            *ConditionalAccessUsers        `json:"users,omitempty"`
 	ClientAppTypes   *[]string                      `json:"clientAppTypes,omitempty"`
+	Devices          *ConditionalAccessDevices      `json:"devices,omitempty"`
+	DeviceStates     *ConditionalAccessDeviceStates `json:"deviceStates,omitempty"`
 	Locations        *ConditionalAccessLocations    `json:"locations,omitempty"`
 	Platforms        *ConditionalAccessPlatforms    `json:"platforms,omitempty"`
 	SignInRiskLevels *[]string                      `json:"signInRiskLevels,omitempty"`
 	UserRiskLevels   *[]string                      `json:"userRiskLevels,omitempty"`
+	Users            *ConditionalAccessUsers        `json:"users,omitempty"`
+}
+
+type ConditionalAccessDevices struct {
+	IncludeDevices *[]string                `json:"includeDevices,omitempty"`
+	ExcludeDevices *[]string                `json:"excludeDevices,omitempty"`
+	DeviceFilter   *ConditionalAccessFilter `json:"deviceFilter,omitempty"`
+}
+
+type ConditionalAccessDeviceStates struct {
+	IncludeStates *ConditionalAccessDeviceStatesInclude `json:"includeStates,omitempty"`
+	ExcludeStates *ConditionalAccessDeviceStatesExclude `json:"excludeStates,omitempty"`
+}
+
+type ConditionalAccessFilter struct {
+	Mode *ConditionalAccessFilterMode `json:"mode,omitempty"`
+	Rule *string                      `json:"rule,omitempty"`
 }
 
 type ConditionalAccessGrantControls struct {

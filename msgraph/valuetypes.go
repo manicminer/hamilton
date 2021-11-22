@@ -201,6 +201,26 @@ const (
 	CredentialUsageSummaryPeriod1  CredentialUsageSummaryPeriod = "D1"
 )
 
+type ConditionalAccessDeviceStatesInclude = string
+
+const (
+	ConditionalAccessDeviceStatesIncludeAll ConditionalAccessDeviceStatesInclude = "All"
+)
+
+type ConditionalAccessDeviceStatesExclude = string
+
+const (
+	ConditionalAccessDeviceStatesExcludeCompliant    ConditionalAccessDeviceStatesExclude = "Compliant"
+	ConditionalAccessDeviceStatesExcludeDomainJoined ConditionalAccessDeviceStatesExclude = "DomainJoined"
+)
+
+type ConditionalAccessFilterMode = string
+
+const (
+	ConditionalAccessFilterModeExclude ConditionalAccessFilterMode = "exclude"
+	ConditionalAccessFilterModeInclude ConditionalAccessFilterMode = "include"
+)
+
 type ConditionalAccessPolicyState = string
 
 const (
