@@ -542,8 +542,8 @@ type ConditionalAccessConditionSet struct {
 	DeviceStates     *ConditionalAccessDeviceStates    `json:"deviceStates,omitempty"`
 	Locations        *ConditionalAccessLocations       `json:"locations,omitempty"`
 	Platforms        *ConditionalAccessPlatforms       `json:"platforms,omitempty"`
-	SignInRiskLevels *[]string                         `json:"signInRiskLevels,omitempty"`
-	UserRiskLevels   *[]string                         `json:"userRiskLevels,omitempty"`
+	SignInRiskLevels *[]ConditionalAccessRiskLevel     `json:"signInRiskLevels,omitempty"`
+	UserRiskLevels   *[]ConditionalAccessRiskLevel     `json:"userRiskLevels,omitempty"`
 	Users            *ConditionalAccessUsers           `json:"users,omitempty"`
 }
 

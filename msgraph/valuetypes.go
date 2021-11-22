@@ -252,6 +252,17 @@ const (
 	ConditionalAccessPolicyStateEnabledForReportingButNotEnforced ConditionalAccessPolicyState = "enabledForReportingButNotEnforced"
 )
 
+type ConditionalAccessRiskLevel = string
+
+const (
+	ConditionalAccessRiskLevelHidden             ConditionalAccessRiskLevel = "hidden"
+	ConditionalAccessRiskLevelHigh               ConditionalAccessRiskLevel = "high"
+	ConditionalAccessRiskLevelLow                ConditionalAccessRiskLevel = "low"
+	ConditionalAccessRiskLevelMedium             ConditionalAccessRiskLevel = "medium"
+	ConditionalAccessRiskLevelNone               ConditionalAccessRiskLevel = "none"
+	ConditionalAccessRiskLevelUnknownFutureValue ConditionalAccessRiskLevel = "unknownFutureValue"
+)
+
 type ExtensionSchemaTargetType = string
 
 const (
