@@ -209,6 +209,13 @@ const (
 	ConditionalAccessPolicyStateEnabledForReportingButNotEnforced ConditionalAccessPolicyState = "enabledForReportingButNotEnforced"
 )
 
+type DelegatedPermissionGrantConsentType = string
+
+const (
+	DelegatedPermissionGrantConsentTypeAllPrincipals DelegatedPermissionGrantConsentType = "AllPrincipals"
+	DelegatedPermissionGrantConsentTypePrincipal     DelegatedPermissionGrantConsentType = "Principal"
+)
+
 type ExtensionSchemaTargetType = string
 
 const (
