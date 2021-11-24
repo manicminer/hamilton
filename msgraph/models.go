@@ -662,7 +662,7 @@ func (d *DelegatedPermissionGrant) UnmarshalJSON(data []byte) error {
 	// Local type needed to avoid recursive UnmarshalJSON calls
 	type delegatedPermissionGrant DelegatedPermissionGrant
 	grant := struct {
-		Scopes *string `json:"scopes"`
+		Scopes *string `json:"scope"`
 		*delegatedPermissionGrant
 	}{
 		delegatedPermissionGrant: (*delegatedPermissionGrant)(d),
