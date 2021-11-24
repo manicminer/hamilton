@@ -455,6 +455,13 @@ const (
 	PermissionScopeTypeUser  PermissionScopeType = "User"
 )
 
+type PersistentBrowserSessionMode = string
+
+const (
+	PersistentBrowserSessionModeAlways PersistentBrowserSessionMode = "always"
+	PersistentBrowserSessionModeNever  PersistentBrowserSessionMode = "never"
+)
+
 type PreferredSingleSignOnMode = StringNullWhenEmpty
 
 const (

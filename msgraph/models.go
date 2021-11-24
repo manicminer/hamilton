@@ -1102,8 +1102,8 @@ type PermissionScope struct {
 }
 
 type PersistentBrowserSessionControl struct {
-	IsEnabled *bool   `json:"isEnabled,omitempty"`
-	Mode      *string `json:"mode,omitempty"`
+	IsEnabled *bool                         `json:"isEnabled,omitempty"`
+	Mode      *PersistentBrowserSessionMode `json:"mode,omitempty"`
 }
 
 type PhoneAuthenticationMethod struct {
