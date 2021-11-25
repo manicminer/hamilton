@@ -44,7 +44,7 @@ func TestServicePrincipalsClient(t *testing.T) {
 	testServicePrincipalsClient_Update(t, c, *sp)
 	pwd := testServicePrincipalsClient_AddPassword(t, c, sp)
 	testServicePrincipalsClient_RemovePassword(t, c, sp, pwd)
-	testServicePrincipalsClient_List(t, c)
+	testServicePrincipalsClient_List(t, c, odata.Query{})
 
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
@@ -112,7 +112,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	testServicePrincipalsClient_Get(t, c, *sp.ID)
 	sp.Tags = &([]string{"TestTag"})
 	testServicePrincipalsClient_Update(t, c, *sp)
-	testServicePrincipalsClient_List(t, c)
+	testServicePrincipalsClient_List(t, c, odata.Query{})
 
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-servicePrincipals-appRoleAssignments"),
@@ -182,8 +182,9 @@ func testServicePrincipalsClient_Update(t *testing.T, c *test.Test, sp msgraph.S
 	return
 }
 
-func testServicePrincipalsClient_List(t *testing.T, c *test.Test) (servicePrincipals *[]msgraph.ServicePrincipal) {
-	servicePrincipals, _, err := c.ServicePrincipalsClient.List(c.Context, odata.Query{Top: 10})
+func testServicePrincipalsClient_List(t *testing.T, c *test.Test, query odata.Query) (servicePrincipals *[]msgraph.ServicePrincipal) {
+	query.Top = 10
+	servicePrincipals, _, err := c.ServicePrincipalsClient.List(c.Context, query)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.List(): %v", err)
 	}

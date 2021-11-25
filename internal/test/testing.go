@@ -97,6 +97,7 @@ type Test struct {
 	AppRoleAssignedToClient                   *msgraph.AppRoleAssignedToClient
 	AuthenticationMethodsClient               *msgraph.AuthenticationMethodsClient
 	ConditionalAccessPoliciesClient           *msgraph.ConditionalAccessPoliciesClient
+	DelegatedPermissionGrantsClient           *msgraph.DelegatedPermissionGrantsClient
 	DirectoryAuditReportsClient               *msgraph.DirectoryAuditReportsClient
 	DirectoryObjectsClient                    *msgraph.DirectoryObjectsClient
 	DirectoryRoleTemplatesClient              *msgraph.DirectoryRoleTemplatesClient
@@ -209,6 +210,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ConditionalAccessPoliciesClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ConditionalAccessPoliciesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.ConditionalAccessPoliciesClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.DelegatedPermissionGrantsClient = msgraph.NewDelegatedPermissionGrantsClient(c.Connection.AuthConfig.TenantID)
+	c.DelegatedPermissionGrantsClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.DelegatedPermissionGrantsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.DelegatedPermissionGrantsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DirectoryAuditReportsClient = msgraph.NewDirectoryAuditReportsClient(c.Connection.AuthConfig.TenantID)
 	c.DirectoryAuditReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
