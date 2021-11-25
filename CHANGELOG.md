@@ -1,4 +1,6 @@
-## 0.36.0 (Unreleased)
+## 0.37.0 (Unreleased)
+
+## 0.36.0 (November 25, 2021)
 
 - Support for [administrative units](https://docs.microsoft.com/en-us/graph/api/resources/administrativeunit?view=graph-rest-beta) ([#124](https://github.com/manicminer/hamilton/pull/124))
 - Support for [delegated permission grants](https://docs.microsoft.com/en-us/graph/api/resources/oauth2permissiongrant?view=graph-rest-1.0) ([#126](https://github.com/manicminer/hamilton/pull/126))
