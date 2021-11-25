@@ -201,12 +201,88 @@ const (
 	CredentialUsageSummaryPeriod1  CredentialUsageSummaryPeriod = "D1"
 )
 
+type ConditionalAccessClientAppType = string
+
+const (
+	ConditionalAccessClientAppTypeAll                         ConditionalAccessClientAppType = "all"
+	ConditionalAccessClientAppTypeBrowser                     ConditionalAccessClientAppType = "browser"
+	ConditionalAccessClientAppTypeEasSupported                ConditionalAccessClientAppType = "easSupported"
+	ConditionalAccessClientAppTypeExchangeActiveSync          ConditionalAccessClientAppType = "exchangeActiveSync"
+	ConditionalAccessClientAppTypeMobileAppsAndDesktopClients ConditionalAccessClientAppType = "mobileAppsAndDesktopClients"
+	ConditionalAccessClientAppTypeOther                       ConditionalAccessClientAppType = "other"
+)
+
+type ConditionalAccessCloudAppSecuritySessionControlType = string
+
+const (
+	ConditionalAccessCloudAppSecuritySessionControlTypeBlockDownloads     ConditionalAccessCloudAppSecuritySessionControlType = "blockDownloads"
+	ConditionalAccessCloudAppSecuritySessionControlTypeMcasConfigured     ConditionalAccessCloudAppSecuritySessionControlType = "mcasConfigured"
+	ConditionalAccessCloudAppSecuritySessionControlTypeMonitorOnly        ConditionalAccessCloudAppSecuritySessionControlType = "monitorOnly"
+	ConditionalAccessCloudAppSecuritySessionControlTypeUnknownFutureValue ConditionalAccessCloudAppSecuritySessionControlType = "unknownFutureValue"
+)
+
+type ConditionalAccessDevicePlatform = string
+
+const (
+	ConditionalAccessDevicePlatformAll                ConditionalAccessDevicePlatform = "All"
+	ConditionalAccessDevicePlatformAndroid            ConditionalAccessDevicePlatform = "android"
+	ConditionalAccessDevicePlatformIos                ConditionalAccessDevicePlatform = "iOS"
+	ConditionalAccessDevicePlatformMacOs              ConditionalAccessDevicePlatform = "macOS"
+	ConditionalAccessDevicePlatformUnknownFutureValue ConditionalAccessDevicePlatform = "unknownFutureValue"
+	ConditionalAccessDevicePlatformWindows            ConditionalAccessDevicePlatform = "windows"
+	ConditionalAccessDevicePlatformWindowsPhone       ConditionalAccessDevicePlatform = "windowsPhone"
+)
+
+type ConditionalAccessDeviceStatesInclude = string
+
+const (
+	ConditionalAccessDeviceStatesIncludeAll ConditionalAccessDeviceStatesInclude = "All"
+)
+
+type ConditionalAccessDeviceStatesExclude = string
+
+const (
+	ConditionalAccessDeviceStatesExcludeCompliant    ConditionalAccessDeviceStatesExclude = "Compliant"
+	ConditionalAccessDeviceStatesExcludeDomainJoined ConditionalAccessDeviceStatesExclude = "DomainJoined"
+)
+
+type ConditionalAccessFilterMode = string
+
+const (
+	ConditionalAccessFilterModeExclude ConditionalAccessFilterMode = "exclude"
+	ConditionalAccessFilterModeInclude ConditionalAccessFilterMode = "include"
+)
+
+type ConditionalAccessGrantControl = string
+
+const (
+	ConditionalAccessGrantControlApprovedApplication  ConditionalAccessGrantControl = "approvedApplication"
+	ConditionalAccessGrantControlBlock                ConditionalAccessGrantControl = "block"
+	ConditionalAccessGrantControlCompliantApplication ConditionalAccessGrantControl = "compliantApplication"
+	ConditionalAccessGrantControlCompliantDevice      ConditionalAccessGrantControl = "compliantDevice"
+	ConditionalAccessGrantControlDomainJoinedDevice   ConditionalAccessGrantControl = "domainJoinedDevice"
+	ConditionalAccessGrantControlMfa                  ConditionalAccessGrantControl = "mfa"
+	ConditionalAccessGrantControlPasswordChange       ConditionalAccessGrantControl = "passwordChange"
+	ConditionalAccessGrantControlUnknownFutureValue   ConditionalAccessGrantControl = "unknownFutureValue"
+)
+
 type ConditionalAccessPolicyState = string
 
 const (
 	ConditionalAccessPolicyStateEnabled                           ConditionalAccessPolicyState = "enabled"
 	ConditionalAccessPolicyStateDisabled                          ConditionalAccessPolicyState = "disabled"
 	ConditionalAccessPolicyStateEnabledForReportingButNotEnforced ConditionalAccessPolicyState = "enabledForReportingButNotEnforced"
+)
+
+type ConditionalAccessRiskLevel = string
+
+const (
+	ConditionalAccessRiskLevelHidden             ConditionalAccessRiskLevel = "hidden"
+	ConditionalAccessRiskLevelHigh               ConditionalAccessRiskLevel = "high"
+	ConditionalAccessRiskLevelLow                ConditionalAccessRiskLevel = "low"
+	ConditionalAccessRiskLevelMedium             ConditionalAccessRiskLevel = "medium"
+	ConditionalAccessRiskLevelNone               ConditionalAccessRiskLevel = "none"
+	ConditionalAccessRiskLevelUnknownFutureValue ConditionalAccessRiskLevel = "unknownFutureValue"
 )
 
 type ExtensionSchemaTargetType = string
@@ -377,6 +453,13 @@ type PermissionScopeType = string
 const (
 	PermissionScopeTypeAdmin PermissionScopeType = "Admin"
 	PermissionScopeTypeUser  PermissionScopeType = "User"
+)
+
+type PersistentBrowserSessionMode = string
+
+const (
+	PersistentBrowserSessionModeAlways PersistentBrowserSessionMode = "always"
+	PersistentBrowserSessionModeNever  PersistentBrowserSessionMode = "never"
 )
 
 type PreferredSingleSignOnMode = StringNullWhenEmpty
