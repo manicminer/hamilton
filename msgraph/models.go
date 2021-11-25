@@ -525,8 +525,8 @@ type BaseNamedLocation struct {
 }
 
 type CloudAppSecurityControl struct {
-	IsEnabled            *bool   `json:"isEnabled,omitempty"`
-	CloudAppSecurityType *string `json:"cloudAppSecurityType,omitempty"`
+	IsEnabled            *bool                                                `json:"isEnabled,omitempty"`
+	CloudAppSecurityType *ConditionalAccessCloudAppSecuritySessionControlType `json:"cloudAppSecurityType,omitempty"`
 }
 
 type ConditionalAccessApplications struct {
@@ -536,20 +536,38 @@ type ConditionalAccessApplications struct {
 }
 
 type ConditionalAccessConditionSet struct {
-	Applications     *ConditionalAccessApplications `json:"applications,omitempty"`
-	Users            *ConditionalAccessUsers        `json:"users,omitempty"`
-	ClientAppTypes   *[]string                      `json:"clientAppTypes,omitempty"`
-	Locations        *ConditionalAccessLocations    `json:"locations,omitempty"`
-	Platforms        *ConditionalAccessPlatforms    `json:"platforms,omitempty"`
-	SignInRiskLevels *[]string                      `json:"signInRiskLevels,omitempty"`
-	UserRiskLevels   *[]string                      `json:"userRiskLevels,omitempty"`
+	Applications     *ConditionalAccessApplications    `json:"applications,omitempty"`
+	ClientAppTypes   *[]ConditionalAccessClientAppType `json:"clientAppTypes,omitempty"`
+	Devices          *ConditionalAccessDevices         `json:"devices,omitempty"`
+	DeviceStates     *ConditionalAccessDeviceStates    `json:"deviceStates,omitempty"`
+	Locations        *ConditionalAccessLocations       `json:"locations,omitempty"`
+	Platforms        *ConditionalAccessPlatforms       `json:"platforms,omitempty"`
+	SignInRiskLevels *[]ConditionalAccessRiskLevel     `json:"signInRiskLevels,omitempty"`
+	UserRiskLevels   *[]ConditionalAccessRiskLevel     `json:"userRiskLevels,omitempty"`
+	Users            *ConditionalAccessUsers           `json:"users,omitempty"`
+}
+
+type ConditionalAccessDevices struct {
+	IncludeDevices *[]string                `json:"includeDevices,omitempty"`
+	ExcludeDevices *[]string                `json:"excludeDevices,omitempty"`
+	DeviceFilter   *ConditionalAccessFilter `json:"deviceFilter,omitempty"`
+}
+
+type ConditionalAccessDeviceStates struct {
+	IncludeStates *ConditionalAccessDeviceStatesInclude `json:"includeStates,omitempty"`
+	ExcludeStates *ConditionalAccessDeviceStatesExclude `json:"excludeStates,omitempty"`
+}
+
+type ConditionalAccessFilter struct {
+	Mode *ConditionalAccessFilterMode `json:"mode,omitempty"`
+	Rule *string                      `json:"rule,omitempty"`
 }
 
 type ConditionalAccessGrantControls struct {
-	Operator                    *string   `json:"operator,omitempty"`
-	BuiltInControls             *[]string `json:"builtInControls,omitempty"`
-	CustomAuthenticationFactors *[]string `json:"customAuthenticationFactors,omitempty"`
-	TermsOfUse                  *[]string `json:"termsOfUse,omitempty"`
+	Operator                    *string                          `json:"operator,omitempty"`
+	BuiltInControls             *[]ConditionalAccessGrantControl `json:"builtInControls,omitempty"`
+	CustomAuthenticationFactors *[]string                        `json:"customAuthenticationFactors,omitempty"`
+	TermsOfUse                  *[]string                        `json:"termsOfUse,omitempty"`
 }
 
 type ConditionalAccessLocations struct {
@@ -558,8 +576,8 @@ type ConditionalAccessLocations struct {
 }
 
 type ConditionalAccessPlatforms struct {
-	IncludePlatforms *[]string `json:"includePlatforms,omitempty"`
-	ExcludePlatforms *[]string `json:"excludePlatforms,omitempty"`
+	IncludePlatforms *[]ConditionalAccessDevicePlatform `json:"includePlatforms,omitempty"`
+	ExcludePlatforms *[]ConditionalAccessDevicePlatform `json:"excludePlatforms,omitempty"`
 }
 
 // ConditionalAccessPolicy describes an Conditional Access Policy object.
@@ -1139,8 +1157,8 @@ type PermissionScope struct {
 }
 
 type PersistentBrowserSessionControl struct {
-	IsEnabled *bool   `json:"isEnabled,omitempty"`
-	Mode      *string `json:"mode,omitempty"`
+	IsEnabled *bool                         `json:"isEnabled,omitempty"`
+	Mode      *PersistentBrowserSessionMode `json:"mode,omitempty"`
 }
 
 type PhoneAuthenticationMethod struct {
