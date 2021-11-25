@@ -2,7 +2,7 @@
 
 ## 0.36.1 (November 25, 2021)
 
-- Fix an incorrect enum value for `ConditionalAccessDevicePlatformAll` [GH-127]
+- Fix an incorrect enum value for `ConditionalAccessDevicePlatformAll` ([#127](https://github.com/manicminer/hamilton/pull/127))
 
 ## 0.36.0 (November 25, 2021)
 
