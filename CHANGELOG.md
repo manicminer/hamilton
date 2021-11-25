@@ -1,5 +1,9 @@
 ## 0.37.0 (Unreleased)
 
+## 0.36.1 (November 25, 2021)
+
+- Fix an incorrect enum value for `ConditionalAccessDevicePlatformAll` [GH-127]
+
 ## 0.36.0 (November 25, 2021)
 
 - Support for [administrative units](https://docs.microsoft.com/en-us/graph/api/resources/administrativeunit?view=graph-rest-beta) ([#124](https://github.com/manicminer/hamilton/pull/124))
