@@ -1,5 +1,7 @@
 ## 0.37.0 (Unreleased)
 
+- Fix an incorrect hostname for `environments.KeyVaultUSGovEndpoint` ([#128](https://github.com/manicminer/hamilton/pull/128))
+
 ## 0.36.1 (November 25, 2021)
 
 - Fix an incorrect enum value for `ConditionalAccessDevicePlatformAll` ([#127](https://github.com/manicminer/hamilton/pull/127))
