@@ -4,6 +4,8 @@ import (
 	"fmt"
 )
 
+var ApiUnavailable = Api{}
+
 // API represent an API configuration for Microsoft Graph or Azure Active Directory Graph.
 type Api struct {
 	// The Application ID for the API.
@@ -11,6 +13,10 @@ type Api struct {
 
 	// The endpoint for the API, including scheme.
 	Endpoint ApiEndpoint
+}
+
+func (a *Api) IsAvailable() bool {
+	return a != nil && *a != ApiUnavailable
 }
 
 func (a *Api) DefaultScope() string {
