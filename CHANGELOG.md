@@ -1,4 +1,6 @@
-## 0.37.0 (Unreleased)
+## 0.38.0 (Unreleased)
+
+## 0.37.0 (November 29, 2021)
 
 - Add some missing API endpoints for national cloud environments ([#129](https://github.com/manicminer/hamilton/pull/129))
 - Add an `Api{}.IsAvailable()` method to determine whether a service is supported for an environment  ([#129](https://github.com/manicminer/hamilton/pull/129))
