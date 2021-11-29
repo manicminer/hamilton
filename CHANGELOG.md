@@ -3,6 +3,7 @@
 - Add some missing API endpoints for national cloud environments ([#129](https://github.com/manicminer/hamilton/pull/129))
 - Add an `Api{}.IsAvailable()` method to determine whether a service is supported for an environment  ([#129](https://github.com/manicminer/hamilton/pull/129))
 - Fix an incorrect hostname for `environments.KeyVaultUSGovEndpoint` ([#128](https://github.com/manicminer/hamilton/pull/128))
+- Support for `autorest.BearerAuthorizerCallback` in `auth.CachedAuthorizer` ([#130](https://github.com/manicminer/hamilton/pull/130))
 
 ## 0.36.1 (November 25, 2021)
 
