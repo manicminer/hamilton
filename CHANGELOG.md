@@ -2,6 +2,11 @@
 
 - Add a helper function `environments.EnvironmentFromMetadata()` which is intended to substitute the [`azure.EnvironmentFromURL()` function from go-autorest](https://github.com/Azure/go-autorest/blob/v14.2.0/autorest/azure/metadata_environment.go#L96-L141) ([#131](https://github.com/manicminer/hamilton/pull/131))
 - Fix an incorrect API ID for KeyVault ([#131](https://github.com/manicminer/hamilton/pull/131))
+- Improve support for dynamic group memberships ([#132](https://github.com/manicminer/hamilton/pull/132))
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `Group.MembershipRule` has changed from a `*string` to a `*StringNullWhenEmpty` ([#132](https://github.com/manicminer/hamilton/pull/132))
 
 ## 0.37.0 (November 29, 2021)
 
