@@ -1,4 +1,6 @@
-## 0.38.0 (Unreleased)
+## 0.39.0 (Unreleased)
+
+## 0.38.0 (December 8, 2021)
 
 - Add a helper function `environments.EnvironmentFromMetadata()` which is intended to substitute the [`azure.EnvironmentFromURL()` function from go-autorest](https://github.com/Azure/go-autorest/blob/v14.2.0/autorest/azure/metadata_environment.go#L96-L141) ([#131](https://github.com/manicminer/hamilton/pull/131))
 - Fix an incorrect API ID for KeyVault ([#131](https://github.com/manicminer/hamilton/pull/131))
