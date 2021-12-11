@@ -22,10 +22,11 @@ func (s StringNullWhenEmpty) MarshalJSON() ([]byte, error) {
 	return json.Marshal(string(s))
 }
 
-type AccessPackageCatalogStatus = string
+type AccessPackageCatalogState = string
 
 const (
-	AccessPackageCatalogStatusPublished AccessPackageCatalogStatus = "Published"
+	AccessPackageCatalogStatePublished AccessPackageCatalogState = "published"
+	AccessPackageCatalogStateUnpublished AccessPackageCatalogState = "unpublished"
 )
 
 type AccessPackageCatalogType = string

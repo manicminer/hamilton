@@ -14,14 +14,11 @@ import (
 
 type AccessPackage struct {
 	ID                  *string    `json:"id,omitempty"`
-	CatalogId           *string    `json:"catalogId,omitempty"`
-	CreatedBy           *string    `json:"createdBy,omitempty"`
+	Catalog           *AccessPackageCatalog    `json:"catalog,omitempty"`
 	CreatedDateTime     *time.Time `json:"createdDateTime,omitempty"`
 	Description         *string    `json:"description,omitempty"`
 	DisplayName         *string    `json:"displayName,omitempty"`
 	IsHidden            *bool      `json:"isHidden,omitempty"`
-	IsRoleScopesVisible *bool      `json:"isRoleScopesVisible,omitempty"`
-	ModifiedBy          *string    `json:"modifiedBy,omitempty"`
 	ModifiedDateTime    *time.Time `json:"modifiedDateTime,omitempty"`
 }
 
@@ -45,14 +42,12 @@ type AccessPackageAssignmentPolicy struct {
 
 type AccessPackageCatalog struct {
 	ID                  *string                    `json:"id,omitempty"`
-	CatalogStatus       AccessPackageCatalogStatus `json:"catalogStatus,omitempty"`
+	State       AccessPackageCatalogState `json:"state,omitempty"`
 	CatalogType         AccessPackageCatalogType   `json:"catalogType,omitempty"`
-	CreatedBy           *string                    `json:"createdBy,omitempty"`
 	CreatedDateTime     *time.Time                 `json:"createdDateTime,omitempty"`
 	Description         *string                    `json:"description,omitempty"`
 	DisplayName         *string                    `json:"displayName,omitempty"`
 	IsExternallyVisible *bool                      `json:"isExternallyVisible,omitempty"`
-	ModifiedBy          *string                    `json:"modifiedBy,omitempty"`
 	ModifiedDateTime    *time.Time                 `json:"modifiedDateTime,omitempty"`
 }
 
@@ -1497,6 +1492,7 @@ type UserRegistrationMethodSummary struct {
 }
 
 type UserSet struct {
+	ODataType   *odata.Type `json:"@odata.type,omitempty"`
 	IsBackup    *bool   `json:"isBackup,omitempty"`
 	ID          *string `json:"id,omitempty"` // Either user or group ID
 	Description *string `json:"description,omitempty"`

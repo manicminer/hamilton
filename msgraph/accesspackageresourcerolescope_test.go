@@ -24,16 +24,17 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 
 	// Create access package
 	accessPackage := testAccessPackageResourceRoleScopeAP_Create(t, c, msgraph.AccessPackage{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
-		CatalogId:           accessPackageCatalog.ID,
-		Description:         utils.StringPtr("Test Access Package"),
-		IsHidden:            utils.BoolPtr(false),
-		IsRoleScopesVisible: utils.BoolPtr(false),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
+		Catalog:           &msgraph.AccessPackageCatalog{
+			ID: accessPackageCatalog.ID,
+		},
+		Description: utils.StringPtr("Test Access Package"),
+		IsHidden:    utils.BoolPtr(false),
 	})
 
 	// Create Resource Request and poll for ID
 	accessPackageResourceRequest := testAccessPackageResourceRoleScopeResourceRequest_Create(t, c, msgraph.AccessPackageResourceRequest{
-		CatalogId:   accessPackage.CatalogId,
+		CatalogId:   accessPackage.Catalog.ID,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
 			OriginId:     aadGroup.ID,
@@ -210,7 +211,7 @@ func testAccessPackageResourceRoleScopeCatalog_Create(t *testing.T, c *test.Test
 	accessPackageCatalog, _, err := c.AccessPackageCatalogClient.Create(c.Context, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
 		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
-		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
+		State:               msgraph.AccessPackageCatalogStatePublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})

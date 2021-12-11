@@ -17,7 +17,7 @@ func TestAccessPackageCatalogClient(t *testing.T) {
 	accessPackageCatalog := testAccessPackageCatalogClient_Create(t, c, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
 		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
-		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
+		State:               msgraph.AccessPackageCatalogStatePublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
