@@ -129,7 +129,7 @@ func testAccessPackageAssignmentPolicyClient_Delete(t *testing.T, c *test.Test, 
 func testAccessPackage_Create(t *testing.T, c *test.Test, accessPackageCatalog *msgraph.AccessPackageCatalog) (accessPackage *msgraph.AccessPackage) {
 	accessPackage, _, err := c.AccessPackageClient.Create(c.Context, msgraph.AccessPackage{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
-		Catalog:           &msgraph.AccessPackageCatalog{
+		Catalog: &msgraph.AccessPackageCatalog{
 			ID: accessPackageCatalog.ID,
 		},
 		Description: utils.StringPtr("Test Access Package"),

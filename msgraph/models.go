@@ -13,13 +13,13 @@ import (
 )
 
 type AccessPackage struct {
-	ID                  *string    `json:"id,omitempty"`
-	Catalog           *AccessPackageCatalog    `json:"catalog,omitempty"`
-	CreatedDateTime     *time.Time `json:"createdDateTime,omitempty"`
-	Description         *string    `json:"description,omitempty"`
-	DisplayName         *string    `json:"displayName,omitempty"`
-	IsHidden            *bool      `json:"isHidden,omitempty"`
-	ModifiedDateTime    *time.Time `json:"modifiedDateTime,omitempty"`
+	ID               *string               `json:"id,omitempty"`
+	Catalog          *AccessPackageCatalog `json:"catalog,omitempty"`
+	CreatedDateTime  *time.Time            `json:"createdDateTime,omitempty"`
+	Description      *string               `json:"description,omitempty"`
+	DisplayName      *string               `json:"displayName,omitempty"`
+	IsHidden         *bool                 `json:"isHidden,omitempty"`
+	ModifiedDateTime *time.Time            `json:"modifiedDateTime,omitempty"`
 }
 
 type AccessPackageAssignmentPolicy struct {
@@ -41,14 +41,14 @@ type AccessPackageAssignmentPolicy struct {
 }
 
 type AccessPackageCatalog struct {
-	ID                  *string                    `json:"id,omitempty"`
-	State       AccessPackageCatalogState `json:"state,omitempty"`
-	CatalogType         AccessPackageCatalogType   `json:"catalogType,omitempty"`
-	CreatedDateTime     *time.Time                 `json:"createdDateTime,omitempty"`
-	Description         *string                    `json:"description,omitempty"`
-	DisplayName         *string                    `json:"displayName,omitempty"`
-	IsExternallyVisible *bool                      `json:"isExternallyVisible,omitempty"`
-	ModifiedDateTime    *time.Time                 `json:"modifiedDateTime,omitempty"`
+	ID                  *string                   `json:"id,omitempty"`
+	State               AccessPackageCatalogState `json:"state,omitempty"`
+	CatalogType         AccessPackageCatalogType  `json:"catalogType,omitempty"`
+	CreatedDateTime     *time.Time                `json:"createdDateTime,omitempty"`
+	Description         *string                   `json:"description,omitempty"`
+	DisplayName         *string                   `json:"displayName,omitempty"`
+	IsExternallyVisible *bool                     `json:"isExternallyVisible,omitempty"`
+	ModifiedDateTime    *time.Time                `json:"modifiedDateTime,omitempty"`
 }
 
 type AccessPackageLocalizedContent struct {
@@ -1493,9 +1493,9 @@ type UserRegistrationMethodSummary struct {
 
 type UserSet struct {
 	ODataType   *odata.Type `json:"@odata.type,omitempty"`
-	IsBackup    *bool   `json:"isBackup,omitempty"`
-	ID          *string `json:"id,omitempty"` // Either user or group ID
-	Description *string `json:"description,omitempty"`
+	IsBackup    *bool       `json:"isBackup,omitempty"`
+	ID          *string     `json:"id,omitempty"` // Either user or group ID
+	Description *string     `json:"description,omitempty"`
 }
 
 type UserCredentialUsageDetails struct {

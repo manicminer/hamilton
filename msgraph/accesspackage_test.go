@@ -19,12 +19,12 @@ func TestAccessPackageClient(t *testing.T) {
 
 	// Create AP
 	accessPackage := testAccessPackageClient_Create(t, c, msgraph.AccessPackage{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
-		Catalog:           &msgraph.AccessPackageCatalog{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
+		Catalog: &msgraph.AccessPackageCatalog{
 			ID: accessPackageCatalog.ID,
 		},
-		Description:         utils.StringPtr("Test Access Package"),
-		IsHidden:            utils.BoolPtr(false),
+		Description: utils.StringPtr("Test Access Package"),
+		IsHidden:    utils.BoolPtr(false),
 	})
 
 	// Update test
@@ -112,7 +112,7 @@ func testapCatalog_Create(t *testing.T, c *test.Test) (accessPackageCatalog *msg
 	accessPackageCatalog, _, err := c.AccessPackageCatalogClient.Create(c.Context, msgraph.AccessPackageCatalog{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
 		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
-		State:       msgraph.AccessPackageCatalogStatePublished,
+		State:               msgraph.AccessPackageCatalogStatePublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})

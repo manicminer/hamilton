@@ -25,7 +25,7 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 	// Create access package
 	accessPackage := testAccessPackageResourceRequestAP_Create(t, c, msgraph.AccessPackage{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
-		Catalog:           &msgraph.AccessPackageCatalog{
+		Catalog: &msgraph.AccessPackageCatalog{
 			ID: accessPackageCatalog.ID,
 		},
 		Description: utils.StringPtr("Test Access Package"),
