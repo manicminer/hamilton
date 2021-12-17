@@ -27,9 +27,17 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 		Description:     utils.StringPtr("Test AP Policy Assignment Description"),
 		//AccessReviewSettings: utils.BoolPtr()
 		RequestorSettings: &msgraph.RequestorSettings{
+			//ScopeType:      msgraph.RequestorSettingsScopeTypeSpecificDirectorySubjects,
 			ScopeType:      msgraph.RequestorSettingsScopeTypeNoSubjects,
 			AcceptRequests: utils.BoolPtr(true),
-			//AllowedRequestors: &msgraph.UserSet{}
+			// AllowedRequestors: &[]msgraph.UserSet{
+			// 		{
+			// 			ODataType: utils.StringPtr(odata.TypeGroupMembers),
+			// 			IsBackup: utils.BoolPtr(false),
+			// 			ID: utils.StringPtr("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"),
+			// 			Description: utils.StringPtr("Sample users group"),
+			// 		},
+			// },
 		},
 		RequestApprovalSettings: &msgraph.ApprovalSettings{
 			IsApprovalRequired:               utils.BoolPtr(false),
@@ -37,6 +45,68 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 			IsRequestorJustificationRequired: utils.BoolPtr(false),
 			ApprovalMode:                     msgraph.ApprovalModeNoApproval,
 			//ApprovalStages: &msgraph.ApprovalStages{},
+		},
+		Questions: &[]msgraph.AccessPackageQuestion{
+			{
+				ODataType:  utils.StringPtr(odata.TypeAccessPackageTextInputQuestion),
+				IsRequired: utils.BoolPtr(false),
+				Sequence:   utils.Int32Ptr(1),
+				Text: &msgraph.AccessPackageLocalizedContent{
+					DefaultText: utils.StringPtr("Test"),
+					LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
+						{
+							Text:         utils.StringPtr("abc"),
+							LanguageCode: utils.StringPtr("en"),
+						},
+					},
+				},
+			},
+			{
+				ODataType:  utils.StringPtr(odata.TypeAccessPackageMultipleChoiceQuestion),
+				IsRequired: utils.BoolPtr(false),
+				Sequence:   utils.Int32Ptr(2),
+				Text: &msgraph.AccessPackageLocalizedContent{
+					DefaultText: utils.StringPtr("Test"),
+					LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
+						{
+							Text:         utils.StringPtr("abc 2"),
+							LanguageCode: utils.StringPtr("gb"),
+						},
+					},
+				},
+				Choices: &[]msgraph.AccessPackageMultipleChoiceQuestions{
+					// Choice 1 containing a list of languages
+					{
+						ActualValue: utils.StringPtr("CHOICE1"),
+						DisplayValue: &msgraph.AccessPackageLocalizedContent{
+							DefaultText: utils.StringPtr("One"),
+							LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
+								{
+									Text:         utils.StringPtr("Choice 1"),
+									LanguageCode: utils.StringPtr("gb"),
+								},
+							},
+						},
+					},
+					// Choice 2 containing a list of languages, etc.
+					{
+						ActualValue: utils.StringPtr("CHOICE2"),
+						DisplayValue: &msgraph.AccessPackageLocalizedContent{
+							DefaultText: utils.StringPtr("Two"),
+							LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
+								{
+									Text:         utils.StringPtr("Choice 2"),
+									LanguageCode: utils.StringPtr("gb"),
+								},
+								{
+									Text:         utils.StringPtr("Zwei"),
+									LanguageCode: utils.StringPtr("de"),
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 	})
 

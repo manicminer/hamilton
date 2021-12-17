@@ -62,10 +62,19 @@ type AccessPackageLocalizedTexts struct {
 }
 
 type AccessPackageQuestion struct {
-	ID         *string                        `json:"id,omitempty"`
-	IsRequired *bool                          `json:"isRequired,omitempty"`
-	Sequence   *int32                         `json:"sequence,omitempty"`
-	Text       *AccessPackageLocalizedContent `json:"text,omitempty"`
+	ODataType            *odata.Type                             `json:"@odata.type,omitempty"`
+	ID                   *string                                 `json:"id,omitempty"`
+	IsRequired           *bool                                   `json:"isRequired,omitempty"`
+	Sequence             *int32                                  `json:"sequence,omitempty"`
+	Text                 *AccessPackageLocalizedContent          `json:"text,omitempty"`
+	Choices              *[]AccessPackageMultipleChoiceQuestions `json:"choices,omitempty"`
+	IsSingleLineQuestion *bool                                   `json:"isSingleLineQuestion,omitempty"`
+}
+
+type AccessPackageMultipleChoiceQuestions struct {
+	ODataType    *odata.Type                    `json:"@odata.type,omitempty"`
+	ActualValue  *string                        `json:"actualValue,string"`
+	DisplayValue *AccessPackageLocalizedContent `json:"displayValue,omitempty"`
 }
 
 type AccessPackageResource struct {
