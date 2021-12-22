@@ -83,9 +83,11 @@ func (c *AccessPackageClient) Create(ctx context.Context, accessPackage AccessPa
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	newAccessPackage.Catalog = &AccessPackageCatalog{
-		ID: accessPackage.Catalog.ID,
-	} //Stable API doesn't return this
+	if c.BaseClient.ApiVersion == Version10 {
+		newAccessPackage.Catalog = &AccessPackageCatalog{
+			ID: accessPackage.Catalog.ID,
+		} //Stable API doesn't return this
+	}
 
 	return &newAccessPackage, status, nil
 }

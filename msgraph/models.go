@@ -20,6 +20,11 @@ type AccessPackage struct {
 	DisplayName      *string               `json:"displayName,omitempty"`
 	IsHidden         *bool                 `json:"isHidden,omitempty"`
 	ModifiedDateTime *time.Time            `json:"modifiedDateTime,omitempty"`
+	//Beta
+	IsRoleScopesVisible *bool   `json:"isRoleScopesVisible,omitempty"`
+	ModifiedBy          *string `json:"modifiedBy,omitempty"`
+	CatalogId           *string `json:"catalogId,omitempty"`
+	CreatedBy           *string `json:"createdBy,omitempty"`
 }
 
 type AccessPackageAssignmentPolicy struct {
@@ -49,6 +54,10 @@ type AccessPackageCatalog struct {
 	DisplayName         *string                   `json:"displayName,omitempty"`
 	IsExternallyVisible *bool                     `json:"isExternallyVisible,omitempty"`
 	ModifiedDateTime    *time.Time                `json:"modifiedDateTime,omitempty"`
+	//Beta
+	CatalogStatus AccessPackageCatalogStatus `json:"catalogStatus,omitempty"`
+	CreatedBy     *string                    `json:"createdBy,omitempty"`
+	ModifiedBy    *string                    `json:"modifiedBy,omitempty"`
 }
 
 type AccessPackageLocalizedContent struct {

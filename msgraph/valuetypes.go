@@ -29,6 +29,13 @@ const (
 	AccessPackageCatalogStateUnpublished AccessPackageCatalogState = "unpublished"
 )
 
+type AccessPackageCatalogStatus = string
+
+const (
+	AccessPackageCatalogStatusPublished   AccessPackageCatalogStatus = "Published"
+	AccessPackageCatalogStatusUnpublished AccessPackageCatalogState  = "Unpublished"
+)
+
 type AccessPackageCatalogType = string
 
 const (
