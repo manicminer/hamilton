@@ -98,7 +98,7 @@ type AccessPackageResource struct {
 	OriginSystem                     AccessPackageResourceOriginSystem `json:"originSystem,omitempty"`
 	ResourceType                     *AccessPackageResourceType        `json:"resourceType,omitempty"`
 	Url                              *string                           `json:"url,omitempty"`
-	// Attributes is a returned collection but is not documented or used
+	// Attributes is a returned collection but is not documented or used in beta
 }
 
 type AccessPackageResourceEnvironment struct {
@@ -514,12 +514,15 @@ type ApprovalStage struct {
 }
 
 type AssignmentReviewSettings struct {
-	IsEnabled      *bool      `json:"isEnabled,omitempty"`
-	RecurrenceType *string    `json:"recurrenceType,omitempty"`
-	ReviewerType   *string    `json:"reviewerType,omitempty"`
-	StartDateTime  *time.Time `json:"startDateTime,omitempty"`
-	DurationInDays *int32     `json:"durationInDays,omitempty"`
-	Reviewers      *[]UserSet `json:"reviewers,omitempty"`
+	IsEnabled                       *bool                           `json:"isEnabled,omitempty"`
+	RecurrenceType                  AccessReviewRecurranceType      `json:"recurrenceType,omitempty"`
+	ReviewerType                    AccessReviewReviewerType        `json:"reviewerType,omitempty"`
+	StartDateTime                   *time.Time                      `json:"startDateTime,omitempty"`
+	DurationInDays                  *int32                          `json:"durationInDays,omitempty"`
+	Reviewers                       *[]UserSet                      `json:"reviewers,omitempty"`
+	IsAccessRecommendationEnabled   *bool                           `json:"isAccessRecommendationEnabled,omitempty"`
+	IsApprovalJustificationRequired *bool                           `json:"isApprovalJustificationRequired,omitempty"`
+	AccessReviewTimeoutBehavior     AccessReviewTimeoutBehaviorType `json:"accessReviewTimeoutBehavior,omitempty"`
 }
 
 type AuditActivityInitiator struct {
@@ -1510,10 +1513,11 @@ type UserRegistrationMethodSummary struct {
 }
 
 type UserSet struct {
-	ODataType   *odata.Type `json:"@odata.type,omitempty"`
-	IsBackup    *bool       `json:"isBackup,omitempty"`
-	ID          *string     `json:"id,omitempty"` // Either user or group ID
-	Description *string     `json:"description,omitempty"`
+	ODataType    *odata.Type `json:"@odata.type,omitempty"`
+	IsBackup     *bool       `json:"isBackup,omitempty"`
+	ID           *string     `json:"id,omitempty"` // Either user or group ID
+	Description  *string     `json:"description,omitempty"`
+	ManagerLevel *int32      `json:"managerLevel,omitempty"`
 }
 
 type UserCredentialUsageDetails struct {

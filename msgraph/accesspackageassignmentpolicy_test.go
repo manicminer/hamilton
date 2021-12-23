@@ -3,6 +3,7 @@ package msgraph_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
@@ -20,11 +21,35 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 	// Create AP
 	accessPackage := testAccessPackage_Create(t, c, accessPackageCatalog)
 
+	currentTimePlusDay := time.Now().AddDate(0, 0, 1)
+
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
 		AccessPackageId: accessPackage.ID,
-		DisplayName:     utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.RandomString)),
-		Description:     utils.StringPtr("Test AP Policy Assignment Description"),
+		AccessReviewSettings: &msgraph.AssignmentReviewSettings{
+			AccessReviewTimeoutBehavior:     msgraph.AccessReviewTimeoutBehaviorTypeRemoveAccess,
+			IsEnabled:                       utils.BoolPtr(true),
+			StartDateTime:                   &currentTimePlusDay,
+			DurationInDays:                  utils.Int32Ptr(5),
+			RecurrenceType:                  msgraph.AccessReviewRecurranceTypeMonthly,
+			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
+			IsAccessRecommendationEnabled:   utils.BoolPtr(true),
+			IsApprovalJustificationRequired: utils.BoolPtr(true),
+			// Reviewers: &[]msgraph.UserSet{
+			// 	{
+			// 		ODataType:    utils.StringPtr(odata.TypeRequestorManager),
+			// 		IsBackup:     utils.BoolPtr(false),
+			// 		ManagerLevel: utils.Int32Ptr(1),
+			// 	},
+			// 	{
+			// 		ODataType:    utils.StringPtr(odata.TypeSingleUser),
+			// 		IsBackup:     utils.BoolPtr(true),
+			// 		ID:           utils.StringPtr(""),
+			// 	},
+			// },
+		},
+		DisplayName: utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.RandomString)),
+		Description: utils.StringPtr("Test AP Policy Assignment Description"),
 		//AccessReviewSettings: utils.BoolPtr()
 		RequestorSettings: &msgraph.RequestorSettings{
 			//ScopeType:      msgraph.RequestorSettingsScopeTypeSpecificDirectorySubjects,

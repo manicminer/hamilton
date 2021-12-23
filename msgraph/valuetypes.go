@@ -71,6 +71,31 @@ const (
 	AccessPackageResourceTypeSharePointOnlineSite AccessPackageResourceType = "SharePoint Online Site"
 )
 
+type AccessReviewTimeoutBehaviorType = string
+
+const (
+	AccessReviewTimeoutBehaviorTypeAcceptAccessRecommendation AccessReviewTimeoutBehaviorType = "acceptAccessRecommendation"
+	AccessReviewTimeoutBehaviorTypeKeepAccess                 AccessReviewTimeoutBehaviorType = "keepAccess"
+	AccessReviewTimeoutBehaviorTypeRemoveAccess               AccessReviewTimeoutBehaviorType = "removeAccess"
+)
+
+type AccessReviewReviewerType = string
+
+const (
+	AccessReviewReviewerTypeSelf      AccessReviewReviewerType = "Self"
+	AccessReviewReviewerTypeReviewers AccessReviewReviewerType = "Reviewers"
+)
+
+type AccessReviewRecurranceType = string
+
+const (
+	AccessReviewRecurranceTypeWeekly     AccessReviewRecurranceType = "weekly"
+	AccessReviewRecurranceTypeMonthly    AccessReviewRecurranceType = "monthly"
+	AccessReviewRecurranceTypeQuarterly  AccessReviewRecurranceType = "quarterly"
+	AccessReviewRecurranceTypeHalfYearly AccessReviewRecurranceType = "halfyearly"
+	AccessReviewRecurranceTypeAnnual     AccessReviewRecurranceType = "annual"
+)
+
 type AdministrativeUnitVisibility = string
 
 const (
