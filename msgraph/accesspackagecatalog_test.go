@@ -45,7 +45,7 @@ func testAccessPackageCatalogClient_Create(t *testing.T, c *test.Test, a msgraph
 		t.Fatal("AccessPackageCatalogClient.Create(): accessPackageCatalog was nil")
 	}
 	if accessPackageCatalog.ID == nil {
-		t.Fatal("AccessPackageCatalogClient.Create(): acccessPackageCatalog.ID was nil")
+		t.Fatal("AccessPackageCatalogClient.Create(): accessPackageCatalog.ID was nil")
 	}
 	return
 }
