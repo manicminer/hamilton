@@ -160,7 +160,7 @@ func testAccessPackageResourceRoleScopeResourceRequest_Create(t *testing.T, c *t
 		t.Fatal("AccessPackageResourceRequestClient.Create(): accessPackageResourceRequest was nil")
 	}
 	if accessPackageResourceRequest.ID == nil {
-		t.Fatal("AccessPackageResourceRequestClient.Create(): acccessPackageResourceRequest.ID was nil")
+		t.Fatal("AccessPackageResourceRequestClient.Create(): accessPackageResourceRequest.ID was nil")
 	}
 	return
 }
@@ -189,7 +189,7 @@ func testAccessPackageResourceRoleScopeAP_Create(t *testing.T, c *test.Test, a m
 		t.Fatal("AccessPackageClient.Create(): accessPackage was nil")
 	}
 	if accessPackage.ID == nil {
-		t.Fatal("AccessPackageClient.Create(): acccessPackage.ID was nil")
+		t.Fatal("AccessPackageClient.Create(): accessPackage.ID was nil")
 	}
 	return
 }

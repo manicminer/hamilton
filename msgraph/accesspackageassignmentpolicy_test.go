@@ -74,7 +74,7 @@ func testAccessPackageAssignmentPolicyClient_Create(t *testing.T, c *test.Test, 
 		t.Fatal("AccessPackageAssignmentPolicyClient.Create(): accessPackageAssignmentPolicy was nil")
 	}
 	if accessPackageAssignmentPolicy.ID == nil {
-		t.Fatal("AccessPackageAssignmentPolicyClient.Create(): acccessPackageAssignmentPolicy.ID was nil")
+		t.Fatal("AccessPackageAssignmentPolicyClient.Create(): accessPackageAssignmentPolicy.ID was nil")
 	}
 	return
 }

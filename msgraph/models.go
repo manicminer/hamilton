@@ -927,7 +927,7 @@ func (g *Group) HasTypes(types []GroupType) bool {
 
 type GroupAssignedLabel struct {
 	LabelId     *string `json:"labelId,omitempty"`
-	DisplayName *string `json:"displayNanme,omitempty"`
+	DisplayName *string `json:"displayName,omitempty"`
 }
 
 type GroupAssignedLicense struct {
