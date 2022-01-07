@@ -1,5 +1,6 @@
 ## 0.39.0 (Unreleased)
 
+- Support for [Federated Identity Credentials](https://docs.microsoft.com/en-us/graph/api/resources/federatedidentitycredential?view=graph-rest-beta) (beta-only) ([#134](https://github.com/manicminer/hamilton/pull/134))
 - Bug fix: corrected the `DisplayName` struct tag for the `GroupAssignedLabel` model ([#135](https://github.com/manicminer/hamilton/pull/135))
 - Bug fix: fixed a typo in the constant `AccessPackageResourceRequestTypeAdminRemove` (was `AccessPackageResourceRequestTypeAdmminRemove`) ([#135](https://github.com/manicminer/hamilton/pull/135))
 
