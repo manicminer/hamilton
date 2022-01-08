@@ -60,8 +60,8 @@ const (
 type AccessPackageResourceRequestType = string
 
 const (
-	AccessPackageResourceRequestTypeAdminAdd     AccessPackageResourceRequestType = "AdminAdd"
-	AccessPackageResourceRequestTypeAdmminRemove AccessPackageResourceRequestType = "AdminRemove"
+	AccessPackageResourceRequestTypeAdminAdd    AccessPackageResourceRequestType = "AdminAdd"
+	AccessPackageResourceRequestTypeAdminRemove AccessPackageResourceRequestType = "AdminRemove"
 )
 
 type AccessPackageResourceType = string

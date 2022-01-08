@@ -66,6 +66,20 @@ func TestApplicationsClient(t *testing.T) {
 
 	testApplicationsClient_UploadLogo(t, c, app)
 
+	credential := testApplicationsClient_CreateFederatedIdentityCredential(t, c, *app.ID, msgraph.FederatedIdentityCredential{
+		Audiences:   &[]string{"api://AzureADTokenExchange"},
+		Description: msgraph.NullableString("such testing many pull request"),
+		Issuer:      utils.StringPtr("https://token.actions.githubusercontent.com"),
+		Name:        utils.StringPtr(fmt.Sprintf("test-credential-%s", c.RandomString)),
+		Subject:     utils.StringPtr("repo:manicminer-test/gha-test:pull-request"),
+	})
+	testApplicationsClient_GetFederatedIdentityCredential(t, c, *app.ID, *credential.ID)
+
+	credential.Description = msgraph.NullableString("")
+	testApplicationsClient_UpdateFederatedIdentityCredential(t, c, *app.ID, *credential)
+	testApplicationsClient_ListFederatedIdentityCredentials(t, c, *app.ID)
+	testApplicationsClient_DeleteFederatedIdentityCredential(t, c, *app.ID, *credential.ID)
+
 	testApplicationsClient_List(t, c)
 	testApplicationsClient_Delete(t, c, *app.ID)
 	testApplicationsClient_ListDeleted(t, c, *app.ID)
@@ -353,5 +367,70 @@ func testApplicationsClient_UploadLogo(t *testing.T, c *test.Test, a *msgraph.Ap
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.UploadLogo(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_CreateFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId string, credential msgraph.FederatedIdentityCredential) (newCredential *msgraph.FederatedIdentityCredential) {
+	newCredential, status, err := c.ApplicationsClient.CreateFederatedIdentityCredential(c.Context, applicationId, credential)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.CreateFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.CreateFederatedIdentityCredential(): invalid status: %d", status)
+	}
+	if newCredential == nil {
+		t.Fatal("ApplicationsClient.CreateFederatedIdentityCredential(): credential was nil")
+	}
+	if newCredential.ID == nil {
+		t.Fatal("ApplicationsClient.CreateFederatedIdentityCredential(): credential.ID was nil")
+	}
+	return
+}
+
+func testApplicationsClient_UpdateFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId string, credential msgraph.FederatedIdentityCredential) {
+	status, err := c.ApplicationsClient.UpdateFederatedIdentityCredential(c.Context, applicationId, credential)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.UpdateFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.UpdateFederatedIdentityCredential(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_ListFederatedIdentityCredentials(t *testing.T, c *test.Test, applicationId string) (credentials *[]msgraph.FederatedIdentityCredential) {
+	credentials, status, err := c.ApplicationsClient.ListFederatedIdentityCredentials(c.Context, applicationId, odata.Query{})
+	if err != nil {
+		t.Fatalf("ApplicationsClient.ListFederatedIdentityCredentials(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.ListFederatedIdentityCredentials(): invalid status: %d", status)
+	}
+	if credentials == nil {
+		t.Fatal("ApplicationsClient.ListFederatedIdentityCredentials(): credentials was nil")
+	}
+	return
+}
+
+func testApplicationsClient_GetFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId, credentialId string) (credential *msgraph.FederatedIdentityCredential) {
+	credential, status, err := c.ApplicationsClient.GetFederatedIdentityCredential(c.Context, applicationId, credentialId, odata.Query{})
+	if err != nil {
+		t.Fatalf("ApplicationsClient.GetFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.GetFederatedIdentityCredential(): invalid status: %d", status)
+	}
+	if credential == nil {
+		t.Fatal("ApplicationsClient.GetFederatedIdentityCredential(): credential was nil")
+	}
+	return
+}
+
+func testApplicationsClient_DeleteFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId, credentialId string) {
+	status, err := c.ApplicationsClient.DeleteFederatedIdentityCredential(c.Context, applicationId, credentialId)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.DeleteFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.DeleteFederatedIdentityCredential(): invalid status: %d", status)
 	}
 }

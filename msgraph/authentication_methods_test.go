@@ -47,7 +47,7 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	emailAuthMethod.EmailAddress = utils.StringPtr("test-user-authenticationmethods@contoso.com")
 	testAuthMethods_UpdateEmailMethod(t, c, *user.ID, *emailAuthMethod)
 	testAuthMethods_DeleteEmailMethod(t, c, *user.ID, *emailAuthMethod.ID)
-	_ = testAuthMetods_ListPasswordMethods(t, c, *user.ID)
+	_ = testAuthMethods_ListPasswordMethods(t, c, *user.ID)
 	testUsersClient_Delete(t, c, *user.ID)
 }
 
@@ -353,7 +353,8 @@ func testAuthMethods_DeleteEmailMethod(t *testing.T, c *test.Test, userID, ID st
 	}
 }
 
-func testAuthMetods_ListPasswordMethods(t *testing.T, c *test.Test, userID string) (passwordMethods *[]msgraph.PasswordAuthenticationMethod) {
+func testAuthMethods_ListPasswordMethods(t *testing.T, c *test.Test, userID string) (passwordMethods *[]msgraph.
+	PasswordAuthenticationMethod) {
 	passwordMethods, status, err := c.AuthenticationMethodsClient.ListPasswordMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListPasswordMethods(): invalid status: %d", status)
