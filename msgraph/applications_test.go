@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
@@ -297,8 +298,10 @@ func testApplicationsClient_RemoveOwners(t *testing.T, c *test.Test, appId strin
 }
 
 func testApplicationsClient_AddPassword(t *testing.T, c *test.Test, a *msgraph.Application) *msgraph.PasswordCredential {
+	expiry := time.Now().Add(24 * 90 * time.Hour)
 	pwd := msgraph.PasswordCredential{
 		DisplayName: utils.StringPtr("test password"),
+		EndDateTime: &expiry,
 	}
 	newPwd, status, err := c.ApplicationsClient.AddPassword(c.Context, *a.ID, pwd)
 	if err != nil {
