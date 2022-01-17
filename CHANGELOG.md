@@ -1,5 +1,18 @@
 ## 0.40.0 (Unreleased)
 
+- Support v1.0 API for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-overview?view=graph-rest-1.0) ([#133](https://github.com/manicminer/hamilton/pull/133))
+  - `AccessPackageQuestion` model - add the `Choices` and `IsSingleLineQuestion` fields
+  - `AccessPackageCatalog` model - add the `State` field
+  - `AssignmentReviewSettings` model - add the `IsAccessRecommendationEnabled`, `IsApprovalJustificationRequired` and `AccessReviewTimeoutBehavior` fields
+  - `UserSet` model - add the `ManagerLevel` field
+  - New model: `AccessPackageMultipleChoiceQuestions`
+
+⚠️ BREAKING CHANGES:
+
+- `AccessPackage` model - the `CatalogId` field is replaced by the `Catalog` field
+- `AssignmentReviewSettings` model - the `RecurrenceType` field now has a custom type
+- `AssignmentReviewSettings` model - the `ReviewerType` field now has a custom type
+
 ## 0.39.0 (January 7, 2022)
 
 - Support for [Federated Identity Credentials](https://docs.microsoft.com/en-us/graph/api/resources/federatedidentitycredential?view=graph-rest-beta) (beta-only) ([#134](https://github.com/manicminer/hamilton/pull/134))
