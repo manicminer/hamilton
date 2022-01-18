@@ -3,6 +3,7 @@ package msgraph_test
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/go-uuid"
 
@@ -236,7 +237,11 @@ func testServicePrincipalsClient_ListGroupMemberships(t *testing.T, c *test.Test
 }
 
 func testServicePrincipalsClient_AddPassword(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal) *msgraph.PasswordCredential {
-	pwd := msgraph.PasswordCredential{}
+	expiry := time.Now().Add(24 * 90 * time.Hour)
+	pwd := msgraph.PasswordCredential{
+		DisplayName: utils.StringPtr("test password"),
+		EndDateTime: &expiry,
+	}
 	newPwd, status, err := c.ServicePrincipalsClient.AddPassword(c.Context, *a.ID, pwd)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
