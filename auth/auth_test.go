@@ -25,6 +25,9 @@ var (
 	environment           = os.Getenv("AZURE_ENVIRONMENT")
 	msiEndpoint           = os.Getenv("MSI_ENDPOINT")
 	msiToken              = os.Getenv("MSI_TOKEN")
+
+	gitHubTokenURL = os.Getenv("ACTIONS_ID_TOKEN_REQUEST_URL")
+	gitHubToken    = os.Getenv("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
 )
 
 func TestClientCertificateAuthorizerV1(t *testing.T) {
@@ -193,6 +196,39 @@ func TestAutorestAuthorizerWrapper(t *testing.T) {
 	auth, err := auth.NewAutorestAuthorizerWrapper(autorest.NewBearerAuthorizer(spt))
 	if err != nil {
 		t.Fatalf("NewAutorestAuthorizerWrapper(): %v", err)
+	}
+	if auth == nil {
+		t.Fatal("auth is nil, expected Authorizer")
+	}
+
+	token, err := auth.Token()
+	if err != nil {
+		t.Fatalf("auth.Token(): %v", err)
+	}
+	if token == nil {
+		t.Fatal("token was nil")
+	}
+	if token.AccessToken == "" {
+		t.Fatal("token.AccessToken was empty")
+	}
+}
+
+func TestGitHubOIDCAuthorizer(t *testing.T) {
+	if gitHubTokenURL == "" {
+		t.Skip("gitHubTokenURL was empty")
+	}
+	if gitHubToken == "" {
+		t.Skip("gitHubToken was empty")
+	}
+
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	auth, err := auth.NewGitHubOIDCAuthorizer(context.Background(), env, env.MsGraph, tenantId, []string{}, clientId, gitHubTokenURL, gitHubToken)
+	if err != nil {
+		t.Fatalf("NewGitHubOIDCAuthorizer(): %v", err)
 	}
 	if auth == nil {
 		t.Fatal("auth is nil, expected Authorizer")
