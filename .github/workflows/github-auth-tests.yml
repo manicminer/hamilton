@@ -1,0 +1,50 @@
+---
+name: Tests - auth (github)
+on:
+  pull_request:
+    types: ["opened", "synchronize"]
+    paths:
+      - "auth/**.go"
+      - ".github/workflows/github-auth-tests.yml"
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  azure-cli-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: az-cli login
+        uses: azure/login@v1
+        with:
+            client-id: ${{ secrets.CLIENT_ID }}
+            tenant-id: ${{ secrets.TENANT_ID }}
+            allow-no-subscriptions: true  
+
+      - name: az account show
+        run: az account show
+
+  test-github-auth:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.16.4
+
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Test
+        run: go test -count=1 -race -v ./auth -run '^TestGitHub'
+        env:
+          AZURE_ENVIRONMENT: ${{ secrets.AZURE_ENVIRONMENT }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+
+# vim: set ts=2 sts=2 sw=2 et:
