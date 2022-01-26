@@ -7,6 +7,8 @@
   - `AssignmentReviewSettings` model - add the `IsAccessRecommendationEnabled`, `IsApprovalJustificationRequired` and `AccessReviewTimeoutBehavior` fields
   - `UserSet` model - add the `ManagerLevel` field
   - New model: `AccessPackageMultipleChoiceQuestions`
+- Support for [Role Definitions](https://docs.microsoft.com/en-us/graph/api/resources/unifiedroledefinition?view=graph-rest-1.0) via the unified role management endpoint ([#137](https://github.com/manicminer/hamilton/pull/137))
+- Support for [Role Assignments](https://docs.microsoft.com/en-us/graph/api/resources/unifiedroleassignment?view=graph-rest-1.0) via the unified role management endpoint ([#137](https://github.com/manicminer/hamilton/pull/137))
 
 ⚠️ BREAKING CHANGES:
 
