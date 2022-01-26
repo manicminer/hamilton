@@ -110,6 +110,8 @@ type Test struct {
 	MeClient                                  *msgraph.MeClient
 	NamedLocationsClient                      *msgraph.NamedLocationsClient
 	ReportsClient                             *msgraph.ReportsClient
+	RoleAssignmentsClient                     *msgraph.RoleAssignmentsClient
+	RoleDefinitionsClient                     *msgraph.RoleDefinitionsClient
 	SchemaExtensionsClient                    *msgraph.SchemaExtensionsClient
 	ServicePrincipalsAppRoleAssignmentsClient *msgraph.AppRoleAssignmentsClient
 	ServicePrincipalsClient                   *msgraph.ServicePrincipalsClient
@@ -275,6 +277,16 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ReportsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.ReportsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.RoleAssignmentsClient = msgraph.NewRoleAssignmentsClient(c.Connection.AuthConfig.TenantID)
+	c.RoleAssignmentsClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.RoleAssignmentsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.RoleAssignmentsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.RoleDefinitionsClient = msgraph.NewRoleDefinitionsClient(c.Connection.AuthConfig.TenantID)
+	c.RoleDefinitionsClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.RoleDefinitionsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.RoleDefinitionsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.SchemaExtensionsClient = msgraph.NewSchemaExtensionsClient(c.Connection.AuthConfig.TenantID)
 	c.SchemaExtensionsClient.BaseClient.Authorizer = c.Connection.Authorizer
