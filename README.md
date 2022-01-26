@@ -16,7 +16,7 @@ See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
 - Support for both the v1.0 and beta API endpoints
 - Ability to inject middleware functions for logging etc
 - OData parsing in API responses and support for OData queries such as filters, sorting, searching, expand and select
-- Built-in authentication support using methods including client credentials (both client secret and client certificate), obtaining access tokens via Azure CLI, and managed identity via the Azure Metadata Service
+- Built-in authentication support using methods including client credentials (both client secret and client certificate), obtaining access tokens via Azure CLI, managed identity via the Azure Metadata Service, and federated credentials with a built-in authorizer for GitHub OIDC.
 
 ## Getting Started
 
