@@ -1,4 +1,4 @@
-## 0.40.0 (Unreleased)
+## 0.40.0 (January 26, 2022)
 
 - Add a new authorizer `GitHubOIDCAuthorizer` which supports [OIDC token exchange](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) for authenticating to Azure Active Directory ([#142](https://github.com/manicminer/hamilton/pull/142))
 - Support v1.0 API for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-overview?view=graph-rest-1.0) ([#133](https://github.com/manicminer/hamilton/pull/133))
