@@ -14,25 +14,32 @@ import (
 
 type ContainerRegistryClient struct {
 	authorizer auth.Authorizer
+	httpClient *http.Client
 	serverURL  string
 	tenantID   string
 }
 
 func NewContainerRegistryClient(authorizer auth.Authorizer, serverURL string, tenantID string) *ContainerRegistryClient {
+	httpClient := http.DefaultClient
 	return &ContainerRegistryClient{
 		authorizer,
+		httpClient,
 		serverURL,
 		tenantID,
 	}
 }
 
-func (c ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, error) {
+func (c *ContainerRegistryClient) WithHttpClient(httpClient *http.Client) {
+	c.httpClient = httpClient
+}
+
+func (c *ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, error) {
 	token, err := c.authorizer.Token()
 	if err != nil {
 		return "", err
 	}
 
-	service, err := getService(c.serverURL)
+	service, host, err := getService(c.serverURL)
 	if err != nil {
 		return "", err
 	}
@@ -45,14 +52,14 @@ func (c ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, err
 		data.Set("tenant", c.tenantID)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("https://%s/oauth2/exchange", service), strings.NewReader(data.Encode()))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("https://%s/oauth2/exchange", host), strings.NewReader(data.Encode()))
 	if err != nil {
 		return "", err
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := c.httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -65,7 +72,7 @@ func (c ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, err
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("received non-200 status code: %d", res.StatusCode)
+		return "", fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
 	}
 
 	var resData struct {
@@ -80,7 +87,7 @@ func (c ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, err
 	return resData.RefreshToken, nil
 }
 
-func getService(serverURL string) (string, error) {
+func getService(serverURL string) (string, string, error) {
 	scheme := "https://"
 	if strings.HasPrefix(serverURL, "https://") {
 		scheme = ""
@@ -88,8 +95,8 @@ func getService(serverURL string) (string, error) {
 
 	serviceURL, err := url.Parse(fmt.Sprintf("%s%s", scheme, serverURL))
 	if err != nil {
-		return "", fmt.Errorf("failed to parse server URL - %w", err)
+		return "", "", fmt.Errorf("failed to parse server URL - %w", err)
 	}
 
-	return serviceURL.Hostname(), nil
+	return serviceURL.Hostname(), serviceURL.Host, nil
 }
