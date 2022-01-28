@@ -1,3 +1,8 @@
+## 0.40.1 (January 28, 2022)
+
+- Bug fix: Correct the type for `AllowExternalSenders` field in the `Group` model ([#143](https://github.com/manicminer/hamilton/pull/143))
+- `GroupsClient{}.Update()` - Don't include the ID in the body when updating a group, as this prevents some Unified group fields from being updated ([#143](https://github.com/manicminer/hamilton/pull/143))
+
 ## 0.40.0 (January 26, 2022)
 
 - Add a new authorizer `GitHubOIDCAuthorizer` which supports [OIDC token exchange](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) for authenticating to Azure Active Directory ([#142](https://github.com/manicminer/hamilton/pull/142))
