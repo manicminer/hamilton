@@ -1,11 +1,19 @@
-## 0.40.0 (Unreleased)
+## 0.40.1 (January 28, 2022)
 
+- Bug fix: Correct the type for `AllowExternalSenders` field in the `Group` model ([#143](https://github.com/manicminer/hamilton/pull/143))
+- `GroupsClient{}.Update()` - Don't include the ID in the body when updating a group, as this prevents some Unified group fields from being updated ([#143](https://github.com/manicminer/hamilton/pull/143))
+
+## 0.40.0 (January 26, 2022)
+
+- Add a new authorizer `GitHubOIDCAuthorizer` which supports [OIDC token exchange](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) for authenticating to Azure Active Directory ([#142](https://github.com/manicminer/hamilton/pull/142))
 - Support v1.0 API for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-overview?view=graph-rest-1.0) ([#133](https://github.com/manicminer/hamilton/pull/133))
   - `AccessPackageQuestion` model - add the `Choices` and `IsSingleLineQuestion` fields
   - `AccessPackageCatalog` model - add the `State` field
   - `AssignmentReviewSettings` model - add the `IsAccessRecommendationEnabled`, `IsApprovalJustificationRequired` and `AccessReviewTimeoutBehavior` fields
   - `UserSet` model - add the `ManagerLevel` field
   - New model: `AccessPackageMultipleChoiceQuestions`
+- Support for [Role Definitions](https://docs.microsoft.com/en-us/graph/api/resources/unifiedroledefinition?view=graph-rest-1.0) via the unified role management endpoint ([#137](https://github.com/manicminer/hamilton/pull/137))
+- Support for [Role Assignments](https://docs.microsoft.com/en-us/graph/api/resources/unifiedroleassignment?view=graph-rest-1.0) via the unified role management endpoint ([#137](https://github.com/manicminer/hamilton/pull/137))
 
 ⚠️ BREAKING CHANGES:
 

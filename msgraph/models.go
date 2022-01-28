@@ -847,7 +847,7 @@ type Group struct {
 	Owners           *Owners                `json:"owners@odata.bind,omitempty"`
 	SchemaExtensions *[]SchemaExtensionData `json:"-"`
 
-	AllowExternalSenders          *string                             `json:"allowExternalSenders,omitempty"`
+	AllowExternalSenders          *bool                               `json:"allowExternalSenders,omitempty"`
 	AssignedLabels                *[]GroupAssignedLabel               `json:"assignedLabels,omitempty"`
 	AssignedLicenses              *[]GroupAssignedLicense             `json:"assignLicenses,omitempty"`
 	AutoSubscribeNewMembers       *bool                               `json:"autoSubscribeNewMembers,omitempty"`
@@ -1365,6 +1365,34 @@ type TemporaryAccessPassAuthenticationMethod struct {
 	IsUsableOnce          *bool                  `json:"isUsableOnce,omitempty"`
 	IsUsable              *bool                  `json:"isUsable,omitempty"`
 	MethodUsabilityReason *MethodUsabilityReason `json:"methodUsabilityReason,omitempty"`
+}
+
+type UnifiedRoleAssignment struct {
+	DirectoryObject
+
+	AppScopeId       *string `json:"appScopeId,omitempty"`
+	DirectoryScopeId *string `json:"directoryScopeId,omitempty"`
+	PrincipalId      *string `json:"principalId,omitempty"`
+	RoleDefinitionId *string `json:"roleDefinitionId,omitempty"`
+}
+
+type UnifiedRoleDefinition struct {
+	DirectoryObject
+
+	Description     *string                  `json:"description,omitempty"`
+	DisplayName     *string                  `json:"displayName,omitempty"`
+	IsBuiltIn       *bool                    `json:"isBuiltIn,omitempty"`
+	IsEnabled       *bool                    `json:"isEnabled,omitempty"`
+	ResourceScopes  *[]string                `json:"resourceScopes,omitempty"`
+	RolePermissions *[]UnifiedRolePermission `json:"rolePermissions,omitempty"`
+	TemplateId      *string                  `json:"templateId,omitempty"`
+	Version         *string                  `json:"version,omitempty"`
+}
+
+type UnifiedRolePermission struct {
+	AllowedResourceActions  *[]string `json:"allowedResourceActions,omitempty"`
+	Condition               *string   `json:"condition,omitempty"`
+	ExcludedResourceActions *[]string `json:"excludedResourceActions,omitempty"`
 }
 
 // User describes a User object.
