@@ -12,21 +12,21 @@ import (
 	"github.com/manicminer/hamilton/auth"
 )
 
-type ContainerRegistry struct {
+type ContainerRegistryClient struct {
 	authorizer auth.Authorizer
 	serverURL  string
 	tenantID   string
 }
 
-func New(authorizer auth.Authorizer, serverURL string, tenantID string) *ContainerRegistry {
-	return &ContainerRegistry{
+func NewContainerRegistryClient(authorizer auth.Authorizer, serverURL string, tenantID string) *ContainerRegistryClient {
+	return &ContainerRegistryClient{
 		authorizer,
 		serverURL,
 		tenantID,
 	}
 }
 
-func (c ContainerRegistry) ExchangeToken(ctx context.Context) (string, error) {
+func (c ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, error) {
 	token, err := c.authorizer.Token()
 	if err != nil {
 		return "", err
