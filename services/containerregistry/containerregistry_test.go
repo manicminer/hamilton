@@ -78,6 +78,26 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 	if atClaims.Issuer != "Azure Container Registry" {
 		t.Fatalf("access token claim 'iss' (Issuer) expected to be 'Azure Container Registry', but received: %s", atClaims.Issuer)
 	}
+
+	catalogClient := NewCatalogClient(cr)
+	repositories, err := catalogClient.List(ctx, nil, nil)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if len(repositories) == 0 {
+		t.Fatalf("repositories are empty")
+	}
+
+	t.Logf("Catalog Repositories: %v", repositories)
+
+	imageName := repositories[0]
+	attributes, err := catalogClient.GetAttributes(ctx, imageName)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	t.Logf("Catalog repository (%s) attributes: %#v", imageName, attributes)
 }
 
 type testFakeAuthorizer struct {

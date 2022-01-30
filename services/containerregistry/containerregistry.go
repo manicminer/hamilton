@@ -33,6 +33,10 @@ func (c *ContainerRegistryClient) WithHttpClient(httpClient *http.Client) {
 	c.httpClient = httpClient
 }
 
+func (c *ContainerRegistryClient) getBaseURL() (*url.URL, error) {
+	return parseService(c.serverURL)
+}
+
 func parseService(serverURL string) (*url.URL, error) {
 	scheme := "https://"
 	if strings.HasPrefix(serverURL, "https://") {
