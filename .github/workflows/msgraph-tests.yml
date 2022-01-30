@@ -7,9 +7,13 @@ on:
       - "msgraph/**.go"
       - ".github/workflows/msgraph-tests.yml"
 
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
 jobs:
   test-msgraph:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: true
     steps:
@@ -23,5 +27,10 @@ jobs:
 
       - name: Test
         run: go test -count=1 -race -v ./msgraph
+        env:
+          AZURE_ENVIRONMENT: ${{ secrets.AZURE_ENVIRONMENT }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          TENANT_ID: ${{ secrets.TENANT_ID }}
+          TENANT_DOMAIN: ${{ secrets.TENANT_DOMAIN }}
 
 # vim: set ts=2 sts=2 sw=2 et:
