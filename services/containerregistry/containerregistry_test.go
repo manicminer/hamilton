@@ -98,6 +98,12 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 	}
 
 	t.Logf("Catalog repository (%s) attributes: %#v", imageName, attributes)
+
+	toBoolPtr := func(v bool) *bool { return &v }
+	err = catalogClient.UpdateAttributes(ctx, imageName, RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
 }
 
 type testFakeAuthorizer struct {

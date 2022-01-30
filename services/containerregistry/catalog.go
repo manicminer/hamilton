@@ -1,6 +1,7 @@
 package containerregistry
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -84,6 +85,8 @@ func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) (
 		return nil, err
 	}
 
+	defer res.Body.Close()
+
 	if res.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
 	}
@@ -134,6 +137,8 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 		return RepositoryAttributesResponse{}, err
 	}
 
+	defer res.Body.Close()
+
 	if res.StatusCode != http.StatusOK {
 		return RepositoryAttributesResponse{}, fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
 	}
@@ -152,7 +157,54 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 // imageName - name of the image (including the namespace)
 // attributes - the attributes (that are non-nil) that should be updated
 func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, attributes RepositoryChangeableAttributes) error {
-	return fmt.Errorf("UpdateAttributes not implemented yet")
+	bodyBytes, err := json.Marshal(attributes)
+	if err != nil {
+		return err
+	}
+
+	if string(bodyBytes) == "{}" {
+		return fmt.Errorf("no attributes set")
+	}
+
+	baseURL, err := c.cr.getBaseURL()
+	if err != nil {
+		return err
+	}
+
+	catalogURL, err := url.Parse(fmt.Sprintf("%s/acr/v1/%s", baseURL.String(), imageName))
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, catalogURL.String(), bytes.NewReader(bodyBytes))
+	if err != nil {
+		return err
+	}
+
+	err = c.setAuthorizationHeader(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := c.cr.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	resBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
+	}
+
+	return nil
 }
 
 // Delete the repository identified by name
@@ -232,11 +284,11 @@ func (c *CatalogClient) getAccessToken(ctx context.Context) (string, error) {
 }
 
 type RepositoryChangeableAttributes struct {
-	DeleteEnabled   *bool `json:"deleteEnabled"`
-	WriteEnabled    *bool `json:"writeEnabled"`
-	ReadEnabled     *bool `json:"readEnabled"`
-	ListEnabled     *bool `json:"listEnabled"`
-	TeleportEnabled *bool `json:"teleportEnabled"`
+	DeleteEnabled   *bool `json:"deleteEnabled,omitempty"`
+	WriteEnabled    *bool `json:"writeEnabled,omitempty"`
+	ReadEnabled     *bool `json:"readEnabled,omitempty"`
+	ListEnabled     *bool `json:"listEnabled,omitempty"`
+	TeleportEnabled *bool `json:"teleportEnabled,omitempty"`
 }
 
 type RepositoryChangeableAttributesResponse struct {
