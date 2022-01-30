@@ -12,15 +12,15 @@ import (
 )
 
 // ExchangeRefreshToken exchanges an Azure AD token for an Azure Container Registry refresh token
-func (c *ContainerRegistryClient) ExchangeRefreshToken(ctx context.Context) (string, *RefreshTokenClaims, error) {
+func (c *ContainerRegistryClient) ExchangeRefreshToken(ctx context.Context) (string, RefreshTokenClaims, error) {
 	token, err := c.authorizer.Token()
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	serviceURL, err := parseService(c.serverURL)
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	data := url.Values{}
@@ -33,25 +33,25 @@ func (c *ContainerRegistryClient) ExchangeRefreshToken(ctx context.Context) (str
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("%s://%s/oauth2/exchange", serviceURL.Scheme, serviceURL.Host), strings.NewReader(data.Encode()))
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	resBytes, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return "", nil, fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
+		return "", RefreshTokenClaims{}, fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
 	}
 
 	var resData struct {
@@ -60,12 +60,12 @@ func (c *ContainerRegistryClient) ExchangeRefreshToken(ctx context.Context) (str
 
 	err = json.Unmarshal(resBytes, &resData)
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	rtClaims, err := decodeRefreshTokenWithoutValidation(resData.RefreshToken)
 	if err != nil {
-		return "", nil, err
+		return "", RefreshTokenClaims{}, err
 	}
 
 	return resData.RefreshToken, rtClaims, nil
@@ -95,18 +95,18 @@ type RefreshTokenClaims struct {
 	Roles          []string                      `json:"roles"`
 }
 
-func decodeRefreshTokenWithoutValidation(token string) (*RefreshTokenClaims, error) {
+func decodeRefreshTokenWithoutValidation(token string) (RefreshTokenClaims, error) {
 	parts := strings.SplitN(token, ".", 3)
 	claimsBytes, err := base64.RawURLEncoding.DecodeString(parts[1])
 	if err != nil {
-		return nil, err
+		return RefreshTokenClaims{}, err
 	}
 
 	var rtClaims RefreshTokenClaims
 	err = json.Unmarshal(claimsBytes, &rtClaims)
 	if err != nil {
-		return nil, err
+		return RefreshTokenClaims{}, err
 	}
 
-	return &rtClaims, nil
+	return rtClaims, nil
 }
