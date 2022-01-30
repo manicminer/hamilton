@@ -1,10 +1,7 @@
 package containerregistry
 
 import (
-	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -12,6 +9,7 @@ import (
 	"github.com/manicminer/hamilton/auth"
 )
 
+// ContainerRegistryClient handles communication with Azure Container Registry
 type ContainerRegistryClient struct {
 	authorizer auth.Authorizer
 	httpClient *http.Client
@@ -19,6 +17,7 @@ type ContainerRegistryClient struct {
 	tenantID   string
 }
 
+// NewContainerRegistryClient returns a ContainerRegistryClient
 func NewContainerRegistryClient(authorizer auth.Authorizer, serverURL string, tenantID string) *ContainerRegistryClient {
 	httpClient := http.DefaultClient
 	return &ContainerRegistryClient{
@@ -29,65 +28,12 @@ func NewContainerRegistryClient(authorizer auth.Authorizer, serverURL string, te
 	}
 }
 
+// WithHttpClient replaces what http client is used for communication to Azure Container Registry
 func (c *ContainerRegistryClient) WithHttpClient(httpClient *http.Client) {
 	c.httpClient = httpClient
 }
 
-func (c *ContainerRegistryClient) ExchangeToken(ctx context.Context) (string, error) {
-	token, err := c.authorizer.Token()
-	if err != nil {
-		return "", err
-	}
-
-	service, host, err := getService(c.serverURL)
-	if err != nil {
-		return "", err
-	}
-
-	data := url.Values{}
-	data.Set("grant_type", "access_token")
-	data.Set("service", service)
-	data.Set("access_token", token.AccessToken)
-	if len(c.tenantID) > 0 {
-		data.Set("tenant", c.tenantID)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, fmt.Sprintf("https://%s/oauth2/exchange", host), strings.NewReader(data.Encode()))
-	if err != nil {
-		return "", err
-	}
-
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-	res, err := c.httpClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-
-	resBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		return "", err
-	}
-
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
-	}
-
-	var resData struct {
-		RefreshToken string `json:"refresh_token"`
-	}
-
-	err = json.Unmarshal(resBytes, &resData)
-	if err != nil {
-		return "", err
-	}
-
-	return resData.RefreshToken, nil
-}
-
-func getService(serverURL string) (string, string, error) {
+func parseService(serverURL string) (*url.URL, error) {
 	scheme := "https://"
 	if strings.HasPrefix(serverURL, "https://") {
 		scheme = ""
@@ -95,8 +41,8 @@ func getService(serverURL string) (string, string, error) {
 
 	serviceURL, err := url.Parse(fmt.Sprintf("%s%s", scheme, serverURL))
 	if err != nil {
-		return "", "", fmt.Errorf("failed to parse server URL - %w", err)
+		return nil, fmt.Errorf("failed to parse server URL - %w", err)
 	}
 
-	return serviceURL.Hostname(), serviceURL.Host, nil
+	return serviceURL, nil
 }

@@ -2,16 +2,16 @@ package containerregistry
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/http/httptest"
-	"net/url"
+	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/auth"
+	"github.com/manicminer/hamilton/environments"
 	"golang.org/x/oauth2"
 )
 
@@ -21,45 +21,62 @@ func TestContainerRegistryClient(t *testing.T) {
 	httpServer := httptest.NewTLSServer(h.handler(t))
 	h.serverURL = httpServer.URL
 	h.expectedTenant = ""
-	testContainerRegistryClient(t, fa, httpServer.URL, "", httpServer.Client())
+	testExchangeRefreshTokenSuccess(t, fa, httpServer.URL, "", httpServer.Client())
+	testExchangeAccessTokenSuccess(t, fa, httpServer.URL, "", httpServer.Client())
 
 	h.expectedTenant = "ze-tenant"
-	testContainerRegistryClient(t, fa, httpServer.URL, "ze-tenant", httpServer.Client())
+	testExchangeRefreshTokenSuccess(t, fa, httpServer.URL, "ze-tenant", httpServer.Client())
+	testExchangeAccessTokenSuccess(t, fa, httpServer.URL, "ze-tenant", httpServer.Client())
 
 	h.expectedTenant = "ze-tenant"
 	h.fakeError = fmt.Errorf("ze-fake-error")
-	testContainerRegistryClientFailure(t, fa, httpServer.URL, "ze-tenant", httpServer.Client(), "ze-fake-error")
+	testExchangeRefreshTokenFailure(t, fa, httpServer.URL, "ze-tenant", httpServer.Client(), "ze-fake-error")
+	testExchangeAccessTokenFailure(t, fa, httpServer.URL, "ze-tenant", httpServer.Client(), "ze-fake-error")
 }
 
-func testContainerRegistryClient(t *testing.T, authorizer auth.Authorizer, serverURL string, tenant string, httpClient *http.Client) {
-	t.Helper()
+func TestContainerRegistryClientE2E(t *testing.T) {
+	containerRegistryName := os.Getenv("CONTAINER_REGISTRY_NAME")
+	if containerRegistryName == "" {
+		t.Skip("environment variable CONTAINER_REGISTRY_NAME not set")
+	}
 
-	cr := NewContainerRegistryClient(authorizer, serverURL, tenant)
-	cr.WithHttpClient(httpClient)
-	ctx := context.Background()
-	token, err := cr.ExchangeToken(ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	authorizer := testNewAuthorizer(t, ctx)
+	serverURL := fmt.Sprintf("%s.azurecr.io", containerRegistryName)
+	cr := NewContainerRegistryClient(authorizer, serverURL, "")
+	refreshToken, rtClaims, err := cr.ExchangeRefreshToken(ctx)
 	if err != nil {
-		t.Fatalf("Received unexpected error: %v", err)
+		t.Fatalf("received unexpected error: %v", err)
 	}
 
-	if token != "foobar" {
-		t.Fatalf("Expected token 'foobar', received: %s", token)
-	}
-}
-
-func testContainerRegistryClientFailure(t *testing.T, authorizer auth.Authorizer, serverURL string, tenant string, httpClient *http.Client, errContains string) {
-	t.Helper()
-
-	cr := NewContainerRegistryClient(authorizer, serverURL, tenant)
-	cr.WithHttpClient(httpClient)
-	ctx := context.Background()
-	_, err := cr.ExchangeToken(ctx)
-	if err == nil {
-		t.Fatalf("Expected to receive error but didn't")
+	if refreshToken == "" {
+		t.Fatalf("refreshToken is empty")
 	}
 
-	if !strings.Contains(err.Error(), errContains) {
-		t.Fatalf("Expected to receive error containing %q but received: %v", errContains, err)
+	if rtClaims.Issuer != "Azure Container Registry" {
+		t.Fatalf("refresh token claim 'iss' (Issuer) expected to be 'Azure Container Registry', but received: %s", rtClaims.Issuer)
+	}
+
+	atScopes := AccessTokenScopes{
+		{
+			Type:    "registry",
+			Name:    "catalog",
+			Actions: []string{"*"},
+		},
+	}
+
+	accessToken, atClaims, err := cr.ExchangeAccessToken(ctx, refreshToken, atScopes)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if accessToken == "" {
+		t.Fatalf("accessToken is empty")
+	}
+
+	if atClaims.Issuer != "Azure Container Registry" {
+		t.Fatalf("access token claim 'iss' (Issuer) expected to be 'Azure Container Registry', but received: %s", atClaims.Issuer)
 	}
 }
 
@@ -93,9 +110,6 @@ type testACRHandler struct {
 	serverURL      string
 	expectedTenant string
 	fakeError      error
-	response       struct {
-		RefreshToken string `json:"refresh_token"`
-	}
 }
 
 func testNewACRHandler(t *testing.T) *testACRHandler {
@@ -108,75 +122,83 @@ func (h *testACRHandler) handler(t *testing.T) http.HandlerFunc {
 	t.Helper()
 
 	return func(w http.ResponseWriter, r *http.Request) {
-		accessToken, err := h.validateRequest(t, r)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			w.Write([]byte(err.Error()))
-			return
-		}
-
-		h.response.RefreshToken = fmt.Sprintf("%sbar", accessToken)
-
-		json.NewEncoder(w).Encode(h.response)
+		h.router(t, w, r)
 	}
 }
 
-func (h *testACRHandler) validateRequest(t *testing.T, r *http.Request) (string, error) {
+func (h *testACRHandler) router(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Path
+	switch path {
+	case "/oauth2/exchange":
+		h.refreshTokenHandler(t, w, r)
+	case "/oauth2/token":
+		h.accessTokenHandler(t, w, r)
+	default:
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(fmt.Sprintf("unknown path: %s", path)))
+		return
+	}
+}
+
+func testNewAuthorizer(t *testing.T, ctx context.Context) auth.Authorizer {
 	t.Helper()
 
-	path := r.URL.Path
-	if path != "/oauth2/exchange" {
-		return "", fmt.Errorf("expected path '/oauth2/exchange', received path: %s", path)
+	authCfg := testNewAuthConfig(t)
+	gitHubTokenURL := strings.TrimSpace(os.Getenv("ACTIONS_ID_TOKEN_REQUEST_URL"))
+	gitHubToken := strings.TrimSpace(os.Getenv("ACTIONS_ID_TOKEN_REQUEST_TOKEN"))
+
+	a, err := auth.NewClientCertificateAuthorizer(ctx, authCfg.Environment, authCfg.Environment.ResourceManager, authCfg.Version, authCfg.TenantID, authCfg.AuxiliaryTenantIDs, authCfg.ClientID, authCfg.ClientCertData, authCfg.ClientCertPath, authCfg.ClientCertPassword)
+	if err == nil {
+		return a
 	}
 
-	query := r.URL.Query()
-	if len(query) > 0 {
-		return "", fmt.Errorf("expected empty query, received: %s", query)
+	if authCfg.TenantID != "" && authCfg.ClientID != "" && authCfg.ClientSecret != "" {
+		a, err = auth.NewClientSecretAuthorizer(ctx, authCfg.Environment, authCfg.Environment.ResourceManager, authCfg.Version, authCfg.TenantID, authCfg.AuxiliaryTenantIDs, authCfg.ClientID, authCfg.ClientSecret)
+		if err == nil {
+			return a
+		}
 	}
 
-	contentType := r.Header.Get("Content-Type")
-	if contentType != "application/x-www-form-urlencoded" {
-		return "", fmt.Errorf("expected Content-Type 'application/x-www-form-urlencoded', received: %s", contentType)
+	a, err = auth.NewMsiAuthorizer(ctx, authCfg.Environment.ResourceManager, authCfg.MsiEndpoint, authCfg.ClientID)
+	if err == nil {
+		_, err := a.Token()
+		if err == nil {
+			return a
+		}
 	}
 
-	bodyBytes, err := io.ReadAll(r.Body)
-	if err != nil {
-		return "", fmt.Errorf("received unexpected error reading body: %v", err)
-	}
-	defer r.Body.Close()
-
-	reqData, err := url.ParseQuery(string(bodyBytes))
-	if err != nil {
-		return "", fmt.Errorf("received unexpected error parsing bodyBytes: %v", err)
+	if gitHubToken != "" || gitHubTokenURL != "" {
+		a, err = auth.NewGitHubOIDCAuthorizer(ctx, authCfg.Environment, authCfg.Environment.ResourceManager, authCfg.TenantID, authCfg.AuxiliaryTenantIDs, authCfg.ClientID, gitHubTokenURL, gitHubToken)
+		if err == nil {
+			return a
+		}
 	}
 
-	grantType := reqData.Get("grant_type")
-	if grantType != "access_token" {
-		return "", fmt.Errorf("expected req body grant_type to be 'access_token', received: %s", grantType)
+	a, err = auth.NewAzureCliAuthorizer(ctx, authCfg.Environment.ResourceManager, authCfg.TenantID)
+	if err == nil {
+		return a
 	}
 
-	expectedService, err := url.Parse(h.serverURL)
-	if err != nil {
-		return "", fmt.Errorf("received unexpected error parsing serverURL: %v", err)
-	}
-	service := reqData.Get("service")
-	if service != expectedService.Hostname() {
-		return "", fmt.Errorf("expected req body service to be %q, received: %s", expectedService.Hostname(), service)
+	t.Fatalf("no valid authorizer could be found")
+	return nil
+}
+
+func testNewAuthConfig(t *testing.T) *auth.Config {
+	t.Helper()
+
+	auxTenants := strings.Split(os.Getenv("AZURE_AUXILIARY_TENANT_IDS"), ";")
+	for i := range auxTenants {
+		auxTenants[i] = strings.TrimSpace(auxTenants[i])
 	}
 
-	accessToken := reqData.Get("access_token")
-	if accessToken != "foo" {
-		return "", fmt.Errorf("expected req body access_token to be 'foo', received: %s", accessToken)
+	return &auth.Config{
+		Environment:        environments.Global,
+		TenantID:           strings.TrimSpace(os.Getenv("AZURE_TENANT_ID")),
+		ClientID:           strings.TrimSpace(os.Getenv("AZURE_CLIENT_ID")),
+		ClientSecret:       strings.TrimSpace(os.Getenv("AZURE_CLIENT_SECRET")),
+		ClientCertPath:     os.Getenv("AZURE_CERTIFICATE_PATH"),
+		ClientCertPassword: os.Getenv("AZURE_CERTIFICATE_PASSWORD"),
+		AuxiliaryTenantIDs: auxTenants,
+		Version:            auth.TokenVersion2,
 	}
-
-	tenant := reqData.Get("tenant")
-	if tenant != h.expectedTenant {
-		return "", fmt.Errorf("expected req body tenant to be %q, received: %s", h.expectedTenant, tenant)
-	}
-
-	if h.fakeError != nil {
-		return "", h.fakeError
-	}
-
-	return accessToken, nil
 }
