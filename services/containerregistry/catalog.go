@@ -76,10 +76,6 @@ func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) (
 		return nil, err
 	}
 
-	var resData struct {
-		Repositories []string `json:"repositories"`
-	}
-
 	resBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
@@ -91,6 +87,9 @@ func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) (
 		return nil, fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
 	}
 
+	var resData struct {
+		Repositories []string `json:"repositories"`
+	}
 	err = json.Unmarshal(resBytes, &resData)
 	if err != nil {
 		return nil, err
@@ -130,8 +129,6 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 		return RepositoryAttributesResponse{}, err
 	}
 
-	var resData RepositoryAttributesResponse
-
 	resBytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return RepositoryAttributesResponse{}, err
@@ -143,6 +140,7 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 		return RepositoryAttributesResponse{}, fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
 	}
 
+	var resData RepositoryAttributesResponse
 	err = json.Unmarshal(resBytes, &resData)
 	if err != nil {
 		return RepositoryAttributesResponse{}, err
@@ -152,6 +150,7 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 }
 
 // UpdateAttributes updates the attribute identified by name where reference is the name of the repository
+// Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/update-attributes
 // Parameters:
 // ctx - the context
 // imageName - name of the image (including the namespace)
@@ -208,11 +207,54 @@ func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, 
 }
 
 // Delete the repository identified by name
+// Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/delete
 // Parameters:
 // ctx - the context
 // imageName - name of the image (including the namespace)
 func (c *CatalogClient) Delete(ctx context.Context, imageName string) (RepositoryDeleteResponse, error) {
-	return RepositoryDeleteResponse{}, fmt.Errorf("Delete not implemented yet")
+	baseURL, err := c.cr.getBaseURL()
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	catalogURL, err := url.Parse(fmt.Sprintf("%s/acr/v1/%s", baseURL.String(), imageName))
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, catalogURL.String(), http.NoBody)
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	err = c.setAuthorizationHeader(ctx, req)
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	res, err := c.cr.httpClient.Do(req)
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	resBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusAccepted {
+		return RepositoryDeleteResponse{}, fmt.Errorf("received non-202 status code - %d: %s", res.StatusCode, string(resBytes))
+	}
+
+	var resData RepositoryDeleteResponse
+	err = json.Unmarshal(resBytes, &resData)
+	if err != nil {
+		return RepositoryDeleteResponse{}, err
+	}
+
+	return resData, nil
 }
 
 func (c *CatalogClient) setAuthorizationHeader(ctx context.Context, req *http.Request) error {
