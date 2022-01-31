@@ -34,7 +34,7 @@ func TestContainerRegistryClient(t *testing.T) {
 	testExchangeAccessTokenFailure(t, fa, httpServer.URL, "ze-tenant", httpServer.Client(), "ze-fake-error")
 }
 
-func TestContainerRegistryClientE2E(t *testing.T) {
+func TestContainerRegistryE2E(t *testing.T) {
 	containerRegistryName := os.Getenv("CONTAINER_REGISTRY_NAME")
 	if containerRegistryName == "" {
 		t.Skip("environment variable CONTAINER_REGISTRY_NAME not set")
@@ -42,8 +42,16 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
-	authorizer := testNewAuthorizer(t, ctx)
 	serverURL := fmt.Sprintf("%s.azurecr.io", containerRegistryName)
+
+	cr := testContainerRegistryClientE2E(t, ctx, serverURL)
+	testCatalogClientE2E(t, ctx, cr)
+}
+
+func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL string) *ContainerRegistryClient {
+	t.Helper()
+
+	authorizer := testNewAuthorizer(t, ctx)
 	cr := NewContainerRegistryClient(authorizer, serverURL, "")
 	refreshToken, rtClaims, err := cr.ExchangeRefreshToken(ctx)
 	if err != nil {
@@ -79,6 +87,12 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 		t.Fatalf("access token claim 'iss' (Issuer) expected to be 'Azure Container Registry', but received: %s", atClaims.Issuer)
 	}
 
+	return cr
+}
+
+func testCatalogClientE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
+	t.Helper()
+
 	catalogClient := NewCatalogClient(cr)
 	repositories, err := catalogClient.List(ctx, nil, nil)
 	if err != nil {
@@ -104,15 +118,11 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 		t.Fatalf("expected %q (repositoriesLimit[0]) to be %q (repositories[1])", repositoriesLimit[0], repositories[1])
 	}
 
-	t.Logf("Catalog Repositories: %v", repositories)
-
 	imageName := repositories[0]
-	attributes, err := catalogClient.GetAttributes(ctx, imageName)
+	_, err = catalogClient.GetAttributes(ctx, imageName)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
-
-	t.Logf("Catalog repository (%s) attributes: %#v", imageName, attributes)
 
 	toBoolPtr := func(v bool) *bool { return &v }
 	err = catalogClient.UpdateAttributes(ctx, imageName, RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
