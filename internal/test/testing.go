@@ -31,6 +31,8 @@ var (
 	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
 	clientSecret          = os.Getenv("CLIENT_SECRET")
 	environment           = os.Getenv("AZURE_ENVIRONMENT")
+	idTokenRequestUrl     = os.Getenv("ACTIONS_ID_TOKEN_REQUEST_URL")
+	idTokenRequestToken   = os.Getenv("ACTIONS_ID_TOKEN_REQUEST_TOKEN")
 	retryMax              = envDefault("RETRY_MAX", "14")
 )
 
@@ -57,9 +59,12 @@ func NewConnection(tokenVersion auth.TokenVersion) *Connection {
 			ClientCertPath:         clientCertificatePath,
 			ClientCertPassword:     clientCertPassword,
 			ClientSecret:           clientSecret,
+			IDTokenRequestURL:      idTokenRequestUrl,
+			IDTokenRequestToken:    idTokenRequestToken,
 			EnableClientCertAuth:   true,
 			EnableClientSecretAuth: true,
 			EnableAzureCliToken:    true,
+			EnableGitHubOIDCAuth:   true,
 		},
 		DomainName: tenantDomain,
 	}
