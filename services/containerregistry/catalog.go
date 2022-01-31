@@ -275,7 +275,8 @@ func (c *CatalogClient) getAccessToken(ctx context.Context) (string, error) {
 	c.mu.Unlock()
 
 	atExpiry := time.Unix(atClaims.ExpirationTime, 0)
-	if at != "" && atExpiry.After(time.Now().Add(time.Minute)) {
+	atValid := at != "" && atExpiry.After(time.Now().Add(time.Minute))
+	if atValid {
 		return at, nil
 	}
 
@@ -285,44 +286,43 @@ func (c *CatalogClient) getAccessToken(ctx context.Context) (string, error) {
 	c.mu.Unlock()
 
 	rtExpiry := time.Unix(rtClaims.ExpirationTime, 0)
-	if rt != "" && !rtExpiry.IsZero() && rtExpiry.After(time.Now().Add(time.Minute)) {
-		scopes := AccessTokenScopes{
-			{
-				Type:    "registry",
-				Name:    "catalog",
-				Actions: []string{"*"},
-			},
-			{
-				Type:    "repository",
-				Name:    "*",
-				Actions: []string{"*"},
-			},
-		}
-
-		at, atClaims, err := c.cr.ExchangeAccessToken(ctx, c.refreshToken, scopes)
+	rtValid := rt != "" && !rtExpiry.IsZero() && rtExpiry.After(time.Now().Add(time.Minute))
+	if !rtValid {
+		rt, rtClaims, err := c.cr.ExchangeRefreshToken(ctx)
 		if err != nil {
-			return "", nil
+			return "", err
 		}
 
 		c.mu.Lock()
-		c.accessToken = at
-		c.accessTokenClaims = atClaims
+		c.refreshToken = rt
+		c.refreshTokenClaims = rtClaims
 		c.mu.Unlock()
-
-		return c.getAccessToken(ctx)
 	}
 
-	rt, rtClaims, err := c.cr.ExchangeRefreshToken(ctx)
+	scopes := AccessTokenScopes{
+		{
+			Type:    "registry",
+			Name:    "catalog",
+			Actions: []string{"*"},
+		},
+		{
+			Type:    "repository",
+			Name:    "*",
+			Actions: []string{"*"},
+		},
+	}
+
+	at, atClaims, err := c.cr.ExchangeAccessToken(ctx, c.refreshToken, scopes)
 	if err != nil {
-		return "", err
+		return "", nil
 	}
 
 	c.mu.Lock()
-	c.refreshToken = rt
-	c.refreshTokenClaims = rtClaims
+	c.accessToken = at
+	c.accessTokenClaims = atClaims
 	c.mu.Unlock()
 
-	return c.getAccessToken(ctx)
+	return at, nil
 }
 
 type RepositoryChangeableAttributes struct {
