@@ -1,3 +1,8 @@
+## 0.41.0 (Unreleased)
+
+- Support for selecting GitHub OIDC authentication when using the `auth.NewAuthorizer()` helper function ([#145](https://github.com/manicminer/hamilton/pull/145))
+- Bump supported Go version to 1.17.6 ([#145](https://github.com/manicminer/hamilton/pull/145))
+
 ## 0.40.1 (January 28, 2022)
 
 - Bug fix: Correct the type for `AllowExternalSenders` field in the `Group` model ([#143](https://github.com/manicminer/hamilton/pull/143))
