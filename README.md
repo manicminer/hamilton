@@ -158,6 +158,8 @@ Please raise a pull request [on GitHub][gh-project] to submit contributions. Bug
 Testing requires an Azure AD tenant and real credentials. Note that some tests require an Azure AD Premium P2 license and/or an Office 365 license.
 You can authenticate with any supported method for the client tests, and the auth tests are split by authentication method.
 
+> ℹ️ You can sign up for the [Microsoft 365 Developer Program](https://developer.microsoft.com/en-us/microsoft-365/dev-program) which offers a Microsoft 365 E5 subscription for 25 users, at no cost for development purposes.
+
 Note that each client generally has a single test that exercises all methods. This is to help ensure that test objects
 are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up separately.
 The [test-cleanup](https://github.com/manicminer/hamilton/tree/main/internal/cmd/test-cleanup) command can be used to
