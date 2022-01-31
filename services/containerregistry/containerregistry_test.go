@@ -85,8 +85,23 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 		t.Fatalf("received unexpected error: %v", err)
 	}
 
-	if len(repositories) == 0 {
-		t.Fatalf("repositories are empty")
+	if len(repositories) < 2 {
+		t.Fatalf("expected at least two repositories")
+	}
+
+	toStringPtr := func(v string) *string { return &v }
+	toIntPtr := func(v int) *int { return &v }
+	repositoriesLimit, err := catalogClient.List(ctx, toStringPtr(repositories[0]), toIntPtr(1))
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if len(repositoriesLimit) != 1 {
+		t.Fatalf("expected repositoriesLimit to contain exactly one repository")
+	}
+
+	if repositoriesLimit[0] != repositories[1] {
+		t.Fatalf("expected %q (repositoriesLimit[0]) to be %q (repositories[1])", repositoriesLimit[0], repositories[1])
 	}
 
 	t.Logf("Catalog Repositories: %v", repositories)
@@ -103,6 +118,15 @@ func TestContainerRegistryClientE2E(t *testing.T) {
 	err = catalogClient.UpdateAttributes(ctx, imageName, RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	_, err = catalogClient.Delete(ctx, "image-that-does-not-exist")
+	if err == nil {
+		t.Fatal("expected error when running Delete()")
+	}
+
+	if !strings.Contains(err.Error(), "repository name not known to registry") {
+		t.Fatalf("expected error of Delete() to contain 'repository name not known to registry' but received: %v", err)
 	}
 }
 
