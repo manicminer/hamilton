@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"regexp"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -187,17 +189,47 @@ func (h *testACRHandler) handler(t *testing.T) http.HandlerFunc {
 }
 
 func (h *testACRHandler) router(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	path := r.URL.Path
-	switch path {
-	case "/oauth2/exchange":
+	switch {
+	case testMatchPath(t, path, "/oauth2/exchange"):
 		h.refreshTokenHandler(t, w, r)
-	case "/oauth2/token":
+	case testMatchPath(t, path, "/oauth2/token"):
 		h.accessTokenHandler(t, w, r)
+	case testMatchPath(t, path, "/acr/v1/.*"):
+		h.catalogHandler(t, w, r)
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("unknown path: %s", path)))
 		return
 	}
+}
+
+func testMatchPath(t *testing.T, path, pattern string, vars ...interface{}) bool {
+	t.Helper()
+
+	regex := regexp.MustCompile("^" + pattern + "$")
+	matches := regex.FindStringSubmatch(path)
+	if len(matches) <= 0 {
+		return false
+	}
+
+	for i, match := range matches[1:] {
+		switch p := vars[i].(type) {
+		case *string:
+			*p = match
+		case *int:
+			n, err := strconv.Atoi(match)
+			if err != nil {
+				return false
+			}
+			*p = n
+		default:
+			panic("vars must be *string or *int")
+		}
+	}
+	return true
 }
 
 func testNewAuthorizer(t *testing.T, ctx context.Context) auth.Authorizer {

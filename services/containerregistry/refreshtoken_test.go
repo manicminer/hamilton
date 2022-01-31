@@ -56,6 +56,7 @@ func testExchangeRefreshTokenFailure(t *testing.T, authorizer auth.Authorizer, s
 func (h *testACRHandler) refreshTokenHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
 	err := h.validateExchangeRefreshTokenRequest(t, r)
 	if err != nil {
+
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
@@ -72,6 +73,10 @@ func (h *testACRHandler) refreshTokenHandler(t *testing.T, w http.ResponseWriter
 
 func (h *testACRHandler) validateExchangeRefreshTokenRequest(t *testing.T, r *http.Request) error {
 	t.Helper()
+
+	if r.Method != http.MethodPost {
+		return fmt.Errorf("expected method to be POST, received: %s", r.Method)
+	}
 
 	path := r.URL.Path
 	if path != "/oauth2/exchange" {
