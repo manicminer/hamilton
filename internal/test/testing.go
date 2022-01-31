@@ -101,6 +101,7 @@ type Test struct {
 	ApplicationsClient                        *msgraph.ApplicationsClient
 	AppRoleAssignedToClient                   *msgraph.AppRoleAssignedToClient
 	AuthenticationMethodsClient               *msgraph.AuthenticationMethodsClient
+	ClaimsMappingPolicyClient                 *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient           *msgraph.ConditionalAccessPoliciesClient
 	DelegatedPermissionGrantsClient           *msgraph.DelegatedPermissionGrantsClient
 	DirectoryAuditReportsClient               *msgraph.DirectoryAuditReportsClient
@@ -322,6 +323,10 @@ func NewTest(t *testing.T) (c *Test) {
 	c.UsersClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.UsersClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.UsersClient.BaseClient.RetryableClient.RetryMax = retry
+	c.ClaimsMappingPolicyClient = msgraph.NewClaimsMappingPolicyClient(c.Connection.AuthConfig.TenantID)
+	c.ClaimsMappingPolicyClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.ClaimsMappingPolicyClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ClaimsMappingPolicyClient.BaseClient.RetryableClient.RetryMax = retry
 
 	return
 }

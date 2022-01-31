@@ -540,6 +540,13 @@ type BaseNamedLocation struct {
 	ModifiedDateTime *time.Time  `json:"modifiedDateTime,omitempty"`
 }
 
+type ClaimsMappingPolicy struct {
+	Definition            *[]string `json:"definition,omitempty"`
+	Description           *string   `json:"description,omitempty"`
+	DisplayName           *string   `json:"displayName,omitempty"`
+	IsOrganizationDefault *bool     `json:"isOrganizationDefault,omitempty"`
+}
+
 type CloudAppSecurityControl struct {
 	IsEnabled            *bool                                                `json:"isEnabled,omitempty"`
 	CloudAppSecurityType *ConditionalAccessCloudAppSecuritySessionControlType `json:"cloudAppSecurityType,omitempty"`
