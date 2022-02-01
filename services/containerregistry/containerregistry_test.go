@@ -156,14 +156,26 @@ func testTagE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient, 
 		t.Errorf("expected at least one tag from TagList")
 	}
 
-	t.Logf("Tag list: %#v", tagList)
-
-	tagAttributes, err := cr.TagGetAttributes(ctx, imageName, tagList.Tags[0].Name)
+	reference := tagList.Tags[0].Name
+	_, err = cr.TagGetAttributes(ctx, imageName, reference)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
 
-	t.Logf("Tag attributes: %#v", tagAttributes)
+	toBoolPtr := func(v bool) *bool { return &v }
+	err = cr.TagUpdateAttributes(ctx, imageName, reference, TagChangeableAttributes{ListEnabled: toBoolPtr(true)})
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	err = cr.TagDelete(ctx, imageName, "this-tag-does-not-exist")
+	if err == nil {
+		t.Fatal("expected error when running Delete()")
+	}
+
+	if !strings.Contains(err.Error(), "the specified tag does not exist") {
+		t.Fatalf("expected error of Delete() to contain 'the specified tag does not exist' but received: %v", err)
+	}
 }
 
 type testFakeAuthorizer struct {

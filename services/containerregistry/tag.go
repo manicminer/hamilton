@@ -1,6 +1,7 @@
 package containerregistry
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -12,6 +13,15 @@ import (
 
 // TagList lists tags of a repository
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/get-list
+// Parameters:
+// ctx - the context
+// imageName - name of the image (including the namespace)
+// digest - filter by digest
+// last - parameter for the last item in previous query. Result set will include values lexically after last.
+// maxItems - parameter for max number of item
+// orderBy - orderby query parameter
+//
+// Parameters are pointers and if set to nil they won't be added to the query.
 func (cr *ContainerRegistryClient) TagList(ctx context.Context, imageName string, digest *string, last *string, maxItems *int, orderBy *string) (TagList, error) {
 	baseURL, err := cr.getBaseURL()
 	if err != nil {
@@ -86,6 +96,10 @@ func (cr *ContainerRegistryClient) TagList(ctx context.Context, imageName string
 
 // TagGetAttributes get tag attributes by tag
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/get-attributes
+// Parameters:
+// ctx - the context
+// imageName - name of the image (including the namespace)
+// reference - tag name
 func (cr *ContainerRegistryClient) TagGetAttributes(ctx context.Context, imageName string, reference string) (TagAttributesResponse, error) {
 	baseURL, err := cr.getBaseURL()
 	if err != nil {
@@ -134,13 +148,116 @@ func (cr *ContainerRegistryClient) TagGetAttributes(ctx context.Context, imageNa
 
 // TagUpdateAttributes update tag attributes
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/update-attributes
-func (cr *ContainerRegistryClient) TagUpdateAttributes(ctx context.Context) {}
+// Parameters:
+// ctx - the context
+// imageName - name of the image (including the namespace)
+// reference - tag name
+// attributes - the attributes (that are non-nil) that should be updated
+func (cr *ContainerRegistryClient) TagUpdateAttributes(ctx context.Context, imageName string, reference string, attributes TagChangeableAttributes) error {
+	bodyBytes, err := json.Marshal(attributes)
+	if err != nil {
+		return err
+	}
+
+	if string(bodyBytes) == "{}" {
+		return fmt.Errorf("no attributes set")
+	}
+
+	baseURL, err := cr.getBaseURL()
+	if err != nil {
+		return err
+	}
+
+	tagURL, err := url.Parse(fmt.Sprintf("%s/acr/v1/%s/_tags/%s", baseURL.String(), imageName, reference))
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, tagURL.String(), bytes.NewReader(bodyBytes))
+	if err != nil {
+		return err
+	}
+
+	err = cr.setAuthorizationHeader(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := cr.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	resBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("received non-200 status code - %d: %s", res.StatusCode, string(resBytes))
+	}
+
+	return nil
+}
 
 // TagDelete delete tag
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/delete
-func (cr *ContainerRegistryClient) TagDelete(ctx context.Context, imageName string) {}
+// Parameters:
+// ctx - the context
+// imageName - name of the image (including the namespace)
+// reference - tag name
+func (cr *ContainerRegistryClient) TagDelete(ctx context.Context, imageName string, reference string) error {
+	baseURL, err := cr.getBaseURL()
+	if err != nil {
+		return err
+	}
+
+	tagURL, err := url.Parse(fmt.Sprintf("%s/acr/v1/%s/_tags/%s", baseURL.String(), imageName, reference))
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, tagURL.String(), http.NoBody)
+	if err != nil {
+		return err
+	}
+
+	err = cr.setAuthorizationHeader(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	res, err := cr.httpClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	resBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusAccepted {
+		return fmt.Errorf("received non-202 status code - %d: %s", res.StatusCode, string(resBytes))
+	}
+
+	return nil
+}
 
 type TagChangeableAttributes struct {
+	DeleteEnabled *bool `json:"deleteEnabled,omitempty"`
+	WriteEnabled  *bool `json:"writeEnabled,omitempty"`
+	ReadEnabled   *bool `json:"readEnabled,omitempty"`
+	ListEnabled   *bool `json:"listEnabled,omitempty"`
+}
+
+type TagChangeableAttributesResponse struct {
 	DeleteEnabled bool `json:"deleteEnabled"`
 	WriteEnabled  bool `json:"writeEnabled"`
 	ReadEnabled   bool `json:"readEnabled"`
@@ -148,12 +265,12 @@ type TagChangeableAttributes struct {
 }
 
 type Tag struct {
-	Name                 string                  `json:"name"`
-	Digest               string                  `json:"digest"`
-	CreatedTime          time.Time               `json:"createdTime"`
-	LastUpdateTime       time.Time               `json:"lastUpdateTime"`
-	Signed               bool                    `json:"signed"`
-	ChangeableAttributes TagChangeableAttributes `json:"changeableAttributes"`
+	Name                 string                          `json:"name"`
+	Digest               string                          `json:"digest"`
+	CreatedTime          time.Time                       `json:"createdTime"`
+	LastUpdateTime       time.Time                       `json:"lastUpdateTime"`
+	Signed               bool                            `json:"signed"`
+	ChangeableAttributes TagChangeableAttributesResponse `json:"changeableAttributes"`
 }
 
 type TagList struct {
