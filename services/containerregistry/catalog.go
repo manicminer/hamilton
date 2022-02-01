@@ -14,6 +14,7 @@ import (
 // CatalogList lists repositories
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-list
 // Parameters:
+// ctx - the context
 // last - parameter for the last item in previous query. Result set will include values lexically after last.
 // maxItems - parameter for max number of item
 //
