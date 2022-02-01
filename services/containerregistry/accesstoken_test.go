@@ -75,7 +75,7 @@ func (h *testACRHandler) accessTokenHandler(t *testing.T, w http.ResponseWriter,
 	err := h.validateExchangeAccessTokenRequest(t, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(err.Error())) //nolint
 		return
 	}
 
@@ -85,7 +85,7 @@ func (h *testACRHandler) accessTokenHandler(t *testing.T, w http.ResponseWriter,
 		AccessToken: testFakeAccessToken,
 	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response) //nolint
 }
 
 func (h *testACRHandler) validateExchangeAccessTokenRequest(t *testing.T, r *http.Request) error {

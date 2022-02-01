@@ -201,7 +201,7 @@ func (h *testACRHandler) router(t *testing.T, w http.ResponseWriter, r *http.Req
 		h.catalogHandler(t, w, r)
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("unknown path: %s", path)))
+		w.Write([]byte(fmt.Sprintf("unknown path: %s", path))) //nolint
 		return
 	}
 }

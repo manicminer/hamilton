@@ -58,7 +58,7 @@ func (h *testACRHandler) refreshTokenHandler(t *testing.T, w http.ResponseWriter
 	if err != nil {
 
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(err.Error())) //nolint
 		return
 	}
 
@@ -68,7 +68,7 @@ func (h *testACRHandler) refreshTokenHandler(t *testing.T, w http.ResponseWriter
 		RefreshToken: testFakeRefreshToken,
 	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response) //nolint
 }
 
 func (h *testACRHandler) validateExchangeRefreshTokenRequest(t *testing.T, r *http.Request) error {

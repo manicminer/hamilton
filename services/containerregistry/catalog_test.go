@@ -100,7 +100,7 @@ func (h *testACRHandler) catalogHandler(t *testing.T, w http.ResponseWriter, r *
 		h.catalogDeleteHandler(t, w, r, imageName)
 	default:
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(fmt.Sprintf("unknown method: %s", r.Method)))
+		w.Write([]byte(fmt.Sprintf("unknown method: %s", r.Method))) //nolint
 		return
 	}
 }
@@ -109,7 +109,7 @@ func (h *testACRHandler) catalogListHandler(t *testing.T, w http.ResponseWriter,
 	err := h.validateCatalogListRequest(t, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(err.Error())) //nolint
 		return
 	}
 
@@ -119,7 +119,7 @@ func (h *testACRHandler) catalogListHandler(t *testing.T, w http.ResponseWriter,
 		Repositories: []string{"foo", "bar", "baz"},
 	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response) //nolint
 }
 
 func (h *testACRHandler) validateCatalogListRequest(t *testing.T, r *http.Request) error {
@@ -150,7 +150,7 @@ func (h *testACRHandler) catalogGetAttributesHandler(t *testing.T, w http.Respon
 	err := h.validateCatalogGetAttributesRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(err.Error())) //nolint
 		return
 	}
 
@@ -170,7 +170,7 @@ func (h *testACRHandler) catalogGetAttributesHandler(t *testing.T, w http.Respon
 		},
 	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response) //nolint
 }
 
 func (h *testACRHandler) validateCatalogGetAttributesRequest(t *testing.T, r *http.Request, imageName string) error {
@@ -202,7 +202,7 @@ func (h *testACRHandler) catalogUpdateAttributesHandler(t *testing.T, w http.Res
 	err := h.validateCatalogUpdateAttributesRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(err.Error())) //nolint
 		return
 	}
 }
@@ -231,7 +231,7 @@ func (h *testACRHandler) catalogDeleteHandler(t *testing.T, w http.ResponseWrite
 	err := h.validateCatalogDeleteRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte(err.Error()))
+		w.Write([]byte(err.Error())) //nolint
 		return
 	}
 
@@ -241,7 +241,7 @@ func (h *testACRHandler) catalogDeleteHandler(t *testing.T, w http.ResponseWrite
 		TagsDeleted:      []string{"latest"},
 	}
 
-	json.NewEncoder(w).Encode(response)
+	json.NewEncoder(w).Encode(response) //nolint
 }
 
 func (h *testACRHandler) validateCatalogDeleteRequest(t *testing.T, r *http.Request, imageName string) error {
