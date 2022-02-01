@@ -40,6 +40,10 @@ func testTagList(t *testing.T, ctx context.Context, cr *ContainerRegistryClient)
 	if len(tagList.Tags) != 3 {
 		t.Fatalf("expected three tags")
 	}
+
+	if tagList.ImageName != imageName {
+		t.Fatalf("expected to receive image name %q, but got: %s", imageName, tagList.ImageName)
+	}
 }
 
 func testTagGetAttributes(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
@@ -89,7 +93,7 @@ func (h *testACRHandler) tagHandler(t *testing.T, w http.ResponseWriter, r *http
 		return
 	}
 
-	tagParts := strings.SplitN(r.URL.Path, "/_tags/", 2)
+	tagParts := strings.SplitN(tagPath, "/_tags/", 2)
 	if len(tagParts) != 2 {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(fmt.Sprintf("expected tagParts to be of length 2: %s", tagParts))) //nolint
@@ -121,10 +125,20 @@ func (h *testACRHandler) tagListHandler(t *testing.T, w http.ResponseWriter, r *
 		return
 	}
 
-	response := struct {
-		Repositories []string `json:"repositories"`
-	}{
-		Repositories: []string{"foo", "bar", "baz"},
+	response := TagList{
+		Registry:  "foo.azureacr.io",
+		ImageName: imageName,
+		Tags: []Tag{
+			{
+				Name: "tag1",
+			},
+			{
+				Name: "tag2",
+			},
+			{
+				Name: "tag3",
+			},
+		},
 	}
 
 	json.NewEncoder(w).Encode(response) //nolint
@@ -163,19 +177,11 @@ func (h *testACRHandler) tagGetAttributesHandler(t *testing.T, w http.ResponseWr
 		return
 	}
 
-	response := RepositoryAttributesResponse{
-		Registry:       "foobar.azurecr.io",
-		ImageName:      imageName,
-		CreatedTime:    time.Now().Add(-60 * time.Minute),
-		LastUpdateTime: time.Now().Add(-30 * time.Minute),
-		ManifestCount:  1,
-		TagCount:       1,
-		ChangeableAttributes: RepositoryChangeableAttributesResponse{
-			DeleteEnabled:   true,
-			WriteEnabled:    true,
-			ReadEnabled:     true,
-			ListEnabled:     true,
-			TeleportEnabled: false,
+	response := TagAttributesResponse{
+		Registry:  "foo.azurecr.io",
+		ImageName: imageName,
+		Tag: Tag{
+			Name: reference,
 		},
 	}
 
@@ -190,14 +196,9 @@ func (h *testACRHandler) validateTagGetAttributesRequest(t *testing.T, r *http.R
 	}
 
 	path := r.URL.Path
-	expectedPath := fmt.Sprintf("/acr/v1/%s", imageName)
+	expectedPath := fmt.Sprintf("/acr/v1/%s/_tags/%s", imageName, reference)
 	if path != expectedPath {
 		return fmt.Errorf("expected path %q, received path: %s", expectedPath, path)
-	}
-
-	query := r.URL.Query()
-	if len(query) > 2 {
-		return fmt.Errorf("expected query to contain max of 2 parameters, received: %s", query)
 	}
 
 	if h.fakeError != nil {
@@ -224,7 +225,7 @@ func (h *testACRHandler) validateTagUpdateAttributesRequest(t *testing.T, r *htt
 	}
 
 	path := r.URL.Path
-	expectedPath := fmt.Sprintf("/acr/v1/%s", imageName)
+	expectedPath := fmt.Sprintf("/acr/v1/%s/_tags/%s", imageName, reference)
 	if path != expectedPath {
 		return fmt.Errorf("expected path %q, received path: %s", expectedPath, path)
 	}
@@ -245,12 +246,6 @@ func (h *testACRHandler) tagDeleteHandler(t *testing.T, w http.ResponseWriter, r
 	}
 
 	w.WriteHeader(http.StatusAccepted)
-	response := RepositoryDeleteResponse{
-		ManifestsDeleted: []string{"sha256:e31831d63f77a0a6d74ef5b16df619a50808dac842190d07ae24e8b520d159fa"},
-		TagsDeleted:      []string{"latest"},
-	}
-
-	json.NewEncoder(w).Encode(response) //nolint
 }
 
 func (h *testACRHandler) validateTagDeleteRequest(t *testing.T, r *http.Request, imageName string, reference string) error {
@@ -261,7 +256,7 @@ func (h *testACRHandler) validateTagDeleteRequest(t *testing.T, r *http.Request,
 	}
 
 	path := r.URL.Path
-	expectedPath := fmt.Sprintf("/acr/v1/%s", imageName)
+	expectedPath := fmt.Sprintf("/acr/v1/%s/_tags/%s", imageName, reference)
 	if path != expectedPath {
 		return fmt.Errorf("expected path %q, received path: %s", expectedPath, path)
 	}
