@@ -8,17 +8,11 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"sync"
 	"time"
 )
 
 type CatalogClient struct {
-	mu                 sync.Mutex
-	cr                 *ContainerRegistryClient
-	refreshToken       string
-	refreshTokenClaims RefreshTokenClaims
-	accessToken        string
-	accessTokenClaims  AccessTokenClaims
+	cr *ContainerRegistryClient
 }
 
 func NewCatalogClient(cr *ContainerRegistryClient) *CatalogClient {
@@ -66,7 +60,7 @@ func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) (
 		return nil, err
 	}
 
-	err = c.setAuthorizationHeader(ctx, req)
+	err = c.cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -119,7 +113,7 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 		return RepositoryAttributesResponse{}, err
 	}
 
-	err = c.setAuthorizationHeader(ctx, req)
+	err = c.cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return RepositoryAttributesResponse{}, err
 	}
@@ -180,7 +174,7 @@ func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, 
 		return err
 	}
 
-	err = c.setAuthorizationHeader(ctx, req)
+	err = c.cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -227,7 +221,7 @@ func (c *CatalogClient) Delete(ctx context.Context, imageName string) (Repositor
 		return RepositoryDeleteResponse{}, err
 	}
 
-	err = c.setAuthorizationHeader(ctx, req)
+	err = c.cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return RepositoryDeleteResponse{}, err
 	}
@@ -255,74 +249,6 @@ func (c *CatalogClient) Delete(ctx context.Context, imageName string) (Repositor
 	}
 
 	return resData, nil
-}
-
-func (c *CatalogClient) setAuthorizationHeader(ctx context.Context, req *http.Request) error {
-	at, err := c.getAccessToken(ctx)
-	if err != nil {
-		return err
-	}
-
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", at))
-
-	return nil
-}
-
-func (c *CatalogClient) getAccessToken(ctx context.Context) (string, error) {
-	c.mu.Lock()
-	at := c.accessToken
-	atClaims := c.accessTokenClaims
-	c.mu.Unlock()
-
-	atExpiry := time.Unix(atClaims.ExpirationTime, 0)
-	atValid := at != "" && atExpiry.After(time.Now().Add(time.Minute))
-	if atValid {
-		return at, nil
-	}
-
-	c.mu.Lock()
-	rt := c.refreshToken
-	rtClaims := c.refreshTokenClaims
-	c.mu.Unlock()
-
-	rtExpiry := time.Unix(rtClaims.ExpirationTime, 0)
-	rtValid := rt != "" && !rtExpiry.IsZero() && rtExpiry.After(time.Now().Add(time.Minute))
-	if !rtValid {
-		rt, rtClaims, err := c.cr.ExchangeRefreshToken(ctx)
-		if err != nil {
-			return "", err
-		}
-
-		c.mu.Lock()
-		c.refreshToken = rt
-		c.refreshTokenClaims = rtClaims
-		c.mu.Unlock()
-	}
-
-	scopes := AccessTokenScopes{
-		{
-			Type:    "registry",
-			Name:    "catalog",
-			Actions: []string{"*"},
-		},
-		{
-			Type:    "repository",
-			Name:    "*",
-			Actions: []string{"*"},
-		},
-	}
-
-	at, atClaims, err := c.cr.ExchangeAccessToken(ctx, c.refreshToken, scopes)
-	if err != nil {
-		return "", nil
-	}
-
-	c.mu.Lock()
-	c.accessToken = at
-	c.accessTokenClaims = atClaims
-	c.mu.Unlock()
-
-	return at, nil
 }
 
 type RepositoryChangeableAttributes struct {
