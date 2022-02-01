@@ -47,7 +47,7 @@ func TestContainerRegistryE2E(t *testing.T) {
 	serverURL := fmt.Sprintf("%s.azurecr.io", containerRegistryName)
 
 	cr := testContainerRegistryClientE2E(t, ctx, serverURL)
-	testCatalogClientE2E(t, ctx, cr)
+	testCatalogE2E(t, ctx, cr)
 }
 
 func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL string) *ContainerRegistryClient {
@@ -92,11 +92,10 @@ func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL
 	return cr
 }
 
-func testCatalogClientE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
+func testCatalogE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
 	t.Helper()
 
-	catalogClient := NewCatalogClient(cr)
-	repositories, err := catalogClient.List(ctx, nil, nil)
+	repositories, err := cr.CatalogList(ctx, nil, nil)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
@@ -107,7 +106,7 @@ func testCatalogClientE2E(t *testing.T, ctx context.Context, cr *ContainerRegist
 
 	toStringPtr := func(v string) *string { return &v }
 	toIntPtr := func(v int) *int { return &v }
-	repositoriesLimit, err := catalogClient.List(ctx, toStringPtr(repositories[0]), toIntPtr(1))
+	repositoriesLimit, err := cr.CatalogList(ctx, toStringPtr(repositories[0]), toIntPtr(1))
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
@@ -121,18 +120,18 @@ func testCatalogClientE2E(t *testing.T, ctx context.Context, cr *ContainerRegist
 	}
 
 	imageName := repositories[0]
-	_, err = catalogClient.GetAttributes(ctx, imageName)
+	_, err = cr.CatalogGetAttributes(ctx, imageName)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
 
 	toBoolPtr := func(v bool) *bool { return &v }
-	err = catalogClient.UpdateAttributes(ctx, imageName, RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
+	err = cr.CatalogUpdateAttributes(ctx, imageName, RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
 
-	_, err = catalogClient.Delete(ctx, "image-that-does-not-exist")
+	_, err = cr.CatalogDelete(ctx, "image-that-does-not-exist")
 	if err == nil {
 		t.Fatal("expected error when running Delete()")
 	}

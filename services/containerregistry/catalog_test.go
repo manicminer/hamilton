@@ -11,28 +11,27 @@ import (
 	"time"
 )
 
-func TestCatalogClient(t *testing.T) {
+func TestCatalog(t *testing.T) {
 	fa := testNewFakeAuthorizer(t)
 	h := testNewACRHandler(t)
 	httpServer := httptest.NewTLSServer(h.handler(t))
 	h.serverURL = httpServer.URL
 	cr := NewContainerRegistryClient(fa, httpServer.URL, "")
 	cr.WithHttpClient(httpServer.Client())
-	catalogClient := NewCatalogClient(cr)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	testCatalogClientList(t, ctx, catalogClient)
-	testCatalogClientUpdateAttributes(t, ctx, catalogClient)
-	testCatalogClientGetAttributes(t, ctx, catalogClient)
-	testCatalogClientDelete(t, ctx, catalogClient)
+	testCatalogList(t, ctx, cr)
+	testCatalogUpdateAttributes(t, ctx, cr)
+	testCatalogGetAttributes(t, ctx, cr)
+	testCatalogDelete(t, ctx, cr)
 }
 
-func testCatalogClientList(t *testing.T, ctx context.Context, catalogClient *CatalogClient) {
+func testCatalogList(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
 	t.Helper()
 
-	repositories, err := catalogClient.List(ctx, nil, nil)
+	repositories, err := cr.CatalogList(ctx, nil, nil)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
@@ -42,11 +41,11 @@ func testCatalogClientList(t *testing.T, ctx context.Context, catalogClient *Cat
 	}
 }
 
-func testCatalogClientGetAttributes(t *testing.T, ctx context.Context, catalogClient *CatalogClient) {
+func testCatalogGetAttributes(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
 	t.Helper()
 
 	imageName := "foobar"
-	res, err := catalogClient.GetAttributes(ctx, imageName)
+	res, err := cr.CatalogGetAttributes(ctx, imageName)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
@@ -56,20 +55,20 @@ func testCatalogClientGetAttributes(t *testing.T, ctx context.Context, catalogCl
 	}
 }
 
-func testCatalogClientUpdateAttributes(t *testing.T, ctx context.Context, catalogClient *CatalogClient) {
+func testCatalogUpdateAttributes(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
 	t.Helper()
 
 	toBoolPtr := func(v bool) *bool { return &v }
-	err := catalogClient.UpdateAttributes(ctx, "foobar", RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
+	err := cr.CatalogUpdateAttributes(ctx, "foobar", RepositoryChangeableAttributes{ListEnabled: toBoolPtr(true)})
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
 }
 
-func testCatalogClientDelete(t *testing.T, ctx context.Context, catalogClient *CatalogClient) {
+func testCatalogDelete(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
 	t.Helper()
 
-	res, err := catalogClient.Delete(ctx, "foobar")
+	res, err := cr.CatalogDelete(ctx, "foobar")
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}

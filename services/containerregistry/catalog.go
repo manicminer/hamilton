@@ -11,25 +11,15 @@ import (
 	"time"
 )
 
-type CatalogClient struct {
-	cr *ContainerRegistryClient
-}
-
-func NewCatalogClient(cr *ContainerRegistryClient) *CatalogClient {
-	return &CatalogClient{
-		cr: cr,
-	}
-}
-
-// List repositories
+// CatalogList lists repositories
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-list
 // Parameters:
 // last - parameter for the last item in previous query. Result set will include values lexically after last.
 // maxItems - parameter for max number of item
 //
 // Parameters are pointers and if set to nil they won't be added to the query.
-func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) ([]string, error) {
-	baseURL, err := c.cr.getBaseURL()
+func (cr *ContainerRegistryClient) CatalogList(ctx context.Context, last *string, maxItems *int) ([]string, error) {
+	baseURL, err := cr.getBaseURL()
 	if err != nil {
 		return nil, err
 	}
@@ -60,12 +50,12 @@ func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) (
 		return nil, err
 	}
 
-	err = c.cr.setAuthorizationHeader(ctx, req)
+	err = cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	res, err := c.cr.httpClient.Do(req)
+	res, err := cr.httpClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -92,13 +82,13 @@ func (c *CatalogClient) List(ctx context.Context, last *string, maxItems *int) (
 	return resData.Repositories, nil
 }
 
-// GetAttributes returns repository attributes for a specific image
+// CatalogGetAttributes returns repository attributes for a specific image
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-attributes
 // Parameters:
 // ctx - the context
 // imageName - name of the image (including the namespace)
-func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (RepositoryAttributesResponse, error) {
-	baseURL, err := c.cr.getBaseURL()
+func (cr *ContainerRegistryClient) CatalogGetAttributes(ctx context.Context, imageName string) (RepositoryAttributesResponse, error) {
+	baseURL, err := cr.getBaseURL()
 	if err != nil {
 		return RepositoryAttributesResponse{}, err
 	}
@@ -113,12 +103,12 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 		return RepositoryAttributesResponse{}, err
 	}
 
-	err = c.cr.setAuthorizationHeader(ctx, req)
+	err = cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return RepositoryAttributesResponse{}, err
 	}
 
-	res, err := c.cr.httpClient.Do(req)
+	res, err := cr.httpClient.Do(req)
 	if err != nil {
 		return RepositoryAttributesResponse{}, err
 	}
@@ -143,13 +133,13 @@ func (c *CatalogClient) GetAttributes(ctx context.Context, imageName string) (Re
 	return resData, nil
 }
 
-// UpdateAttributes updates the attribute identified by name where reference is the name of the repository
+// CatalogUpdateAttributes updates the attribute identified by name where reference is the name of the repository
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/update-attributes
 // Parameters:
 // ctx - the context
 // imageName - name of the image (including the namespace)
 // attributes - the attributes (that are non-nil) that should be updated
-func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, attributes RepositoryChangeableAttributes) error {
+func (cr *ContainerRegistryClient) CatalogUpdateAttributes(ctx context.Context, imageName string, attributes RepositoryChangeableAttributes) error {
 	bodyBytes, err := json.Marshal(attributes)
 	if err != nil {
 		return err
@@ -159,7 +149,7 @@ func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, 
 		return fmt.Errorf("no attributes set")
 	}
 
-	baseURL, err := c.cr.getBaseURL()
+	baseURL, err := cr.getBaseURL()
 	if err != nil {
 		return err
 	}
@@ -174,14 +164,14 @@ func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, 
 		return err
 	}
 
-	err = c.cr.setAuthorizationHeader(ctx, req)
+	err = cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
 
-	res, err := c.cr.httpClient.Do(req)
+	res, err := cr.httpClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -200,13 +190,13 @@ func (c *CatalogClient) UpdateAttributes(ctx context.Context, imageName string, 
 	return nil
 }
 
-// Delete the repository identified by name
+// CatalogDelete the repository identified by name
 // Reference: https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/delete
 // Parameters:
 // ctx - the context
 // imageName - name of the image (including the namespace)
-func (c *CatalogClient) Delete(ctx context.Context, imageName string) (RepositoryDeleteResponse, error) {
-	baseURL, err := c.cr.getBaseURL()
+func (cr *ContainerRegistryClient) CatalogDelete(ctx context.Context, imageName string) (RepositoryDeleteResponse, error) {
+	baseURL, err := cr.getBaseURL()
 	if err != nil {
 		return RepositoryDeleteResponse{}, err
 	}
@@ -221,12 +211,12 @@ func (c *CatalogClient) Delete(ctx context.Context, imageName string) (Repositor
 		return RepositoryDeleteResponse{}, err
 	}
 
-	err = c.cr.setAuthorizationHeader(ctx, req)
+	err = cr.setAuthorizationHeader(ctx, req)
 	if err != nil {
 		return RepositoryDeleteResponse{}, err
 	}
 
-	res, err := c.cr.httpClient.Do(req)
+	res, err := cr.httpClient.Do(req)
 	if err != nil {
 		return RepositoryDeleteResponse{}, err
 	}
