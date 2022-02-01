@@ -291,6 +291,10 @@ func (h *testACRHandler) router(t *testing.T, w http.ResponseWriter, r *http.Req
 		h.accessTokenHandler(t, w, r)
 	case testMatchPath(t, path, "/acr/v1/.*/_tags.*"):
 		h.tagHandler(t, w, r)
+	case testMatchPath(t, path, "/acr/v1/.*/_manifests.*", "/v2/.*/manifests/.*"):
+		h.manifestHandler(t, w, r)
+	case testMatchPath(t, path, "/v2/.*/manifests/.*"):
+		h.manifestHandler(t, w, r)
 	case testMatchPath(t, path, "/acr/v1/.*"):
 		h.catalogHandler(t, w, r)
 	default:
