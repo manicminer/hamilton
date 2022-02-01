@@ -10,52 +10,66 @@ The following APIs are implemented.
 
 ### Access Token
 
-- [Get](https://docs.microsoft.com/en-us/rest/api/containerregistry/access-tokens/get): `ExchangeAccessToken()`
+| Name                                                                                 | Method                  |
+| ------------------------------------------------------------------------------------ | ----------------------- |
+| [Get](https://docs.microsoft.com/en-us/rest/api/containerregistry/access-tokens/get) | `ExchangeAccessToken()` |
 
 ### Refresh Token
 
-- [Get From Exchange](https://docs.microsoft.com/en-us/rest/api/containerregistry/refresh-tokens/get-from-exchange) `ExchangeRefreshToken()`
+| Name                                                                                                              | Method                   |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------ |
+| [Get From Exchange](https://docs.microsoft.com/en-us/rest/api/containerregistry/refresh-tokens/get-from-exchange) | `ExchangeRefreshToken()` |
 
 ### Repository (Catalog)
 
-- [Get List](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-list): `CatalogList()`
-- [Get Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-attributes): `CatalogGetAttributes()`
-- [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/update-attributes): `CatalogUpdateAttributes()`
-- [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/delete): `CatalogDelete()`
+| Name                                                                                                          | Method                      |
+| ------------------------------------------------------------------------------------------------------------- | --------------------------- |
+| [Get List](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-list)                   | `CatalogList()`             |
+| [Get Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/get-attributes)       | `CatalogGetAttributes()`    |
+| [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/update-attributes) | `CatalogUpdateAttributes()` |
+| [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/repository/delete)                       | `CatalogDelete()`           |
 
 ### Tag
 
-- [Get List](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/get-list): `TagList()`
-- [Get Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/get-attributes): `TagGetAttributes()`
-- [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/update-attributes): `TagUpdateAttributes()`
-- [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/delete): `TagDelete()`
+| Name                                                                                                   | Method                  |
+| ------------------------------------------------------------------------------------------------------ | ----------------------- |
+| [Get List](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/get-list)                   | `TagList()`             |
+| [Get Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/get-attributes)       | `TagGetAttributes()`    |
+| [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/update-attributes) | `TagUpdateAttributes()` |
+| [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/tag/delete)                       | `TagDelete()`           |
 
 ### Manifest
 
-- [Get List](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/get-list): `ManifestList()`
-- [Get](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/get): `ManifestGet()`
-- [Get Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/get-attributes): `ManifestGetAttributes()`
-- [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/update-attributes): `ManifestUpdateAttributes()`
-- [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/delete): `ManifestDelete()`
+| Name                                                                                                         | Method                       |
+| ------------------------------------------------------------------------------------------------------------ | ---------------------------- |
+| [Get List](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/get-list)                   | `ManifestList()`             |
+| [Get](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/get)                             | `ManifestGet()`              |
+| [Get Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/get-attributes)       | `ManifestGetAttributes()`    |
+| [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/update-attributes) | `ManifestUpdateAttributes()` |
+| [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/delete)                       | `ManifestDelete()`           |
 
-## Not implemented (yet)
+## Not implemented APIs (yet)
 
 The following APIs haven't been implemented yet.
 
 ### Manifest
 
-- [Create](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/create)
+| Name                                                                                   |
+| -------------------------------------------------------------------------------------- |
+| [Create](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/create) |
 
 ### Blob
 
-- [Cancel Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/cancel-upload)
-- [Check](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/check)
-- [Check Chunk](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/check-chunk)
-- [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/delete)
-- [End Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/end-upload)
-- [Get](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/get)
-- [Get Chunk](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/get-chunk)
-- [Get Status](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/get-status)
-- [Mount](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/mount)
-- [Start Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/start-upload)
-- [Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/upload)
+| Name                                                                                            |
+| ----------------------------------------------------------------------------------------------- |
+| [Cancel Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/cancel-upload) |
+| [Check](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/check)                 |
+| [Check Chunk](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/check-chunk)     |
+| [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/delete)               |
+| [End Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/end-upload)       |
+| [Get](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/get)                     |
+| [Get Chunk](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/get-chunk)         |
+| [Get Status](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/get-status)       |
+| [Mount](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/mount)                 |
+| [Start Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/start-upload)   |
+| [Upload](https://docs.microsoft.com/en-us/rest/api/containerregistry/blob/upload)               |
