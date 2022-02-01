@@ -42,12 +42,13 @@ func TestContainerRegistryE2E(t *testing.T) {
 		t.Skip("environment variable CONTAINER_REGISTRY_NAME not set")
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	serverURL := fmt.Sprintf("%s.azurecr.io", containerRegistryName)
 
 	cr := testContainerRegistryClientE2E(t, ctx, serverURL)
-	testCatalogE2E(t, ctx, cr)
+	imageName := testCatalogE2E(t, ctx, cr)
+	testTagE2E(t, ctx, cr, imageName)
 }
 
 func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL string) *ContainerRegistryClient {
@@ -92,7 +93,7 @@ func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL
 	return cr
 }
 
-func testCatalogE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
+func testCatalogE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) string {
 	t.Helper()
 
 	repositories, err := cr.CatalogList(ctx, nil, nil)
@@ -139,6 +140,30 @@ func testCatalogE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClie
 	if !strings.Contains(err.Error(), "repository name not known to registry") {
 		t.Fatalf("expected error of Delete() to contain 'repository name not known to registry' but received: %v", err)
 	}
+
+	return repositories[0]
+}
+
+func testTagE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient, imageName string) {
+	t.Helper()
+
+	tagList, err := cr.TagList(ctx, imageName, nil, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if len(tagList.Tags) == 0 {
+		t.Errorf("expected at least one tag from TagList")
+	}
+
+	t.Logf("Tag list: %#v", tagList)
+
+	tagAttributes, err := cr.TagGetAttributes(ctx, imageName, tagList.Tags[0].Name)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	t.Logf("Tag attributes: %#v", tagAttributes)
 }
 
 type testFakeAuthorizer struct {
