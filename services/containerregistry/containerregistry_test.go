@@ -49,6 +49,7 @@ func TestContainerRegistryE2E(t *testing.T) {
 	cr := testContainerRegistryClientE2E(t, ctx, serverURL)
 	imageName := testCatalogE2E(t, ctx, cr)
 	testTagE2E(t, ctx, cr, imageName)
+	testManifestE2E(t, ctx, cr, imageName)
 }
 
 func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL string) *ContainerRegistryClient {
@@ -121,9 +122,13 @@ func testCatalogE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClie
 	}
 
 	imageName := repositories[0]
-	_, err = cr.CatalogGetAttributes(ctx, imageName)
+	attributes, err := cr.CatalogGetAttributes(ctx, imageName)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if attributes.ImageName != imageName {
+		t.Errorf("expected attributes.ImageName to be %q but received: %s", imageName, attributes.ImageName)
 	}
 
 	toBoolPtr := func(v bool) *bool { return &v }
@@ -157,9 +162,13 @@ func testTagE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient, 
 	}
 
 	reference := tagList.Tags[0].Name
-	_, err = cr.TagGetAttributes(ctx, imageName, reference)
+	attributes, err := cr.TagGetAttributes(ctx, imageName, reference)
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if attributes.ImageName != imageName {
+		t.Errorf("expected attributes.ImageName to be %q but received: %s", imageName, attributes.ImageName)
 	}
 
 	toBoolPtr := func(v bool) *bool { return &v }
@@ -175,6 +184,53 @@ func testTagE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient, 
 
 	if !strings.Contains(err.Error(), "the specified tag does not exist") {
 		t.Fatalf("expected error of Delete() to contain 'the specified tag does not exist' but received: %v", err)
+	}
+}
+
+func testManifestE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient, imageName string) {
+	t.Helper()
+
+	manifestList, err := cr.ManifestList(ctx, imageName, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if len(manifestList.Manifests) == 0 {
+		t.Errorf("expected at least one tag from ManifestList")
+	}
+
+	digest := manifestList.Manifests[0].Digest
+	manifest, err := cr.ManifestGet(ctx, imageName, digest)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if len(manifest.Layers) == 0 {
+		t.Errorf("expected at least one layer from manifest")
+	}
+
+	attributes, err := cr.ManifestGetAttributes(ctx, imageName, digest)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if attributes.ImageName != imageName {
+		t.Errorf("expected attributes.ImageName to be %q but received: %s", imageName, attributes.ImageName)
+	}
+
+	toBoolPtr := func(v bool) *bool { return &v }
+	err = cr.ManifestUpdateAttributes(ctx, imageName, digest, ManifestChangeableAttributes{ListEnabled: toBoolPtr(true)})
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	err = cr.ManifestDelete(ctx, imageName, "sha256:0000000000000000000000000000000000000000000000000000000000000000")
+	if err == nil {
+		t.Fatal("expected error when running Delete()")
+	}
+
+	if !strings.Contains(err.Error(), "manifest sha256:0000000000000000000000000000000000000000000000000000000000000000 is not found") {
+		t.Fatalf("expected error of Delete() to contain 'manifest sha256:0000000000000000000000000000000000000000000000000000000000000000 is not found' but received: %v", err)
 	}
 }
 
