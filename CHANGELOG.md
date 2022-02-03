@@ -1,3 +1,10 @@
+## 0.41.1 (February 3, 2022)
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `UnifiedRoleDefinition.Description` has changed from a `*string` to a `*StringNullWhenEmpty` ([#148](https://github.com/manicminer/hamilton/pull/148))
+- Bug fix: `UnifiedRolePermission.Condition` has changed from a `*string` to a `*StringNullWhenEmpty` ([#148](https://github.com/manicminer/hamilton/pull/148))
+
 ## 0.41.0 (February 3, 2022)
 
 - Support for selecting GitHub OIDC authentication when using the `auth.NewAuthorizer()` helper function ([#145](https://github.com/manicminer/hamilton/pull/145))
