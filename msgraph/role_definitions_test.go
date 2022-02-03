@@ -14,7 +14,7 @@ func TestRoleDefinitionsClient(t *testing.T) {
 	defer c.CancelFunc()
 
 	roleDefinition := testRoleDefinitionsClient_Create(t, c, msgraph.UnifiedRoleDefinition{
-		Description: utils.StringPtr("my test role definition"),
+		Description: msgraph.NullableString("my test role definition"),
 		DisplayName: utils.StringPtr("Test Pontificator"),
 		IsEnabled:   utils.BoolPtr(true),
 		RolePermissions: &[]msgraph.UnifiedRolePermission{
@@ -30,7 +30,7 @@ func TestRoleDefinitionsClient(t *testing.T) {
 		Version: utils.StringPtr("1.5"),
 	})
 
-	roleDefinition.Description = utils.StringPtr("for the tests")
+	roleDefinition.Description = msgraph.NullableString("for the tests")
 	testRoleDefinitionsClient_Update(t, c, *roleDefinition)
 	testRoleDefinitionsClient_Get(t, c, *roleDefinition.ID)
 
