@@ -48,6 +48,12 @@ The following APIs are implemented.
 | [Update Attributes](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/update-attributes) | `ManifestUpdateAttributes()` |
 | [Delete](https://docs.microsoft.com/en-us/rest/api/containerregistry/manifests/delete)                       | `ManifestDelete()`           |
 
+### V2 Support
+
+| Name                                                                                  | Method      |
+| ------------------------------------------------------------------------------------- | ----------- |
+| [Check](https://docs.microsoft.com/en-us/rest/api/containerregistry/v2-support/check) | `V2Check()` |
+
 ## Not implemented APIs (yet)
 
 The following APIs haven't been implemented yet.

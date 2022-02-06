@@ -49,6 +49,7 @@ func TestContainerRegistryE2E(t *testing.T) {
 	cr := testContainerRegistryClientE2E(t, ctx, serverURL)
 	imageName := testCatalogE2E(t, ctx, cr)
 	testTagE2E(t, ctx, cr, imageName)
+	testV2E2E(t, ctx, cr)
 	testManifestE2E(t, ctx, cr, imageName)
 }
 
@@ -234,6 +235,19 @@ func testManifestE2E(t *testing.T, ctx context.Context, cr *ContainerRegistryCli
 	}
 }
 
+func testV2E2E(t *testing.T, ctx context.Context, cr *ContainerRegistryClient) {
+	t.Helper()
+
+	v2Supported, err := cr.V2Check(ctx)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if !v2Supported {
+		t.Fatalf("expected v2 to be supported")
+	}
+}
+
 type testFakeAuthorizer struct {
 	t *testing.T
 }
@@ -289,6 +303,8 @@ func (h *testACRHandler) router(t *testing.T, w http.ResponseWriter, r *http.Req
 		h.refreshTokenHandler(t, w, r)
 	case testMatchPath(t, path, "/oauth2/token"):
 		h.accessTokenHandler(t, w, r)
+	case testMatchPath(t, path, "^/v2/$"):
+		h.v2Handler(t, w, r)
 	case testMatchPath(t, path, "/acr/v1/.*/_tags.*"):
 		h.tagHandler(t, w, r)
 	case testMatchPath(t, path, "/acr/v1/.*/_manifests.*", "/v2/.*/manifests/.*"):
