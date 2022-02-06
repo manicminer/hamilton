@@ -97,6 +97,8 @@ func testManifestDelete(t *testing.T, ctx context.Context, cr *ContainerRegistry
 }
 
 func (h *testACRHandler) manifestHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	apiVersion := 1
 	if strings.HasPrefix(r.URL.Path, "/v2/") {
 		apiVersion = 2
@@ -115,6 +117,8 @@ func (h *testACRHandler) manifestHandler(t *testing.T, w http.ResponseWriter, r 
 }
 
 func (h *testACRHandler) manifestV1Handler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	parts := strings.SplitN(r.URL.Path, "/", 4)
 	manifestPath := parts[3]
 	if strings.HasSuffix(manifestPath, "/_manifests") {
@@ -146,6 +150,8 @@ func (h *testACRHandler) manifestV1Handler(t *testing.T, w http.ResponseWriter, 
 }
 
 func (h *testACRHandler) manifestV2Handler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	// /v2/%s/manifests/%s
 	manifestPath := strings.TrimPrefix(r.URL.Path, "/v2/")
 	manifestParts := strings.SplitN(manifestPath, "/manifests/", 2)
@@ -171,6 +177,8 @@ func (h *testACRHandler) manifestV2Handler(t *testing.T, w http.ResponseWriter, 
 }
 
 func (h *testACRHandler) manifestListHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string) {
+	t.Helper()
+
 	err := h.validateManifestListRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -218,6 +226,8 @@ func (h *testACRHandler) validateManifestListRequest(t *testing.T, r *http.Reque
 }
 
 func (h *testACRHandler) manifestGetHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateManifestGetRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -286,6 +296,8 @@ func (h *testACRHandler) validateManifestGetRequest(t *testing.T, r *http.Reques
 }
 
 func (h *testACRHandler) manifestGetAttributesHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateManifestGetAttributesRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -325,6 +337,8 @@ func (h *testACRHandler) validateManifestGetAttributesRequest(t *testing.T, r *h
 }
 
 func (h *testACRHandler) manifestUpdateAttributesHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateManifestUpdateAttributesRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -354,6 +368,8 @@ func (h *testACRHandler) validateManifestUpdateAttributesRequest(t *testing.T, r
 }
 
 func (h *testACRHandler) manifestDeleteHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateManifestDeleteRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

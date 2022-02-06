@@ -81,6 +81,8 @@ func testExchangeRefreshTokenFailure(t *testing.T, authorizer auth.Authorizer, s
 }
 
 func (h *testACRHandler) refreshTokenHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	err := h.validateExchangeRefreshTokenRequest(t, r)
 	if err != nil {
 

@@ -83,6 +83,8 @@ func testCatalogDelete(t *testing.T, ctx context.Context, cr *ContainerRegistryC
 }
 
 func (h *testACRHandler) catalogHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	parts := strings.SplitN(r.URL.Path, "/", 4)
 	imageName := parts[3]
 	if imageName == "_catalog" {
@@ -105,6 +107,8 @@ func (h *testACRHandler) catalogHandler(t *testing.T, w http.ResponseWriter, r *
 }
 
 func (h *testACRHandler) catalogListHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	err := h.validateCatalogListRequest(t, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -146,6 +150,8 @@ func (h *testACRHandler) validateCatalogListRequest(t *testing.T, r *http.Reques
 }
 
 func (h *testACRHandler) catalogGetAttributesHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string) {
+	t.Helper()
+
 	err := h.validateCatalogGetAttributesRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -198,6 +204,8 @@ func (h *testACRHandler) validateCatalogGetAttributesRequest(t *testing.T, r *ht
 }
 
 func (h *testACRHandler) catalogUpdateAttributesHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string) {
+	t.Helper()
+
 	err := h.validateCatalogUpdateAttributesRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -227,6 +235,8 @@ func (h *testACRHandler) validateCatalogUpdateAttributesRequest(t *testing.T, r 
 }
 
 func (h *testACRHandler) catalogDeleteHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string) {
+	t.Helper()
+
 	err := h.validateCatalogDeleteRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

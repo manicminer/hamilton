@@ -99,6 +99,8 @@ func testExchangeAccessTokenFailure(t *testing.T, authorizer auth.Authorizer, se
 }
 
 func (h *testACRHandler) accessTokenHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	err := h.validateExchangeAccessTokenRequest(t, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

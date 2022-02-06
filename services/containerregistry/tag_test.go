@@ -85,6 +85,8 @@ func testTagDelete(t *testing.T, ctx context.Context, cr *ContainerRegistryClien
 }
 
 func (h *testACRHandler) tagHandler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	parts := strings.SplitN(r.URL.Path, "/", 4)
 	tagPath := parts[3]
 	if strings.HasSuffix(tagPath, "/_tags") {
@@ -118,6 +120,8 @@ func (h *testACRHandler) tagHandler(t *testing.T, w http.ResponseWriter, r *http
 }
 
 func (h *testACRHandler) tagListHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string) {
+	t.Helper()
+
 	err := h.validateTagListRequest(t, r, imageName)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -170,6 +174,8 @@ func (h *testACRHandler) validateTagListRequest(t *testing.T, r *http.Request, i
 }
 
 func (h *testACRHandler) tagGetAttributesHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateTagGetAttributesRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -209,6 +215,8 @@ func (h *testACRHandler) validateTagGetAttributesRequest(t *testing.T, r *http.R
 }
 
 func (h *testACRHandler) tagUpdateAttributesHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateTagUpdateAttributesRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -238,6 +246,8 @@ func (h *testACRHandler) validateTagUpdateAttributesRequest(t *testing.T, r *htt
 }
 
 func (h *testACRHandler) tagDeleteHandler(t *testing.T, w http.ResponseWriter, r *http.Request, imageName string, reference string) {
+	t.Helper()
+
 	err := h.validateTagDeleteRequest(t, r, imageName, reference)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

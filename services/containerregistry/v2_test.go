@@ -37,6 +37,8 @@ func testV2Check(t *testing.T, ctx context.Context, cr *ContainerRegistryClient)
 }
 
 func (h *testACRHandler) v2Handler(t *testing.T, w http.ResponseWriter, r *http.Request) {
+	t.Helper()
+
 	err := h.validateV2CheckRequest(t, r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
