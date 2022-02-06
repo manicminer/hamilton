@@ -32,4 +32,17 @@ func testNewAuthorizer(t *testing.T, cr *ContainerRegistryClient) {
 	if !token.Valid() {
 		t.Fatalf("expected token to be valid")
 	}
+
+	token2, err := authorizer.Token()
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	if token.AccessToken != token2.AccessToken {
+		t.Fatalf("expected token2 to have the same access token as token")
+	}
+
+	if token.RefreshToken != token2.RefreshToken {
+		t.Fatalf("expected token2 to have the same access token as token")
+	}
 }
