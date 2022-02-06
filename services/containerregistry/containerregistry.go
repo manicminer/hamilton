@@ -12,67 +12,9 @@ import (
 	"github.com/manicminer/hamilton/auth"
 )
 
-// ContainerRegistryClient handles communication with Azure Container Registry
-type ContainerRegistryClient struct {
-	mu                 sync.Mutex
-	authorizer         auth.Authorizer
-	httpClient         *http.Client
-	serverURL          string
-	tenantID           string
-	refreshToken       string
-	refreshTokenClaims RefreshTokenClaims
-	accessToken        string
-	accessTokenClaims  AccessTokenClaims
-}
-
-// NewContainerRegistryClient returns a ContainerRegistryClient
-func NewContainerRegistryClient(authorizer auth.Authorizer, serverURL string, tenantID string) *ContainerRegistryClient {
-	httpClient := http.DefaultClient
-	return &ContainerRegistryClient{
-		authorizer: authorizer,
-		httpClient: httpClient,
-		serverURL:  serverURL,
-		tenantID:   tenantID,
-	}
-}
-
-// WithHttpClient replaces what http client is used for communication to Azure Container Registry
-func (cr *ContainerRegistryClient) WithHttpClient(httpClient *http.Client) {
-	cr.httpClient = httpClient
-}
-
-func (cr *ContainerRegistryClient) getAccessToken(ctx context.Context) (string, error) {
-	cr.mu.Lock()
-	at := cr.accessToken
-	atClaims := cr.accessTokenClaims
-	cr.mu.Unlock()
-
-	atExpiry := time.Unix(atClaims.ExpirationTime, 0)
-	atValid := at != "" && atExpiry.After(time.Now().Add(time.Minute))
-	if atValid {
-		return at, nil
-	}
-
-	cr.mu.Lock()
-	rt := cr.refreshToken
-	rtClaims := cr.refreshTokenClaims
-	cr.mu.Unlock()
-
-	rtExpiry := time.Unix(rtClaims.ExpirationTime, 0)
-	rtValid := rt != "" && !rtExpiry.IsZero() && rtExpiry.After(time.Now().Add(time.Minute))
-	if !rtValid {
-		rt, rtClaims, err := cr.ExchangeRefreshToken(ctx)
-		if err != nil {
-			return "", err
-		}
-
-		cr.mu.Lock()
-		cr.refreshToken = rt
-		cr.refreshTokenClaims = rtClaims
-		cr.mu.Unlock()
-	}
-
-	scopes := AccessTokenScopes{
+var (
+	defaultExpiryDelta       = 10 * time.Second
+	defaultAccessTokenScopes = AccessTokenScopes{
 		{
 			Type:    "registry",
 			Name:    "catalog",
@@ -84,8 +26,80 @@ func (cr *ContainerRegistryClient) getAccessToken(ctx context.Context) (string, 
 			Actions: []string{"*"},
 		},
 	}
+)
 
-	at, atClaims, err := cr.ExchangeAccessToken(ctx, cr.refreshToken, scopes)
+// ContainerRegistryClient handles communication with Azure Container Registry
+type ContainerRegistryClient struct {
+	mu                 sync.Mutex
+	authorizer         auth.Authorizer
+	httpClient         *http.Client
+	serverURL          string
+	tenantID           string
+	refreshToken       string
+	refreshTokenClaims RefreshTokenClaims
+	accessToken        string
+	accessTokenClaims  AccessTokenClaims
+	accessTokenScopes  AccessTokenScopes
+	expiryDelta        time.Duration
+}
+
+// NewContainerRegistryClient returns a ContainerRegistryClient
+func NewContainerRegistryClient(authorizer auth.Authorizer, serverURL string, tenantID string) *ContainerRegistryClient {
+
+	return &ContainerRegistryClient{
+		authorizer:        authorizer,
+		httpClient:        http.DefaultClient,
+		serverURL:         serverURL,
+		tenantID:          tenantID,
+		accessTokenScopes: defaultAccessTokenScopes,
+		expiryDelta:       defaultExpiryDelta,
+	}
+}
+
+// WithHttpClient replaces what http client is used for communication to Azure Container Registry
+func (cr *ContainerRegistryClient) WithHttpClient(httpClient *http.Client) {
+	cr.httpClient = httpClient
+}
+
+// WithAccessTokenScopes replaces the default access token scopes with the ones provided.
+// This is used with the ContainerRegistryClient when communicating with the different APIs.
+func (cr *ContainerRegistryClient) WithAccessTokenScopes(accessTokenScopes AccessTokenScopes) {
+	cr.accessTokenScopes = accessTokenScopes
+}
+
+// WithAccessTokenScopes replaces the default access token scopes with the ones provided.
+func (cr *ContainerRegistryClient) WithExpiryDelta(expiryDelta time.Duration) {
+	cr.expiryDelta = expiryDelta
+}
+
+func (cr *ContainerRegistryClient) getAccessToken(ctx context.Context) (string, error) {
+	cr.mu.Lock()
+	at := cr.accessToken
+	atClaims := cr.accessTokenClaims
+	cr.mu.Unlock()
+
+	if isTokenValid(at, time.Now(), atClaims.ExpirationTime, cr.expiryDelta) {
+		return at, nil
+	}
+
+	cr.mu.Lock()
+	rt := cr.refreshToken
+	rtClaims := cr.refreshTokenClaims
+	cr.mu.Unlock()
+
+	if !isTokenValid(rt, time.Now(), rtClaims.ExpirationTime, cr.expiryDelta) {
+		rt, rtClaims, err := cr.ExchangeRefreshToken(ctx)
+		if err != nil {
+			return "", err
+		}
+
+		cr.mu.Lock()
+		cr.refreshToken = rt
+		cr.refreshTokenClaims = rtClaims
+		cr.mu.Unlock()
+	}
+
+	at, atClaims, err := cr.ExchangeAccessToken(ctx, cr.refreshToken, cr.accessTokenScopes)
 	if err != nil {
 		return "", nil
 	}
@@ -125,4 +139,13 @@ func parseService(serverURL string) (*url.URL, error) {
 	}
 
 	return serviceURL, nil
+}
+
+func isTokenValid(token string, currentTime time.Time, expirationTime int64, expiryDelta time.Duration) bool {
+	if token == "" {
+		return false
+	}
+
+	expiry := time.Unix(expirationTime, 0)
+	return expiry.Round(0).After(currentTime.Add(expiryDelta))
 }

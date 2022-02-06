@@ -408,3 +408,52 @@ func testNewAuthConfig(t *testing.T) *auth.Config {
 		Version:            auth.TokenVersion2,
 	}
 }
+
+func TestIsTokenValid(t *testing.T) {
+	timeNow := time.Now()
+	cases := []struct {
+		testDescription string
+		token           string
+		currentTime     time.Time
+		expirationTime  int64
+		expiryDelta     time.Duration
+		expectedResult  bool
+	}{
+		{
+			testDescription: "false when empty token",
+			token:           "",
+			expectedResult:  false,
+		},
+		{
+			testDescription: "false when expiry and current time is the same, no expiry delta",
+			token:           "foobar",
+			currentTime:     timeNow,
+			expirationTime:  timeNow.Unix(),
+			expectedResult:  false,
+		},
+		{
+			testDescription: "false when expiry is 10 seconds ahead of current time, expiry delta is 10 seconds",
+			token:           "foobar",
+			currentTime:     timeNow,
+			expirationTime:  timeNow.Add(10 * time.Second).Unix(),
+			expiryDelta:     10 * time.Second,
+			expectedResult:  false,
+		},
+		{
+			testDescription: "true when expiry is 10 seconds ahead of current time, expiry delta is 9 seconds",
+			token:           "foobar",
+			currentTime:     timeNow,
+			expirationTime:  timeNow.Add(10 * time.Second).Unix(),
+			expiryDelta:     9 * time.Second,
+			expectedResult:  true,
+		},
+	}
+
+	for i, c := range cases {
+		t.Logf("Test #%d: %s", i, c.testDescription)
+		result := isTokenValid(c.token, c.currentTime, c.expirationTime, c.expiryDelta)
+		if result != c.expectedResult {
+			t.Fatalf("expected %t but received %t", c.expectedResult, result)
+		}
+	}
+}
