@@ -2,6 +2,7 @@ package containerregistry
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -9,13 +10,39 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/manicminer/hamilton/auth"
 )
 
-const (
-	testFakeRefreshToken = "foo.eyJqdGkiOiIwMDAwMDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDAiLCJzdWIiOiJ6ZSNmb29AYmFyLmNvbSIsIm5iZiI6MTY0MzQ4OTgxNiwiZXhwIjoxNjQzNTAxNTE2LCJpYXQiOjE2NDM0ODk4MTYsImlzcyI6IkF6dXJlIENvbnRhaW5lciBSZWdpc3RyeSIsImF1ZCI6ImZvb2Jhci5henVyZWNyLmlvIiwidmVyc2lvbiI6IjEuMCIsInJpZCI6IjAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIiwiZ3JhbnRfdHlwZSI6InJlZnJlc2hfdG9rZW4iLCJhcHBpZCI6IjAwMDAwMDAwLTAwMDAtMDAwMC0wMDAwLTAwMDAwMDAwMDAwMCIsInBlcm1pc3Npb25zIjp7IkFjdGlvbnMiOlsicmVhZCIsIndyaXRlIiwiZGVsZXRlIl0sIk5vdEFjdGlvbnMiOltdfSwicm9sZXMiOltdfQ.bar"
-)
+func testNewFakeRefreshToken(t *testing.T) string {
+	t.Helper()
+
+	claims := RefreshTokenClaims{
+		JwtID:          "00000000-0000-0000-0000-000000000000",
+		Subject:        "ze#foo@bar.com",
+		NotBefore:      time.Now().Unix(),
+		ExpirationTime: time.Now().Add(time.Hour).Unix(),
+		IssuedAt:       time.Now().Unix(),
+		Issuer:         "Azure Container Registry",
+		Audience:       "foobar.azurecr.io",
+		Version:        "1.0",
+		Rid:            "00000000000000000000000000000000",
+		GrantType:      "refresh_token",
+		ApplicationID:  "00000000-0000-0000-0000-000000000000",
+		Permissions:    RefreshTokenClaimsPermissions{},
+		Roles:          []string{},
+	}
+
+	claimsBytes, err := json.Marshal(claims)
+	if err != nil {
+		t.Fatalf("received unexpected error: %v", err)
+	}
+
+	b64Claims := base64.RawURLEncoding.EncodeToString(claimsBytes)
+
+	return fmt.Sprintf("foo.%s.bar", b64Claims)
+}
 
 func testExchangeRefreshTokenSuccess(t *testing.T, authorizer auth.Authorizer, serverURL string, tenant string, httpClient *http.Client) {
 	t.Helper()
@@ -28,8 +55,8 @@ func testExchangeRefreshTokenSuccess(t *testing.T, authorizer auth.Authorizer, s
 		t.Fatalf("Received unexpected error: %v", err)
 	}
 
-	if token != testFakeRefreshToken {
-		t.Fatalf("Expected token %q, received: %s", testFakeRefreshToken, token)
+	if token == "" {
+		t.Fatalf("received empty token")
 	}
 
 	if rtClaims.JwtID != "00000000-0000-0000-0000-000000000000" {
@@ -65,7 +92,7 @@ func (h *testACRHandler) refreshTokenHandler(t *testing.T, w http.ResponseWriter
 	response := struct {
 		RefreshToken string `json:"refresh_token"`
 	}{
-		RefreshToken: testFakeRefreshToken,
+		RefreshToken: testNewFakeRefreshToken(t),
 	}
 
 	json.NewEncoder(w).Encode(response) //nolint
@@ -136,7 +163,7 @@ func (h *testACRHandler) validateExchangeRefreshTokenRequest(t *testing.T, r *ht
 }
 
 func TestDecodeRefreshTokenWithoutValidation(t *testing.T) {
-	rtClaims, err := decodeRefreshTokenWithoutValidation(testFakeRefreshToken)
+	rtClaims, err := decodeRefreshTokenWithoutValidation(testNewFakeRefreshToken(t))
 	if err != nil {
 		t.Fatalf("received unexpected error: %v", err)
 	}
