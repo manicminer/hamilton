@@ -47,6 +47,7 @@ func TestContainerRegistryE2E(t *testing.T) {
 	serverURL := fmt.Sprintf("%s.azurecr.io", containerRegistryName)
 
 	cr := testContainerRegistryClientE2E(t, ctx, serverURL)
+	testNewAuthorizer(t, cr)
 	imageName := testCatalogE2E(t, ctx, cr)
 	testTagE2E(t, ctx, cr, imageName)
 	testV2E2E(t, ctx, cr)
@@ -56,7 +57,7 @@ func TestContainerRegistryE2E(t *testing.T) {
 func testContainerRegistryClientE2E(t *testing.T, ctx context.Context, serverURL string) *ContainerRegistryClient {
 	t.Helper()
 
-	authorizer := testNewAuthorizer(t, ctx)
+	authorizer := testNewE2EAuthorizer(t, ctx)
 	cr := NewContainerRegistryClient(authorizer, serverURL, "")
 	refreshToken, rtClaims, err := cr.ExchangeRefreshToken(ctx)
 	if err != nil {
@@ -346,7 +347,7 @@ func testMatchPath(t *testing.T, path, pattern string, vars ...interface{}) bool
 	return true
 }
 
-func testNewAuthorizer(t *testing.T, ctx context.Context) auth.Authorizer {
+func testNewE2EAuthorizer(t *testing.T, ctx context.Context) auth.Authorizer {
 	t.Helper()
 
 	authCfg := testNewAuthConfig(t)
