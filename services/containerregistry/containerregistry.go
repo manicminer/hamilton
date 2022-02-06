@@ -101,7 +101,7 @@ func (cr *ContainerRegistryClient) getAccessToken(ctx context.Context) (string, 
 
 	at, atClaims, err := cr.ExchangeAccessToken(ctx, cr.refreshToken, cr.accessTokenScopes)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 
 	cr.mu.Lock()
