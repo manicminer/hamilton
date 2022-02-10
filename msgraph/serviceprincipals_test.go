@@ -45,6 +45,10 @@ func TestServicePrincipalsClient(t *testing.T) {
 	testServicePrincipalsClient_Update(t, c, *sp)
 	pwd := testServicePrincipalsClient_AddPassword(t, c, sp)
 	testServicePrincipalsClient_RemovePassword(t, c, sp, pwd)
+
+	tsc := testServicePrincipalsClient_AddTokenSigningCertificate(t, c, sp)
+	testServicePrincipalsClient_SetPreferredTokenSigningKeyThumbprint(t, c, sp, *tsc.Thumbprint)
+
 	testServicePrincipalsClient_List(t, c, odata.Query{})
 
 	newGroupParent := msgraph.Group{
@@ -253,6 +257,38 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c *test.Test, a *msgr
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): nil or empty secretText returned by API")
 	}
 	return newPwd
+}
+
+func testServicePrincipalsClient_AddTokenSigningCertificate(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal) *msgraph.KeyCredential {
+	expiry := time.Now().Add(24 * 90 * time.Hour)
+	tsc := msgraph.KeyCredential{
+		DisplayName: utils.StringPtr("test cert"),
+		EndDateTime: &expiry,
+	}
+	newKey, status, err := c.ServicePrincipalsClient.AddTokenSigningCertificate(c.Context, *a.ID, tsc)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): invalid status: %d", status)
+	}
+
+	if newKey.Thumbprint == nil || len(*newKey.Thumbprint) == 0 {
+		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): nil or empty thumbprint returned by API")
+	}
+
+	return newKey
+}
+
+func testServicePrincipalsClient_SetPreferredTokenSigningKeyThumbprint(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal, thumbprint string) {
+
+	status, err := c.ServicePrincipalsClient.SetPreferredTokenSigningKeyThumbprint(c.Context, *a.ID, thumbprint)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): invalid status: %d", status)
+	}
 }
 
 func testServicePrincipalsClient_RemovePassword(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal, p *msgraph.PasswordCredential) {
