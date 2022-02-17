@@ -214,6 +214,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AuthenticationMethodsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.AuthenticationMethodsClient.BaseClient.RetryableClient.RetryMax = retry
 
+	c.ClaimsMappingPolicyClient = msgraph.NewClaimsMappingPolicyClient(c.Connection.AuthConfig.TenantID)
+	c.ClaimsMappingPolicyClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.ClaimsMappingPolicyClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ClaimsMappingPolicyClient.BaseClient.RetryableClient.RetryMax = retry
+
 	c.ConditionalAccessPoliciesClient = msgraph.NewConditionalAccessPoliciesClient(c.Connection.AuthConfig.TenantID)
 	c.ConditionalAccessPoliciesClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ConditionalAccessPoliciesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
@@ -323,10 +328,6 @@ func NewTest(t *testing.T) (c *Test) {
 	c.UsersClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.UsersClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.UsersClient.BaseClient.RetryableClient.RetryMax = retry
-	c.ClaimsMappingPolicyClient = msgraph.NewClaimsMappingPolicyClient(c.Connection.AuthConfig.TenantID)
-	c.ClaimsMappingPolicyClient.BaseClient.Authorizer = c.Connection.Authorizer
-	c.ClaimsMappingPolicyClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
-	c.ClaimsMappingPolicyClient.BaseClient.RetryableClient.RetryMax = retry
 
 	return
 }

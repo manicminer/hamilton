@@ -368,8 +368,7 @@ func (c *ServicePrincipalsClient) AssignClaimsMappingPolicy(ctx context.Context,
 			return false
 		}
 
-		path := odata.Id(fmt.Sprintf("https://graph.microsoft.com/v1.0/policies/claimsMappingPolicies/%s", *policy.ID))
-		body, err := json.Marshal(ClaimsMappingPolicy{ODataId: &path})
+		body, err := json.Marshal(DirectoryObject{ODataId: policy.ODataId})
 		if err != nil {
 			return status, fmt.Errorf("json.Marshal(): %v", err)
 		}

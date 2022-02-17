@@ -17,7 +17,7 @@ type ClaimsMappingPolicyClient struct {
 // NewClaimsMappingPolicyClient returns a new ClaimsMappingPolicyClient
 func NewClaimsMappingPolicyClient(tenantId string) *ClaimsMappingPolicyClient {
 	return &ClaimsMappingPolicyClient{
-		BaseClient: NewClient(VersionBeta, tenantId),
+		BaseClient: NewClient(Version10, tenantId),
 	}
 }
 
@@ -32,6 +32,7 @@ func (c *ClaimsMappingPolicyClient) Create(ctx context.Context, policy ClaimsMap
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
+		OData:            odata.Query{Metadata: odata.MetadataFull},
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
 			Entity:      "/policies/claimsMappingPolicies",
@@ -58,6 +59,8 @@ func (c *ClaimsMappingPolicyClient) Create(ctx context.Context, policy ClaimsMap
 
 // List returns a list of ClaimsMappingPolicy, optionally queried using OData.
 func (c *ClaimsMappingPolicyClient) List(ctx context.Context, query odata.Query) (*[]ClaimsMappingPolicy, int, error) {
+	query.Metadata = odata.MetadataFull
+
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
 		OData:            query,
@@ -89,6 +92,8 @@ func (c *ClaimsMappingPolicyClient) List(ctx context.Context, query odata.Query)
 
 // Get retrieves a ClaimsMappingPolicy.
 func (c *ClaimsMappingPolicyClient) Get(ctx context.Context, id string, query odata.Query) (*ClaimsMappingPolicy, int, error) {
+	query.Metadata = odata.MetadataFull
+
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		OData:                  query,
