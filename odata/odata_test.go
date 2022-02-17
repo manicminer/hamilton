@@ -40,6 +40,10 @@ func TestODataId(t *testing.T) {
 			expected: []byte(`"https://graph.microsoft.com/v1.0/users/11111111-1111-1111-1111-111111111111"`),
 			input:    odata.Id(`users('11111111-1111-1111-1111-111111111111')`),
 		},
+		{
+			expected: []byte(`"https://graph.microsoft.com/v1.0/policies/claimsMappingPolicies/11111111-1111-1111-1111-111111111111"`),
+			input:    odata.Id(`policies/claimsMappingPolicies('11111111-1111-1111-1111-111111111111')`),
+		},
 	}
 
 	for n, c := range testCases {
