@@ -23,9 +23,9 @@ func envDefault(envVarName, defaultValue string) string {
 }
 
 var (
-	tenantId              = os.Getenv("TENANT_ID")
-	tenantDomain          = os.Getenv("TENANT_DOMAIN")
-	clientId              = os.Getenv("CLIENT_ID")
+	tenantId              = envDefault("TENANT_ID", "6df54acb-f3cd-4734-85e3-7511ade57a02")
+	tenantDomain          = envDefault("TENANT_DOMAIN", "hamiltontesting2.onmicrosoft.com")
+	clientId              = envDefault("CLIENT_ID", "c072182f-ead2-4e94-aa7f-a5975558c945")
 	clientCertificate     = os.Getenv("CLIENT_CERTIFICATE")
 	clientCertificatePath = os.Getenv("CLIENT_CERTIFICATE_PATH")
 	clientCertPassword    = os.Getenv("CLIENT_CERTIFICATE_PASSWORD")
