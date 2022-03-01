@@ -1,3 +1,7 @@
+## 0.42.0 (Unreleased)
+
+- Broaden the regular expression used for fixing up bad oData IDs when marshaling an `odata.Id` ([#152](https://github.com/manicminer/hamilton/pull/152))
+
 ## 0.41.1 (February 3, 2022)
 
 ⚠️ BREAKING CHANGES:
