@@ -7,18 +7,18 @@ on:
       - "auth/**.go"
       - ".github/workflows/auth-tests.yml"
 
-env:
-  AZURE_ENVIRONMENT: ${{ secrets.AZURE_ENVIRONMENT }}
-  CLIENT_ID: ${{ secrets.AUTH_CLIENT_ID }}
-  CLIENT_CERTIFICATE: ${{ secrets.AUTH_CLIENT_CERTIFICATE }}
-  CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.AUTH_CLIENT_CERTIFICATE_PASSWORD }}
-  CLIENT_SECRET: ${{ secrets.AUTH_CLIENT_SECRET }}
-  MSI_TOKEN: ${{ secrets.AUTH_MSI_TOKEN }}
-  TENANT_ID: ${{ secrets.TENANT_ID }}
+#env:
+#  AZURE_ENVIRONMENT: ${{ secrets.AZURE_ENVIRONMENT }}
+#  CLIENT_ID: ${{ secrets.AUTH_CLIENT_ID }}
+#  CLIENT_CERTIFICATE: ${{ secrets.AUTH_CLIENT_CERTIFICATE }}
+#  CLIENT_CERTIFICATE_PASSWORD: ${{ secrets.AUTH_CLIENT_CERTIFICATE_PASSWORD }}
+#  CLIENT_SECRET: ${{ secrets.AUTH_CLIENT_SECRET }}
+#  MSI_TOKEN: ${{ secrets.AUTH_MSI_TOKEN }}
+#  TENANT_ID: ${{ secrets.TENANT_ID }}
 
 jobs:
   test-auth:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     strategy:
       fail-fast: true
     steps:
