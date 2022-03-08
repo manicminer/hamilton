@@ -101,6 +101,7 @@ type Test struct {
 	ApplicationsClient                        *msgraph.ApplicationsClient
 	AppRoleAssignedToClient                   *msgraph.AppRoleAssignedToClient
 	AuthenticationMethodsClient               *msgraph.AuthenticationMethodsClient
+	ClaimsMappingPolicyClient                 *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient           *msgraph.ConditionalAccessPoliciesClient
 	DelegatedPermissionGrantsClient           *msgraph.DelegatedPermissionGrantsClient
 	DirectoryAuditReportsClient               *msgraph.DirectoryAuditReportsClient
@@ -212,6 +213,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AuthenticationMethodsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.AuthenticationMethodsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.AuthenticationMethodsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.ClaimsMappingPolicyClient = msgraph.NewClaimsMappingPolicyClient(c.Connection.AuthConfig.TenantID)
+	c.ClaimsMappingPolicyClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.ClaimsMappingPolicyClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.ClaimsMappingPolicyClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ConditionalAccessPoliciesClient = msgraph.NewConditionalAccessPoliciesClient(c.Connection.AuthConfig.TenantID)
 	c.ConditionalAccessPoliciesClient.BaseClient.Authorizer = c.Connection.Authorizer

@@ -47,6 +47,24 @@ func TestServicePrincipalsClient(t *testing.T) {
 	testServicePrincipalsClient_RemovePassword(t, c, sp, pwd)
 	testServicePrincipalsClient_List(t, c, odata.Query{})
 
+	claimsMappingPolicy := testClaimsMappingPolicyClient_Create(t, c, msgraph.ClaimsMappingPolicy{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-claims-mapping-policy-%s", c.RandomString)),
+		Definition: utils.ArrayStringPtr(
+			[]string{
+				"{\"ClaimsMappingPolicy\":{\"Version\":1,\"IncludeBasicClaimSet\":\"true\",\"ClaimsSchema\": [{\"Source\":\"user\",\"ID\":\"employeeid\",\"SamlClaimType\":\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name\",\"JwtClaimType\":\"name\"},{\"Source\":\"company\",\"ID\":\"tenantcountry\",\"SamlClaimType\":\"http://schemas.xmlsoap.org/ws/2005/05/identity/claims/country\",\"JwtClaimType\":\"country\"}]}}",
+			},
+		),
+	})
+
+	sp.ClaimsMappingPolicies = &[]msgraph.ClaimsMappingPolicy{*claimsMappingPolicy}
+
+	testServicePrincipalsClient_AssignClaimsMappingPolicy(t, c, sp)
+	// ListClaimsMappingPolicy is called within RemoveClaimsMappingPolicy
+	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID})
+	// A Second call tests that a remove call on an empty assignment list returns ok
+	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID})
+	testClaimsMappingPolicyClient_Delete(t, c, *claimsMappingPolicy.ID)
+
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
 		MailEnabled:     utils.BoolPtr(false),
@@ -344,6 +362,26 @@ func testServicePrincipalsClient_RemoveOwners(t *testing.T, c *test.Test, spId s
 	_, err := c.ServicePrincipalsClient.RemoveOwners(c.Context, spId, &ownerIds)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemoveOwners(): %v", err)
+	}
+}
+
+func testServicePrincipalsClient_AssignClaimsMappingPolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal){
+	status, err := c.ServicePrincipalsClient.AssignClaimsMappingPolicy(c.Context, sp)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AssignClaimsMappingPolicy(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AssignClaimsMappingPolicy(): invalid status: %d", status)
+	}
+}
+
+func testServicePrincipalsClient_RemoveClaimsMappingPolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal, policyIds []string){
+	status, err := c.ServicePrincipalsClient.RemoveClaimsMappingPolicy(c.Context, sp, &policyIds)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.RemoveClaimsMappingPolicy(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.RemoveClaimsMappingPolicy(): invalid status: %d", status)
 	}
 }
 
