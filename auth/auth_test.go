@@ -5,8 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest"
-	"github.com/Azure/go-autorest/autorest/adal"
 	"golang.org/x/oauth2"
 
 	"github.com/manicminer/hamilton/auth"
@@ -159,43 +157,6 @@ func TestMsiAuthorizer(t *testing.T) {
 	auth, err := auth.NewMsiAuthorizer(ctx, env.MsGraph, msiEndpoint, clientId)
 	if err != nil {
 		t.Fatalf("NewMsiAuthorizer(): %v", err)
-	}
-	if auth == nil {
-		t.Fatal("auth is nil, expected Authorizer")
-	}
-
-	token, err := auth.Token()
-	if err != nil {
-		t.Fatalf("auth.Token(): %v", err)
-	}
-	if token == nil {
-		t.Fatal("token was nil")
-	}
-	if token.AccessToken == "" {
-		t.Fatal("token.AccessToken was empty")
-	}
-}
-
-func TestAutorestAuthorizerWrapper(t *testing.T) {
-	env, err := environments.EnvironmentFromString(environment)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	// adal.ServicePrincipalToken.refreshInternal() doesn't support v2 tokens
-	oauthConfig, err := adal.NewOAuthConfigWithAPIVersion(string(env.AzureADEndpoint), tenantId, utils.StringPtr("1.0"))
-	if err != nil {
-		t.Fatalf("adal.NewOAuthConfig(): %v", err)
-	}
-
-	spt, err := adal.NewServicePrincipalToken(*oauthConfig, clientId, clientSecret, string(env.MsGraph.Endpoint))
-	if err != nil {
-		t.Fatalf("adal.NewServicePrincipalToken(): %v", err)
-	}
-
-	auth, err := auth.NewAutorestAuthorizerWrapper(autorest.NewBearerAuthorizer(spt))
-	if err != nil {
-		t.Fatalf("NewAutorestAuthorizerWrapper(): %v", err)
 	}
 	if auth == nil {
 		t.Fatal("auth is nil, expected Authorizer")
