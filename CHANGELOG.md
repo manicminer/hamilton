@@ -1,4 +1,4 @@
-## 0.43.0 (Unreleased)
+## 0.43.0 (March 15, 2022)
 
 ⚠️ BREAKING CHANGES:
 
