@@ -1,3 +1,15 @@
+## 0.43.0 (Unreleased)
+
+⚠️ BREAKING CHANGES:
+
+- This release removes the following, which have been replaced by compatible equivalents in the new [hamilton-autorest](https://github.com/manicminer/hamilton-autorest) module ([#154](https://github.com/manicminer/hamilton/pull/154))
+  - `auth.AutorestAuthorizerWrapper{}` struct
+  - `auth.CachedAuthorizer{}.BearerAuthorizerCallback()` method
+  - `auth.CachedAuthorizer{}.WithAuthorization()` method
+  - `auth.NewAutorestAuthorizerWrapper()` function
+  - `auth.ServicePrincipalToken` interface
+  - `environments.EnvironmentFromMetadata()` function
+
 ## 0.42.0 (March 9, 2022)
 
 - Broaden the regular expression used for fixing up bad oData IDs when marshaling an `odata.Id` ([#152](https://github.com/manicminer/hamilton/pull/152))
