@@ -17,6 +17,7 @@ See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
 - Ability to inject middleware functions for logging etc
 - OData parsing in API responses and support for OData queries such as filters, sorting, searching, expand and select
 - Built-in authentication support using methods including client credentials (both client secret and client certificate), obtaining access tokens via Azure CLI, managed identity via the Azure Metadata Service, and federated credentials with a built-in authorizer for GitHub OIDC.
+- Compatibility with [go-autorest](https://github.com/Azure/go-autorest), both for consuming autorest authorizers, and for providing autorest-compatible authorizers (see the [hamilton-autorest](https://github.com/manicminer/hamilton-autorest) add-on module)
 
 ## Getting Started
 
