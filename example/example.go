@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
-	"net/http/httputil"
 	"os"
 
 	"github.com/manicminer/hamilton/auth"
@@ -38,30 +36,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	requestLogger := func(req *http.Request) (*http.Request, error) {
-		if req != nil {
-			dmp, err := httputil.DumpRequestOut(req, true)
-			if err == nil {
-				log.Printf("REQUEST: %s", dmp)
-			}
-		}
-		return req, nil
-	}
-
-	responseLogger := func(req *http.Request, resp *http.Response) (*http.Response, error) {
-		if resp != nil {
-			dmp, err := httputil.DumpResponse(resp, true)
-			if err == nil {
-				log.Printf("RESPONSE: %s", dmp)
-			}
-		}
-		return resp, nil
-	}
-
 	client := msgraph.NewUsersClient(tenantId)
 	client.BaseClient.Authorizer = authorizer
-	client.BaseClient.RequestMiddlewares = &[]msgraph.RequestMiddleware{requestLogger}
-	client.BaseClient.ResponseMiddlewares = &[]msgraph.ResponseMiddleware{responseLogger}
 
 	users, _, err := client.List(ctx, odata.Query{})
 	if err != nil {

@@ -28,7 +28,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"github.com/manicminer/hamilton/auth"
