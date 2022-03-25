@@ -667,6 +667,17 @@ type CredentialUserRegistrationDetails struct {
 	UserPrincipalName *string                   `json:"UserPrincipalName,omitempty"`
 }
 
+// In Azure AD entitlement management, a connected organization is a reference to a
+// directory or domain of another organization whose users can request access.
+type ConnectedOrganization struct {
+	ID               *string           `json:"id,omitempty"`
+	Description      *string           `json:"description,omitempty"`
+	DisplayName      *string           `json:"displayName,omitempty"`
+	IdentitySources  *[]IdentitySource `json:"identitySources,omitempty"`
+	CreatedDateTime  *time.Time        `json:"createdDateTime,omitempty"`
+	ModifiedDateTime *time.Time        `json:"modifiedDateTime,omitempty"`
+}
+
 type DelegatedPermissionGrant struct {
 	Id          *string                              `json:"id,omitempty"`
 	ClientId    *string                              `json:"clientId,omitempty"`
@@ -990,6 +1001,15 @@ type IdentityProvider struct {
 	ClientSecret *string     `json:"clientSecret,omitempty"`
 	Type         *string     `json:"identityProviderType,omitempty"`
 	Name         *string     `json:"displayName,omitempty"`
+}
+
+// Used in the identity sources of a ConnectedOrganization.
+type IdentitySource struct {
+	ODataType   *odata.Type `json:"@odata.type,omitempty"`
+	DisplayName *string     `json:"displayName,omitempty"`
+	TenantId    *string     `json:"tenantId,omitempty"`
+	DomainName  *string     `json:"domainName,omitempty"`
+	IssuerUri   *string     `json:"issuerUri,omitempty"`
 }
 
 type ImplicitGrantSettings struct {
