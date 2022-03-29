@@ -107,6 +107,7 @@ type Test struct {
 	B2CUserFlowClient                         *msgraph.B2CUserFlowClient
 	ClaimsMappingPolicyClient                 *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient           *msgraph.ConditionalAccessPoliciesClient
+	ConnectedOrganizationClient               *msgraph.ConnectedOrganizationClient
 	DelegatedPermissionGrantsClient           *msgraph.DelegatedPermissionGrantsClient
 	DirectoryAuditReportsClient               *msgraph.DirectoryAuditReportsClient
 	DirectoryObjectsClient                    *msgraph.DirectoryObjectsClient
@@ -241,6 +242,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ConditionalAccessPoliciesClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.ConditionalAccessPoliciesClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
 	c.ConditionalAccessPoliciesClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.ConnectedOrganizationClient = msgraph.NewConnectedOrganizationClient(c.Connections["default"].AuthConfig.TenantID)
+	c.ConnectedOrganizationClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.ConnectedOrganizationClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.ConnectedOrganizationClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DelegatedPermissionGrantsClient = msgraph.NewDelegatedPermissionGrantsClient(c.Connections["default"].AuthConfig.TenantID)
 	c.DelegatedPermissionGrantsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer

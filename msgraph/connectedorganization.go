@@ -22,6 +22,7 @@ func NewConnectedOrganizationClient(tenantId string) *ConnectedOrganizationClien
 }
 
 // List returns a list of ConnectedOrganization
+// https://docs.microsoft.com/graph/api/entitlementmanagement-list-connectedorganizations
 func (c *ConnectedOrganizationClient) List(ctx context.Context, query odata.Query) (*[]ConnectedOrganization, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
@@ -53,6 +54,7 @@ func (c *ConnectedOrganizationClient) List(ctx context.Context, query odata.Quer
 }
 
 // Create creates a new ConnectedOrganization.
+// https://docs.microsoft.com/graph/api/entitlementmanagement-post-connectedorganizations
 func (c *ConnectedOrganizationClient) Create(ctx context.Context, connectedOrganization ConnectedOrganization) (*ConnectedOrganization, int, error) {
 	var status int
 	body, err := json.Marshal(connectedOrganization)
@@ -87,6 +89,7 @@ func (c *ConnectedOrganizationClient) Create(ctx context.Context, connectedOrgan
 }
 
 // Get retrieves a ConnectedOrganization.
+// https://docs.microsoft.com/graph/api/connectedorganization-get
 func (c *ConnectedOrganizationClient) Get(ctx context.Context, id string, query odata.Query) (*ConnectedOrganization, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -116,6 +119,7 @@ func (c *ConnectedOrganizationClient) Get(ctx context.Context, id string, query 
 }
 
 // Update amends an existing ConnectedOrganization.
+// https://docs.microsoft.com/graph/api/connectedorganization-update
 func (c *ConnectedOrganizationClient) Update(ctx context.Context, connectedOrganization ConnectedOrganization) (int, error) {
 	var status int
 
@@ -123,7 +127,14 @@ func (c *ConnectedOrganizationClient) Update(ctx context.Context, connectedOrgan
 		return status, errors.New("cannot update ConnectedOrganization with nil ID")
 	}
 
-	body, err := json.Marshal(connectedOrganization)
+	// These are the only properties that can up updated.
+	updatedOrg := ConnectedOrganization{
+		DisplayName: connectedOrganization.DisplayName,
+		Description: connectedOrganization.Description,
+		State:       connectedOrganization.State,
+	}
+
+	body, err := json.Marshal(updatedOrg)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
@@ -145,6 +156,7 @@ func (c *ConnectedOrganizationClient) Update(ctx context.Context, connectedOrgan
 }
 
 // Delete removes a ConnectedOrganization.
+// https://docs.microsoft.com/graph/api/connectedorganization-delete
 func (c *ConnectedOrganizationClient) Delete(ctx context.Context, id string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
