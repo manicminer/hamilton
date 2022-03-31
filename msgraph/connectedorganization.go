@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/hashicorp/go-uuid"
 	"github.com/manicminer/hamilton/odata"
 )
 
@@ -171,4 +172,58 @@ func (c *ConnectedOrganizationClient) Delete(ctx context.Context, id string) (in
 	}
 
 	return status, nil
+}
+
+// List the external sponsors for a connected organization.
+// https://docs.microsoft.com/en-gb/graph/api/connectedorganization-list-externalsponsors
+func (c *ConnectedOrganizationClient) ListExternalSponsors(ctx context.Context, query odata.Query, id string) (*[]DirectoryObject, int, error) {
+	return ListSponsors(&c.BaseClient, ctx, query, id, true)
+}
+
+// List the internal sponsors for a connected organization.
+// https://docs.microsoft.com/en-gb/graph/api/connectedorganization-list-internalsponsors
+func (c *ConnectedOrganizationClient) ListInternalSponsors(ctx context.Context, query odata.Query, id string) (*[]DirectoryObject, int, error) {
+	return ListSponsors(&c.BaseClient, ctx, query, id, false)
+}
+
+// List the internal/external sponsors for a connected organization.
+func ListSponsors(c *Client, ctx context.Context, query odata.Query, id string, external bool) (*[]DirectoryObject, int, error) {
+
+	if _, err := uuid.ParseUUID(id); err != nil {
+		return nil, 0, fmt.Errorf("The id %q is not a valid connected organization id", id)
+	}
+	var entity string
+	if external {
+		entity = "/identityGovernance/entitlementManagement/connectedOrganizations/" + id + "/externalSponsors"
+	} else {
+		entity = "/identityGovernance/entitlementManagement/connectedOrganizations/" + id + "/internalSponsors"
+	}
+
+	resp, status, _, err := c.Get(ctx, GetHttpRequestInput{
+		DisablePaging:    query.Top > 0,
+		OData:            query,
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      entity,
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("ConnectedOrganizationClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		ExternalSponsors []DirectoryObject `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &data.ExternalSponsors, status, nil
 }
