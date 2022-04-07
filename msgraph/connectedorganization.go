@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/hashicorp/go-uuid"
+	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/odata"
 )
 
@@ -175,28 +175,111 @@ func (c *ConnectedOrganizationClient) Delete(ctx context.Context, id string) (in
 }
 
 // List the external sponsors for a connected organization.
-// https://docs.microsoft.com/en-gb/graph/api/connectedorganization-list-externalsponsors
+// https://docs.microsoft.com/graph/api/connectedorganization-list-externalsponsors
 func (c *ConnectedOrganizationClient) ListExternalSponsors(ctx context.Context, query odata.Query, id string) (*[]DirectoryObject, int, error) {
-	return ListSponsors(&c.BaseClient, ctx, query, id, true)
+	return listSponsors(&c.BaseClient, ctx, query, id, true)
 }
 
 // List the internal sponsors for a connected organization.
-// https://docs.microsoft.com/en-gb/graph/api/connectedorganization-list-internalsponsors
+// https://docs.microsoft.com/graph/api/connectedorganization-list-internalsponsors
 func (c *ConnectedOrganizationClient) ListInternalSponsors(ctx context.Context, query odata.Query, id string) (*[]DirectoryObject, int, error) {
-	return ListSponsors(&c.BaseClient, ctx, query, id, false)
+	return listSponsors(&c.BaseClient, ctx, query, id, false)
+}
+
+// Add a user as an external sponsor to the connected organization.
+// https://docs.microsoft.com/graph/api/connectedorganization-post-externalsponsors
+func (c *ConnectedOrganizationClient) AddExternalSponsorUser(ctx context.Context, orgId string, userId string) error {
+	return addSponsor(&c.BaseClient, ctx, orgId, userId, true, false)
+}
+
+// Add a group as an external sponsor to the connected organization.
+// https://docs.microsoft.com/graph/api/connectedorganization-post-externalsponsors
+func (c *ConnectedOrganizationClient) AddExternalSponsorGroup(ctx context.Context, orgId string, grpId string) error {
+	return addSponsor(&c.BaseClient, ctx, orgId, grpId, true, true)
+}
+
+// Add a user as an external sponsor to the connected organization.
+// https://docs.microsoft.com/graph/api/connectedorganization-post-internalsponsors
+func (c *ConnectedOrganizationClient) AddInternalSponsorUser(ctx context.Context, orgId string, userId string) error {
+	return addSponsor(&c.BaseClient, ctx, orgId, userId, false, false)
+}
+
+// Add a group as an external sponsor to the connected organization.
+// https://docs.microsoft.com/graph/api/connectedorganization-post-internalsponsors
+func (c *ConnectedOrganizationClient) AddInternalSponsorGroup(ctx context.Context, orgId string, grpId string) error {
+	return addSponsor(&c.BaseClient, ctx, orgId, grpId, false, true)
+}
+
+// Delete a user or group as an external sponsor to the connected organization.
+// https://docs.microsoft.com/graph/api/connectedorganization-delete-externalsponsors
+func (c *ConnectedOrganizationClient) DeleteExternalSponsor(ctx context.Context, orgId string, id string) error {
+	return deleteSponsor(&c.BaseClient, ctx, orgId, id, true)
+}
+
+// Delete a user or group as an internal sponsor to the connected organization.
+// https://docs.microsoft.com/graph/api/connectedorganization-delete-internalsponsors
+func (c *ConnectedOrganizationClient) DeleteInternalSponsor(ctx context.Context, orgId string, id string) error {
+	return deleteSponsor(&c.BaseClient, ctx, orgId, id, false)
+}
+
+func addSponsor(client *Client, ctx context.Context, orgId string, userOrGroupId string, external bool, group bool) error {
+	if !ValidateId(&orgId) {
+		return fmt.Errorf("the id %q is not a valid connected organization id", orgId)
+	}
+	if !ValidateId(&userOrGroupId) {
+		return fmt.Errorf("the id %q is not a valid user/group id", userOrGroupId)
+	}
+
+	var userOrGroup string
+	if group {
+		userOrGroup = "/groups/"
+	} else {
+		userOrGroup = "/users/"
+	}
+
+	extUser := Ref{
+		ObjectUri: utils.StringPtr(string(client.Endpoint) + "/" + string(client.ApiVersion) + userOrGroup + userOrGroupId),
+	}
+
+	body, err := json.Marshal(extUser)
+	if err != nil {
+		return fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	var internalOrExternal string
+	if external {
+		internalOrExternal = "externalSponsors"
+	} else {
+		internalOrExternal = "internalSponsors"
+	}
+
+	_, status, _, err := client.Post(ctx, PostHttpRequestInput{
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/connectedOrganizations/%s/%s/$ref", orgId, internalOrExternal),
+			HasTenantId: true,
+		},
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:             body,
+	})
+
+	if err != nil {
+		return fmt.Errorf("AddExternalSponsorUser returned status code %d: %v", status, err)
+	}
+
+	return nil
 }
 
 // List the internal/external sponsors for a connected organization.
-func ListSponsors(c *Client, ctx context.Context, query odata.Query, id string, external bool) (*[]DirectoryObject, int, error) {
-
-	if _, err := uuid.ParseUUID(id); err != nil {
-		return nil, 0, fmt.Errorf("The id %q is not a valid connected organization id", id)
+func listSponsors(c *Client, ctx context.Context, query odata.Query, id string, external bool) (*[]DirectoryObject, int, error) {
+	if !ValidateId(&id) {
+		return nil, 0, fmt.Errorf("the id %q is not a valid connected organization id", id)
 	}
-	var entity string
+
+	var internalOrExternal string
 	if external {
-		entity = "/identityGovernance/entitlementManagement/connectedOrganizations/" + id + "/externalSponsors"
+		internalOrExternal = "externalSponsors"
 	} else {
-		entity = "/identityGovernance/entitlementManagement/connectedOrganizations/" + id + "/internalSponsors"
+		internalOrExternal = "internalSponsors"
 	}
 
 	resp, status, _, err := c.Get(ctx, GetHttpRequestInput{
@@ -204,7 +287,7 @@ func ListSponsors(c *Client, ctx context.Context, query odata.Query, id string, 
 		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      entity,
+			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/connectedOrganizations/%s/%s", id, internalOrExternal),
 			HasTenantId: true,
 		},
 	})
@@ -226,4 +309,33 @@ func ListSponsors(c *Client, ctx context.Context, query odata.Query, id string, 
 	}
 
 	return &data.ExternalSponsors, status, nil
+}
+
+func deleteSponsor(c *Client, ctx context.Context, orgId string, id string, external bool) error {
+	if !ValidateId(&orgId) {
+		return fmt.Errorf("the id %q is not a valid connected organization id", id)
+	}
+	if !ValidateId(&id) {
+		return fmt.Errorf("the id %q is not a valid user/group id", id)
+	}
+	var internalOrExternal string
+	if external {
+		internalOrExternal = "externalSponsors"
+	} else {
+		internalOrExternal = "internalSponsors"
+	}
+
+	_, status, _, err := c.Delete(ctx, DeleteHttpRequestInput{
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/connectedOrganizations/%s/%s/%s/$ref", orgId, internalOrExternal, id),
+			HasTenantId: true,
+		},
+		ValidStatusCodes: []int{http.StatusNoContent},
+	})
+
+	if err != nil {
+		return fmt.Errorf("DeleteSponsor returned status code %d: %v", status, err)
+	}
+
+	return nil
 }

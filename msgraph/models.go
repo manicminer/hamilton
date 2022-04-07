@@ -1231,6 +1231,10 @@ type Recipient struct {
 	EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
 }
 
+type Ref struct {
+	ObjectUri *string `json:"@odata.id,omitempty"`
+}
+
 type RequestorSettings struct {
 	ScopeType         RequestorSettingsScopeType `json:"scopeType,omitempty"`
 	AcceptRequests    *bool                      `json:"acceptRequests,omitempty"`

@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -29,7 +30,7 @@ func TestConnectedOrganizationClient(t *testing.T) {
 	}
 
 	// CREATE
-	newConnectedOrg := testConnectedOrganizationClient_Create(t, c, GetTestConnectedOrganization(&connectedTenantId))
+	newConnectedOrg := testConnectedOrganizationClient_Create(t, c, getTestConnectedOrganization(&connectedTenantId))
 
 	// Now delete it
 	if newConnectedOrg != nil && newConnectedOrg.ID != nil {
@@ -37,7 +38,7 @@ func TestConnectedOrganizationClient(t *testing.T) {
 	}
 
 	// and test again with a domain name
-	newConnectedOrg = testConnectedOrganizationClient_Create(t, c, GetTestConnectedOrganization(&connectedDomain))
+	newConnectedOrg = testConnectedOrganizationClient_Create(t, c, getTestConnectedOrganization(&connectedDomain))
 
 	// LIST
 	connectedOrganizations := testConnectedOrganizationClient_List(t, c)
@@ -58,6 +59,9 @@ func TestConnectedOrganizationClient(t *testing.T) {
 	if *(*readConnectedOrg.IdentitySources)[0].TenantId != connectedTenantId {
 		t.Fatalf("The connected organization should have the source tenant id set, even when created with a domain name.")
 	}
+
+	// Test internal/external sponsors
+	testConnectedOrganizationClient_Sponsors(t, c, readConnectedOrg)
 
 	// UPDATE
 	newConnectedOrg.Description = utils.StringPtr("Changed description")
@@ -136,7 +140,76 @@ func testConnectedOrganizationClient_Update(t *testing.T, c *test.Test, connecte
 	}
 }
 
-func GetTestConnectedOrganization(idOrDomain *string) *msgraph.ConnectedOrganization {
+func testConnectedOrganizationClient_Sponsors(t *testing.T, c *test.Test, connectedOrganization *msgraph.ConnectedOrganization) {
+	// Create some groups that we can add.
+	extGroup, intGroup, err := createGroupsForSponsors(c)
+
+	if err != nil {
+		t.Fatalf("GroupsClient.Create() - Could not create test groups: %v", err)
+	}
+
+	err = c.ConnectedOrganizationClient.AddExternalSponsorGroup(c.Context, *connectedOrganization.ID, *extGroup.ID)
+	if err != nil {
+		t.Fatalf("ConnectedOrganizationClient.AddExternalSponsorGroup(): %v", err)
+	}
+
+	err = c.ConnectedOrganizationClient.AddInternalSponsorGroup(c.Context, *connectedOrganization.ID, *intGroup.ID)
+	if err != nil {
+		t.Fatalf("ConnectedOrganizationClient.AddInternalSponsorGroup(): %v", err)
+	}
+
+	var status int
+
+	// List the sponsors
+	_, status, err = c.ConnectedOrganizationClient.ListExternalSponsors(c.Context, odata.Query{}, *connectedOrganization.ID)
+	if err != nil {
+		t.Fatalf("ConnectedOrganizationClient.ListExternalSponsors(): invalid status: %d, %v", status, err)
+	}
+	_, status, err = c.ConnectedOrganizationClient.ListInternalSponsors(c.Context, odata.Query{}, *connectedOrganization.ID)
+	if err != nil {
+		t.Fatalf("ConnectedOrganizationClient.ListInternalSponsors(): invalid status: %d, %v", status, err)
+	}
+
+	// Now remove the sponsors
+	err = c.ConnectedOrganizationClient.DeleteExternalSponsor(c.Context, *connectedOrganization.ID, *extGroup.ID)
+	if err != nil {
+		t.Fatalf("ConnectedOrganizationClient.DeleteExternalSponsor(): %v", err)
+	}
+
+	err = c.ConnectedOrganizationClient.DeleteInternalSponsor(c.Context, *connectedOrganization.ID, *intGroup.ID)
+	if err != nil {
+		t.Fatalf("ConnectedOrganizationClient.DeleteInternalSponsor(): %v", err)
+	}
+
+	// Remove the test groups.
+	c.GroupsClient.Delete(c.Context, *extGroup.ID)
+	c.GroupsClient.Delete(c.Context, *intGroup.ID)
+}
+
+func createGroupsForSponsors(c *test.Test) (extGroup *msgraph.Group, intGroup *msgraph.Group, err error) {
+	// Create some groups that we can add.
+	extGroup, _, err = c.GroupsClient.Create(c.Context, msgraph.Group{
+		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", "testexternalsponsors", c.RandomString)),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", "testexternalsponsors", c.RandomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+	})
+	if err != nil {
+		return
+	}
+
+	// Create some groups that we can add.
+	intGroup, _, err = c.GroupsClient.Create(c.Context, msgraph.Group{
+		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", "testinternalsponsors", c.RandomString)),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", "testinternalsponsors", c.RandomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+	})
+
+	return
+}
+
+func getTestConnectedOrganization(idOrDomain *string) *msgraph.ConnectedOrganization {
 
 	var idSrcs []msgraph.IdentitySource
 
