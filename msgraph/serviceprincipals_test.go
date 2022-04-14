@@ -280,7 +280,7 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c *test.Test, a *msgr
 func testServicePrincipalsClient_AddTokenSigningCertificate(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal) *msgraph.KeyCredential {
 	expiry := time.Now().Add(24 * 90 * time.Hour)
 	tsc := msgraph.KeyCredential{
-		DisplayName: utils.StringPtr("test cert"),
+		DisplayName: utils.StringPtr("cn=test cert"),
 		EndDateTime: &expiry,
 	}
 	newKey, status, err := c.ServicePrincipalsClient.AddTokenSigningCertificate(c.Context, *a.ID, tsc)
