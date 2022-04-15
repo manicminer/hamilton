@@ -865,7 +865,7 @@ type Group struct {
 	Description                   *StringNullWhenEmpty                `json:"description,omitempty"`
 	DisplayName                   *string                             `json:"displayName,omitempty"`
 	ExpirationDateTime            *time.Time                          `json:"expirationDateTime,omitempty"`
-	GroupTypes                    []GroupType                         `json:"groupTypes,omitempty"`
+	GroupTypes                    *[]GroupType                        `json:"groupTypes,omitempty"`
 	HasMembersWithLicenseErrors   *bool                               `json:"hasMembersWithLicenseErrors,omitempty"`
 	HideFromAddressLists          *bool                               `json:"hideFromAddressLists,omitempty"`
 	HideFromOutlookClients        *bool                               `json:"hideFromOutlookClients,omitempty"`
@@ -887,8 +887,8 @@ type Group struct {
 	PreferredLanguage             *string                             `json:"preferredLanguage,omitempty"`
 	ProxyAddresses                *[]string                           `json:"proxyAddresses,omitempty"`
 	RenewedDateTime               *time.Time                          `json:"renewedDateTime,omitempty"`
-	ResourceBehaviorOptions       []GroupResourceBehaviorOption       `json:"resourceBehaviorOptions,omitempty"`
-	ResourceProvisioningOptions   []GroupResourceProvisioningOption   `json:"resourceProvisioningOptions,omitempty"`
+	ResourceBehaviorOptions       *[]GroupResourceBehaviorOption      `json:"resourceBehaviorOptions,omitempty"`
+	ResourceProvisioningOptions   *[]GroupResourceProvisioningOption  `json:"resourceProvisioningOptions,omitempty"`
 	SecurityEnabled               *bool                               `json:"securityEnabled,omitempty"`
 	SecurityIdentifier            *string                             `json:"securityIdentifier,omitempty"`
 	Theme                         *GroupTheme                         `json:"theme,omitempty"`
@@ -945,7 +945,7 @@ func (g *Group) UnmarshalJSON(data []byte) error {
 func (g *Group) HasTypes(types []GroupType) bool {
 	for _, t := range types {
 		found := false
-		for _, gt := range g.GroupTypes {
+		for _, gt := range *g.GroupTypes {
 			if t == gt {
 				found = true
 				break
