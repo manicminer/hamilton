@@ -1,5 +1,6 @@
 ## 0.44.0 (Unreleased)
 
+- Bugfix: Set the correct URL for `environments.KeyVaultUSGovEndpoint` ([#157](https://github.com/manicminer/hamilton/pull/157))
 - Support for [Token Signing Certificates](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-addtokensigningcertificate?view=graph-rest-1.0&tabs=http) for service principals ([#151](https://github.com/manicminer/hamilton/pull/151), [#158](https://github.com/manicminer/hamilton/pull/158))
 
 ## 0.43.0 (March 15, 2022)
