@@ -564,8 +564,8 @@ type ConditionalAccessConditionSet struct {
 	ClientAppTypes   *[]ConditionalAccessClientAppType `json:"clientAppTypes,omitempty"`
 	Devices          *ConditionalAccessDevices         `json:"devices,omitempty"`
 	DeviceStates     *ConditionalAccessDeviceStates    `json:"deviceStates,omitempty"`
-	Locations        *ConditionalAccessLocations       `json:"locations,omitempty"`
-	Platforms        *ConditionalAccessPlatforms       `json:"platforms,omitempty"`
+	Locations        *ConditionalAccessLocations       `json:"locations"`
+	Platforms        *ConditionalAccessPlatforms       `json:"platforms"`
 	SignInRiskLevels *[]ConditionalAccessRiskLevel     `json:"signInRiskLevels,omitempty"`
 	UserRiskLevels   *[]ConditionalAccessRiskLevel     `json:"userRiskLevels,omitempty"`
 	Users            *ConditionalAccessUsers           `json:"users,omitempty"`
