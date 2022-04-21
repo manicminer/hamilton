@@ -1,3 +1,9 @@
+## 0.45.0 (April 21, 2022)
+
+⚠️ BREAKING CHANGES:
+
+- Removed `omitempty` from the JSON struct tag for the `Locations` and `Platforms` fields of the `msgraph.ConditionalAccessConditionSet` model ([#161](https://github.com/manicminer/hamilton/pull/161))
+
 ## 0.44.0 (April 19, 2022)
 
 - Bugfix: Set the correct URL for `environments.KeyVaultUSGovEndpoint` ([#157](https://github.com/manicminer/hamilton/pull/157))
