@@ -1,6 +1,8 @@
 ## 0.46.0 (Unreleased)
 
-- Add Azure Security Insights to `environments.PublishedApis` ([#162](https://github.com/manicminer/hamilton/pull/162))
+- Added Azure Security Insights to `environments.PublishedApis` ([#162](https://github.com/manicminer/hamilton/pull/162))
+- Added `linux` to supported `msgraph.ConditionalAccessDevicePlatform` values ([#163](https://github.com/manicminer/hamilton/pull/163))
+- Added `SubscribeMembersToCalendarEventsDisabled` to supported `msgraph.GroupResourceBehaviorOption` values ([#163](https://github.com/manicminer/hamilton/pull/163))
 
 ## 0.45.0 (April 21, 2022)
 
