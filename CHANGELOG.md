@@ -1,3 +1,7 @@
+## 0.46.0 (Unreleased)
+
+- Add Azure Security Insights to `environments.PublishedApis` ([#162](https://github.com/manicminer/hamilton/pull/162))
+
 ## 0.45.0 (April 21, 2022)
 
 ⚠️ BREAKING CHANGES:
