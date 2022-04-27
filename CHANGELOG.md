@@ -1,4 +1,4 @@
-## 0.46.0 (Unreleased)
+## 0.46.0 (April 27, 2022)
 
 - Added Azure Security Insights to `environments.PublishedApis` ([#162](https://github.com/manicminer/hamilton/pull/162))
 - Added `linux` to supported `msgraph.ConditionalAccessDevicePlatform` values ([#163](https://github.com/manicminer/hamilton/pull/163))
