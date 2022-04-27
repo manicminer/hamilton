@@ -385,10 +385,11 @@ const (
 type GroupResourceBehaviorOption = string
 
 const (
-	GroupResourceBehaviorOptionAllowOnlyMembersToPost   GroupResourceBehaviorOption = "AllowOnlyMembersToPost"
-	GroupResourceBehaviorOptionHideGroupInOutlook       GroupResourceBehaviorOption = "HideGroupInOutlook"
-	GroupResourceBehaviorOptionSubscribeNewGroupMembers GroupResourceBehaviorOption = "SubscribeNewGroupMembers"
-	GroupResourceBehaviorOptionWelcomeEmailDisabled     GroupResourceBehaviorOption = "WelcomeEmailDisabled"
+	GroupResourceBehaviorOptionAllowOnlyMembersToPost                   GroupResourceBehaviorOption = "AllowOnlyMembersToPost"
+	GroupResourceBehaviorOptionHideGroupInOutlook                       GroupResourceBehaviorOption = "HideGroupInOutlook"
+	GroupResourceBehaviorOptionSubscribeMembersToCalendarEventsDisabled GroupResourceBehaviorOption = "SubscribeMembersToCalendarEventsDisabled"
+	GroupResourceBehaviorOptionSubscribeNewGroupMembers                 GroupResourceBehaviorOption = "SubscribeNewGroupMembers"
+	GroupResourceBehaviorOptionWelcomeEmailDisabled                     GroupResourceBehaviorOption = "WelcomeEmailDisabled"
 )
 
 type GroupResourceProvisioningOption = string
