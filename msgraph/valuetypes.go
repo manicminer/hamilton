@@ -60,7 +60,7 @@ const (
 type AccessPackageResourceRequestType = string
 
 const (
-	AccessPackageResourceRequestTypeAdminAdd     AccessPackageResourceRequestType = "AdminAdd"
+	AccessPackageResourceRequestTypeAdminAdd    AccessPackageResourceRequestType = "AdminAdd"
 	AccessPackageResourceRequestTypeAdminRemove AccessPackageResourceRequestType = "AdminRemove"
 )
 
@@ -260,6 +260,7 @@ const (
 	ConditionalAccessDevicePlatformAll                ConditionalAccessDevicePlatform = "all"
 	ConditionalAccessDevicePlatformAndroid            ConditionalAccessDevicePlatform = "android"
 	ConditionalAccessDevicePlatformIos                ConditionalAccessDevicePlatform = "iOS"
+	ConditionalAccessDevicePlatformLinux              ConditionalAccessDevicePlatform = "linux"
 	ConditionalAccessDevicePlatformMacOs              ConditionalAccessDevicePlatform = "macOS"
 	ConditionalAccessDevicePlatformUnknownFutureValue ConditionalAccessDevicePlatform = "unknownFutureValue"
 	ConditionalAccessDevicePlatformWindows            ConditionalAccessDevicePlatform = "windows"
