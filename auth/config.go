@@ -54,6 +54,7 @@ type Config struct {
 	// Specifies the password to authenticate with using client secret authentication
 	ClientSecret string
 
+	// Enables OIDC Federated authentication
 	EnableClientFederatedAuth bool
 
 	// Specifies the federated assertion to authenticate using client credentials
