@@ -54,6 +54,11 @@ type Config struct {
 	// Specifies the password to authenticate with using client secret authentication
 	ClientSecret string
 
+	EnableClientFederatedAuth bool
+
+	// Specifies the federated assertion to authenticate using client credentials
+	FederatedAssertion string
+
 	// Enables GitHub OIDC authentication
 	EnableGitHubOIDCAuth bool
 
