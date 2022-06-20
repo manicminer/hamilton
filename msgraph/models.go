@@ -1307,6 +1307,60 @@ func (s *ServicePrincipal) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type SynchronizationSchedule struct {
+	Expiration *time.Time `json:"expiration,omitempty"`
+	Interval   *string    `json:"interval,omitempty"` // TODO Duration
+	State      *string    `json:"state,omitempty"`
+}
+
+type SynchronizationTaskExecution struct { // TODO synchronizationTaskExecution
+	ActivityIdentifier *string `json:"activityIdentifier,omitempty"`
+	CountEntitled      *string `json:"countEntitled,omitempty"`
+	// // CountEntitled         *string  `json:"countEntitled,omitempty"`
+	// State         *string  `json:"state,omitempty"`
+}
+
+type SynchronizationProgress struct {
+	CompletedUnits              *int32     `json:"completedUnits,omitempty"`
+	ProgressObservationDateTime *time.Time `json:"progressObservationDateTime,omitempty"`
+	TotalUnits                  *int32     `json:"totalUnits,omitempty"`
+	Units                       *string    `json:"units,omitempty"`
+}
+type SynchronizationError struct {
+	// TODO
+}
+type Quarantine struct {
+	CurrentBegan *time.Time            `json:"currentBegan,omitempty"`
+	NextAttempt  *time.Time            `json:"nextAttempt,omitempty"`
+	Reason       *int32                `json:"reason,omitempty"`
+	SeriesBegan  *time.Time            `json:"seriesBegan,omitempty"`
+	SeriesCount  *int64                `json:"seriesCount,omitempty"`
+	Error        *SynchronizationError `json:"error,omitempty"`
+}
+
+type SynchronizationStatus struct {
+	Code                               *string                       `json:"code,omitempty"`
+	CountSuccssiveCompleteFailure      *int64                        `json:"countSuccessiveCompleteFailures,omitempty"`
+	EscrowsPruned                      *bool                         `json:"escrowsPruned,omitempty"`
+	LastExecution                      *SynchronizationTaskExecution `json:"lastExecution,omitempty"`
+	LastSuccessfulExecution            *SynchronizationTaskExecution `json:"lastExecution,omitempty"`
+	LastSuccessfulExecutionWithExports *SynchronizationTaskExecution `json:"lastSuccessfulExecutionWithExports,omitempty"`
+	Progress                           *SynchronizationProgress      `json:"progress,omitempty"`
+	Quarantine                         *string                       `json:"quarantine,omitempty"` // TODO synchronizationQuarantine
+	SteadyStateFirstAchievedTime       *time.Time                    `json:"steadyStateFirstAchievedTime,omitempty"`
+	SteadyStateLastAchievedTime        *time.Time                    `json:"steadyStateLastAchievedTime,omitempty"`
+	SynchronizedEntryCountByType       *string                       `json:"synchronizedEntryCountByType,omitempty"` // TODO stringKeyLongValuePair
+	TroubleshootingUrl                 *string                       `json:"troubleshootingUrl,omitempty"`           // TODO troubleshootingUrl
+}
+
+type SynchronizationJob struct {
+	ID                         *string                  `json:"id,omitempty"`
+	Schedule                   *SynchronizationSchedule `json:"schedule,omitempty"`
+	Status                     *SynchronizationStatus   `json:"status,omitempty"` // TODO
+	SynchronizationJobSettings *[]KeyValue              `json:"synchronizationJobSettings,omitempty"`
+	TemplateId                 *string                  `json:"templateId,omitempty"`
+}
+
 type SignInActivity struct {
 	LastSignInDateTime  *time.Time `json:"lastSignInDateTime,omitempty"`
 	LastSignInRequestId *string    `json:"lastSignInRequestId,omitempty"`
