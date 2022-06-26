@@ -122,6 +122,7 @@ type Test struct {
 	ServicePrincipalsAppRoleAssignmentsClient *msgraph.AppRoleAssignmentsClient
 	ServicePrincipalsClient                   *msgraph.ServicePrincipalsClient
 	SignInReportsClient                       *msgraph.SignInReportsClient
+	SynchronizationJobClient                  *msgraph.SynchronizationJobClient
 	UsersAppRoleAssignmentsClient             *msgraph.AppRoleAssignmentsClient
 	UsersClient                               *msgraph.UsersClient
 }
@@ -318,6 +319,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.SignInReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.SignInReportsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.SignInReportsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.SynchronizationJobClient = msgraph.NewSynchronizationJobClient(c.Connection.AuthConfig.TenantID)
+	c.SynchronizationJobClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.SynchronizationJobClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.SynchronizationJobClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.UsersAppRoleAssignmentsClient = msgraph.NewUsersAppRoleAssignmentsClient(c.Connection.AuthConfig.TenantID)
 	c.UsersAppRoleAssignmentsClient.BaseClient.Authorizer = c.Connection.Authorizer

@@ -1309,15 +1309,14 @@ func (s *ServicePrincipal) UnmarshalJSON(data []byte) error {
 
 type SynchronizationSchedule struct {
 	Expiration *time.Time `json:"expiration,omitempty"`
-	Interval   *string    `json:"interval,omitempty"` // TODO Duration
+	Interval   *string    `json:"interval,omitempty"`
 	State      *string    `json:"state,omitempty"`
 }
 
-type SynchronizationTaskExecution struct { // TODO synchronizationTaskExecution
+type SynchronizationTaskExecution struct {
 	ActivityIdentifier *string `json:"activityIdentifier,omitempty"`
 	CountEntitled      *string `json:"countEntitled,omitempty"`
-	// // CountEntitled         *string  `json:"countEntitled,omitempty"`
-	// State         *string  `json:"state,omitempty"`
+	State              *string `json:"state,omitempty"`
 }
 
 type SynchronizationProgress struct {
@@ -1326,16 +1325,18 @@ type SynchronizationProgress struct {
 	TotalUnits                  *int32     `json:"totalUnits,omitempty"`
 	Units                       *string    `json:"units,omitempty"`
 }
-type SynchronizationError struct {
-	// TODO
+
+type SynchronizationQuarantine struct {
+	CurrentBegan *time.Time `json:"currentBegan,omitempty"`
+	NextAttempt  *time.Time `json:"nextAttempt,omitempty"`
+	Reason       *string    `json:"reason,omitempty"`
+	SeriesBegan  *time.Time `json:"seriesBegan,omitempty"`
+	SeriesCount  *int64     `json:"seriesCount,omitempty"`
 }
-type Quarantine struct {
-	CurrentBegan *time.Time            `json:"currentBegan,omitempty"`
-	NextAttempt  *time.Time            `json:"nextAttempt,omitempty"`
-	Reason       *int32                `json:"reason,omitempty"`
-	SeriesBegan  *time.Time            `json:"seriesBegan,omitempty"`
-	SeriesCount  *int64                `json:"seriesCount,omitempty"`
-	Error        *SynchronizationError `json:"error,omitempty"`
+
+type StringKeyLongValuePair struct {
+	Key   *string `json:"key,omitempty"`
+	Value *int64  `json:"value,omitempty"`
 }
 
 type SynchronizationStatus struct {
@@ -1345,20 +1346,56 @@ type SynchronizationStatus struct {
 	LastExecution                      *SynchronizationTaskExecution `json:"lastExecution,omitempty"`
 	LastSuccessfulExecution            *SynchronizationTaskExecution `json:"lastExecution,omitempty"`
 	LastSuccessfulExecutionWithExports *SynchronizationTaskExecution `json:"lastSuccessfulExecutionWithExports,omitempty"`
-	Progress                           *SynchronizationProgress      `json:"progress,omitempty"`
-	Quarantine                         *string                       `json:"quarantine,omitempty"` // TODO synchronizationQuarantine
+	Progress                           *[]SynchronizationProgress    `json:"progress,omitempty"`
+	Quarantine                         *SynchronizationQuarantine    `json:"quarantine,omitempty"`
 	SteadyStateFirstAchievedTime       *time.Time                    `json:"steadyStateFirstAchievedTime,omitempty"`
 	SteadyStateLastAchievedTime        *time.Time                    `json:"steadyStateLastAchievedTime,omitempty"`
-	SynchronizedEntryCountByType       *string                       `json:"synchronizedEntryCountByType,omitempty"` // TODO stringKeyLongValuePair
-	TroubleshootingUrl                 *string                       `json:"troubleshootingUrl,omitempty"`           // TODO troubleshootingUrl
+	SynchronizedEntryCountByType       *[]StringKeyLongValuePair     `json:"synchronizedEntryCountByType,omitempty"`
+}
+
+type SynchronizationJobRestartCriteria struct {
+	ResetScope *string `json:"resetScope,omitempty"`
+}
+
+type SynchronizationJobKeyValue struct {
+	Name  *string `json:"name,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+type SynchronizationSecretKeyStringValuePair struct {
+	Key   *string `json:"key,omitempty"`
+	Value *string `json:"value,omitempty"`
+}
+
+type SynchronizationJobSubject struct {
+	ObjectId       *string `json:"objectId,omitempty"`
+	ObjectTypeName *string `json:"objectTypeName,omitempty"`
+}
+
+type SynchronizationJobApplicationParameters struct {
+	RuleId   *string                      `json:"ruleId,omitempty"`
+	Subjects *[]SynchronizationJobSubject `json:"subjects,omitempty"`
+}
+
+type SynchronizationJobProvisionOnDemand struct {
+	Parameters *[]SynchronizationJobApplicationParameters `json:"parameters,omitempty"`
+}
+
+type SynchronizationJobValidateCredentials struct {
+	UseSavedCredentials *bool                                      `json:"useSavedCredentials,omitempty"`
+	Credentials         *[]SynchronizationSecretKeyStringValuePair `json:"credentials,omitempty"`
+}
+
+type SynchronizationSecret struct {
+	Credentials *[]SynchronizationSecretKeyStringValuePair `json:"value,omitempty"`
 }
 
 type SynchronizationJob struct {
-	ID                         *string                  `json:"id,omitempty"`
-	Schedule                   *SynchronizationSchedule `json:"schedule,omitempty"`
-	Status                     *SynchronizationStatus   `json:"status,omitempty"` // TODO
-	SynchronizationJobSettings *[]KeyValue              `json:"synchronizationJobSettings,omitempty"`
-	TemplateId                 *string                  `json:"templateId,omitempty"`
+	ID                         *string                       `json:"id,omitempty"`
+	Schedule                   *SynchronizationSchedule      `json:"schedule,omitempty"`
+	Status                     *SynchronizationStatus        `json:"status,omitempty"`
+	SynchronizationJobSettings *[]SynchronizationJobKeyValue `json:"synchronizationJobSettings,omitempty"`
+	TemplateId                 *string                       `json:"templateId,omitempty"`
 }
 
 type SignInActivity struct {

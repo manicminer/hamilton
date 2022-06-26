@@ -3,12 +3,10 @@ package msgraph
 import (
 	"context"
 	"encoding/json"
-	"errors"
+	// "errors"
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/manicminer/hamilton/odata"
 )
 
 // SynchronizationJobClient performs operations on SynchronizationJobs.
@@ -23,59 +21,12 @@ func NewSynchronizationJobClient(tenantId string) *SynchronizationJobClient {
 	}
 }
 
-// Copied from another function
-// TODO REMOVE
-// func (c *ServicePrincipalsClient) AddOwners(ctx context.Context, servicePrincipal *ServicePrincipal) (int, error) {
-// 	var status int
-
-// 	if servicePrincipal.ID == nil {
-// 		return status, errors.New("cannot update service principal with nil ID")
-// 	}
-// 	if servicePrincipal.Owners == nil {
-// 		return status, errors.New("cannot update service principal with nil Owners")
-// 	}
-
-// 	for _, owner := range *servicePrincipal.Owners {
-// 		// don't fail if an owner already exists
-// 		checkOwnerAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
-// 			if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
-// 				return o.Error.Match(odata.ErrorAddedObjectReferencesAlreadyExist)
-// 			}
-// 			return false
-// 		}
-
-// 		body, err := json.Marshal(DirectoryObject{ODataId: owner.ODataId})
-// 		if err != nil {
-// 			return status, fmt.Errorf("json.Marshal(): %v", err)
-// 		}
-
-// 		_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
-// 			Body:                   body,
-// 			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
-// 			ValidStatusCodes:       []int{http.StatusNoContent},
-// 			ValidStatusFunc:        checkOwnerAlreadyExists,
-// 			Uri: Uri{
-// 				Entity:      fmt.Sprintf("/servicePrincipals/%s/owners/$ref", *servicePrincipal.ID),
-// 				HasTenantId: true,
-// 			},
-// 		})
-// 		if err != nil {
-// 			return status, fmt.Errorf("ServicePrincipalsClient.BaseClient.Post(): %v", err)
-// 		}
-// 	}
-
-// 	return status, nil
-// }
-
-// TODO: CHeck if we can use OData
-// List returns a list of SynchronizationJobs, optionally queried using OData.
-func (c *SynchronizationJobClient) List(ctx context.Context, query odata.Query, servicePrincipal *ServicePrincipal) (*[]SynchronizationJob, int, error) {
+// List returns a list of SynchronizationJobs
+func (c *SynchronizationJobClient) List(ctx context.Context, servicePrincipalId string) (*[]SynchronizationJob, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		DisablePaging:    query.Top > 0,
-		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/", *servicePrincipal.ID),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/", servicePrincipalId),
 			HasTenantId: true,
 		},
 	})
@@ -100,12 +51,11 @@ func (c *SynchronizationJobClient) List(ctx context.Context, query odata.Query, 
 }
 
 // Get retrieves a SynchronizationJob
-func (c *SynchronizationJobClient) Get(ctx context.Context, id string, query odata.Query, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+func (c *SynchronizationJobClient) Get(ctx context.Context, id string, servicePrincipalId string) (*SynchronizationJob, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s", *servicePrincipal.ID, id),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s", servicePrincipalId, id),
 			HasTenantId: true,
 		},
 	})
@@ -119,28 +69,83 @@ func (c *SynchronizationJobClient) Get(ctx context.Context, id string, query oda
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var SynchronizationJob SynchronizationJob
-	if err := json.Unmarshal(respBody, &SynchronizationJob); err != nil {
+	var synchronizationJob SynchronizationJob
+	if err := json.Unmarshal(respBody, &synchronizationJob); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	return &SynchronizationJob, status, nil
+	return &synchronizationJob, status, nil
+}
+
+// GetSecrets retrieves a SynchronizationSecret
+func (c *SynchronizationJobClient) GetSecrets(ctx context.Context, servicePrincipalId string) (*SynchronizationSecret, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/secrets/", servicePrincipalId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("SynchronizationJobClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var synchronizationSecret SynchronizationSecret
+	if err := json.Unmarshal(respBody, &synchronizationSecret); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &synchronizationSecret, status, nil
+}
+
+// Adds a SynchronizationSecrets.
+func (c *SynchronizationJobClient) SetSecrets(ctx context.Context, synchronizationSecret SynchronizationSecret, servicePrincipalId string) (int, error) {
+	var status int
+
+	body, err := json.Marshal(synchronizationSecret)
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	resp, status, _, err := c.BaseClient.Put(ctx, PutHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/secrets", servicePrincipalId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Put(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	_, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	return status, nil
 }
 
 // Creates a SynchronizationJob.
-func (c *SynchronizationJobClient) Create(ctx context.Context, synchronizationJob SynchronizationJob, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+func (c *SynchronizationJobClient) Create(ctx context.Context, synchronizationJob SynchronizationJob, servicePrincipalId string) (*SynchronizationJob, int, error) {
 	var status int
 
 	body, err := json.Marshal(synchronizationJob)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
-
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/", *servicePrincipal.ID),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/", servicePrincipalId),
 			HasTenantId: true,
 		},
 	})
@@ -163,231 +168,151 @@ func (c *SynchronizationJobClient) Create(ctx context.Context, synchronizationJo
 }
 
 // Starts a SynchronizationJob.
-func (c *SynchronizationJobClient) Start(ctx context.Context, id string, synchronizationJob SynchronizationJob, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+func (c *SynchronizationJobClient) Start(ctx context.Context, id string, servicePrincipalId string) (int, error) {
 	var status int
-
-	if synchronizationJob.ID == nil {
-		return nil, status, errors.New("SynchronizationJobClient.Start(): cannot start SynchronizationJob with nil ID")
-	}
-
-	body, err := json.Marshal(synchronizationJob)
-	if err != nil {
-		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
-	}
-
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/start", *servicePrincipal.ID, id),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/start", servicePrincipalId, id),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+		return status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
-
-	var newSynchronizationJob SynchronizationJob
-	if err := json.Unmarshal(respBody, &newSynchronizationJob); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &newSynchronizationJob, status, nil
+	return status, nil
 }
 
 // Delete
-func (c *SynchronizationJobClient) Delete(ctx context.Context, meta interface{}) {
-	// TODO
-	// client := meta.(*clients.Client).AdministrativeUnits.AdministrativeUnitsClient
-	// administrativeUnitId := d.Id()
+func (c *SynchronizationJobClient) Delete(ctx context.Context, id string, servicePrincipalId string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/", servicePrincipalId, id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Delete(): %v", err)
+	}
 
-	// _, status, err := client.Get(ctx, administrativeUnitId, odata.Query{})
-	// if err != nil {
-	// 	if status == http.StatusNotFound {
-	// 		return tf.ErrorDiagPathF(fmt.Errorf("Administrative unit was not found"), "id", "Retrieving administrative unit with object ID %q", administrativeUnitId)
-	// 	}
-	// 	return tf.ErrorDiagPathF(err, "id", "Retrieving administrative unit with object ID: %q", administrativeUnitId)
-	// }
-
-	// if _, err := client.Delete(ctx, administrativeUnitId); err != nil {
-	// 	return tf.ErrorDiagF(err, "Deleting administrative unit with object ID: %q", administrativeUnitId)
-	// }
-
-	// // Wait for administrative unit object to be deleted
-	// if err := helpers.WaitForDeletion(ctx, func(ctx context.Context) (*bool, error) {
-	// 	client.BaseClient.DisableRetries = true
-	// 	if _, status, err := client.Get(ctx, administrativeUnitId, odata.Query{}); err != nil {
-	// 		if status == http.StatusNotFound {
-	// 			return utils.Bool(false), nil
-	// 		}
-	// 		return nil, err
-	// 	}
-	// 	return utils.Bool(true), nil
-	// }); err != nil {
-	// 	return tf.ErrorDiagF(err, "Waiting for deletion of administrative unit with object ID %q", administrativeUnitId)
-	// }
-
-	// return nil
+	return status, nil
 }
 
 // Pause
-func (c *SynchronizationJobClient) Pause(ctx context.Context, id string, synchronizationJob SynchronizationJob, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+func (c *SynchronizationJobClient) Pause(ctx context.Context, id string, servicePrincipalId string) (int, error) {
 	var status int
-
-	if synchronizationJob.ID == nil {
-		return nil, status, errors.New("SynchronizationJobClient.Pause(): cannot pause SynchronizationJob with nil ID")
-	}
-
-	body, err := json.Marshal(synchronizationJob)
-	if err != nil {
-		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
-	}
-
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/pause", *servicePrincipal.ID, id),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/pause", servicePrincipalId, id),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+		return status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var newSynchronizationJob SynchronizationJob
-	if err := json.Unmarshal(respBody, &newSynchronizationJob); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &newSynchronizationJob, status, nil
+	return status, nil
 }
 
-// Restart, TODO Criteria
-func (c *SynchronizationJobClient) Restart(ctx context.Context, id string, synchronizationJob SynchronizationJob, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+func (c *SynchronizationJobClient) Restart(ctx context.Context, id string, synchronizationJobRestartCriteria SynchronizationJobRestartCriteria, servicePrincipalId string) (int, error) {
 	var status int
 
-	if synchronizationJob.ID == nil {
-		return nil, status, errors.New("SynchronizationJobClient.Restart(): cannot restart SynchronizationJob with nil ID")
-	}
-
-	body, err := json.Marshal(synchronizationJob)
+	body, err := json.Marshal(synchronizationJobRestartCriteria)
 	if err != nil {
-		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/restart", *servicePrincipal.ID, id),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/restart", servicePrincipalId, id),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+		return status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var newSynchronizationJob SynchronizationJob
-	if err := json.Unmarshal(respBody, &newSynchronizationJob); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &newSynchronizationJob, status, nil
+	return status, nil
 }
 
 // Provision on demand
-func (c *SynchronizationJobClient) ProvisionOnDemand(ctx context.Context, id string, synchronizationJob SynchronizationJob, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+func (c *SynchronizationJobClient) ProvisionOnDemand(ctx context.Context, id string, synchronizationJobProvisionOnDemand *SynchronizationJobProvisionOnDemand, servicePrincipalId string) (int, error) {
 	var status int
 
-	if synchronizationJob.ID == nil {
-		return nil, status, errors.New("SynchronizationJobClient.ProvisionOnDemand(): cannot set provision on demand for SynchronizationJob with nil ID")
-	}
-
-	body, err := json.Marshal(synchronizationJob)
+	body, err := json.Marshal(synchronizationJobProvisionOnDemand)
 	if err != nil {
-		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/provisionOnDemand", *servicePrincipal.ID, id),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/provisionOnDemand", servicePrincipalId, id),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+		return status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var newSynchronizationJob SynchronizationJob
-	if err := json.Unmarshal(respBody, &newSynchronizationJob); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &newSynchronizationJob, status, nil
+	return status, nil
 }
 
-// Validate credentials, TODO params useSavedCredentials / credentials
-func (c *SynchronizationJobClient) ValidateCredentials(ctx context.Context, id string, synchronizationJob SynchronizationJob, servicePrincipal *ServicePrincipal) (*SynchronizationJob, int, error) {
+// Validate credentials
+func (c *SynchronizationJobClient) ValidateCredentials(ctx context.Context, id string, synchronizationJobValidateCredentials *SynchronizationJobValidateCredentials, servicePrincipalId string) (int, error) {
 	var status int
-
-	if synchronizationJob.ID == nil {
-		return nil, status, errors.New("SynchronizationJobClient.ValidateCredentials(): cannot validate credentials SynchronizationJob with nil ID")
-	}
-
-	body, err := json.Marshal(synchronizationJob)
+	body, err := json.Marshal(synchronizationJobValidateCredentials)
 	if err != nil {
-		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/validateCredentials", *servicePrincipal.ID, id),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/validateCredentials", servicePrincipalId, id),
 			HasTenantId: true,
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("SynchronizationJobClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
+	_, err = io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+		return status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var newSynchronizationJob SynchronizationJob
-	if err := json.Unmarshal(respBody, &newSynchronizationJob); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &newSynchronizationJob, status, nil
+	return status, nil
 }
