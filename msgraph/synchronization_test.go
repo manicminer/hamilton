@@ -3,7 +3,6 @@ package msgraph_test
 import (
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
@@ -21,10 +20,6 @@ func TestSynchronizationClient(t *testing.T) {
 		ID:          template.ID,
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-applicationTemplate-%s", c.RandomString)),
 	})
-
-	// It takes a moment for applications to be created
-	time.Sleep(4 * time.Second)
-
 	testSynchronizationJobClient_SetSecrets(t, c, msgraph.SynchronizationSecret{
 		Credentials: &[]msgraph.SynchronizationSecretKeyStringValuePair{
 			{
@@ -48,7 +43,6 @@ func TestSynchronizationClient(t *testing.T) {
 	testSynchronizationJobClient_Get(t, c, *job.ID, *app.ServicePrincipal.ID)
 	testSynchronizationJobClient_Start(t, c, *job.ID, *app.ServicePrincipal.ID)
 	testSynchronizationJobClient_List(t, c, *app.ServicePrincipal.ID)
-	time.Sleep(10 * time.Millisecond)
 	testSynchronizationJobClient_Pause(t, c, *job.ID, *app.ServicePrincipal.ID)
 	testSynchronizationJobClient_Restart(t, c, *job.ID, msgraph.SynchronizationJobRestartCriteria{}, *app.ServicePrincipal.ID)
 	testSynchronizationJobClient_Delete(t, c, *job.ID, *app.ServicePrincipal.ID)
@@ -64,11 +58,11 @@ func TestSynchronizationClient(t *testing.T) {
 func testSynchronizationJobClient_GetSecrets(t *testing.T, c *test.Test, servicePrincipalId string) (synchronizationSecret *msgraph.SynchronizationSecret) {
 	synchronizationSecret, status, err := c.SynchronizationJobClient.GetSecrets(c.Context, servicePrincipalId)
 	if err != nil {
-		t.Fatalf("SynchronizationJobClient.AddSecrets(): %v", err)
+		t.Fatalf("SynchronizationJobClient.GetSecrets(): %v", err)
 	}
 
 	if status < 200 || status >= 300 {
-		t.Fatalf("SynchronizationJobClient.AddSecrets(): invalid status: %d", status)
+		t.Fatalf("SynchronizationJobClient.GetSecrets(): invalid status: %d", status)
 	}
 	return
 }
@@ -82,7 +76,6 @@ func testSynchronizationJobClient_SetSecrets(t *testing.T, c *test.Test, s msgra
 	if status < 200 || status >= 300 {
 		t.Fatalf("SynchronizationJobClient.SetSecrets(): invalid status: %d", status)
 	}
-	return
 }
 
 func testSynchronizationJobClient_Create(t *testing.T, c *test.Test, a msgraph.SynchronizationJob, servicePrincipalId string) (synchronizationJob *msgraph.SynchronizationJob) {
@@ -137,7 +130,6 @@ func testSynchronizationJobClient_Start(t *testing.T, c *test.Test, jobId string
 	if status < 200 || status >= 300 {
 		t.Fatalf("SynchronizationJobClient.Start(): invalid status: %d", status)
 	}
-	return
 }
 
 func testSynchronizationJobClient_Pause(t *testing.T, c *test.Test, jobId string, servicePrincipalId string) {
@@ -149,7 +141,6 @@ func testSynchronizationJobClient_Pause(t *testing.T, c *test.Test, jobId string
 	if status < 200 || status >= 300 {
 		t.Fatalf("SynchronizationJobClient.Pause(): invalid status: %d", status)
 	}
-	return
 }
 
 func testSynchronizationJobClient_Restart(t *testing.T, c *test.Test, jobId string, synchronizationJobRestartCriteria msgraph.SynchronizationJobRestartCriteria, servicePrincipalId string) {
@@ -161,8 +152,6 @@ func testSynchronizationJobClient_Restart(t *testing.T, c *test.Test, jobId stri
 	if status < 200 || status >= 300 {
 		t.Fatalf("SynchronizationJobClient.Restart(): invalid status: %d", status)
 	}
-
-	return
 }
 
 func testSynchronizationJobClient_Delete(t *testing.T, c *test.Test, jobId string, servicePrincipalId string) {
@@ -174,5 +163,4 @@ func testSynchronizationJobClient_Delete(t *testing.T, c *test.Test, jobId strin
 	if status < 200 || status >= 300 {
 		t.Fatalf("SynchronizationJobClient.Delete(): invalid status: %d", status)
 	}
-	return
 }

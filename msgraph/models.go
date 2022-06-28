@@ -1344,7 +1344,7 @@ type SynchronizationStatus struct {
 	CountSuccssiveCompleteFailure      *int64                        `json:"countSuccessiveCompleteFailures,omitempty"`
 	EscrowsPruned                      *bool                         `json:"escrowsPruned,omitempty"`
 	LastExecution                      *SynchronizationTaskExecution `json:"lastExecution,omitempty"`
-	LastSuccessfulExecution            *SynchronizationTaskExecution `json:"lastExecution,omitempty"`
+	LastSuccessfulExecution            *SynchronizationTaskExecution `json:"lastSuccessfulExecution,omitempty"`
 	LastSuccessfulExecutionWithExports *SynchronizationTaskExecution `json:"lastSuccessfulExecutionWithExports,omitempty"`
 	Progress                           *[]SynchronizationProgress    `json:"progress,omitempty"`
 	Quarantine                         *SynchronizationQuarantine    `json:"quarantine,omitempty"`

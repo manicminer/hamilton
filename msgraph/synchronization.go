@@ -3,10 +3,11 @@ package msgraph
 import (
 	"context"
 	"encoding/json"
-	// "errors"
 	"fmt"
 	"io"
 	"net/http"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // SynchronizationJobClient performs operations on SynchronizationJobs.
@@ -21,12 +22,22 @@ func NewSynchronizationJobClient(tenantId string) *SynchronizationJobClient {
 	}
 }
 
+// Api calls give UnknownError on consistency errors
+func ServicePrincipalDoesNotExistConsistency(resp *http.Response, o *odata.OData) bool {
+	return o != nil && o.Error != nil && resp.StatusCode == http.StatusUnauthorized
+}
+
+// Api call give StatusConflict on consistency errors
+func ConflictConsistencyFailureFunc(resp *http.Response, o *odata.OData) bool {
+	return o != nil && o.Error != nil && resp.StatusCode == http.StatusConflict
+}
+
 // List returns a list of SynchronizationJobs
 func (c *SynchronizationJobClient) List(ctx context.Context, servicePrincipalId string) (*[]SynchronizationJob, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/", servicePrincipalId),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs", servicePrincipalId),
 			HasTenantId: true,
 		},
 	})
@@ -53,7 +64,8 @@ func (c *SynchronizationJobClient) List(ctx context.Context, servicePrincipalId 
 // Get retrieves a SynchronizationJob
 func (c *SynchronizationJobClient) Get(ctx context.Context, id string, servicePrincipalId string) (*SynchronizationJob, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ValidStatusCodes:       []int{http.StatusOK},
+		ConsistencyFailureFunc: ServicePrincipalDoesNotExistConsistency,
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s", servicePrincipalId, id),
 			HasTenantId: true,
@@ -80,9 +92,10 @@ func (c *SynchronizationJobClient) Get(ctx context.Context, id string, servicePr
 // GetSecrets retrieves a SynchronizationSecret
 func (c *SynchronizationJobClient) GetSecrets(ctx context.Context, servicePrincipalId string) (*SynchronizationSecret, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusOK},
+		ValidStatusCodes:       []int{http.StatusOK},
+		ConsistencyFailureFunc: ServicePrincipalDoesNotExistConsistency,
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/secrets/", servicePrincipalId),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/secrets", servicePrincipalId),
 			HasTenantId: true,
 		},
 	})
@@ -113,8 +126,9 @@ func (c *SynchronizationJobClient) SetSecrets(ctx context.Context, synchronizati
 		return status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 	resp, status, _, err := c.BaseClient.Put(ctx, PutHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		Body:                   body,
+		ConsistencyFailureFunc: ServicePrincipalDoesNotExistConsistency,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/secrets", servicePrincipalId),
 			HasTenantId: true,
@@ -141,11 +155,13 @@ func (c *SynchronizationJobClient) Create(ctx context.Context, synchronizationJo
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
+
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		Body:                   body,
+		ConsistencyFailureFunc: ServicePrincipalDoesNotExistConsistency,
+		ValidStatusCodes:       []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/", servicePrincipalId),
+			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs", servicePrincipalId),
 			HasTenantId: true,
 		},
 	})
@@ -171,7 +187,8 @@ func (c *SynchronizationJobClient) Create(ctx context.Context, synchronizationJo
 func (c *SynchronizationJobClient) Start(ctx context.Context, id string, servicePrincipalId string) (int, error) {
 	var status int
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: ConflictConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/start", servicePrincipalId, id),
 			HasTenantId: true,
@@ -192,7 +209,7 @@ func (c *SynchronizationJobClient) Start(ctx context.Context, id string, service
 // Delete
 func (c *SynchronizationJobClient) Delete(ctx context.Context, id string, servicePrincipalId string) (int, error) {
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
-		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ConsistencyFailureFunc: ConflictConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/", servicePrincipalId, id),
@@ -210,7 +227,8 @@ func (c *SynchronizationJobClient) Delete(ctx context.Context, id string, servic
 func (c *SynchronizationJobClient) Pause(ctx context.Context, id string, servicePrincipalId string) (int, error) {
 	var status int
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: ConflictConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/pause", servicePrincipalId, id),
 			HasTenantId: true,
@@ -238,8 +256,9 @@ func (c *SynchronizationJobClient) Restart(ctx context.Context, id string, synch
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ConsistencyFailureFunc: ConflictConsistencyFailureFunc,
+		Body:                   body,
+		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/restart", servicePrincipalId, id),
 			HasTenantId: true,
