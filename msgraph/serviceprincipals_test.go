@@ -401,7 +401,7 @@ func testServicePrincipalsClient_RemoveOwners(t *testing.T, c *test.Test, spId s
 	}
 }
 
-func testServicePrincipalsClient_AssignClaimsMappingPolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal){
+func testServicePrincipalsClient_AssignClaimsMappingPolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal) {
 	status, err := c.ServicePrincipalsClient.AssignClaimsMappingPolicy(c.Context, sp)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AssignClaimsMappingPolicy(): %v", err)
@@ -411,7 +411,7 @@ func testServicePrincipalsClient_AssignClaimsMappingPolicy(t *testing.T, c *test
 	}
 }
 
-func testServicePrincipalsClient_RemoveClaimsMappingPolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal, policyIds []string){
+func testServicePrincipalsClient_RemoveClaimsMappingPolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal, policyIds []string) {
 	status, err := c.ServicePrincipalsClient.RemoveClaimsMappingPolicy(c.Context, sp, &policyIds)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemoveClaimsMappingPolicy(): %v", err)
