@@ -1,6 +1,7 @@
 ## 0.47.0 (Unreleased)
 
 - Support for OIDC federated authentication by supplying an ID token directly ([#166](https://github.com/manicminer/hamilton/pull/166))
+- Support for [Azure AD Synchronization](https://docs.microsoft.com/en-us/graph/api/resources/synchronization-overview?view=graph-rest-beta) ([#167](https://github.com/manicminer/hamilton/pull/167))
 
 ## 0.46.0 (April 27, 2022)
 
