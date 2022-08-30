@@ -1,3 +1,7 @@
+## 0.47.1 (August 30, 2022)
+
+- Bugfix: Add missing configuration checks for OIDC methods in the `auth.Config.NewAuthorizer()` method ([#173](https://github.com/manicminer/hamilton/pull/173))
+
 ## 0.47.0 (August 25, 2022)
 
 - Support for OIDC federated authentication by supplying an ID token directly ([#166](https://github.com/manicminer/hamilton/pull/166))
