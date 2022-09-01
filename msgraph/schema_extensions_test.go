@@ -6,18 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
-
-type SchemaExtensionsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.SchemaExtensionsClient
-	randomString string
-}
 
 type MyExtensionProperties struct {
 	Property1 *string `json:"property1,omitempty"`
@@ -31,27 +24,8 @@ func (e *MyExtensionProperties) UnmarshalJSON(data []byte) error {
 }
 
 func TestSchemaExtensionsClient(t *testing.T) {
-	rs := test.RandomString()
-	c := SchemaExtensionsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	c.client = msgraph.NewSchemaExtensionsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
-
-	g := GroupsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
-	g.client.BaseClient.Authorizer = g.connection.Authorizer
-
-	u := UsersClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
-	u.client.BaseClient.Authorizer = u.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	property1 := msgraph.ExtensionSchemaProperty{
 		Name: utils.StringPtr("property1"),
@@ -88,19 +62,19 @@ func TestSchemaExtensionsClient(t *testing.T) {
 	// Replication seems to be a problem with schema extensions, no viable workaround as yet
 	time.Sleep(10 * time.Second)
 
-	testSchemaExtensionsGroup(t, g, schema)
-	testSchemaExtensionsUser(t, u, schema)
+	testSchemaExtensionsGroup(t, c, schema)
+	testSchemaExtensionsUser(t, c, schema)
 
 	testSchemaExtensionsClient_Delete(t, c, *schema.ID)
 }
 
-func testSchemaExtensionsGroup(t *testing.T, g GroupsClientTest, schema *msgraph.SchemaExtension) {
+func testSchemaExtensionsGroup(t *testing.T, c *test.Test, schema *msgraph.SchemaExtension) {
 	// First create a group having schema extension data expressed using msgraph.SchemaExtensionMap
-	group := testGroupsClient_Create(t, g, msgraph.Group{
+	group := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group"),
 		GroupTypes:      []msgraph.GroupType{msgraph.GroupTypeUnified},
 		MailEnabled:     utils.BoolPtr(true),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("test-365-group-%s", g.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-365-group-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 		SchemaExtensions: &[]msgraph.SchemaExtensionData{
 			{
@@ -114,7 +88,7 @@ func testSchemaExtensionsGroup(t *testing.T, g GroupsClientTest, schema *msgraph
 	})
 
 	// Then retrieve the group and populate using msgraph.SchemaExtensionGraph
-	group = testSchemaExtensionsGroup_Get(t, g, *group.ID, []msgraph.SchemaExtensionData{
+	group = testSchemaExtensionsGroup_Get(t, c, *group.ID, []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &msgraph.SchemaExtensionMap{},
@@ -139,10 +113,10 @@ func testSchemaExtensionsGroup(t *testing.T, g GroupsClientTest, schema *msgraph
 			},
 		},
 	}
-	testGroupsClient_Update(t, g, *group)
+	testGroupsClient_Update(t, c, *group)
 
 	// Finally retrieve the group and populate using MyExtensionProperties
-	group = testSchemaExtensionsGroup_Get(t, g, *group.ID, []msgraph.SchemaExtensionData{
+	group = testSchemaExtensionsGroup_Get(t, c, *group.ID, []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &MyExtensionProperties{},
@@ -156,15 +130,15 @@ func testSchemaExtensionsGroup(t *testing.T, g GroupsClientTest, schema *msgraph
 		t.Fatalf("Unexpected value for Property2 returned: %+v", val)
 	}
 
-	testGroupsClient_Delete(t, g, *group.ID)
+	testGroupsClient_Delete(t, c, *group.ID)
 }
 
-func testSchemaExtensionsGroup_Get(t *testing.T, g GroupsClientTest, id string, schemaExtensions []msgraph.SchemaExtensionData) (group *msgraph.Group) {
+func testSchemaExtensionsGroup_Get(t *testing.T, c *test.Test, id string, schemaExtensions []msgraph.SchemaExtensionData) (group *msgraph.Group) {
 	sel := []string{"id", "displayName"}
 	for _, s := range schemaExtensions {
 		sel = append(sel, s.ID)
 	}
-	group, status, err := g.client.GetWithSchemaExtensions(g.connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
+	group, status, err := c.GroupsClient.GetWithSchemaExtensions(c.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
 		t.Fatalf("GroupsClient.Get(): %v", err)
 	}
@@ -183,15 +157,15 @@ func testSchemaExtensionsGroup_Get(t *testing.T, g GroupsClientTest, id string, 
 	return
 }
 
-func testSchemaExtensionsUser(t *testing.T, u UsersClientTest, schema *msgraph.SchemaExtension) {
+func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.SchemaExtension) {
 	// First create a user having schema extension data expressed using msgraph.SchemaExtensionMap
-	user := testUsersClient_Create(t, u, msgraph.User{
+	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", u.randomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", u.randomString, u.connection.DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.RandomString, c.Connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
-			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", u.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 		SchemaExtensions: &[]msgraph.SchemaExtensionData{
 			{
@@ -205,7 +179,7 @@ func testSchemaExtensionsUser(t *testing.T, u UsersClientTest, schema *msgraph.S
 	})
 
 	// Then retrieve the user and populate using msgraph.SchemaExtensionGraph
-	user = testSchemaExtensionsUser_Get(t, u, *user.ID, []msgraph.SchemaExtensionData{
+	user = testSchemaExtensionsUser_Get(t, c, *user.ID, []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &msgraph.SchemaExtensionMap{},
@@ -230,10 +204,10 @@ func testSchemaExtensionsUser(t *testing.T, u UsersClientTest, schema *msgraph.S
 			},
 		},
 	}
-	testUsersClient_Update(t, u, *user)
+	testUsersClient_Update(t, c, *user)
 
 	// Finally retrieve the user and populate using MyExtensionProperties
-	user = testSchemaExtensionsUser_Get(t, u, *user.ID, []msgraph.SchemaExtensionData{
+	user = testSchemaExtensionsUser_Get(t, c, *user.ID, []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &MyExtensionProperties{},
@@ -247,15 +221,15 @@ func testSchemaExtensionsUser(t *testing.T, u UsersClientTest, schema *msgraph.S
 		t.Fatalf("Unexpected value for Property2 returned: %+v", val)
 	}
 
-	testUsersClient_Delete(t, u, *user.ID)
+	testUsersClient_Delete(t, c, *user.ID)
 }
 
-func testSchemaExtensionsUser_Get(t *testing.T, u UsersClientTest, id string, schemaExtensions []msgraph.SchemaExtensionData) (user *msgraph.User) {
+func testSchemaExtensionsUser_Get(t *testing.T, c *test.Test, id string, schemaExtensions []msgraph.SchemaExtensionData) (user *msgraph.User) {
 	sel := []string{"id", "displayName"}
 	for _, s := range schemaExtensions {
 		sel = append(sel, s.ID)
 	}
-	user, status, err := u.client.GetWithSchemaExtensions(u.connection.Context, id, odata.Query{Select: sel}, &schemaExtensions)
+	user, status, err := c.UsersClient.GetWithSchemaExtensions(c.Context, id, odata.Query{Select: sel}, &schemaExtensions)
 	if err != nil {
 		t.Fatalf("UsersClient.Get(): %v", err)
 	}
@@ -274,8 +248,8 @@ func testSchemaExtensionsUser_Get(t *testing.T, u UsersClientTest, id string, sc
 	return
 }
 
-func testSchemaExtensionsClient_Create(t *testing.T, c SchemaExtensionsClientTest, s msgraph.SchemaExtension) (schema *msgraph.SchemaExtension) {
-	schema, status, err := c.client.Create(c.connection.Context, s)
+func testSchemaExtensionsClient_Create(t *testing.T, c *test.Test, s msgraph.SchemaExtension) (schema *msgraph.SchemaExtension) {
+	schema, status, err := c.SchemaExtensionsClient.Create(c.Context, s)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Create(): %v", err)
 	}
@@ -291,8 +265,8 @@ func testSchemaExtensionsClient_Create(t *testing.T, c SchemaExtensionsClientTes
 	return
 }
 
-func testSchemaExtensionsClient_Get(t *testing.T, c SchemaExtensionsClientTest, id string) (schema *msgraph.SchemaExtension) {
-	schema, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
+func testSchemaExtensionsClient_Get(t *testing.T, c *test.Test, id string) (schema *msgraph.SchemaExtension) {
+	schema, status, err := c.SchemaExtensionsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Get(): %v", err)
 	}
@@ -305,8 +279,8 @@ func testSchemaExtensionsClient_Get(t *testing.T, c SchemaExtensionsClientTest, 
 	return
 }
 
-func testSchemaExtensionsClient_Update(t *testing.T, c SchemaExtensionsClientTest, s msgraph.SchemaExtension) {
-	status, err := c.client.Update(c.connection.Context, s)
+func testSchemaExtensionsClient_Update(t *testing.T, c *test.Test, s msgraph.SchemaExtension) {
+	status, err := c.SchemaExtensionsClient.Update(c.Context, s)
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Update(): %v", err)
 	}
@@ -315,8 +289,8 @@ func testSchemaExtensionsClient_Update(t *testing.T, c SchemaExtensionsClientTes
 	}
 }
 
-func testSchemaExtensionsClient_Delete(t *testing.T, c SchemaExtensionsClientTest, id string) {
-	status, err := c.client.Delete(c.connection.Context, id)
+func testSchemaExtensionsClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.SchemaExtensionsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("SchemaExtensionsClient.Delete(): %v", err)
 	}

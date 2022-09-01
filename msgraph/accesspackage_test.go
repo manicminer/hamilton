@@ -4,49 +4,33 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type AccessPackageTest struct {
-	connection      *test.Connection
-	apClient        *msgraph.AccessPackageClient        //apClient
-	apCatalogClient *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required
-	randomString    string
-}
-
 func TestAccessPackageClient(t *testing.T) {
-	c := AccessPackageTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-
-	// Init clients
-	c.apClient = msgraph.NewAccessPackageClient(c.connection.AuthConfig.TenantID)
-	c.apClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	c.apCatalogClient = msgraph.NewAccessPackageCatalogClient(c.connection.AuthConfig.TenantID)
-	c.apCatalogClient.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	// Create test catalog
 	accessPackageCatalog := testapCatalog_Create(t, c)
 
 	// Create AP
 	accessPackage := testAccessPackageClient_Create(t, c, msgraph.AccessPackage{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
-		CatalogId:           accessPackageCatalog.ID,
-		Description:         utils.StringPtr("Test Access Package"),
-		IsHidden:            utils.BoolPtr(false),
-		IsRoleScopesVisible: utils.BoolPtr(false),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
+		Catalog: &msgraph.AccessPackageCatalog{
+			ID: accessPackageCatalog.ID,
+		},
+		Description: utils.StringPtr("Test Access Package"),
+		IsHidden:    utils.BoolPtr(false),
 	})
 
 	// Update test
 	testAccessPackageClient_Update(t, c, msgraph.AccessPackage{
 		ID:          accessPackage.ID,
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-updated-%s", c.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-updated-%s", c.RandomString)),
 	})
 
 	// Other operations
@@ -60,8 +44,8 @@ func TestAccessPackageClient(t *testing.T) {
 
 // AP
 
-func testAccessPackageClient_Create(t *testing.T, c AccessPackageTest, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
-	accessPackage, status, err := c.apClient.Create(c.connection.Context, a)
+func testAccessPackageClient_Create(t *testing.T, c *test.Test, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
+	accessPackage, status, err := c.AccessPackageClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Create(): %v", err)
 	}
@@ -72,13 +56,13 @@ func testAccessPackageClient_Create(t *testing.T, c AccessPackageTest, a msgraph
 		t.Fatal("AccessPackageClient.Create(): accessPackage was nil")
 	}
 	if accessPackage.ID == nil {
-		t.Fatal("AccessPackageClient.Create(): acccessPackage.ID was nil")
+		t.Fatal("AccessPackageClient.Create(): accessPackage.ID was nil")
 	}
 	return
 }
 
-func testAccessPackageClient_Get(t *testing.T, c AccessPackageTest, id string) (accessPackage *msgraph.AccessPackage) {
-	accessPackage, status, err := c.apClient.Get(c.connection.Context, id, odata.Query{})
+func testAccessPackageClient_Get(t *testing.T, c *test.Test, id string) (accessPackage *msgraph.AccessPackage) {
+	accessPackage, status, err := c.AccessPackageClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Get(): %v", err)
 	}
@@ -91,8 +75,8 @@ func testAccessPackageClient_Get(t *testing.T, c AccessPackageTest, id string) (
 	return
 }
 
-func testAccessPackageClient_Update(t *testing.T, c AccessPackageTest, accessPackage msgraph.AccessPackage) {
-	status, err := c.apClient.Update(c.connection.Context, accessPackage)
+func testAccessPackageClient_Update(t *testing.T, c *test.Test, accessPackage msgraph.AccessPackage) {
+	status, err := c.AccessPackageClient.Update(c.Context, accessPackage)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Update(): %v", err)
 	}
@@ -101,8 +85,8 @@ func testAccessPackageClient_Update(t *testing.T, c AccessPackageTest, accessPac
 	}
 }
 
-func testAccessPackageClient_List(t *testing.T, c AccessPackageTest) (accessPackages *[]msgraph.AccessPackage) {
-	accessPackages, _, err := c.apClient.List(c.connection.Context, odata.Query{Top: 10})
+func testAccessPackageClient_List(t *testing.T, c *test.Test) (accessPackages *[]msgraph.AccessPackage) {
+	accessPackages, _, err := c.AccessPackageClient.List(c.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("AccessPackageClient.List(): %v", err)
 	}
@@ -112,8 +96,8 @@ func testAccessPackageClient_List(t *testing.T, c AccessPackageTest) (accessPack
 	return
 }
 
-func testAccessPackageClient_Delete(t *testing.T, c AccessPackageTest, id string) {
-	status, err := c.apClient.Delete(c.connection.Context, id)
+func testAccessPackageClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.AccessPackageClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Delete(): %v", err)
 	}
@@ -124,11 +108,11 @@ func testAccessPackageClient_Delete(t *testing.T, c AccessPackageTest, id string
 
 // AP Catalog
 
-func testapCatalog_Create(t *testing.T, c AccessPackageTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
+func testapCatalog_Create(t *testing.T, c *test.Test) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
+	accessPackageCatalog, _, err := c.AccessPackageCatalogClient.Create(c.Context, msgraph.AccessPackageCatalog{
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
 		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
-		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
+		State:               msgraph.AccessPackageCatalogStatePublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
@@ -139,8 +123,8 @@ func testapCatalog_Create(t *testing.T, c AccessPackageTest) (accessPackageCatal
 	return
 }
 
-func testapCatalog_Delete(t *testing.T, c AccessPackageTest, accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	_, err := c.apCatalogClient.Delete(c.connection.Context, *accessPackageCatalog.ID)
+func testapCatalog_Delete(t *testing.T, c *test.Test, accessPackageCatalog *msgraph.AccessPackageCatalog) {
+	_, err := c.AccessPackageCatalogClient.Delete(c.Context, *accessPackageCatalog.ID)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete() - Could not delete test AccessPackage catalog")
 	}

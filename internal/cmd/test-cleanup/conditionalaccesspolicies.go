@@ -9,19 +9,19 @@ import (
 )
 
 func cleanupConditionalAccessPolicies() {
-	conditionalAccessPoliciesClient := msgraph.NewConditionalAccessPolicyClient(tenantId)
+	conditionalAccessPoliciesClient := msgraph.NewConditionalAccessPoliciesClient(tenantId)
 	conditionalAccessPoliciesClient.BaseClient.Authorizer = authorizer
 
-	conditionalAccessPoliciess, _, err := conditionalAccessPoliciesClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})
+	conditionalAccessPolicies, _, err := conditionalAccessPoliciesClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	if conditionalAccessPoliciess == nil {
+	if conditionalAccessPolicies == nil {
 		log.Println("bad API response, nil ConditionalAccessPolicies result received")
 		return
 	}
-	for _, conditionalAccessPolicies := range *conditionalAccessPoliciess {
+	for _, conditionalAccessPolicies := range *conditionalAccessPolicies {
 		if conditionalAccessPolicies.ID == nil || conditionalAccessPolicies.DisplayName == nil {
 			log.Println("Conditional Access Policy returned with nil ID or DisplayName")
 			continue

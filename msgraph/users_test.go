@@ -4,86 +4,66 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type UsersClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.UsersClient
-	randomString string
-}
-
 func TestUsersClient(t *testing.T) {
-	rs := test.RandomString()
-	c := UsersClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	c.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.randomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.randomString, c.connection.DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.RandomString, c.Connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
-			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
 	testUsersClient_Get(t, c, *user.ID)
-	user.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-user-%s", c.randomString))
+	user.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-user-%s", c.RandomString))
 	testUsersClient_Update(t, c, *user)
 	testUsersClient_List(t, c)
 
 	manager := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user-manager"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-manager-%s", c.randomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-manager-%s@%s", c.randomString, c.connection.DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-manager-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-manager-%s@%s", c.RandomString, c.Connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
-			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
 	testUsersClient_Get(t, c, *manager.ID)
 
-	g := GroupsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	g.client = msgraph.NewGroupsClient(g.connection.AuthConfig.TenantID)
-	g.client.BaseClient.Authorizer = g.connection.Authorizer
-
-	newGroupParent := msgraph.Group{
+	groupParent := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-users"),
 		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
-	}
-	newGroupChild := msgraph.Group{
+	})
+	groupChild := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-child-users"),
 		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
-	}
+	})
 
-	groupParent := testGroupsClient_Create(t, g, newGroupParent)
-	groupChild := testGroupsClient_Create(t, g, newGroupChild)
 	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
-	testGroupsClient_AddMembers(t, g, groupParent)
+	testGroupsClient_AddMembers(t, c, groupParent)
 	groupChild.Members = &msgraph.Members{user.DirectoryObject}
-	testGroupsClient_AddMembers(t, g, groupChild)
+	testGroupsClient_AddMembers(t, c, groupChild)
 
 	testUsersClient_ListGroupMemberships(t, c, *user.ID)
-	testGroupsClient_Delete(t, g, *groupParent.ID)
-	testGroupsClient_Delete(t, g, *groupChild.ID)
+	testGroupsClient_Delete(t, c, *groupParent.ID)
+	testGroupsClient_Delete(t, c, *groupChild.ID)
 
 	testUsersClient_AssignManager(t, c, *user.ID, *manager)
 	testUsersClient_GetManager(t, c, *user.ID)
+	testUsersClient_DeleteManager(t, c, *user.ID)
 	testUsersClient_Delete(t, c, *manager.ID)
 
 	testUsersClient_Delete(t, c, *user.ID)
@@ -94,8 +74,8 @@ func TestUsersClient(t *testing.T) {
 	testUsersClient_DeletePermanently(t, c, *user.ID)
 }
 
-func testUsersClient_Create(t *testing.T, c UsersClientTest, u msgraph.User) (user *msgraph.User) {
-	user, status, err := c.client.Create(c.connection.Context, u)
+func testUsersClient_Create(t *testing.T, c *test.Test, u msgraph.User) (user *msgraph.User) {
+	user, status, err := c.UsersClient.Create(c.Context, u)
 	if err != nil {
 		t.Fatalf("UsersClient.Create(): %v", err)
 	}
@@ -111,8 +91,8 @@ func testUsersClient_Create(t *testing.T, c UsersClientTest, u msgraph.User) (us
 	return
 }
 
-func testUsersClient_Update(t *testing.T, c UsersClientTest, u msgraph.User) {
-	status, err := c.client.Update(c.connection.Context, u)
+func testUsersClient_Update(t *testing.T, c *test.Test, u msgraph.User) {
+	status, err := c.UsersClient.Update(c.Context, u)
 	if err != nil {
 		t.Fatalf("UsersClient.Update(): %v", err)
 	}
@@ -121,8 +101,8 @@ func testUsersClient_Update(t *testing.T, c UsersClientTest, u msgraph.User) {
 	}
 }
 
-func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.User) {
-	users, _, err := c.client.List(c.connection.Context, odata.Query{Top: 10, Expand: odata.Expand{Relationship: "memberOf"}})
+func testUsersClient_List(t *testing.T, c *test.Test) (users *[]msgraph.User) {
+	users, _, err := c.UsersClient.List(c.Context, odata.Query{Top: 10, Expand: odata.Expand{Relationship: "memberOf"}})
 	if err != nil {
 		t.Fatalf("UsersClient.List(): %v", err)
 	}
@@ -132,8 +112,8 @@ func testUsersClient_List(t *testing.T, c UsersClientTest) (users *[]msgraph.Use
 	return
 }
 
-func testUsersClient_Get(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
-	user, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
+func testUsersClient_Get(t *testing.T, c *test.Test, id string) (user *msgraph.User) {
+	user, status, err := c.UsersClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.Get(): %v", err)
 	}
@@ -146,8 +126,8 @@ func testUsersClient_Get(t *testing.T, c UsersClientTest, id string) (user *msgr
 	return
 }
 
-func testUsersClient_GetDeleted(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
-	user, status, err := c.client.GetDeleted(c.connection.Context, id, odata.Query{})
+func testUsersClient_GetDeleted(t *testing.T, c *test.Test, id string) (user *msgraph.User) {
+	user, status, err := c.UsersClient.GetDeleted(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.GetDeleted(): %v", err)
 	}
@@ -160,8 +140,8 @@ func testUsersClient_GetDeleted(t *testing.T, c UsersClientTest, id string) (use
 	return
 }
 
-func testUsersClient_Delete(t *testing.T, c UsersClientTest, id string) {
-	status, err := c.client.Delete(c.connection.Context, id)
+func testUsersClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.UsersClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("UsersClient.Delete(): %v", err)
 	}
@@ -170,8 +150,8 @@ func testUsersClient_Delete(t *testing.T, c UsersClientTest, id string) {
 	}
 }
 
-func testUsersClient_DeletePermanently(t *testing.T, c UsersClientTest, id string) {
-	status, err := c.client.DeletePermanently(c.connection.Context, id)
+func testUsersClient_DeletePermanently(t *testing.T, c *test.Test, id string) {
+	status, err := c.UsersClient.DeletePermanently(c.Context, id)
 	if err != nil {
 		t.Fatalf("UsersClient.DeletePermanently(): %v", err)
 	}
@@ -180,8 +160,8 @@ func testUsersClient_DeletePermanently(t *testing.T, c UsersClientTest, id strin
 	}
 }
 
-func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id string) (groups *[]msgraph.Group) {
-	groups, _, err := c.client.ListGroupMemberships(c.connection.Context, id, odata.Query{})
+func testUsersClient_ListGroupMemberships(t *testing.T, c *test.Test, id string) (groups *[]msgraph.Group) {
+	groups, _, err := c.UsersClient.ListGroupMemberships(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.ListGroupMemberships(): %v", err)
 	}
@@ -197,8 +177,8 @@ func testUsersClient_ListGroupMemberships(t *testing.T, c UsersClientTest, id st
 	return
 }
 
-func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest, expectedId string) (deletedUsers *[]msgraph.User) {
-	deletedUsers, status, err := c.client.ListDeleted(c.connection.Context, odata.Query{
+func testUsersClient_ListDeleted(t *testing.T, c *test.Test, expectedId string) (deletedUsers *[]msgraph.User) {
+	deletedUsers, status, err := c.UsersClient.ListDeleted(c.Context, odata.Query{
 		Filter: fmt.Sprintf("id eq '%s'", expectedId),
 		Top:    10,
 	})
@@ -227,8 +207,8 @@ func testUsersClient_ListDeleted(t *testing.T, c UsersClientTest, expectedId str
 	return
 }
 
-func testUsersClient_RestoreDeleted(t *testing.T, c UsersClientTest, id string) {
-	user, status, err := c.client.RestoreDeleted(c.connection.Context, id)
+func testUsersClient_RestoreDeleted(t *testing.T, c *test.Test, id string) {
+	user, status, err := c.UsersClient.RestoreDeleted(c.Context, id)
 	if err != nil {
 		t.Fatalf("UsersClient.RestoreDeleted(): %v", err)
 	}
@@ -246,8 +226,8 @@ func testUsersClient_RestoreDeleted(t *testing.T, c UsersClientTest, id string) 
 	}
 }
 
-func testUsersClient_AssignManager(t *testing.T, c UsersClientTest, id string, manager msgraph.User) {
-	status, err := c.client.AssignManager(c.connection.Context, id, manager)
+func testUsersClient_AssignManager(t *testing.T, c *test.Test, id string, manager msgraph.User) {
+	status, err := c.UsersClient.AssignManager(c.Context, id, manager)
 	if err != nil {
 		t.Fatalf("UsersClient.AssignManager(): %v", err)
 	}
@@ -256,8 +236,8 @@ func testUsersClient_AssignManager(t *testing.T, c UsersClientTest, id string, m
 	}
 }
 
-func testUsersClient_GetManager(t *testing.T, c UsersClientTest, id string) (user *msgraph.User) {
-	user, status, err := c.client.GetManager(c.connection.Context, id)
+func testUsersClient_GetManager(t *testing.T, c *test.Test, id string) (user *msgraph.User) {
+	user, status, err := c.UsersClient.GetManager(c.Context, id)
 	if err != nil {
 		t.Fatalf("UsersClient.GetManager(): %v", err)
 	}
@@ -266,6 +246,17 @@ func testUsersClient_GetManager(t *testing.T, c UsersClientTest, id string) (use
 	}
 	if user == nil {
 		t.Fatal("UsersClient.GetManager(): user was nil")
+	}
+	return
+}
+
+func testUsersClient_DeleteManager(t *testing.T, c *test.Test, id string) (user *msgraph.User) {
+	status, err := c.UsersClient.DeleteManager(c.Context, id)
+	if err != nil {
+		t.Fatalf("UsersClient.DeleteManager(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.DeleteManager(): invalid status: %d", status)
 	}
 	return
 }

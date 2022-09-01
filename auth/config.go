@@ -21,6 +21,9 @@ type Config struct {
 	// Azure Active Directory tenant to connect to, should be a valid UUID
 	TenantID string
 
+	// Auxiliary tenant IDs for which to obtain tokens in a multi-tenant scenario
+	AuxiliaryTenantIDs []string
+
 	// Client ID for the application used to authenticate the connection
 	ClientID string
 
@@ -50,4 +53,19 @@ type Config struct {
 
 	// Specifies the password to authenticate with using client secret authentication
 	ClientSecret string
+
+	// Enables OIDC Federated authentication
+	EnableClientFederatedAuth bool
+
+	// Specifies the federated assertion to authenticate using client credentials
+	FederatedAssertion string
+
+	// Enables GitHub OIDC authentication
+	EnableGitHubOIDCAuth bool
+
+	// The URL for GitHub's OIDC provider
+	IDTokenRequestURL string
+
+	// The bearer token for the request to GitHub's OIDC provider
+	IDTokenRequestToken string
 }

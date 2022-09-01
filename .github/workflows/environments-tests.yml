@@ -1,0 +1,27 @@
+---
+name: Tests - environments
+on:
+  pull_request:
+    types: ["opened", "synchronize"]
+    paths:
+      - "environments/**.go"
+      - ".github/workflows/environments-tests.yml"
+
+jobs:
+  test-environments:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17.6
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: go test -count=1 -race -v ./environments
+
+# vim: set ts=2 sts=2 sw=2 et:

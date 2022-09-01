@@ -72,7 +72,10 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: ownersNotReplicated,
-		ValidStatusCodes:       []int{http.StatusCreated},
+		OData: odata.Query{
+			Metadata: odata.MetadataFull,
+		},
+		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
 			Entity:      "/groups",
 			HasTenantId: true,
@@ -203,6 +206,13 @@ func (c *GroupsClient) GetDeleted(ctx context.Context, id string, query odata.Qu
 func (c *GroupsClient) Update(ctx context.Context, group Group) (int, error) {
 	var status int
 
+	if group.ID == nil {
+		return status, fmt.Errorf("cannot update group with nil ID")
+	}
+
+	groupId := *group.ID
+	group.ID = nil
+
 	body, err := json.Marshal(group)
 	if err != nil {
 		return status, fmt.Errorf("json.Marshal(): %v", err)
@@ -211,9 +221,12 @@ func (c *GroupsClient) Update(ctx context.Context, group Group) (int, error) {
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
-		ValidStatusCodes:       []int{http.StatusNoContent},
+		ValidStatusCodes: []int{
+			http.StatusOK,
+			http.StatusNoContent,
+		},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/groups/%s", *group.ID),
+			Entity:      fmt.Sprintf("/groups/%s", groupId),
 			HasTenantId: true,
 		},
 	})

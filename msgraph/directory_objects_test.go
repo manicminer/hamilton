@@ -4,72 +4,46 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type DirectoryObjectsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.DirectoryObjectsClient
-	randomString string
-}
-
 func TestDirectoryObjectsClient(t *testing.T) {
-	rs := test.RandomString()
-	c := DirectoryObjectsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	c.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
-	g := GroupsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	g.client = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
-	g.client.BaseClient.Authorizer = c.connection.Authorizer
-
-	u := UsersClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-	u.client = msgraph.NewUsersClient(c.connection.AuthConfig.TenantID)
-	u.client.BaseClient.Authorizer = c.connection.Authorizer
-
-	user := testUsersClient_Create(t, u, msgraph.User{
+	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-directoryobject-%s", c.randomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-directoryobject-%s@%s", c.randomString, c.connection.DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-directoryobject-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-directoryobject-%s@%s", c.RandomString, c.Connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
-			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
 
 	newGroup1 := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-directoryobject-member"),
 		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-directoryobject-member-%s", c.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-directoryobject-member-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	newGroup1.Members = &msgraph.Members{user.DirectoryObject}
-	group1 := testGroupsClient_Create(t, g, newGroup1)
+	group1 := testGroupsClient_Create(t, c, newGroup1)
 
 	newGroup2 := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-directoryobject"),
 		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-directoryobject-%s", c.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-directoryobject-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 		Members: &msgraph.Members{
 			group1.DirectoryObject,
 			user.DirectoryObject,
 		},
 	}
-	group2 := testGroupsClient_Create(t, g, newGroup2)
+	group2 := testGroupsClient_Create(t, c, newGroup2)
 
 	testDirectoryObjectsClient_Get(t, c, *user.ID)
 	testDirectoryObjectsClient_Get(t, c, *group1.ID)
@@ -79,8 +53,8 @@ func TestDirectoryObjectsClient(t *testing.T) {
 	testDirectoryObjectsClient_Delete(t, c, *group1.ID)
 }
 
-func testDirectoryObjectsClient_Get(t *testing.T, c DirectoryObjectsClientTest, id string) (directoryObject *msgraph.DirectoryObject) {
-	directoryObject, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
+func testDirectoryObjectsClient_Get(t *testing.T, c *test.Test, id string) (directoryObject *msgraph.DirectoryObject) {
+	directoryObject, status, err := c.DirectoryObjectsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.Get(): %v", err)
 	}
@@ -96,8 +70,8 @@ func testDirectoryObjectsClient_Get(t *testing.T, c DirectoryObjectsClientTest, 
 	return
 }
 
-func testDirectoryObjectsClient_GetByIds(t *testing.T, c DirectoryObjectsClientTest, ids []string, types []odata.ShortType) (directoryObjects *[]msgraph.DirectoryObject) {
-	directoryObjects, status, err := c.client.GetByIds(c.connection.Context, ids, types)
+func testDirectoryObjectsClient_GetByIds(t *testing.T, c *test.Test, ids []string, types []odata.ShortType) (directoryObjects *[]msgraph.DirectoryObject) {
+	directoryObjects, status, err := c.DirectoryObjectsClient.GetByIds(c.Context, ids, types)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.GetByIds(): %v", err)
 	}
@@ -113,8 +87,8 @@ func testDirectoryObjectsClient_GetByIds(t *testing.T, c DirectoryObjectsClientT
 	return
 }
 
-func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c DirectoryObjectsClientTest, id string, securityEnabledOnly bool, expected []string) (directoryObjects *[]msgraph.DirectoryObject) {
-	directoryObjects, status, err := c.client.GetMemberGroups(c.connection.Context, id, securityEnabledOnly)
+func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c *test.Test, id string, securityEnabledOnly bool, expected []string) (directoryObjects *[]msgraph.DirectoryObject) {
+	directoryObjects, status, err := c.DirectoryObjectsClient.GetMemberGroups(c.Context, id, securityEnabledOnly)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.GetMemberGroups(): %v", err)
 	}
@@ -146,8 +120,8 @@ func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c DirectoryObjects
 	return
 }
 
-func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c DirectoryObjectsClientTest, id string, securityEnabledOnly bool, expected []string) (directoryObjects *[]msgraph.DirectoryObject) {
-	directoryObjects, status, err := c.client.GetMemberObjects(c.connection.Context, id, securityEnabledOnly)
+func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c *test.Test, id string, securityEnabledOnly bool, expected []string) (directoryObjects *[]msgraph.DirectoryObject) {
+	directoryObjects, status, err := c.DirectoryObjectsClient.GetMemberObjects(c.Context, id, securityEnabledOnly)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.GetMemberObjects(): %v", err)
 	}
@@ -179,8 +153,8 @@ func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c DirectoryObject
 	return
 }
 
-func testDirectoryObjectsClient_Delete(t *testing.T, c DirectoryObjectsClientTest, id string) {
-	status, err := c.client.Delete(c.connection.Context, id)
+func testDirectoryObjectsClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.DirectoryObjectsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("DirectoryObjectsClient.Delete(): %v", err)
 	}

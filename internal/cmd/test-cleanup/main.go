@@ -42,7 +42,7 @@ func init() {
 	}
 
 	var err error
-	authorizer, err = authConfig.NewAuthorizer(ctx, auth.MsGraph)
+	authorizer, err = authConfig.NewAuthorizer(ctx, environments.Global.MsGraph)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -50,6 +50,7 @@ func init() {
 
 func main() {
 	log.Println("Starting test cleanup...")
+	cleanupAdministrativeUnits()
 	cleanupConditionalAccessPolicies()
 	cleanupNamedLocations()
 	cleanupServicePrincipals()

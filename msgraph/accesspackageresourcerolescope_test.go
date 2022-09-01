@@ -4,65 +4,17 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type AccessPackageResourceRoleScopeTest struct {
-	connection                *test.Connection
-	apClient                  *msgraph.AccessPackageClient        //apClient
-	apCatalogClient           *msgraph.AccessPackageCatalogClient //Client for Catalog Test to associate as required
-	apResourceRequestClient   *msgraph.AccessPackageResourceRequestClient
-	apResourceClient          *msgraph.AccessPackageResourceClient
-	groupsClient              *msgraph.GroupsClient
-	apResourceRoleScopeClient *msgraph.AccessPackageResourceRoleScopeClient
-	randomString              string
-}
-
 func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
-	c := AccessPackageResourceRoleScopeTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
-	// Init clients
-	c.apClient = msgraph.NewAccessPackageClient(c.connection.AuthConfig.TenantID)
-	c.apClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	c.apCatalogClient = msgraph.NewAccessPackageCatalogClient(c.connection.AuthConfig.TenantID)
-	c.apCatalogClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	c.groupsClient = msgraph.NewGroupsClient(c.connection.AuthConfig.TenantID)
-	c.groupsClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	c.apResourceRequestClient = msgraph.NewAccessPackageResourceRequestClient(c.connection.AuthConfig.TenantID)
-	c.apResourceRequestClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	c.apResourceClient = msgraph.NewAccessPackageResourceClient(c.connection.AuthConfig.TenantID)
-	c.apResourceClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	c.apResourceRoleScopeClient = msgraph.NewAccessPackageResourceRoleScopeClient(c.connection.AuthConfig.TenantID)
-	c.apResourceRoleScopeClient.BaseClient.Authorizer = c.connection.Authorizer
-
-	token, err := c.connection.Authorizer.Token()
-	if err != nil {
-		t.Fatalf("could not acquire access token: %v", err)
-	}
-	claims, err := auth.ParseClaims(token)
-	if err != nil {
-		t.Fatalf("could not parse claims: %v", err)
-	}
-
-	o := DirectoryObjectsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-	o.client = msgraph.NewDirectoryObjectsClient(c.connection.AuthConfig.TenantID)
-	o.client.BaseClient.Authorizer = o.connection.Authorizer
-	self := testDirectoryObjectsClient_Get(t, o, claims.ObjectId)
+	self := testDirectoryObjectsClient_Get(t, c, c.Claims.ObjectId)
 
 	// Create group
 	aadGroup := testAccessPackageResourceRoleScopeGroup_Create(t, c, msgraph.Owners{*self})
@@ -72,16 +24,17 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 
 	// Create access package
 	accessPackage := testAccessPackageResourceRoleScopeAP_Create(t, c, msgraph.AccessPackage{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.randomString)),
-		CatalogId:           accessPackageCatalog.ID,
-		Description:         utils.StringPtr("Test Access Package"),
-		IsHidden:            utils.BoolPtr(false),
-		IsRoleScopesVisible: utils.BoolPtr(false),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-accesspackage-%s", c.RandomString)),
+		Catalog: &msgraph.AccessPackageCatalog{
+			ID: accessPackageCatalog.ID,
+		},
+		Description: utils.StringPtr("Test Access Package"),
+		IsHidden:    utils.BoolPtr(false),
 	})
 
 	// Create Resource Request and poll for ID
 	accessPackageResourceRequest := testAccessPackageResourceRoleScopeResourceRequest_Create(t, c, msgraph.AccessPackageResourceRequest{
-		CatalogId:   accessPackage.CatalogId,
+		CatalogId:   accessPackage.Catalog.ID,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
 			OriginId:     aadGroup.ID,
@@ -152,8 +105,8 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 
 // AccessPackageResourceScope
 
-func testAccessPackageResourceRoleScopeClient_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackageResourceRoleScope) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
-	accessPackageResourceRoleScope, status, err := c.apResourceRoleScopeClient.Create(c.connection.Context, a)
+func testAccessPackageResourceRoleScopeClient_Create(t *testing.T, c *test.Test, a msgraph.AccessPackageResourceRoleScope) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
+	accessPackageResourceRoleScope, status, err := c.AccessPackageResourceRoleScopeClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Create(): %v", err)
 	}
@@ -169,8 +122,8 @@ func testAccessPackageResourceRoleScopeClient_Create(t *testing.T, c AccessPacka
 	return
 }
 
-func testAccessPackageResourceRoleScopeClient_Get(t *testing.T, c AccessPackageResourceRoleScopeTest, accessPackageId string, id string) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
-	accessPackageResourceRoleScope, status, err := c.apResourceRoleScopeClient.Get(c.connection.Context, accessPackageId, id)
+func testAccessPackageResourceRoleScopeClient_Get(t *testing.T, c *test.Test, accessPackageId string, id string) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
+	accessPackageResourceRoleScope, status, err := c.AccessPackageResourceRoleScopeClient.Get(c.Context, accessPackageId, id)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Get(): %v", err)
 	}
@@ -183,8 +136,8 @@ func testAccessPackageResourceRoleScopeClient_Get(t *testing.T, c AccessPackageR
 	return
 }
 
-func testAccessPackageResourceRoleScopeClient_List(t *testing.T, c AccessPackageResourceRoleScopeTest, accessPackageId string) (accessPackageResourceRoleScope *[]msgraph.AccessPackageResourceRoleScope) {
-	accessPackageResourceRoleScopes, _, err := c.apResourceRoleScopeClient.List(c.connection.Context, odata.Query{}, accessPackageId)
+func testAccessPackageResourceRoleScopeClient_List(t *testing.T, c *test.Test, accessPackageId string) (accessPackageResourceRoleScope *[]msgraph.AccessPackageResourceRoleScope) {
+	accessPackageResourceRoleScopes, _, err := c.AccessPackageResourceRoleScopeClient.List(c.Context, odata.Query{}, accessPackageId)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.List(): %v", err)
 	}
@@ -196,8 +149,8 @@ func testAccessPackageResourceRoleScopeClient_List(t *testing.T, c AccessPackage
 
 // AccessPackageResourceRequest
 
-func testAccessPackageResourceRoleScopeResourceRequest_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackageResourceRequest, pollForId bool) (accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
-	accessPackageResourceRequest, status, err := c.apResourceRequestClient.Create(c.connection.Context, a, pollForId)
+func testAccessPackageResourceRoleScopeResourceRequest_Create(t *testing.T, c *test.Test, a msgraph.AccessPackageResourceRequest, pollForId bool) (accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
+	accessPackageResourceRequest, status, err := c.AccessPackageResourceRequestClient.Create(c.Context, a, pollForId)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Create(): %v", err)
 	}
@@ -208,13 +161,13 @@ func testAccessPackageResourceRoleScopeResourceRequest_Create(t *testing.T, c Ac
 		t.Fatal("AccessPackageResourceRequestClient.Create(): accessPackageResourceRequest was nil")
 	}
 	if accessPackageResourceRequest.ID == nil {
-		t.Fatal("AccessPackageResourceRequestClient.Create(): acccessPackageResourceRequest.ID was nil")
+		t.Fatal("AccessPackageResourceRequestClient.Create(): accessPackageResourceRequest.ID was nil")
 	}
 	return
 }
 
-func testAccessPackageResourceRoleScopeResourceRequest_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
-	status, err := c.apResourceRequestClient.Delete(c.connection.Context, *accessPackageResourceRequest)
+func testAccessPackageResourceRoleScopeResourceRequest_Delete(t *testing.T, c *test.Test, accessPackageResourceRequest *msgraph.AccessPackageResourceRequest) {
+	status, err := c.AccessPackageResourceRequestClient.Delete(c.Context, *accessPackageResourceRequest)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Delete(): %v", err)
 	}
@@ -225,8 +178,8 @@ func testAccessPackageResourceRoleScopeResourceRequest_Delete(t *testing.T, c Ac
 
 // AccessPackage
 
-func testAccessPackageResourceRoleScopeAP_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
-	accessPackage, status, err := c.apClient.Create(c.connection.Context, a)
+func testAccessPackageResourceRoleScopeAP_Create(t *testing.T, c *test.Test, a msgraph.AccessPackage) (accessPackage *msgraph.AccessPackage) {
+	accessPackage, status, err := c.AccessPackageClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Create(): %v", err)
 	}
@@ -237,13 +190,13 @@ func testAccessPackageResourceRoleScopeAP_Create(t *testing.T, c AccessPackageRe
 		t.Fatal("AccessPackageClient.Create(): accessPackage was nil")
 	}
 	if accessPackage.ID == nil {
-		t.Fatal("AccessPackageClient.Create(): acccessPackage.ID was nil")
+		t.Fatal("AccessPackageClient.Create(): accessPackage.ID was nil")
 	}
 	return
 }
 
-func testAccessPackageResourceRoleScopeAP_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, id string) {
-	status, err := c.apClient.Delete(c.connection.Context, id)
+func testAccessPackageResourceRoleScopeAP_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.AccessPackageClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageClient.Delete(): %v", err)
 	}
@@ -254,11 +207,11 @@ func testAccessPackageResourceRoleScopeAP_Delete(t *testing.T, c AccessPackageRe
 
 // AccessPackageCatalog
 
-func testAccessPackageResourceRoleScopeCatalog_Create(t *testing.T, c AccessPackageResourceRoleScopeTest) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
-	accessPackageCatalog, _, err := c.apCatalogClient.Create(c.connection.Context, msgraph.AccessPackageCatalog{
-		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.randomString)),
+func testAccessPackageResourceRoleScopeCatalog_Create(t *testing.T, c *test.Test) (accessPackageCatalog *msgraph.AccessPackageCatalog) {
+	accessPackageCatalog, _, err := c.AccessPackageCatalogClient.Create(c.Context, msgraph.AccessPackageCatalog{
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-catalog-%s", c.RandomString)),
 		CatalogType:         msgraph.AccessPackageCatalogTypeUserManaged,
-		CatalogStatus:       msgraph.AccessPackageCatalogStatusPublished,
+		State:               msgraph.AccessPackageCatalogStatePublished,
 		Description:         utils.StringPtr("Test Access Catalog"),
 		IsExternallyVisible: utils.BoolPtr(false),
 	})
@@ -269,18 +222,18 @@ func testAccessPackageResourceRoleScopeCatalog_Create(t *testing.T, c AccessPack
 	return
 }
 
-func testAccessPackageResourceRoleScopeCatalog_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, id string) {
-	_, err := c.apCatalogClient.Delete(c.connection.Context, id)
+func testAccessPackageResourceRoleScopeCatalog_Delete(t *testing.T, c *test.Test, id string) {
+	_, err := c.AccessPackageCatalogClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Delete() - Could not delete test AccessPackage catalog")
 	}
 }
 
-func testAccessPackageResourceRoleScopeGroup_Create(t *testing.T, c AccessPackageResourceRoleScopeTest, self msgraph.Owners) (group *msgraph.Group) {
-	group, _, err := c.groupsClient.Create(c.connection.Context, msgraph.Group{
-		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.randomString)),
+func testAccessPackageResourceRoleScopeGroup_Create(t *testing.T, c *test.Test, self msgraph.Owners) (group *msgraph.Group) {
+	group, _, err := c.GroupsClient.Create(c.Context, msgraph.Group{
+		DisplayName:     utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.RandomString)),
 		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.randomString)),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("%s-%s", "testapresourcerequest", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 		Owners:          &self,
 	})
@@ -291,8 +244,8 @@ func testAccessPackageResourceRoleScopeGroup_Create(t *testing.T, c AccessPackag
 	return
 }
 
-func testAccessPackageResourceRoleScopeGroup_Delete(t *testing.T, c AccessPackageResourceRoleScopeTest, group *msgraph.Group) {
-	_, err := c.groupsClient.Delete(c.connection.Context, *group.ID)
+func testAccessPackageResourceRoleScopeGroup_Delete(t *testing.T, c *test.Test, group *msgraph.Group) {
+	_, err := c.GroupsClient.Delete(c.Context, *group.ID)
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}
@@ -300,8 +253,8 @@ func testAccessPackageResourceRoleScopeGroup_Delete(t *testing.T, c AccessPackag
 
 // AccessPackageResource
 
-func testAccessPackageResourceRoleScopeResource_Get(t *testing.T, c AccessPackageResourceRoleScopeTest, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
-	accessPackageResource, status, err := c.apResourceClient.Get(c.connection.Context, catalogId, originId)
+func testAccessPackageResourceRoleScopeResource_Get(t *testing.T, c *test.Test, catalogId string, originId string) (accessPackageResource *msgraph.AccessPackageResource) {
+	accessPackageResource, status, err := c.AccessPackageResourceClient.Get(c.Context, catalogId, originId)
 
 	if err != nil {
 		t.Fatalf("AccessPackageCatalogClient.Get(): %v", err)

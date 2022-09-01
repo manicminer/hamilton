@@ -5,44 +5,23 @@ import (
 	"testing"
 	"time"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type AuthenticationMethodsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.AuthenticationMethodsClient
-	randomString string
-}
-
 func TestAuthenticationMethodsClient(t *testing.T) {
-	rs := test.RandomString()
-	c := AuthenticationMethodsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
-	c.client = msgraph.NewAuthenticationMethodsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
-
-	u := UsersClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: rs,
-	}
-
-	u.client = msgraph.NewUsersClient(u.connection.AuthConfig.TenantID)
-	u.client.BaseClient.Authorizer = u.connection.Authorizer
-
-	user := testUsersClient_Create(t, u, msgraph.User{
+	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user-authenticationmethods"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-authenticationmethods-%s", c.randomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-authenticationmethods-%s@%s", c.randomString, c.connection.DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-authenticationmethods-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-authenticationmethods-%s@%s", c.RandomString, c.Connection.DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
-			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.randomString)),
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
 
@@ -68,12 +47,12 @@ func TestAuthenticationMethodsClient(t *testing.T) {
 	emailAuthMethod.EmailAddress = utils.StringPtr("test-user-authenticationmethods@contoso.com")
 	testAuthMethods_UpdateEmailMethod(t, c, *user.ID, *emailAuthMethod)
 	testAuthMethods_DeleteEmailMethod(t, c, *user.ID, *emailAuthMethod.ID)
-	_ = testAuthMetods_ListPasswordMethods(t, c, *user.ID)
-	testUsersClient_Delete(t, u, *user.ID)
+	_ = testAuthMethods_ListPasswordMethods(t, c, *user.ID)
+	testUsersClient_Delete(t, c, *user.ID)
 }
 
-func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
-	authMethods, status, err := c.client.List(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_List(t *testing.T, c *test.Test, userID string) (authMethods *[]msgraph.AuthenticationMethod) {
+	authMethods, status, err := c.AuthenticationMethodsClient.List(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.List(): invalid status: %d", status)
 	}
@@ -88,8 +67,8 @@ func testAuthMethods_List(t *testing.T, c AuthenticationMethodsClientTest, userI
 	return
 }
 
-func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
-	fido2Methods, status, err := c.client.ListFido2Methods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListFido2Methods(t *testing.T, c *test.Test, userID string) (fido2Methods *[]msgraph.Fido2AuthenticationMethod) {
+	fido2Methods, status, err := c.AuthenticationMethodsClient.ListFido2Methods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListFido2Methods(): invalid status: %d", status)
 	}
@@ -104,8 +83,8 @@ func testAuthMethods_ListFido2Methods(t *testing.T, c AuthenticationMethodsClien
 	return
 }
 
-func testAuthMethods_ListMicrosoftAuthenticatorMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (msAuthMethods *[]msgraph.MicrosoftAuthenticatorAuthenticationMethod) {
-	msAuthMethods, status, err := c.client.ListMicrosoftAuthenticatorMethods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListMicrosoftAuthenticatorMethods(t *testing.T, c *test.Test, userID string) (msAuthMethods *[]msgraph.MicrosoftAuthenticatorAuthenticationMethod) {
+	msAuthMethods, status, err := c.AuthenticationMethodsClient.ListMicrosoftAuthenticatorMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListMicrosoftAuthenticatorMethods(): invalid status: %d", status)
 	}
@@ -120,8 +99,8 @@ func testAuthMethods_ListMicrosoftAuthenticatorMethods(t *testing.T, c Authentic
 	return
 }
 
-func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (windowsHelloMethods *[]msgraph.WindowsHelloForBusinessAuthenticationMethod) {
-	windowsHelloMethods, status, err := c.client.ListWindowsHelloMethods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c *test.Test, userID string) (windowsHelloMethods *[]msgraph.WindowsHelloForBusinessAuthenticationMethod) {
+	windowsHelloMethods, status, err := c.AuthenticationMethodsClient.ListWindowsHelloMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListWindowsHelloMethods(): invalid status: %d", status)
 	}
@@ -136,7 +115,7 @@ func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c AuthenticationMetho
 	return
 }
 
-func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
+func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c *test.Test, userID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
 	startPassTime := time.Now().UTC()
 	startPassTime.AddDate(0, 0, 1)
 	tempPass := msgraph.TemporaryAccessPassAuthenticationMethod{
@@ -145,7 +124,7 @@ func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c Authenticat
 		IsUsableOnce:      utils.BoolPtr(true),
 	}
 
-	tempAccessPass, status, err := c.client.CreateTemporaryAccessPassMethod(c.connection.Context, userID, tempPass)
+	tempAccessPass, status, err := c.AuthenticationMethodsClient.CreateTemporaryAccessPassMethod(c.Context, userID, tempPass)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.CreateTemporaryAccessPassMethod(): invalid status: %d", status)
 	}
@@ -160,8 +139,8 @@ func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c Authenticat
 	return
 }
 
-func testAuthMethods_GetTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
-	tempAccessPass, status, err := c.client.GetTemporaryAccessPassMethod(c.connection.Context, userID, ID, odata.Query{})
+func testAuthMethods_GetTemporaryAccessPassMethod(t *testing.T, c *test.Test, userID, ID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
+	tempAccessPass, status, err := c.AuthenticationMethodsClient.GetTemporaryAccessPassMethod(c.Context, userID, ID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.GetTemporaryAccessPassMethod(): invalid status: %d", status)
 	}
@@ -176,8 +155,8 @@ func testAuthMethods_GetTemporaryAccessPassMethod(t *testing.T, c Authentication
 	return
 }
 
-func testAuthMethods_ListTemporaryAccessPassMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (tempAccessPasses *[]msgraph.TemporaryAccessPassAuthenticationMethod) {
-	tempAccessPasses, status, err := c.client.ListTemporaryAccessPassMethods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListTemporaryAccessPassMethods(t *testing.T, c *test.Test, userID string) (tempAccessPasses *[]msgraph.TemporaryAccessPassAuthenticationMethod) {
+	tempAccessPasses, status, err := c.AuthenticationMethodsClient.ListTemporaryAccessPassMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListTemporaryAccessPassMethod(): invalid status: %d", status)
 	}
@@ -192,9 +171,9 @@ func testAuthMethods_ListTemporaryAccessPassMethods(t *testing.T, c Authenticati
 	return
 }
 
-func testAuthMethods_DeleteTemporaryAccessPassMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
+func testAuthMethods_DeleteTemporaryAccessPassMethod(t *testing.T, c *test.Test, userID, ID string) {
 
-	status, err := c.client.DeleteTemporaryAccessPassMethod(c.connection.Context, userID, ID)
+	status, err := c.AuthenticationMethodsClient.DeleteTemporaryAccessPassMethod(c.Context, userID, ID)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.DeleteTemporaryAccessPassMethod(): invalid status: %d", status)
 	}
@@ -204,13 +183,13 @@ func testAuthMethods_DeleteTemporaryAccessPassMethod(t *testing.T, c Authenticat
 	}
 }
 
-func testAuthMethods_CreatePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
+func testAuthMethods_CreatePhoneMethod(t *testing.T, c *test.Test, userID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
 	phoneType := msgraph.AuthenticationPhoneTypeMobile
 	phoneAuth := msgraph.PhoneAuthenticationMethod{
 		PhoneNumber: utils.StringPtr("+44 07777777777"),
 		PhoneType:   &phoneType,
 	}
-	phoneAuthMethod, status, err := c.client.CreatePhoneMethod(c.connection.Context, userID, phoneAuth)
+	phoneAuthMethod, status, err := c.AuthenticationMethodsClient.CreatePhoneMethod(c.Context, userID, phoneAuth)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.CreatePhoneMethod(): invalid status: %d", status)
 	}
@@ -225,8 +204,8 @@ func testAuthMethods_CreatePhoneMethod(t *testing.T, c AuthenticationMethodsClie
 	return
 }
 
-func testAuthMethods_GetPhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
-	phoneAuthMethod, status, err := c.client.GetPhoneMethod(c.connection.Context, userID, ID, odata.Query{})
+func testAuthMethods_GetPhoneMethod(t *testing.T, c *test.Test, userID, ID string) (phoneAuthMethod *msgraph.PhoneAuthenticationMethod) {
+	phoneAuthMethod, status, err := c.AuthenticationMethodsClient.GetPhoneMethod(c.Context, userID, ID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.GetPhoneMethod(): invalid status: %d", status)
 	}
@@ -241,8 +220,8 @@ func testAuthMethods_GetPhoneMethod(t *testing.T, c AuthenticationMethodsClientT
 	return
 }
 
-func testAuthMethods_ListPhoneMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (phoneAuthMethods *[]msgraph.PhoneAuthenticationMethod) {
-	phoneAuthMethods, status, err := c.client.ListPhoneMethods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListPhoneMethods(t *testing.T, c *test.Test, userID string) (phoneAuthMethods *[]msgraph.PhoneAuthenticationMethod) {
+	phoneAuthMethods, status, err := c.AuthenticationMethodsClient.ListPhoneMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListPhoneMethods(): invalid status: %d", status)
 	}
@@ -257,8 +236,8 @@ func testAuthMethods_ListPhoneMethods(t *testing.T, c AuthenticationMethodsClien
 	return
 }
 
-func testAuthMethods_UpdatePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string, phone msgraph.PhoneAuthenticationMethod) {
-	status, err := c.client.UpdatePhoneMethod(c.connection.Context, userID, phone)
+func testAuthMethods_UpdatePhoneMethod(t *testing.T, c *test.Test, userID string, phone msgraph.PhoneAuthenticationMethod) {
+	status, err := c.AuthenticationMethodsClient.UpdatePhoneMethod(c.Context, userID, phone)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.UpdatePhoneMethod(): invalid status: %d", status)
 	}
@@ -268,8 +247,8 @@ func testAuthMethods_UpdatePhoneMethod(t *testing.T, c AuthenticationMethodsClie
 	}
 }
 
-func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
-	status, err := c.client.EnablePhoneSMS(c.connection.Context, userID, ID)
+func testAuthMethods_EnablePhoneSMS(t *testing.T, c *test.Test, userID, ID string) {
+	status, err := c.AuthenticationMethodsClient.EnablePhoneSMS(c.Context, userID, ID)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.EnablePhoneSMS(): invalid status: %d", status)
 	}
@@ -279,8 +258,8 @@ func testAuthMethods_EnablePhoneSMS(t *testing.T, c AuthenticationMethodsClientT
 	}
 }
 
-func testAuthMethods_DisablePhoneSMS(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
-	status, err := c.client.DisablePhoneSMS(c.connection.Context, userID, ID)
+func testAuthMethods_DisablePhoneSMS(t *testing.T, c *test.Test, userID, ID string) {
+	status, err := c.AuthenticationMethodsClient.DisablePhoneSMS(c.Context, userID, ID)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.DisablePhoneSMS(): invalid status: %d", status)
 	}
@@ -290,8 +269,8 @@ func testAuthMethods_DisablePhoneSMS(t *testing.T, c AuthenticationMethodsClient
 	}
 }
 
-func testAuthMethods_DeletePhoneMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
-	status, err := c.client.DeletePhoneMethod(c.connection.Context, userID, ID)
+func testAuthMethods_DeletePhoneMethod(t *testing.T, c *test.Test, userID, ID string) {
+	status, err := c.AuthenticationMethodsClient.DeletePhoneMethod(c.Context, userID, ID)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.DeletePhoneMethod(): invalid status: %d", status)
 	}
@@ -301,11 +280,11 @@ func testAuthMethods_DeletePhoneMethod(t *testing.T, c AuthenticationMethodsClie
 	}
 }
 
-func testAuthMethods_CreateEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string) (emailMethod *msgraph.EmailAuthenticationMethod) {
+func testAuthMethods_CreateEmailMethod(t *testing.T, c *test.Test, userID string) (emailMethod *msgraph.EmailAuthenticationMethod) {
 	email := msgraph.EmailAuthenticationMethod{
 		EmailAddress: utils.StringPtr("test-user-authenticationmethods@testdomain.com"),
 	}
-	emailMethod, status, err := c.client.CreateEmailMethod(c.connection.Context, userID, email)
+	emailMethod, status, err := c.AuthenticationMethodsClient.CreateEmailMethod(c.Context, userID, email)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.CreateEmailMethod(): invalid status: %d", status)
 	}
@@ -320,8 +299,8 @@ func testAuthMethods_CreateEmailMethod(t *testing.T, c AuthenticationMethodsClie
 	return
 }
 
-func testAuthMethods_GetEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) (emailMethod *msgraph.EmailAuthenticationMethod) {
-	emailMethod, status, err := c.client.GetEmailMethod(c.connection.Context, userID, ID, odata.Query{})
+func testAuthMethods_GetEmailMethod(t *testing.T, c *test.Test, userID, ID string) (emailMethod *msgraph.EmailAuthenticationMethod) {
+	emailMethod, status, err := c.AuthenticationMethodsClient.GetEmailMethod(c.Context, userID, ID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.GetEmailMethod(): invalid status: %d", status)
 	}
@@ -336,8 +315,8 @@ func testAuthMethods_GetEmailMethod(t *testing.T, c AuthenticationMethodsClientT
 	return
 }
 
-func testAuthMethods_ListEmailMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (emailMethods *[]msgraph.EmailAuthenticationMethod) {
-	emailMethods, status, err := c.client.ListEmailMethods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListEmailMethods(t *testing.T, c *test.Test, userID string) (emailMethods *[]msgraph.EmailAuthenticationMethod) {
+	emailMethods, status, err := c.AuthenticationMethodsClient.ListEmailMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListEmailMethods(): invalid status: %d", status)
 	}
@@ -352,8 +331,8 @@ func testAuthMethods_ListEmailMethods(t *testing.T, c AuthenticationMethodsClien
 	return
 }
 
-func testAuthMethods_UpdateEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID string, email msgraph.EmailAuthenticationMethod) {
-	status, err := c.client.UpdateEmailMethod(c.connection.Context, userID, email)
+func testAuthMethods_UpdateEmailMethod(t *testing.T, c *test.Test, userID string, email msgraph.EmailAuthenticationMethod) {
+	status, err := c.AuthenticationMethodsClient.UpdateEmailMethod(c.Context, userID, email)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.UpdateEmailMethod(): invalid status: %d", status)
 	}
@@ -363,8 +342,8 @@ func testAuthMethods_UpdateEmailMethod(t *testing.T, c AuthenticationMethodsClie
 	}
 }
 
-func testAuthMethods_DeleteEmailMethod(t *testing.T, c AuthenticationMethodsClientTest, userID, ID string) {
-	status, err := c.client.DeleteEmailMethod(c.connection.Context, userID, ID)
+func testAuthMethods_DeleteEmailMethod(t *testing.T, c *test.Test, userID, ID string) {
+	status, err := c.AuthenticationMethodsClient.DeleteEmailMethod(c.Context, userID, ID)
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.DeleteEmailMethod(): invalid status: %d", status)
 	}
@@ -374,8 +353,9 @@ func testAuthMethods_DeleteEmailMethod(t *testing.T, c AuthenticationMethodsClie
 	}
 }
 
-func testAuthMetods_ListPasswordMethods(t *testing.T, c AuthenticationMethodsClientTest, userID string) (passwordMethods *[]msgraph.PasswordAuthenticationMethod) {
-	passwordMethods, status, err := c.client.ListPasswordMethods(c.connection.Context, userID, odata.Query{})
+func testAuthMethods_ListPasswordMethods(t *testing.T, c *test.Test, userID string) (passwordMethods *[]msgraph.
+	PasswordAuthenticationMethod) {
+	passwordMethods, status, err := c.AuthenticationMethodsClient.ListPasswordMethods(c.Context, userID, odata.Query{})
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationMethodsClientTest.ListPasswordMethods(): invalid status: %d", status)
 	}

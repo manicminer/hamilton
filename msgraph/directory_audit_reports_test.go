@@ -3,30 +3,21 @@ package msgraph_test
 import (
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type DirectoryAuditReportsClientTest struct {
-	connection *test.Connection
-	client     *msgraph.DirectoryAuditReportsClient
-}
-
 func TestDirectoryAuditReportsTest(t *testing.T) {
-	c := DirectoryAuditReportsClientTest{
-		connection: test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-	}
-	c.client = msgraph.NewDirectoryAuditReportsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	auditLogs := testDirectoryAuditReports_List(t, c)
 	testDirectoryAuditReports_Get(t, c, *(*auditLogs)[0].Id)
 }
 
-func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsClientTest) (dirLogs *[]msgraph.DirectoryAudit) {
-	dirLogs, status, err := c.client.List(c.connection.Context, odata.Query{Top: 10})
+func testDirectoryAuditReports_List(t *testing.T, c *test.Test) (dirLogs *[]msgraph.DirectoryAudit) {
+	dirLogs, status, err := c.DirectoryAuditReportsClient.List(c.Context, odata.Query{Top: 10})
 
 	if status < 200 || status >= 300 {
 		t.Fatalf("DirectoryAuditReportsClient.List(): invalid status: %d", status)
@@ -42,8 +33,8 @@ func testDirectoryAuditReports_List(t *testing.T, c DirectoryAuditReportsClientT
 	return dirLogs
 }
 
-func testDirectoryAuditReports_Get(t *testing.T, c DirectoryAuditReportsClientTest, id string) (dirLog *msgraph.DirectoryAudit) {
-	dirLog, status, err := c.client.Get(c.connection.Context, id, odata.Query{})
+func testDirectoryAuditReports_Get(t *testing.T, c *test.Test, id string) (dirLog *msgraph.DirectoryAudit) {
+	dirLog, status, err := c.DirectoryAuditReportsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("DirectoryAuditReportsClient.Get(): %v", err)
 	}
