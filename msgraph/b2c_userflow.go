@@ -10,7 +10,7 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
-// B2CUserFlowClient performs operations on Users.
+// B2CUserFlowClient performs operations on B2CUserFlow.
 type B2CUserFlowClient struct {
 	BaseClient Client
 }
@@ -90,6 +90,7 @@ func (c *B2CUserFlowClient) Create(ctx context.Context, userflow B2CUserFlow) (*
 	return &newUserFlow, status, nil
 }
 
+// Get returns an existing B2CUserFlow.
 func (c *B2CUserFlowClient) Get(ctx context.Context, id string, query odata.Query) (*B2CUserFlow, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
