@@ -13,10 +13,9 @@ func TestB2CUserFlowClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	userFlowType := msgraph.SIGNUP_USERFLOWTYPE
 	userflow := testB2CUserFlowClient_Create(t, c, msgraph.B2CUserFlow{
 		ID:                  utils.StringPtr("test b2c user flow"),
-		UserFlowType:        &userFlowType,
+		UserFlowType:        utils.StringPtr("signup"),
 		UserFlowTypeVersion: utils.Float32Ptr(3.0),
 	})
 	testB2CUserFlowClient_Get(t, c, *userflow.ID)
