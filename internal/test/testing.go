@@ -123,6 +123,7 @@ type Test struct {
 	ServicePrincipalsClient                   *msgraph.ServicePrincipalsClient
 	SignInReportsClient                       *msgraph.SignInReportsClient
 	SynchronizationJobClient                  *msgraph.SynchronizationJobClient
+	UserFlowAttributesClient                  *msgraph.UserFlowAttributesClient
 	UsersAppRoleAssignmentsClient             *msgraph.AppRoleAssignmentsClient
 	UsersClient                               *msgraph.UsersClient
 }
