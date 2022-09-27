@@ -1689,7 +1689,7 @@ type EmployeeOrgData struct {
 type B2CUserFlow struct {
 	ID                  *string  `json:"id,omitempty"`
 	UserFlowType        *string  `json:"userFlowType,omitempty"`
-	UserFlowTypeVersion *float32 `json:"userFlowVersion,omitempty"`
+	UserFlowTypeVersion *float32 `json:"userFlowTypeVersion,omitempty"`
 	// The property that determines whether language customization is enabled within the B2C user flow. Language customization is not enabled by default for B2C user flows.
 	IsLanguageCustomizationEnabled *bool `json:"IsLanguageCustomizationEnabled,omitempty"`
 	// Indicates the default language of the b2cIdentityUserFlow that is used when no ui_locale tag is specified in the request. This field is RFC 5646 compliant.
