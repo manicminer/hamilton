@@ -1687,9 +1687,9 @@ type EmployeeOrgData struct {
 }
 
 type UserFlowAttribute struct {
-	ID                    *string `json:"id,omitempty"`
-	Description           *string `json:"description,omitempty"`
-	DisplayName           *string `json:"displayName,omitempty"`
-	UserFlowAttributeType *string `json:"userFlowAttributeType,omitempty"`
-	DataType              *string `json:"dataType,omitempty"`
+	ID                    *string                    `json:"id,omitempty"`
+	Description           *string                    `json:"description,omitempty"`
+	DisplayName           *string                    `json:"displayName,omitempty"`
+	UserFlowAttributeType *string                    `json:"userFlowAttributeType,omitempty"`
+	DataType              *UserflowAttributeDataType `json:"dataType,omitempty"`
 }
