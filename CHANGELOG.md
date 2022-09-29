@@ -1,3 +1,11 @@
+## 0.48.0 (Unreleased)
+
+⚠️ BREAKING CHANGES:
+
+- `Group.GroupTypes` has changed from a `[]GroupType` to a `*[]GroupType` ([#160](https://github.com/manicminer/hamilton/pull/160))
+- `Group.ResourceBehaviorOptions` has changed from a `[]GroupResourceBehaviorOption` to a `*[]GroupResourceBehaviorOption` ([#160](https://github.com/manicminer/hamilton/pull/160))
+- `Group.ResourceProvisioningOptions` has changed from a `[]GroupResourceProvisioningOption` to a `*[]GroupResourceProvisioningOption` ([#160](https://github.com/manicminer/hamilton/pull/160))
+
 ## 0.47.1 (August 30, 2022)
 
 - Bugfix: Add missing configuration checks for OIDC methods in the `auth.Config.NewAuthorizer()` method ([#173](https://github.com/manicminer/hamilton/pull/173))
