@@ -1,5 +1,7 @@
 ## 0.48.0 (Unreleased)
 
+- Add an `AdditionalData` field of type `map[string]interface{}` to the `DirectoryObject` model, for returning additional untyped fields ([#171](https://github.com/manicminer/hamilton/pull/171))
+
 ⚠️ BREAKING CHANGES:
 
 - `Group.GroupTypes` has changed from a `[]GroupType` to a `*[]GroupType` ([#160](https://github.com/manicminer/hamilton/pull/160))
