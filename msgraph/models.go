@@ -1282,6 +1282,7 @@ type ServicePrincipal struct {
 	LogoutUrl                           *string                       `json:"logoutUrl,omitempty"`
 	Notes                               *StringNullWhenEmpty          `json:"notes,omitempty"`
 	NotificationEmailAddresses          *[]string                     `json:"notificationEmailAddresses,omitempty"`
+	OAuth2PermissionScopes              *[]PermissionScope            `json:"oauth2PermissionScopes,omitempty"`
 	PasswordCredentials                 *[]PasswordCredential         `json:"passwordCredentials,omitempty"`
 	PasswordSingleSignOnSettings        *PasswordSingleSignOnSettings `json:"passwordSingleSignOnSettings,omitempty"`
 	PreferredSingleSignOnMode           *PreferredSingleSignOnMode    `json:"preferredSingleSignOnMode,omitempty"`
