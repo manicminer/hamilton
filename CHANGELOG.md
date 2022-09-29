@@ -1,4 +1,4 @@
-## 0.48.0 (Unreleased)
+## 0.48.0 (September 29, 2022)
 
 - Bug fix: `SynchronizationTaskExecution.CountEntitled` has changed from a `string` to an `int64` ([#172](https://github.com/manicminer/hamilton/pull/172))
 - Support for [B2C User Flows](https://learn.microsoft.com/en-us/graph/api/resources/b2cidentityuserflow?view=graph-rest-beta) ([#179](https://github.com/manicminer/hamilton/pull/179))
