@@ -1,6 +1,7 @@
 ## 0.48.0 (Unreleased)
 
 - Bug fix: `SynchronizationTaskExecution.CountEntitled` has changed from a `string` to an `int64` ([#172](https://github.com/manicminer/hamilton/pull/172))
+- Support for [B2C User Flows](https://learn.microsoft.com/en-us/graph/api/resources/b2cidentityuserflow?view=graph-rest-beta) ([#179](https://github.com/manicminer/hamilton/pull/179))
 - Support for [User Flow Attributes](https://learn.microsoft.com/en-us/graph/api/resources/identityuserflowattribute?view=graph-rest-1.0) ([#182](https://github.com/manicminer/hamilton/pull/182))
 - Add an `AdditionalData` field of type `map[string]interface{}` to the `DirectoryObject` model, for returning additional untyped fields ([#171](https://github.com/manicminer/hamilton/pull/171))
 - `AppRoleAssignmentsClient.List()` - support odata query parameters ([#181](https://github.com/manicminer/hamilton/pull/181))
