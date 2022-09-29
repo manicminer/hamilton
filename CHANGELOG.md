@@ -1,5 +1,6 @@
 ## 0.48.0 (Unreleased)
 
+- Bug fix: `SynchronizationTaskExecution.CountEntitled` has changed from a `string` to an `int64` ([#172](https://github.com/manicminer/hamilton/pull/172))
 - Add an `AdditionalData` field of type `map[string]interface{}` to the `DirectoryObject` model, for returning additional untyped fields ([#171](https://github.com/manicminer/hamilton/pull/171))
 
 ⚠️ BREAKING CHANGES:
