@@ -60,7 +60,7 @@ func TestGroupsClient(t *testing.T) {
 
 	newGroup365 := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-365"),
-		GroupTypes:      []msgraph.GroupType{msgraph.GroupTypeUnified},
+		GroupTypes:      &[]msgraph.GroupType{msgraph.GroupTypeUnified},
 		MailEnabled:     utils.BoolPtr(true),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-365-group-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),

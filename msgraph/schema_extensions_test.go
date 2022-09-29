@@ -72,7 +72,7 @@ func testSchemaExtensionsGroup(t *testing.T, c *test.Test, schema *msgraph.Schem
 	// First create a group having schema extension data expressed using msgraph.SchemaExtensionMap
 	group := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group"),
-		GroupTypes:      []msgraph.GroupType{msgraph.GroupTypeUnified},
+		GroupTypes:      &[]msgraph.GroupType{msgraph.GroupTypeUnified},
 		MailEnabled:     utils.BoolPtr(true),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-365-group-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
