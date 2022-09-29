@@ -311,7 +311,7 @@ func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
 }
 
 func testGroupsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.GroupsAppRoleAssignmentsClient.List(c.Context, id)
+	appRoleAssignments, _, err := c.GroupsAppRoleAssignmentsClient.List(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.List(): %v", err)
 	}
@@ -322,7 +322,7 @@ func testGroupsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id stri
 }
 
 func testServicePrincipalsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.ServicePrincipalsAppRoleAssignmentsClient.List(c.Context, id)
+	appRoleAssignments, _, err := c.ServicePrincipalsAppRoleAssignmentsClient.List(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.List(): %v", err)
 	}
@@ -333,7 +333,7 @@ func testServicePrincipalsAppRoleAssignmentsClient_List(t *testing.T, c *test.Te
 }
 
 func testUsersAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {
-	appRoleAssignments, _, err := c.UsersAppRoleAssignmentsClient.List(c.Context, id)
+	appRoleAssignments, _, err := c.UsersAppRoleAssignmentsClient.List(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AppRoleAssignmentsClient.List(): %v", err)
 	}
