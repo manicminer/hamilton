@@ -334,6 +334,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.SynchronizationJobClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.SynchronizationJobClient.BaseClient.RetryableClient.RetryMax = retry
 
+	c.UserFlowAttributesClient = msgraph.NewUserFlowAttributesClient(c.Connection.AuthConfig.TenantID)
+	c.UserFlowAttributesClient.BaseClient.Authorizer = c.Connection.Authorizer
+	c.UserFlowAttributesClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
+	c.UserFlowAttributesClient.BaseClient.RetryableClient.RetryMax = retry
+
 	c.UsersAppRoleAssignmentsClient = msgraph.NewUsersAppRoleAssignmentsClient(c.Connection.AuthConfig.TenantID)
 	c.UsersAppRoleAssignmentsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.UsersAppRoleAssignmentsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
