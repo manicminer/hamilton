@@ -1317,7 +1317,7 @@ type SynchronizationSchedule struct {
 
 type SynchronizationTaskExecution struct {
 	ActivityIdentifier *string `json:"activityIdentifier,omitempty"`
-	CountEntitled      *string `json:"countEntitled,omitempty"`
+	CountEntitled      *int64  `json:"countEntitled,omitempty"`
 	State              *string `json:"state,omitempty"`
 }
 
