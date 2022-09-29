@@ -1,6 +1,7 @@
 ## 0.48.0 (Unreleased)
 
 - Bug fix: `SynchronizationTaskExecution.CountEntitled` has changed from a `string` to an `int64` ([#172](https://github.com/manicminer/hamilton/pull/172))
+- Support for [User Flow Attributes](https://learn.microsoft.com/en-us/graph/api/resources/identityuserflowattribute?view=graph-rest-1.0) ([#182](https://github.com/manicminer/hamilton/pull/182))
 - Add an `AdditionalData` field of type `map[string]interface{}` to the `DirectoryObject` model, for returning additional untyped fields ([#171](https://github.com/manicminer/hamilton/pull/171))
 - `AppRoleAssignmentsClient.List()` - support odata query parameters ([#181](https://github.com/manicminer/hamilton/pull/181))
 - Environments: add new well-known App IDs `MicrosoftAzureFrontDoor and `MicrosoftAzureFrontDoorCdn` ([#175](https://github.com/manicminer/hamilton/pull/175))
