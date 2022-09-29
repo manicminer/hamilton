@@ -206,6 +206,7 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ApplicationsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ApplicationsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.ApplicationsClient.BaseClient.RetryableClient.RetryMax = retry
+	c.ApplicationsClient.BaseClient.ApiVersion = msgraph.Version10
 
 	c.AppRoleAssignedToClient = msgraph.NewAppRoleAssignedToClient(c.Connection.AuthConfig.TenantID)
 	c.AppRoleAssignedToClient.BaseClient.Authorizer = c.Connection.Authorizer
@@ -321,6 +322,7 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ServicePrincipalsClient.BaseClient.Authorizer = c.Connection.Authorizer
 	c.ServicePrincipalsClient.BaseClient.Endpoint = c.Connection.AuthConfig.Environment.MsGraph.Endpoint
 	c.ServicePrincipalsClient.BaseClient.RetryableClient.RetryMax = retry
+	c.ServicePrincipalsClient.BaseClient.ApiVersion = msgraph.Version10
 
 	c.SignInReportsClient = msgraph.NewSignInReportsClient(c.Connection.AuthConfig.TenantID)
 	c.SignInReportsClient.BaseClient.Authorizer = c.Connection.Authorizer
