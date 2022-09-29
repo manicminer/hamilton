@@ -1,3 +1,7 @@
+## 0.49.0 (Unreleased)
+
+- Service Principals: support for the `Oauth2PermissionScopes` field (json `oauth2PermissionScopes`), which is used by the v1.0 API ([#183](https://github.com/manicminer/hamilton/pull/183))
+
 ## 0.48.0 (September 29, 2022)
 
 - Bug fix: `SynchronizationTaskExecution.CountEntitled` has changed from a `string` to an `int64` ([#172](https://github.com/manicminer/hamilton/pull/172))
