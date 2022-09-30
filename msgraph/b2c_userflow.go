@@ -169,3 +169,135 @@ func (c *B2CUserFlowClient) Delete(ctx context.Context, id string) (int, error) 
 
 	return status, nil
 }
+
+// AssignAttribute assigns the user flow attribute to user flow.
+func (c *B2CUserFlowClient) AssignAttribute(ctx context.Context, userflowId string, assignment UserFlowAttributeAssignment) (*UserFlowAttributeAssignment, int, error) {
+	var status int
+
+	if assignment.UserAttribute == nil {
+		return nil, status, fmt.Errorf("UserAttribute cannot be nil")
+	}
+	if assignment.UserAttribute.ID == nil {
+		return nil, status, fmt.Errorf("UserAttribute.ID cannot be nil")
+	}
+	body, err := json.Marshal(assignment)
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body: body,
+		OData: odata.Query{
+			Metadata: odata.MetadataFull,
+		},
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments", userflowId),
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Post(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newAttrAssignment UserFlowAttributeAssignment
+	if err := json.Unmarshal(respBody, &newAttrAssignment); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newAttrAssignment, status, nil
+}
+
+// ListAssignedAttributes returns all the assigned attributes for the user flow.
+func (c *B2CUserFlowClient) ListAssignedAttributes(ctx context.Context, id string, query odata.Query) (*[]UserFlowAttributeAssignment, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		OData:            query,
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments", id)},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		UserFlowAttributeAssignments []UserFlowAttributeAssignment `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &data.UserFlowAttributeAssignments, status, nil
+}
+
+// GetAssignedAttribute returns the assigned attribute.
+func (c *B2CUserFlowClient) GetAssignedAttribute(ctx context.Context, userflowId, assignmentId string) (*UserFlowAttributeAssignment, int, error) {
+	var status int
+
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		OData: odata.Query{
+			Metadata: odata.MetadataFull,
+		},
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, assignmentId),
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newAttrAssignment UserFlowAttributeAssignment
+	if err := json.Unmarshal(respBody, &newAttrAssignment); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newAttrAssignment, status, nil
+}
+
+// RemoveAttributeAssignment removes the assigned attribute from the user flow.
+func (c *B2CUserFlowClient) RemoveAttributeAssignment(ctx context.Context, userflowId, assignmentId string) (*UserFlowAttributeAssignment, int, error) {
+	var status int
+
+	resp, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		OData: odata.Query{
+			Metadata: odata.MetadataFull,
+		},
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, assignmentId),
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newAttrAssignment UserFlowAttributeAssignment
+	if err := json.Unmarshal(respBody, &newAttrAssignment); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newAttrAssignment, status, nil
+}

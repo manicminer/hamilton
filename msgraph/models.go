@@ -1706,3 +1706,13 @@ type UserFlowAttribute struct {
 	UserFlowAttributeType *string                    `json:"userFlowAttributeType,omitempty"`
 	DataType              *UserflowAttributeDataType `json:"dataType,omitempty"`
 }
+
+type UserFlowAttributeAssignment struct {
+	ID                   *string            `json:"id,omitempty"`
+	DisplayName          *string            `json:"displayName,omitempty"`
+	IsOptional           *bool              `json:"isOptional,omitempty"`
+	RequiresVerification *bool              `json:"requiresVerification,omitempty"`
+	UserAttributeValues  []string           `json:"userAttributeValues,omitempty"`
+	UserInputType        *UserInputType     `json:"userInputType,omitempty"`
+	UserAttribute        *UserFlowAttribute `json:"userAttribute,omitempty"`
+}

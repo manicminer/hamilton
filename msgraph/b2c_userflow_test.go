@@ -23,6 +23,14 @@ func TestB2CUserFlowClient(t *testing.T) {
 	testB2CUserFlowClient_Update(t, c, *userflow)
 	testB2CUserFlowClient_List(t, c)
 	testGroupsClient_Delete(t, c, *userflow.ID)
+
+	attr := testB2CUserFlowClient_CreateAttribute(t, c)
+	testB2CUserFlowClient_AssignAttribute(t, c, *userflow.ID, &msgraph.UserFlowAttributeAssignment{
+		UserInputType: utils.StringPtr(msgraph.UserInpuTypeTextBox),
+		UserAttribute: attr,
+		DisplayName:   utils.StringPtr("test assignment"),
+	})
+
 }
 
 func testB2CUserFlowClient_Create(t *testing.T, c *test.Test, u msgraph.B2CUserFlow) *msgraph.B2CUserFlow {
@@ -75,4 +83,26 @@ func testB2CUserFlowClient_Update(t *testing.T, c *test.Test, u msgraph.B2CUserF
 	if status < 200 || status >= 300 {
 		t.Fatalf("B2CUserFlowClient.Update(): invalid status: %d", status)
 	}
+}
+
+func testB2CUserFlowClient_CreateAttribute(t *testing.T, c *test.Test) *msgraph.UserFlowAttribute {
+	attr := msgraph.UserFlowAttribute{
+		DisplayName:           utils.StringPtr("testattr"),
+		UserFlowAttributeType: utils.StringPtr("custom"),
+		DataType:              utils.StringPtr(msgraph.UserflowAttributeDataTypeString),
+		Description:           utils.StringPtr("test attr description"),
+	}
+	resp, _, err := c.UserFlowAttributesClient.Create(c.Context, attr)
+	if err != nil {
+		t.Fatalf("failed to create user flow attribute. err: %s", err)
+	}
+	return resp
+}
+
+func testB2CUserFlowClient_AssignAttribute(t *testing.T, c *test.Test, id string, u *msgraph.UserFlowAttributeAssignment) *msgraph.UserFlowAttributeAssignment {
+	resp, _, err := c.B2CUserFlowClient.AssignAttribute(c.Context, id, *u)
+	if err != nil {
+		t.Fatalf("failed to assign user flow attribute. err: %s", err)
+	}
+	return resp
 }
