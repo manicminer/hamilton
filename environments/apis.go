@@ -197,6 +197,11 @@ var (
 		AppId:    PublishedApis["AzureSynapseGateway"],
 		Endpoint: SynapsePublicEndpoint,
 	}
+
+	SynapseUsGov = Api {
+		AppId:    PublishedApis["AzureSynapseGateway"],
+		Endpoint: SynapseUsGovEndpoint,
+	}
 )
 
 type ApiCliName string

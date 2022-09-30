@@ -74,7 +74,7 @@ var (
 		ServiceManagement:   ServiceManagementUSGov,
 		SQLDatabase:         SQLDatabaseUSGov,
 		Storage:             StoragePublic,
-		Synapse:             ApiUnavailable,
+		Synapse:             SynapseUsGov,
 	}
 
 	USGovernmentL5 = Environment{
@@ -91,7 +91,7 @@ var (
 		ServiceManagement:   ServiceManagementUSGov,
 		SQLDatabase:         SQLDatabaseUSGov,
 		Storage:             StoragePublic,
-		Synapse:             ApiUnavailable,
+		Synapse:             SynapseUsGov,
 	}
 
 	Canary = Environment{
