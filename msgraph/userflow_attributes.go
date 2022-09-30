@@ -18,7 +18,7 @@ type UserFlowAttributesClient struct {
 // NewUserFlowAttributesClient returns a new UserFlowAttributesClient.
 func NewUserFlowAttributesClient(tenantId string) *UserFlowAttributesClient {
 	return &UserFlowAttributesClient{
-		BaseClient: NewClient(Version10, tenantId),
+		BaseClient: NewClient(VersionBeta, tenantId),
 	}
 }
 
@@ -142,7 +142,7 @@ func (c *UserFlowAttributesClient) Update(ctx context.Context, userflowAttribute
 			http.StatusNoContent,
 		},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identity/userFlowAttributes//%s", userflowID),
+			Entity:      fmt.Sprintf("/identity/userFlowAttributes/%s", userflowID),
 			HasTenantId: true,
 		},
 	})
