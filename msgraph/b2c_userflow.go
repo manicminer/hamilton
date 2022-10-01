@@ -248,7 +248,7 @@ func (c *B2CUserFlowClient) GetAssignedAttribute(ctx context.Context, userflowId
 		OData: odata.Query{
 			Metadata: odata.MetadataFull,
 		},
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, assignmentId),
 		},
@@ -279,7 +279,7 @@ func (c *B2CUserFlowClient) RemoveAttributeAssignment(ctx context.Context, userf
 		OData: odata.Query{
 			Metadata: odata.MetadataFull,
 		},
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusNoContent},
 		Uri: Uri{
 			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, assignmentId),
 		},
@@ -313,7 +313,7 @@ func (c *B2CUserFlowClient) UpdateAttributeAssignment(ctx context.Context, userf
 		OData: odata.Query{
 			Metadata: odata.MetadataFull,
 		},
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, id),
 		},
