@@ -272,10 +272,10 @@ func (c *B2CUserFlowClient) GetAssignedAttribute(ctx context.Context, userflowId
 }
 
 // RemoveAttributeAssignment removes the assigned attribute from the user flow.
-func (c *B2CUserFlowClient) RemoveAttributeAssignment(ctx context.Context, userflowId, assignmentId string) (*UserFlowAttributeAssignment, int, error) {
+func (c *B2CUserFlowClient) RemoveAttributeAssignment(ctx context.Context, userflowId, assignmentId string) (int, error) {
 	var status int
 
-	resp, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		OData: odata.Query{
 			Metadata: odata.MetadataFull,
 		},
@@ -285,19 +285,8 @@ func (c *B2CUserFlowClient) RemoveAttributeAssignment(ctx context.Context, userf
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Get(): %v", err)
+		return status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Delete(): %v", err)
 	}
 
-	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
-	}
-
-	var newAttrAssignment UserFlowAttributeAssignment
-	if err := json.Unmarshal(respBody, &newAttrAssignment); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &newAttrAssignment, status, nil
+	return status, nil
 }
