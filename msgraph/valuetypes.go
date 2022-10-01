@@ -641,10 +641,10 @@ const (
 type UserInputType = string
 
 const (
-	UserInpuTypeTextBox              UserInputType = "textBox"
-	UserInpuTypeDateTimeDropdown     UserInputType = "dateTimeDropdown"
-	UserInpuTypeRadioSingleSelect    UserInputType = "radioSingleSelect"
-	UserInpuTypeDropdownSingleSelect UserInputType = "dropdownSingleSelect"
-	UserInpuTypeEmailBox             UserInputType = "emailBox"
-	UserInpuTypeCheckboxMultiSelect  UserInputType = "checkboxMultiSelect"
+	UserInputTypeTextBox              UserInputType = "textBox"
+	UserInputTypeDateTimeDropdown     UserInputType = "dateTimeDropdown"
+	UserInputTypeRadioSingleSelect    UserInputType = "radioSingleSelect"
+	UserInputTypeDropdownSingleSelect UserInputType = "dropdownSingleSelect"
+	UserInputTypeEmailBox             UserInputType = "emailBox"
+	UserInputTypeCheckboxMultiSelect  UserInputType = "checkboxMultiSelect"
 )
