@@ -250,7 +250,7 @@ func (c *B2CUserFlowClient) GetAssignedAttribute(ctx context.Context, userflowId
 		},
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, assignmentId),
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s?$expand=userAttribute", userflowId, assignmentId),
 		},
 	})
 	if err != nil {
