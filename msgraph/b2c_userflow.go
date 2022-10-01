@@ -290,3 +290,48 @@ func (c *B2CUserFlowClient) RemoveAttributeAssignment(ctx context.Context, userf
 
 	return status, nil
 }
+
+// UpdateAttributeAssignment updates the user flow attribute assignment.
+func (c *B2CUserFlowClient) UpdateAttributeAssignment(ctx context.Context, userflowId string, assignment UserFlowAttributeAssignment) (*UserFlowAttributeAssignment, int, error) {
+	var status int
+
+	if assignment.ID == nil {
+		return nil, status, fmt.Errorf("Assignment ID cannot be nil")
+	}
+	// The API doesn't allow updating the user attribute in an assignment. The user should create
+	// a new assignment if they wish to change the attribute.
+	if assignment.UserAttribute != nil {
+		return nil, status, fmt.Errorf("UserAttribute should be nil")
+	}
+	body, err := json.Marshal(assignment)
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	id := *assignment.ID
+	resp, status, _, err := c.BaseClient.Patch(ctx, PatchHttpRequestInput{
+		Body: body,
+		OData: odata.Query{
+			Metadata: odata.MetadataFull,
+		},
+		ValidStatusCodes: []int{http.StatusCreated},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, id),
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("UserFlowAttributeAssignmentsClient.BaseClient.Patch(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newAttrAssignment UserFlowAttributeAssignment
+	if err := json.Unmarshal(respBody, &newAttrAssignment); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newAttrAssignment, status, nil
+}
