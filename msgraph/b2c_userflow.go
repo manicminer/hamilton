@@ -241,16 +241,14 @@ func (c *B2CUserFlowClient) ListAssignedAttributes(ctx context.Context, id strin
 }
 
 // GetAssignedAttribute returns the assigned attribute.
-func (c *B2CUserFlowClient) GetAssignedAttribute(ctx context.Context, userflowId, assignmentId string) (*UserFlowAttributeAssignment, int, error) {
+func (c *B2CUserFlowClient) GetAssignedAttribute(ctx context.Context, userflowId, assignmentId string, query odata.Query) (*UserFlowAttributeAssignment, int, error) {
 	var status int
 
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		OData: odata.Query{
-			Metadata: odata.MetadataFull,
-		},
-		ValidStatusCodes: []int{http.StatusOK},
+		OData:            query,
+		ValidStatusCodes: []int{http.StatusOK, http.StatusBadRequest},
 		Uri: Uri{
-			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s?$expand=userAttribute", userflowId, assignmentId),
+			Entity: fmt.Sprintf("/identity/b2cUserFlows/%s/userAttributeAssignments/%s", userflowId, assignmentId),
 		},
 	})
 	if err != nil {
