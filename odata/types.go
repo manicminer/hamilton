@@ -39,6 +39,17 @@ const (
 	ShortTypeTemporaryAccessPassAuthenticationMethod     ShortType = "temporaryAccessPassAuthenticationMethod"
 	ShortTypeUser                                        ShortType = "user"
 	ShortTypeWindowsHelloForBusinessAuthenticationMethod ShortType = "windowsHelloForBusinessAuthenticationMethod"
+
+	ShortTypeDeviceManagementConfigurationSettingInstanceTemplateReference ShortType = "deviceManagementConfigurationSettingInstanceTemplateReference"
+	ShortTypeDeviceManagementConfigurationSettingInstance                  ShortType = "deviceManagementConfigurationSettingInstance"
+	ShortTypeDeviceManagementConfigurationGroupSettingCollectionInstance   ShortType = "deviceManagementConfigurationGroupSettingCollectionInstance"
+	ShortTypeDeviceManagementConfigurationSettingValueTemplateReference    ShortType = "deviceManagementConfigurationSettingValueTemplateReference"
+	ShortTypeDeviceManagementConfigurationSettingValue                     ShortType = "deviceManagementConfigurationSettingValue"
+	ShortTypeDeviceManagementConfigurationGroupSettingValue                ShortType = "deviceManagementConfigurationGroupSettingValue"
+	ShortTypeDeviceManagementConfigurationChoiceSettingInstance            ShortType = "deviceManagementConfigurationChoiceSettingInstance"
+	ShortTypeDeviceManagementConfigurationChoiceSettingValue               ShortType = "deviceManagementConfigurationChoiceSettingValue"
+	ShortTypeDeviceManagementConfigurationSimpleSettingInstance            ShortType = "deviceManagementConfigurationSimpleSettingInstance"
+	ShortTypeDeviceManagementConfigurationSimpleSettingValue               ShortType = "deviceManagementConfigurationSimpleSettingValue"
 )
 
 type Type = string
@@ -80,4 +91,16 @@ const (
 	TypeTemporaryAccessPassAuthenticationMethod     Type = "#microsoft.graph.temporaryAccessPassAuthenticationMethod"
 	TypeUser                                        Type = "#microsoft.graph.user"
 	TypeWindowsHelloForBusinessAuthenticationMethod Type = "#microsoft.graph.windowsHelloForBusinessAuthenticationMethod"
+
+	TypeDeviceManagementConfigurationSettingInstanceTemplateReference Type = "#microsoft.graph.deviceManagementConfigurationSettingInstanceTemplateReference"
+	TypeDeviceManagementConfigurationSettingInstance                  Type = "#microsoft.graph.deviceManagementConfigurationSettingInstance"
+	TypeDeviceManagementConfigurationGroupSettingCollectionInstance   Type = "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionInstance"
+	TypeDeviceManagementConfigurationSettingValueTemplateReference    Type = "#microsoft.graph.deviceManagementConfigurationSettingValueTemplateReference"
+	TypeDeviceManagementConfigurationSettingValue                     Type = "#microsoft.graph.deviceManagementConfigurationSettingValue"
+	TypeDeviceManagementConfigurationGroupSettingValue                Type = "#microsoft.graph.deviceManagementConfigurationGroupSettingValue"
+	TypeDeviceManagementConfigurationChoiceSettingInstance            Type = "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance"
+	TypeDeviceManagementConfigurationChoiceSettingValue               Type = "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue"
+	TypeDeviceManagementConfigurationSimpleSettingInstance            Type = "#microsoft.graph.deviceManagementConfigurationSimpleSettingInstance"
+	TypeDeviceManagementConfigurationSimpleSettingValue               Type = "#microsoft.graph.deviceManagementConfigurationSimpleSettingValue"
+	TypeDeviceManagementConfigurationSetting                          Type = "#microsoft.graph.deviceManagementConfigurationSetting"
 )

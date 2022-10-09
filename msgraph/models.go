@@ -1706,3 +1706,77 @@ type UserFlowAttribute struct {
 	UserFlowAttributeType *string                    `json:"userFlowAttributeType,omitempty"`
 	DataType              *UserflowAttributeDataType `json:"dataType,omitempty"`
 }
+
+type DeviceManagementConfigurationSettingInstanceTemplateReference struct {
+	SettingInstanceTemplateId *string `json:"settingInstanceTemplateId,omitempty"`
+}
+
+type DeviceManagementConfigurationSettingInstance interface{}
+
+type BaseDeviceManagementConfigurationSettingInstance struct {
+	ODataType                        *odata.Type                                                    `json:"@odata.type,omitempty"`
+	SettingDefinitionId              *string                                                        `json:"settingDefinitionId,omitempty"`
+	SettingInstanceTemplateReference *DeviceManagementConfigurationSettingInstanceTemplateReference `json:"settingInstanceTemplateReference,omitempty"`
+}
+
+type DeviceManagementConfigurationGroupSettingCollectionInstance struct {
+	*BaseDeviceManagementConfigurationSettingInstance
+	GroupSettingCollectionValue *[]DeviceManagementConfigurationGroupSettingValue `json:"groupSettingCollectionValue,omitempty"`
+}
+
+type DeviceManagementConfigurationChoiceSettingInstance struct {
+	*BaseDeviceManagementConfigurationSettingInstance
+	ChoiceSettingValue *DeviceManagementConfigurationChoiceSettingValue `json:"choiceSettingValue,omitempty"`
+}
+
+type DeviceManagementConfigurationSimpleSettingInstance struct {
+	*BaseDeviceManagementConfigurationSettingInstance
+	SimpleSettingValue *DeviceManagementConfigurationSimpleSettingValue `json:"simpleSettingValue,omitempty"`
+}
+
+type DeviceManagementConfigurationSettingValueTemplateReference struct {
+	SettingValueTemplateId *string `json:"settingValueTemplateId,omitempty"`
+	UseTemplateDefault     *bool   `json:"useTemplateDefault,omitempty"`
+}
+
+type DeviceManagementConfigurationSettingValue struct {
+	ODataType                     *odata.Type                                                 `json:"@odata.type,omitempty"`
+	SettingValueTemplateReference *DeviceManagementConfigurationSettingValueTemplateReference `json:"settingValueTemplateReference,omitempty"`
+}
+
+type DeviceManagementConfigurationGroupSettingValue struct {
+	*DeviceManagementConfigurationSettingValue
+	Children DeviceManagementConfigurationSettingInstance `json:"children,omitempty"`
+}
+
+type DeviceManagementConfigurationChoiceSettingValue struct {
+	*DeviceManagementConfigurationSettingValue
+	Value    *string                                      `json:"value,omitempty"`
+	Children DeviceManagementConfigurationSettingInstance `json:"children,omitempty"`
+}
+
+type DeviceManagementConfigurationSimpleSettingValue struct {
+	*DeviceManagementConfigurationSettingValue
+}
+
+type DeviceManagementConfigurationPolicy struct {
+	ID                   *string    `json:"id,omitempty"`
+	Name                 *string    `json:"name,omitempty"`
+	Description          *string    `json:"description,omitempty"`
+	Platforms            *string    `json:"platforms,omitempty"`
+	Technologies         *string    `json:"technologies,omitempty"`
+	CreatedDateTime      *time.Time `json:"createdDateTime,omitempty"`
+	LastModifiedDateTime *time.Time `json:"lastModifiedDateTime,omitempty"`
+	SettingCount         *int32     `json:"settingCount,omitempty"`
+	CreationSource       *string    `json:"creationSource,omitempty"`
+	RoleScopeTagIds      *[]string  `json:"roleScopeTagIds,omitempty"`
+	IsAssigned           *bool      `json:"isAssigned,omitempty"`
+	// deviceManagementConfigurationPolicyTemplateReference
+	Settings *[]DeviceManagementConfigurationSetting `json:"settings,omitempty"`
+}
+
+type DeviceManagementConfigurationSetting struct {
+	ODataType       *odata.Type                                  `json:"@odata.type,omitempty"`
+	ID              *string                                      `json:"id,omitempty"`
+	SettingInstance DeviceManagementConfigurationSettingInstance `json:"settingInstance,omitempty"`
+}
