@@ -33,6 +33,7 @@ func TestGroupsClient(t *testing.T) {
 	members := testGroupsClient_ListMembers(t, c, *group.ID)
 	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID)
 	testGroupsClient_GetMember(t, c, *group.ID, (*members)[0])
+	testGroupsClient_GetMember(t, c, *group.ID, (*transitiveMembers)[0])
 
 	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.RandomString))
 	testGroupsClient_Update(t, c, *group)
