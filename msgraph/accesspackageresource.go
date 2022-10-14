@@ -84,7 +84,7 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 
 	accessPackageResources := data.AccessPackageResources
 
-	if accessPackageResources == nil || len(accessPackageResources) == 0 {
+	if len(accessPackageResources) == 0 {
 		return nil, status, fmt.Errorf("No accessPackageResource found with catalogId %v and originId %v", catalogId, originId)
 	}
 
