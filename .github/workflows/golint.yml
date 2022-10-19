@@ -11,7 +11,7 @@ jobs:
   golint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - id: go-version
         run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT

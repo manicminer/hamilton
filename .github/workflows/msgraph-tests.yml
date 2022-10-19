@@ -15,7 +15,7 @@ jobs:
   test-msgraph:
     runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - id: go-version
         run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT

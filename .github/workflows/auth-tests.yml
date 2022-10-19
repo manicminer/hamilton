@@ -24,7 +24,7 @@ jobs:
     steps:
       - run: az login --allow-no-subscriptions --output none --service-principal --tenant "${TENANT_ID}" --username "${CLIENT_ID}" --password "${CLIENT_SECRET}"
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - id: go-version
         run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
