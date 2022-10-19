@@ -22,18 +22,17 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Azure CLI login
-        run: az login --allow-no-subscriptions --output none --service-principal --tenant "${TENANT_ID}" --username "${CLIENT_ID}" --password "${CLIENT_SECRET}"
+      - run: az login --allow-no-subscriptions --output none --service-principal --tenant "${TENANT_ID}" --username "${CLIENT_ID}" --password "${CLIENT_SECRET}"
 
-      - name: Install Go
-        uses: actions/setup-go@v2
+      - uses: actions/checkout@v2
+
+      - id: go-version
+        run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
+
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.17.6
+          go-version: '${{ steps.go-version.outputs.go_version }}'
 
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Test
-        run: go test -count=1 -race -v ./auth
+      - run: go test -count=1 -race -v ./auth
 
 # vim: set ts=2 sts=2 sw=2 et:

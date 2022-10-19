@@ -10,15 +10,18 @@ on:
 jobs:
   golint:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: true
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-go@v2
+
+      - id: go-version
+        run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
+
+      - uses: actions/setup-go@v3
         with:
-          go-version: "1.17.6"
-      - uses: golangci/golangci-lint-action@v2
+          go-version: '${{ steps.go-version.outputs.go_version }}'
+
+      - uses: golangci/golangci-lint-action@v3
         with:
-          version: "v1.45.2"
+          version: 'v1.50.0'
 
 # vim: set ts=2 sts=2 sw=2 et:

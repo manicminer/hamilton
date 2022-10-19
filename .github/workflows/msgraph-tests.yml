@@ -14,19 +14,17 @@ permissions:
 jobs:
   test-msgraph:
     runs-on: self-hosted
-    strategy:
-      fail-fast: true
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
+      - uses: actions/checkout@v2
+
+      - id: go-version
+        run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
+
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.17.6
+          go-version: '${{ steps.go-version.outputs.go_version }}'
 
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Test
-        run: go test -count=1 -race -v ./msgraph
+      - run: go test -count=1 -race -v ./msgraph
 #        env:
 #          AZURE_ENVIRONMENT: ${{ secrets.AZURE_ENVIRONMENT }}
 #          CLIENT_ID: ${{ secrets.CLIENT_ID }}
