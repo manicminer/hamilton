@@ -90,7 +90,7 @@ type AccessPackageResource struct {
 	AccessPackageResourceEnvironment *AccessPackageResourceEnvironment `json:"accessPackageResourceEnvironment,omitempty"`
 	AddedBy                          *string                           `json:"addedBy,omitempty"`
 	AddedOn                          *time.Time                        `json:"addedOn,omitempty"`
-	Description                      *bool                             `json:"description,omitempty"`
+	Description                      *string                           `json:"description,omitempty"`
 	DisplayName                      *string                           `json:"displayName,omitempty"`
 	ID                               *string                           `json:"id,omitempty"`
 	IsPendingOnboarding              *bool                             `json:"isPendingOnboarding,omitempty"`

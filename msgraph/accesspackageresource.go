@@ -82,7 +82,11 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	accessPackageResource := data.AccessPackageResources[0]
+	accessPackageResources := data.AccessPackageResources
 
-	return &accessPackageResource, status, nil
+	if len(accessPackageResources) == 0 {
+		return nil, status, fmt.Errorf("No accessPackageResource found with catalogId %v and originId %v", catalogId, originId)
+	}
+
+	return &accessPackageResources[0], status, nil
 }
