@@ -31,7 +31,9 @@ func TestGroupsClient(t *testing.T) {
 	testGroupsClient_GetOwner(t, c, *group.ID, (*owners)[0])
 
 	members := testGroupsClient_ListMembers(t, c, *group.ID)
+	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID)
 	testGroupsClient_GetMember(t, c, *group.ID, (*members)[0])
+	testGroupsClient_GetMember(t, c, *group.ID, (*transitiveMembers)[0])
 
 	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.RandomString))
 	testGroupsClient_Update(t, c, *group)
@@ -210,6 +212,23 @@ func testGroupsClient_ListMembers(t *testing.T, c *test.Test, id string) (member
 	}
 	if len(*members) == 0 {
 		t.Fatal("GroupsClient.ListMembers(): members was empty")
+	}
+	return
+}
+
+func testGroupsClient_ListTransitiveMembers(t *testing.T, c *test.Test, id string) (members *[]string) {
+	members, status, err := c.GroupsClient.ListTransitiveMembers(c.Context, id)
+	if err != nil {
+		t.Fatalf("GroupsClient.ListTransitiveMembers(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.ListTransitiveMembers(): invalid status: %d", status)
+	}
+	if members == nil {
+		t.Fatal("GroupsClient.ListTransitiveMembers(): members was nil")
+	}
+	if len(*members) == 0 {
+		t.Fatal("GroupsClient.ListTransitiveMembers(): members was empty")
 	}
 	return
 }
