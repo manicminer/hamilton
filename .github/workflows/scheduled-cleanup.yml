@@ -2,7 +2,7 @@
 name: Scheduled cleanup
 on:
   schedule:
-    - cron: "58 * * * *"
+    - cron: "58 */6 * * *"
 
 jobs:
   cleanup:
@@ -10,15 +10,15 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - name: Install Go
-        uses: actions/setup-go@v2
+      - uses: actions/checkout@v3
+
+      - id: go-version
+        run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
+
+      - uses: actions/setup-go@v3
         with:
-          go-version: 1.17.6
+          go-version: '${{ steps.go-version.outputs.go_version }}'
 
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Vacuum brrrrr
-        run: go run ./internal/cmd/test-cleanup
+      - run: go run ./internal/cmd/test-cleanup
 
 # vim: set ts=2 sts=2 sw=2 et:

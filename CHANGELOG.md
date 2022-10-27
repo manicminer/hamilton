@@ -1,4 +1,10 @@
-## 0.50.0 (Unreleased)
+## 0.51.0 (Unreleased)
+
+- Support for [Connected Organizations](https://learn.microsoft.com/en-gb/graph/api/resources/connectedorganization?view=graph-rest-1.0) ([#156](https://github.com/manicminer/hamilton/pull/156))
+- Bugfix: Add nil slice check in `AccessPackageResourceClient.Get()` ([#187](https://github.com/manicminer/hamilton/pull/187))
+- Bugfix: `AccessPackageResource.Description` has changed from a `*bool` to a `*string` ([#187](https://github.com/manicminer/hamilton/pull/187))
+
+## 0.50.0 (October 14, 2022)
 
 - Environments: add Synapse API in USGovernment ([#186](https://github.com/manicminer/hamilton/pull/186))
 
