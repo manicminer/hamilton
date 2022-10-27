@@ -1,4 +1,4 @@
-## 0.51.0 (Unreleased)
+## 0.51.0 (October 27, 2022)
 
 - Support for [Connected Organizations](https://learn.microsoft.com/en-gb/graph/api/resources/connectedorganization?view=graph-rest-1.0) ([#156](https://github.com/manicminer/hamilton/pull/156))
 - Support for listing [transitive group members](https://learn.microsoft.com/en-us/graph/api/group-list-transitivemembers?view=graph-rest-1.0) ([#191](https://github.com/manicminer/hamilton/pull/191))
