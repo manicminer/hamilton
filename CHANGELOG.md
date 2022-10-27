@@ -1,6 +1,7 @@
 ## 0.51.0 (Unreleased)
 
 - Support for [Connected Organizations](https://learn.microsoft.com/en-gb/graph/api/resources/connectedorganization?view=graph-rest-1.0) ([#156](https://github.com/manicminer/hamilton/pull/156))
+- Support for listing [transitive group members](https://learn.microsoft.com/en-us/graph/api/group-list-transitivemembers?view=graph-rest-1.0) ([#191](https://github.com/manicminer/hamilton/pull/191))
 - Bugfix: Add nil slice check in `AccessPackageResourceClient.Get()` ([#187](https://github.com/manicminer/hamilton/pull/187))
 - Bugfix: `AccessPackageResource.Description` has changed from a `*bool` to a `*string` ([#187](https://github.com/manicminer/hamilton/pull/187))
 
