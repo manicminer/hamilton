@@ -23,10 +23,12 @@ func envDefault(envVarName, defaultValue string) string {
 }
 
 var (
-	defaultTenantId     = envDefault("DEFAULT_TENANT_ID", "6df54acb-f3cd-4734-85e3-7511ade57a02")
-	defaultTenantDomain = envDefault("DEFAULT_TENANT_DOMAIN", "hamiltontesting2.onmicrosoft.com")
-	b2cTenantId         = envDefault("B2C_TENANT_ID", "1f54b558-9265-4964-a119-3eab591f05a9")
-	b2cTenantDomain     = envDefault("B2C_TENANT_DOMAIN", "hamiltontestingb2c.onmicrosoft.com")
+	defaultTenantId       = envDefault("DEFAULT_TENANT_ID", "6df54acb-f3cd-4734-85e3-7511ade57a02")
+	defaultTenantDomain   = envDefault("DEFAULT_TENANT_DOMAIN", "hamiltontesting2.onmicrosoft.com")
+	b2cTenantId           = envDefault("B2C_TENANT_ID", "1f54b558-9265-4964-a119-3eab591f05a9")
+	b2cTenantDomain       = envDefault("B2C_TENANT_DOMAIN", "hamiltontestingb2c.onmicrosoft.com")
+	connectedTenantId     = envDefault("CONNECTED_TENANT_ID", "df78c1c2-114a-425c-b711-091b30dea0ac")
+	connectedTenantDomain = envDefault("CONNECTED_TENANT_DOMAIN", "hamiltontesting3.onmicrosoft.com")
 
 	clientId              = envDefault("CLIENT_ID", "c072182f-ead2-4e94-aa7f-a5975558c945")
 	clientCertificate     = os.Getenv("CLIENT_CERTIFICATE")
@@ -155,6 +157,10 @@ func NewTest(t *testing.T) (c *Test) {
 	conn2 := NewConnection(auth.TokenVersion2, b2cTenantId, b2cTenantDomain)
 	conn2.Authorize(ctx, conn.AuthConfig.Environment.MsGraph)
 	c.Connections["b2c"] = conn2
+
+	conn3 := NewConnection(auth.TokenVersion2, connectedTenantId, connectedTenantDomain)
+	conn3.Authorize(ctx, conn.AuthConfig.Environment.MsGraph)
+	c.Connections["connected"] = conn3
 
 	var err error
 	c.Token, err = conn.Authorizer.Token()

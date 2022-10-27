@@ -2,7 +2,6 @@ package msgraph_test
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/hashicorp/go-uuid"
@@ -16,18 +15,9 @@ func TestConnectedOrganizationClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	// The connected tenant needs to be a valid tenant, so set in environment config.
 	// We can either create the connected organization with a tenant id or with a domain name, test both.
-	connectedTenantId := os.Getenv("CONNECTED_TENANT_ID")
-	connectedDomain := os.Getenv("CONNECTED_DOMAIN")
-
-	if _, err := uuid.ParseUUID(connectedTenantId); err != nil {
-		t.Fatalf("CONNECTED_TENANT_ID is %q. It must be specified as a UUID value.", connectedTenantId)
-	}
-
-	if connectedDomain == "" {
-		t.Fatalf("CONNECTED_DOMAIN must be specified.")
-	}
+	connectedTenantId := c.Connections["connected"].AuthConfig.TenantID
+	connectedDomain := c.Connections["connected"].DomainName
 
 	// CREATE
 	newConnectedOrg := testConnectedOrganizationClient_Create(t, c, getTestConnectedOrganization(&connectedTenantId))
