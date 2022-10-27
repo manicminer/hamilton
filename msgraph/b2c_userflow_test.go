@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/manicminer/hamilton/internal/test"
@@ -14,15 +15,17 @@ func TestB2CUserFlowClient(t *testing.T) {
 	defer c.CancelFunc()
 
 	userflow := testB2CUserFlowClient_Create(t, c, msgraph.B2CUserFlow{
-		ID:                  utils.StringPtr("test b2c user flow"),
-		UserFlowType:        utils.StringPtr("signup"),
-		UserFlowTypeVersion: utils.Float32Ptr(3.0),
+		ID:                  utils.StringPtr(fmt.Sprintf("test_b2c_user_flow_%s", c.RandomString)),
+		UserFlowType:        utils.StringPtr("signUp"),
+		UserFlowTypeVersion: utils.Float32Ptr(1.0),
 	})
 	testB2CUserFlowClient_Get(t, c, *userflow.ID)
-	userflow.DefaultLanguageTag = utils.StringPtr("en")
-	testB2CUserFlowClient_Update(t, c, *userflow)
+	testB2CUserFlowClient_Update(t, c, msgraph.B2CUserFlow{
+		ID:                 userflow.ID,
+		DefaultLanguageTag: utils.StringPtr("en"),
+	})
 	testB2CUserFlowClient_List(t, c)
-	testGroupsClient_Delete(t, c, *userflow.ID)
+	testB2CUserFlowClient_Delete(t, c, *userflow.ID)
 }
 
 func testB2CUserFlowClient_Create(t *testing.T, c *test.Test, u msgraph.B2CUserFlow) *msgraph.B2CUserFlow {
@@ -74,5 +77,15 @@ func testB2CUserFlowClient_Update(t *testing.T, c *test.Test, u msgraph.B2CUserF
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("B2CUserFlowClient.Update(): invalid status: %d", status)
+	}
+}
+
+func testB2CUserFlowClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.B2CUserFlowClient.Delete(c.Context, id)
+	if err != nil {
+		t.Fatalf("B2CUserFlowClient.Delete(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("B2CUserFlowClient.Delete(): invalid status: %d", status)
 	}
 }

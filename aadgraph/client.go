@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -179,7 +179,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 				errText = fmt.Sprintf("OData error: %s", o.Error)
 			default:
 				defer resp.Body.Close()
-				respBody, _ := ioutil.ReadAll(resp.Body)
+				respBody, _ := io.ReadAll(resp.Body)
 				errText = fmt.Sprintf("response: %s", respBody)
 			}
 			return nil, status, o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
@@ -286,7 +286,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
 	if strings.HasPrefix(contentType, "application/json") {
 		// Read the response body and close it
-		respBody, _ := ioutil.ReadAll(resp.Body)
+		respBody, _ := io.ReadAll(resp.Body)
 		resp.Body.Close()
 
 		// Unmarshall firstOdata
@@ -298,7 +298,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		firstValue, ok := firstOdata.Value.([]interface{})
 		if input.DisablePaging || firstOdata.NextLink == nil || firstValue == nil || !ok {
 			// No more pages, reassign response body and return
-			resp.Body = ioutil.NopCloser(bytes.NewBuffer(respBody))
+			resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 			return resp, status, o, nil
 		}
 
@@ -311,7 +311,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		}
 
 		// Read the next page response body and close it
-		nextRespBody, _ := ioutil.ReadAll(nextResp.Body)
+		nextRespBody, _ := io.ReadAll(nextResp.Body)
 		nextResp.Body.Close()
 
 		// Unmarshall firstOdata from the next page
@@ -333,7 +333,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 		}
 
 		// Reassign the response body
-		resp.Body = ioutil.NopCloser(bytes.NewBuffer(newJson))
+		resp.Body = io.NopCloser(bytes.NewBuffer(newJson))
 	}
 
 	return resp, status, o, nil

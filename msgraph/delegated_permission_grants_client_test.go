@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
@@ -24,7 +25,7 @@ func TestDelegatedPermissionGrantsClient(t *testing.T) {
 		DisplayName:    app.DisplayName,
 	})
 
-	result := testServicePrincipalsClient_List(t, c, odata.Query{Filter: fmt.Sprintf("appId eq '%s'", c.Connection.AuthConfig.Environment.MsGraph.AppId)})
+	result := testServicePrincipalsClient_List(t, c, odata.Query{Filter: fmt.Sprintf("appId eq '%s'", environments.PublishedApis["MicrosoftGraph"])})
 	if len(*result) == 0 {
 		t.Fatalf("msgraph service principal not found")
 	}
@@ -33,7 +34,7 @@ func TestDelegatedPermissionGrantsClient(t *testing.T) {
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user"),
 		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.RandomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.RandomString, c.Connection.DomainName)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
