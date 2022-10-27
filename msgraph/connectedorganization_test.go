@@ -58,9 +58,7 @@ func TestConnectedOrganizationClient(t *testing.T) {
 	testConnectedOrganizationClient_Update(t, c, newConnectedOrg)
 
 	// DELETE
-	if newConnectedOrg != nil && newConnectedOrg.ID != nil {
-		testConnectedOrganizationClient_Delete(t, c, *newConnectedOrg.ID)
-	}
+	testConnectedOrganizationClient_Delete(t, c, *newConnectedOrg.ID)
 }
 
 func testConnectedOrganizationClient_Create(t *testing.T, c *test.Test, a *msgraph.ConnectedOrganization) (connectedOrganization *msgraph.ConnectedOrganization) {
@@ -172,8 +170,8 @@ func testConnectedOrganizationClient_Sponsors(t *testing.T, c *test.Test, connec
 	}
 
 	// Remove the test groups.
-	c.GroupsClient.Delete(c.Context, *extGroup.ID)
-	c.GroupsClient.Delete(c.Context, *intGroup.ID)
+	testGroupsClient_Delete(t, c, *extGroup.ID)
+	testGroupsClient_Delete(t, c, *intGroup.ID)
 }
 
 func createGroupsForSponsors(c *test.Test) (extGroup *msgraph.Group, intGroup *msgraph.Group, err error) {
