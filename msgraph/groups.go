@@ -62,16 +62,16 @@ func (c *GroupsClient) Create(ctx context.Context, group Group) (*Group, int, er
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
 
-	ownersNotReplicated := func(resp *http.Response, o *odata.OData) bool {
+	consistencyFunc := func(resp *http.Response, o *odata.OData) bool {
 		if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
-			return o.Error.Match(odata.ErrorResourceDoesNotExist)
+			return o.Error.Match(odata.ErrorPropertyValuesAreInvalid) || o.Error.Match(odata.ErrorResourceDoesNotExist)
 		}
 		return false
 	}
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
-		ConsistencyFailureFunc: ownersNotReplicated,
+		ConsistencyFailureFunc: consistencyFunc,
 		OData: odata.Query{
 			Metadata: odata.MetadataFull,
 		},
@@ -337,6 +337,48 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/groups/%s/members", id),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		Members []struct {
+			Type string `json:"@odata.type"`
+			Id   string `json:"id"`
+		} `json:"value"`
+	}
+	if err := json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	ret := make([]string, len(data.Members))
+	for i, v := range data.Members {
+		ret[i] = v.Id
+	}
+
+	return &ret, status, nil
+}
+
+// ListTransitiveMembers retrieves a flat list of all nested members of the specified Group.
+// id is the object ID of the group.
+func (c *GroupsClient) ListTransitiveMembers(ctx context.Context, id string) (*[]string, int, error) {
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		OData: odata.Query{
+			Select: []string{"id"},
+		},
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/groups/%s/transitiveMembers", id),
 			HasTenantId: true,
 		},
 	})

@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/manicminer/hamilton/environments"
@@ -34,7 +34,7 @@ func (c *ApplicationRefsClient) Get(ctx context.Context, id environments.ApiAppI
 		return nil, status, err
 	}
 	defer resp.Body.Close()
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 	var appRef ApplicationRef
 	if err := json.Unmarshal(respBody, &appRef); err != nil {
 		return nil, status, err

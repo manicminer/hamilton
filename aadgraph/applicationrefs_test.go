@@ -2,11 +2,17 @@ package aadgraph_test
 
 import (
 	"context"
+	"os"
 	"testing"
 
 	"github.com/manicminer/hamilton/aadgraph"
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
+)
+
+var (
+	tenantId     = os.Getenv("DEFAULT_TENANT_ID")
+	tenantDomain = os.Getenv("DEFAULT_TENANT_DOMAIN")
 )
 
 type ApplicationRefsClientTest struct {
@@ -24,7 +30,7 @@ func TestApplicationRefsClient(t *testing.T) {
 	}
 
 	c := ApplicationRefsClientTest{
-		connection:   test.NewConnection(auth.TokenVersion1),
+		connection:   test.NewConnection(auth.TokenVersion1, tenantId, tenantDomain),
 		randomString: test.RandomString(),
 	}
 	c.connection.Authorize(ctx, c.connection.AuthConfig.Environment.MsGraph)

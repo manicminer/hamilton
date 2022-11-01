@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/manicminer/hamilton/internal/test"
@@ -14,15 +15,15 @@ func TestB2CUserFlowClient(t *testing.T) {
 	defer c.CancelFunc()
 
 	userflow := testB2CUserFlowClient_Create(t, c, msgraph.B2CUserFlow{
-		ID:                  utils.StringPtr("testuserflow"),
+		ID:                  utils.StringPtr(fmt.Sprintf("test_b2c_user_flow_%s", c.RandomString)),
 		UserFlowType:        utils.StringPtr("signUp"),
-		UserFlowTypeVersion: utils.Float32Ptr(3.0),
+		UserFlowTypeVersion: utils.Float32Ptr(1.0),
 	})
 	testB2CUserFlowClient_Get(t, c, *userflow.ID)
-	userflow.DefaultLanguageTag = utils.StringPtr("en")
-	userflow.UserFlowType = nil
-	userflow.UserFlowTypeVersion = nil
-	testB2CUserFlowClient_Update(t, c, *userflow)
+	testB2CUserFlowClient_Update(t, c, msgraph.B2CUserFlow{
+		ID:                 userflow.ID,
+		DefaultLanguageTag: utils.StringPtr("en"),
+	})
 	testB2CUserFlowClient_List(t, c)
 	testB2CUserFlowClient_Delete(t, c, *userflow.ID)
 }
