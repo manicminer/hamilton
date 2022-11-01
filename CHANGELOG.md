@@ -1,3 +1,14 @@
+## 0.51.0 (October 27, 2022)
+
+- Support for [Connected Organizations](https://learn.microsoft.com/en-gb/graph/api/resources/connectedorganization?view=graph-rest-1.0) ([#156](https://github.com/manicminer/hamilton/pull/156))
+- Support for listing [transitive group members](https://learn.microsoft.com/en-us/graph/api/group-list-transitivemembers?view=graph-rest-1.0) ([#191](https://github.com/manicminer/hamilton/pull/191))
+- Bugfix: Add nil slice check in `AccessPackageResourceClient.Get()` ([#187](https://github.com/manicminer/hamilton/pull/187))
+- Bugfix: `AccessPackageResource.Description` has changed from a `*bool` to a `*string` ([#187](https://github.com/manicminer/hamilton/pull/187))
+
+## 0.50.0 (October 14, 2022)
+
+- Environments: add Synapse API in USGovernment ([#186](https://github.com/manicminer/hamilton/pull/186))
+
 ## 0.49.0 (September 29, 2022)
 
 - Service Principals: support for the `Oauth2PermissionScopes` field (json `oauth2PermissionScopes`), which is used by the v1.0 API ([#183](https://github.com/manicminer/hamilton/pull/183))

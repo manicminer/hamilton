@@ -319,6 +319,14 @@ const (
 	ConditionalAccessRiskLevelUnknownFutureValue ConditionalAccessRiskLevel = "unknownFutureValue"
 )
 
+type ConnectedOrganizationState = string
+
+const (
+	ConnectedOrganizationStateProposed           ConnectedOrganizationState = "proposed"
+	ConnectedOrganizationStateConfigured         ConnectedOrganizationState = "configured"
+	ConnectedOrganizationStateUnknownFutureValue ConnectedOrganizationState = "unknownFutureValue"
+)
+
 type DelegatedPermissionGrantConsentType = string
 
 const (
