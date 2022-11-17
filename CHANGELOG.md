@@ -1,3 +1,7 @@
+## 0.52.0 (Unreleased)
+
+- Bugfix: Use `eq` over `startsWith` in `msgraph.AccessPackageResourceClient{}.Get()` to improve accuracy ([#194](https://github.com/manicminer/hamilton/pull/194))
+
 ## 0.51.0 (October 27, 2022)
 
 - Support for [Connected Organizations](https://learn.microsoft.com/en-gb/graph/api/resources/connectedorganization?view=graph-rest-1.0) ([#156](https://github.com/manicminer/hamilton/pull/156))
