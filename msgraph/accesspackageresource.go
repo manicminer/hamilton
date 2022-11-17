@@ -57,7 +57,7 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		OData: odata.Query{
-			Filter: fmt.Sprintf("startswith(originId,'%s')", originId),
+			Filter: fmt.Sprintf("originId eq '%s'", originId),
 		},
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
