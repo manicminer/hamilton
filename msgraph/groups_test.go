@@ -25,15 +25,15 @@ func TestGroupsClient(t *testing.T) {
 		Members:         &msgraph.Members{*self},
 	}
 	group := testGroupsClient_Create(t, c, newGroup)
-	testGroupsClient_Get(t, c, *group.ID)
+	testGroupsClient_Get(t, c, *group.ID())
 
-	owners := testGroupsClient_ListOwners(t, c, *group.ID)
-	testGroupsClient_GetOwner(t, c, *group.ID, (*owners)[0])
+	owners := testGroupsClient_ListOwners(t, c, *group.ID())
+	testGroupsClient_GetOwner(t, c, *group.ID(), (*owners)[0])
 
-	members := testGroupsClient_ListMembers(t, c, *group.ID)
-	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID)
-	testGroupsClient_GetMember(t, c, *group.ID, (*members)[0])
-	testGroupsClient_GetMember(t, c, *group.ID, (*transitiveMembers)[0])
+	members := testGroupsClient_ListMembers(t, c, *group.ID())
+	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID())
+	testGroupsClient_GetMember(t, c, *group.ID(), (*members)[0])
+	testGroupsClient_GetMember(t, c, *group.ID(), (*transitiveMembers)[0])
 
 	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.RandomString))
 	testGroupsClient_Update(t, c, *group)
@@ -50,15 +50,15 @@ func TestGroupsClient(t *testing.T) {
 
 	group.Owners = &msgraph.Owners{user.DirectoryObject}
 	testGroupsClient_AddOwners(t, c, group)
-	testGroupsClient_RemoveOwners(t, c, *group.ID, &([]string{c.Claims.ObjectId}))
+	testGroupsClient_RemoveOwners(t, c, *group.ID(), &([]string{c.Claims.ObjectId}))
 
 	group.Members = &msgraph.Members{user.DirectoryObject}
 	testGroupsClient_AddMembers(t, c, group)
-	testGroupsClient_RemoveMembers(t, c, *group.ID, &([]string{c.Claims.ObjectId}))
+	testGroupsClient_RemoveMembers(t, c, *group.ID(), &([]string{c.Claims.ObjectId}))
 
 	testGroupsClient_List(t, c)
-	testGroupsClient_Delete(t, c, *group.ID)
-	testUsersClient_Delete(t, c, *user.ID)
+	testGroupsClient_Delete(t, c, *group.ID())
+	testUsersClient_Delete(t, c, *user.ID())
 
 	newGroup365 := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-365"),
@@ -68,12 +68,12 @@ func TestGroupsClient(t *testing.T) {
 		SecurityEnabled: utils.BoolPtr(true),
 	}
 	group365 := testGroupsClient_Create(t, c, newGroup365)
-	testGroupsClient_Delete(t, c, *group365.ID)
-	testGroupsClient_GetDeleted(t, c, *group365.ID)
-	testGroupsClient_RestoreDeleted(t, c, *group365.ID)
-	testGroupsClient_Delete(t, c, *group365.ID)
-	testGroupsClient_ListDeleted(t, c, *group365.ID)
-	testGroupsClient_DeletePermanently(t, c, *group365.ID)
+	testGroupsClient_Delete(t, c, *group365.ID())
+	testGroupsClient_GetDeleted(t, c, *group365.ID())
+	testGroupsClient_RestoreDeleted(t, c, *group365.ID())
+	testGroupsClient_Delete(t, c, *group365.ID())
+	testGroupsClient_ListDeleted(t, c, *group365.ID())
+	testGroupsClient_DeletePermanently(t, c, *group365.ID())
 }
 
 func testGroupsClient_Create(t *testing.T, c *test.Test, g msgraph.Group) (group *msgraph.Group) {
@@ -87,7 +87,7 @@ func testGroupsClient_Create(t *testing.T, c *test.Test, g msgraph.Group) (group
 	if group == nil {
 		t.Fatal("GroupsClient.Create(): group was nil")
 	}
-	if group.ID == nil {
+	if group.ID() == nil {
 		t.Fatal("GroupsClient.Create(): group.ID was nil")
 	}
 	return
@@ -300,7 +300,7 @@ func testGroupsClient_ListDeleted(t *testing.T, c *test.Test, expectedId string)
 	}
 	found := false
 	for _, group := range *deletedGroups {
-		if group.ID != nil && *group.ID == expectedId {
+		if id := group.ID(); id != nil && *id == expectedId {
 			found = true
 			break
 		}
@@ -322,10 +322,10 @@ func testGroupsClient_RestoreDeleted(t *testing.T, c *test.Test, id string) {
 	if group == nil {
 		t.Fatal("GroupsClient.RestoreDeleted(): group was nil")
 	}
-	if group.ID == nil {
+	if group.ID() == nil {
 		t.Fatal("GroupsClient.RestoreDeleted(): group.ID was nil")
 	}
-	if *group.ID != id {
+	if *group.ID() != id {
 		t.Fatal("GroupsClient.RestoreDeleted(): group IDs do not match")
 	}
 }

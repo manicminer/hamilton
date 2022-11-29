@@ -32,13 +32,13 @@ func TestRoleDefinitionsClient(t *testing.T) {
 
 	roleDefinition.Description = msgraph.NullableString("for the tests")
 	testRoleDefinitionsClient_Update(t, c, *roleDefinition)
-	testRoleDefinitionsClient_Get(t, c, *roleDefinition.ID)
+	testRoleDefinitionsClient_Get(t, c, *roleDefinition.ID())
 
 	roleDefinitions := testRoleDefinitionsClient_List(t, c)
 	role := (*roleDefinitions)[0]
-	testRoleDefinitionsClient_Get(t, c, *role.ID)
+	testRoleDefinitionsClient_Get(t, c, *role.ID())
 
-	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID)
+	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID())
 }
 
 func testRoleDefinitionsClient_Create(t *testing.T, c *test.Test, r msgraph.UnifiedRoleDefinition) (roleDefinition *msgraph.UnifiedRoleDefinition) {
@@ -52,7 +52,7 @@ func testRoleDefinitionsClient_Create(t *testing.T, c *test.Test, r msgraph.Unif
 	if roleDefinition == nil {
 		t.Fatal("RoleDefinitionsClient.Create(): roleDefinition was nil")
 	}
-	if roleDefinition.ID == nil {
+	if roleDefinition.ID() == nil {
 		t.Fatal("RoleDefinitionsClient.Create(): roleDefinition.ID was nil")
 	}
 	return

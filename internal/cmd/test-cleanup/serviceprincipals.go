@@ -22,15 +22,15 @@ func cleanupServicePrincipals() {
 		return
 	}
 	for _, servicePrincipal := range *servicePrincipals {
-		if servicePrincipal.ID == nil || servicePrincipal.DisplayName == nil {
+		if servicePrincipal.ID() == nil || servicePrincipal.DisplayName == nil {
 			log.Println("Service Principal returned with nil ID or DisplayName")
 			continue
 		}
 
-		log.Printf("Deleting service principal %q (DisplayName: %q)\n", *servicePrincipal.ID, *servicePrincipal.DisplayName)
-		_, err := servicePrincipalsClient.Delete(ctx, *servicePrincipal.ID)
+		log.Printf("Deleting service principal %q (DisplayName: %q)\n", *servicePrincipal.ID(), *servicePrincipal.DisplayName)
+		_, err := servicePrincipalsClient.Delete(ctx, *servicePrincipal.ID())
 		if err != nil {
-			log.Printf("Error when deleting service principal %q: %v\n", *servicePrincipal.ID, err)
+			log.Printf("Error when deleting service principal %q: %v\n", *servicePrincipal.ID(), err)
 		}
 	}
 }

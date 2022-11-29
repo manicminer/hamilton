@@ -45,12 +45,12 @@ func TestDirectoryObjectsClient(t *testing.T) {
 	}
 	group2 := testGroupsClient_Create(t, c, newGroup2)
 
-	testDirectoryObjectsClient_Get(t, c, *user.ID)
-	testDirectoryObjectsClient_Get(t, c, *group1.ID)
-	testDirectoryObjectsClient_GetMemberGroups(t, c, *user.ID, true, []string{*group1.ID, *group2.ID})
-	testDirectoryObjectsClient_GetMemberObjects(t, c, *group1.ID, true, []string{*group2.ID})
-	testDirectoryObjectsClient_GetByIds(t, c, []string{*group1.ID, *group2.ID, *user.ID}, []string{odata.ShortTypeGroup})
-	testDirectoryObjectsClient_Delete(t, c, *group1.ID)
+	testDirectoryObjectsClient_Get(t, c, *user.ID())
+	testDirectoryObjectsClient_Get(t, c, *group1.ID())
+	testDirectoryObjectsClient_GetMemberGroups(t, c, *user.ID(), true, []string{*group1.ID(), *group2.ID()})
+	testDirectoryObjectsClient_GetMemberObjects(t, c, *group1.ID(), true, []string{*group2.ID()})
+	testDirectoryObjectsClient_GetByIds(t, c, []string{*group1.ID(), *group2.ID(), *user.ID()}, []string{odata.ShortTypeGroup})
+	testDirectoryObjectsClient_Delete(t, c, *group1.ID())
 }
 
 func testDirectoryObjectsClient_Get(t *testing.T, c *test.Test, id string) (directoryObject *msgraph.DirectoryObject) {
@@ -64,7 +64,7 @@ func testDirectoryObjectsClient_Get(t *testing.T, c *test.Test, id string) (dire
 	if directoryObject == nil {
 		t.Fatal("DirectoryObjectsClient.Get(): directoryObject was nil")
 	}
-	if directoryObject.ID == nil {
+	if directoryObject.ID() == nil {
 		t.Fatal("DirectoryObjectsClient.Get(): directoryObject ID was nil")
 	}
 	return
@@ -109,7 +109,7 @@ func testDirectoryObjectsClient_GetMemberGroups(t *testing.T, c *test.Test, id s
 	var actualCount int
 	for _, e := range expected {
 		for _, o := range *directoryObjects {
-			if o.ID != nil && e == *o.ID {
+			if o.ID() != nil && e == *o.ID() {
 				actualCount++
 			}
 		}
@@ -142,7 +142,7 @@ func testDirectoryObjectsClient_GetMemberObjects(t *testing.T, c *test.Test, id 
 	var actualCount int
 	for _, e := range expected {
 		for _, o := range *directoryObjects {
-			if o.ID != nil && e == *o.ID {
+			if o.ID() != nil && e == *o.ID() {
 				actualCount++
 			}
 		}

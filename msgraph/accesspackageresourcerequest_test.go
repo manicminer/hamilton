@@ -37,7 +37,7 @@ func TestAccessPackageResourceRequestClient(t *testing.T) {
 		CatalogId:   accessPackage.Catalog.ID,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
-			OriginId:     aadGroup.ID,
+			OriginId:     aadGroup.ID(),
 			OriginSystem: msgraph.AccessPackageResourceOriginSystemAadGroup,
 		},
 	}, true)
@@ -180,7 +180,7 @@ func testAccessPackageResourceRequestGroup_Create(t *testing.T, c *test.Test, ow
 }
 
 func testAccessPackageResourceRequestGroup_Delete(t *testing.T, c *test.Test, group *msgraph.Group) {
-	_, err := c.GroupsClient.Delete(c.Context, *group.ID)
+	_, err := c.GroupsClient.Delete(c.Context, *group.ID())
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}

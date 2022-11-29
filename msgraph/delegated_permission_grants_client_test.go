@@ -41,10 +41,10 @@ func TestDelegatedPermissionGrantsClient(t *testing.T) {
 	})
 
 	grant := testDelegatedPermissionGrantsClient_Create(t, c, msgraph.DelegatedPermissionGrant{
-		ClientId:    sp.ID,
+		ClientId:    sp.ID(),
 		ConsentType: utils.StringPtr(msgraph.DelegatedPermissionGrantConsentTypePrincipal),
-		PrincipalId: user.ID,
-		ResourceId:  (*result)[0].ID,
+		PrincipalId: user.ID(),
+		ResourceId:  (*result)[0].ID(),
 		Scopes:      &[]string{"openid", "User.Read"},
 	})
 
@@ -53,12 +53,12 @@ func TestDelegatedPermissionGrantsClient(t *testing.T) {
 	testDelegatedPermissionGrantsClient_Update(t, c, *grant)
 
 	testDelegatedPermissionGrantsClient_List(t, c, odata.Query{})
-	testDelegatedPermissionGrantsClient_List(t, c, odata.Query{Filter: fmt.Sprintf("clientId eq '%s'", *sp.ID)})
+	testDelegatedPermissionGrantsClient_List(t, c, odata.Query{Filter: fmt.Sprintf("clientId eq '%s'", *sp.ID())})
 
 	testDelegatedPermissionGrantsClient_Delete(t, c, *grant.Id)
-	testUsersClient_Delete(t, c, *user.ID)
-	testServicePrincipalsClient_Delete(t, c, *sp.ID)
-	testApplicationsClient_Delete(t, c, *app.ID)
+	testUsersClient_Delete(t, c, *user.ID())
+	testServicePrincipalsClient_Delete(t, c, *sp.ID())
+	testApplicationsClient_Delete(t, c, *app.ID())
 }
 
 func testDelegatedPermissionGrantsClient_Create(t *testing.T, c *test.Test, sp msgraph.DelegatedPermissionGrant) (delegatedPermissionGrant *msgraph.DelegatedPermissionGrant) {

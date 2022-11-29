@@ -22,10 +22,10 @@ func TestClaimsMappingPolicyClient(t *testing.T) {
 		),
 	})
 	testClaimsMappingPolicyClient_List(t, c)
-	testClaimsMappingPolicyClient_Get(t, c, *policy.ID)
+	testClaimsMappingPolicyClient_Get(t, c, *policy.ID())
 	policy.DisplayName = utils.StringPtr(fmt.Sprintf("test-claims-mapping-policy-%s", c.RandomString))
 	testClaimsMappingPolicyClient_Update(t, c, *policy)
-	testClaimsMappingPolicyClient_Delete(t, c, *policy.ID)
+	testClaimsMappingPolicyClient_Delete(t, c, *policy.ID())
 }
 
 func testClaimsMappingPolicyClient_Create(t *testing.T, c *test.Test, p msgraph.ClaimsMappingPolicy) (policy *msgraph.ClaimsMappingPolicy) {
@@ -39,7 +39,7 @@ func testClaimsMappingPolicyClient_Create(t *testing.T, c *test.Test, p msgraph.
 	if policy == nil {
 		t.Fatal("ClaimsMappingPolicyClient.Create(): policy was nil")
 	}
-	if policy.ID == nil {
+	if policy.ID() == nil {
 		t.Fatal("ClaimsMappingPolicyClient.Create(): policy.ID was nil")
 	}
 	return

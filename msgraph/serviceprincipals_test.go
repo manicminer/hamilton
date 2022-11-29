@@ -38,9 +38,9 @@ func TestServicePrincipalsClient(t *testing.T) {
 
 	spChild.Owners = &msgraph.Owners{sp.DirectoryObject}
 	testServicePrincipalsClient_AddOwners(t, c, spChild)
-	testServicePrincipalsClient_ListOwners(t, c, *spChild.ID, []string{*sp.ID})
-	testServicePrincipalsClient_GetOwner(t, c, *spChild.ID, *sp.ID)
-	testServicePrincipalsClient_Get(t, c, *sp.ID)
+	testServicePrincipalsClient_ListOwners(t, c, *spChild.ID(), []string{*sp.ID()})
+	testServicePrincipalsClient_GetOwner(t, c, *spChild.ID(), *sp.ID())
+	testServicePrincipalsClient_Get(t, c, *sp.ID())
 	sp.Tags = &([]string{"TestTag"})
 	testServicePrincipalsClient_Update(t, c, *sp)
 	pwd := testServicePrincipalsClient_AddPassword(t, c, sp)
@@ -64,10 +64,10 @@ func TestServicePrincipalsClient(t *testing.T) {
 
 	testServicePrincipalsClient_AssignClaimsMappingPolicy(t, c, sp)
 	// ListClaimsMappingPolicy is called within RemoveClaimsMappingPolicy
-	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID})
+	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID()})
 	// A Second call tests that a remove call on an empty assignment list returns ok
-	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID})
-	testClaimsMappingPolicyClient_Delete(t, c, *claimsMappingPolicy.ID)
+	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID()})
+	testClaimsMappingPolicyClient_Delete(t, c, *claimsMappingPolicy.ID())
 
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
@@ -89,18 +89,18 @@ func TestServicePrincipalsClient(t *testing.T) {
 	groupChild.Members = &msgraph.Members{sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, c, groupChild)
 
-	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
-	testServicePrincipalsClient_ListOwnedObjects(t, c, *sp.ID)
+	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID())
+	testServicePrincipalsClient_ListOwnedObjects(t, c, *sp.ID())
 
-	testServicePrincipalsClient_RemoveOwners(t, c, *spChild.ID, []string{*sp.ID})
-	testGroupsClient_Delete(t, c, *groupParent.ID)
-	testGroupsClient_Delete(t, c, *groupChild.ID)
+	testServicePrincipalsClient_RemoveOwners(t, c, *spChild.ID(), []string{*sp.ID()})
+	testGroupsClient_Delete(t, c, *groupParent.ID())
+	testGroupsClient_Delete(t, c, *groupChild.ID())
 
-	testServicePrincipalsClient_Delete(t, c, *sp.ID)
-	testServicePrincipalsClient_Delete(t, c, *spChild.ID)
+	testServicePrincipalsClient_Delete(t, c, *sp.ID())
+	testServicePrincipalsClient_Delete(t, c, *spChild.ID())
 
-	testApplicationsClient_Delete(t, c, *app.ID)
-	testApplicationsClient_Delete(t, c, *appChild.ID)
+	testApplicationsClient_Delete(t, c, *app.ID())
+	testApplicationsClient_Delete(t, c, *appChild.ID())
 }
 
 func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
@@ -132,7 +132,7 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 		AppId:          app.AppId,
 		DisplayName:    app.DisplayName,
 	})
-	testServicePrincipalsClient_Get(t, c, *sp.ID)
+	testServicePrincipalsClient_Get(t, c, *sp.ID())
 	sp.Tags = &([]string{"TestTag"})
 	testServicePrincipalsClient_Update(t, c, *sp)
 	testServicePrincipalsClient_List(t, c, odata.Query{})
@@ -157,23 +157,23 @@ func TestServicePrincipalsClient_AppRoleAssignments(t *testing.T) {
 	groupChild.Members = &msgraph.Members{sp.DirectoryObject}
 	testGroupsClient_AddMembers(t, c, groupChild)
 
-	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID)
+	testServicePrincipalsClient_ListGroupMemberships(t, c, *sp.ID())
 
 	// App Role Assignments
-	appRoleAssignment := testServicePrincipalsClient_AssignAppRole(t, c, *groupParent.ID, *sp.ID, testResourceAppRoleId)
+	appRoleAssignment := testServicePrincipalsClient_AssignAppRole(t, c, *groupParent.ID(), *sp.ID(), testResourceAppRoleId)
 	// list resourceApp role assignments for a test group
-	appRoleAssignments := testServicePrincipalsClient_ListAppRoleAssignments(t, c, *sp.ID)
+	appRoleAssignments := testServicePrincipalsClient_ListAppRoleAssignments(t, c, *sp.ID())
 	if len(*appRoleAssignments) == 0 {
 		t.Fatal("expected at least one app role assignment assigned to the test group")
 	}
 	// removes app role assignment previously set to the test group
-	testServicePrincipalsClient_RemoveAppRoleAssignment(t, c, *sp.ID, *appRoleAssignment.Id)
+	testServicePrincipalsClient_RemoveAppRoleAssignment(t, c, *sp.ID(), *appRoleAssignment.Id)
 
 	// remove all test resources
-	testGroupsClient_Delete(t, c, *groupParent.ID)
-	testGroupsClient_Delete(t, c, *groupChild.ID)
-	testServicePrincipalsClient_Delete(t, c, *sp.ID)
-	testApplicationsClient_Delete(t, c, *app.ID)
+	testGroupsClient_Delete(t, c, *groupParent.ID())
+	testGroupsClient_Delete(t, c, *groupChild.ID())
+	testServicePrincipalsClient_Delete(t, c, *sp.ID())
+	testApplicationsClient_Delete(t, c, *app.ID())
 
 }
 
@@ -188,7 +188,7 @@ func testServicePrincipalsClient_Create(t *testing.T, c *test.Test, sp msgraph.S
 	if servicePrincipal == nil {
 		t.Fatal("ServicePrincipalsClient.Create(): servicePrincipal was nil")
 	}
-	if servicePrincipal.ID == nil {
+	if servicePrincipal.ID() == nil {
 		t.Fatal("ServicePrincipalsClient.Create(): servicePrincipal.ID was nil")
 	}
 	return
@@ -264,7 +264,7 @@ func testServicePrincipalsClient_AddPassword(t *testing.T, c *test.Test, a *msgr
 		DisplayName: utils.StringPtr("test password"),
 		EndDateTime: &expiry,
 	}
-	newPwd, status, err := c.ServicePrincipalsClient.AddPassword(c.Context, *a.ID, pwd)
+	newPwd, status, err := c.ServicePrincipalsClient.AddPassword(c.Context, *a.ID(), pwd)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddPassword(): %v", err)
 	}
@@ -283,7 +283,7 @@ func testServicePrincipalsClient_AddTokenSigningCertificate(t *testing.T, c *tes
 		DisplayName: utils.StringPtr("cn=test cert"),
 		EndDateTime: &expiry,
 	}
-	newKey, status, err := c.ServicePrincipalsClient.AddTokenSigningCertificate(c.Context, *a.ID, tsc)
+	newKey, status, err := c.ServicePrincipalsClient.AddTokenSigningCertificate(c.Context, *a.ID(), tsc)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): %v", err)
 	}
@@ -300,7 +300,7 @@ func testServicePrincipalsClient_AddTokenSigningCertificate(t *testing.T, c *tes
 
 func testServicePrincipalsClient_SetPreferredTokenSigningKeyThumbprint(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal, thumbprint string) {
 
-	status, err := c.ServicePrincipalsClient.SetPreferredTokenSigningKeyThumbprint(c.Context, *a.ID, thumbprint)
+	status, err := c.ServicePrincipalsClient.SetPreferredTokenSigningKeyThumbprint(c.Context, *a.ID(), thumbprint)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AddTokenSigningCertificate(): %v", err)
 	}
@@ -310,7 +310,7 @@ func testServicePrincipalsClient_SetPreferredTokenSigningKeyThumbprint(t *testin
 }
 
 func testServicePrincipalsClient_RemovePassword(t *testing.T, c *test.Test, a *msgraph.ServicePrincipal, p *msgraph.PasswordCredential) {
-	status, err := c.ServicePrincipalsClient.RemovePassword(c.Context, *a.ID, *p.KeyId)
+	status, err := c.ServicePrincipalsClient.RemovePassword(c.Context, *a.ID(), *p.KeyId)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemovePassword(): %v", err)
 	}

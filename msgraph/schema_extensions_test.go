@@ -88,7 +88,7 @@ func testSchemaExtensionsGroup(t *testing.T, c *test.Test, schema *msgraph.Schem
 	})
 
 	// Then retrieve the group and populate using msgraph.SchemaExtensionGraph
-	group = testSchemaExtensionsGroup_Get(t, c, *group.ID, []msgraph.SchemaExtensionData{
+	group = testSchemaExtensionsGroup_Get(t, c, *group.ID(), []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &msgraph.SchemaExtensionMap{},
@@ -116,7 +116,7 @@ func testSchemaExtensionsGroup(t *testing.T, c *test.Test, schema *msgraph.Schem
 	testGroupsClient_Update(t, c, *group)
 
 	// Finally retrieve the group and populate using MyExtensionProperties
-	group = testSchemaExtensionsGroup_Get(t, c, *group.ID, []msgraph.SchemaExtensionData{
+	group = testSchemaExtensionsGroup_Get(t, c, *group.ID(), []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &MyExtensionProperties{},
@@ -130,7 +130,7 @@ func testSchemaExtensionsGroup(t *testing.T, c *test.Test, schema *msgraph.Schem
 		t.Fatalf("Unexpected value for Property2 returned: %+v", val)
 	}
 
-	testGroupsClient_Delete(t, c, *group.ID)
+	testGroupsClient_Delete(t, c, *group.ID())
 }
 
 func testSchemaExtensionsGroup_Get(t *testing.T, c *test.Test, id string, schemaExtensions []msgraph.SchemaExtensionData) (group *msgraph.Group) {
@@ -179,7 +179,7 @@ func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.Schema
 	})
 
 	// Then retrieve the user and populate using msgraph.SchemaExtensionGraph
-	user = testSchemaExtensionsUser_Get(t, c, *user.ID, []msgraph.SchemaExtensionData{
+	user = testSchemaExtensionsUser_Get(t, c, *user.ID(), []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &msgraph.SchemaExtensionMap{},
@@ -207,7 +207,7 @@ func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.Schema
 	testUsersClient_Update(t, c, *user)
 
 	// Finally retrieve the user and populate using MyExtensionProperties
-	user = testSchemaExtensionsUser_Get(t, c, *user.ID, []msgraph.SchemaExtensionData{
+	user = testSchemaExtensionsUser_Get(t, c, *user.ID(), []msgraph.SchemaExtensionData{
 		{
 			ID:         *schema.ID,
 			Properties: &MyExtensionProperties{},
@@ -221,7 +221,7 @@ func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.Schema
 		t.Fatalf("Unexpected value for Property2 returned: %+v", val)
 	}
 
-	testUsersClient_Delete(t, c, *user.ID)
+	testUsersClient_Delete(t, c, *user.ID())
 }
 
 func testSchemaExtensionsUser_Get(t *testing.T, c *test.Test, id string, schemaExtensions []msgraph.SchemaExtensionData) (user *msgraph.User) {

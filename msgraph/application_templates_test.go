@@ -24,10 +24,10 @@ func TestApplicationTemplatesClient(t *testing.T) {
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-applicationTemplate-%s", c.RandomString)),
 	})
 
-	testServicePrincipalsClient_Delete(t, c, *app.ServicePrincipal.ID)
+	testServicePrincipalsClient_Delete(t, c, *app.ServicePrincipal.ID())
 
-	testApplicationsClient_Delete(t, c, *app.Application.ID)
-	testApplicationsClient_DeletePermanently(t, c, *app.Application.ID)
+	testApplicationsClient_Delete(t, c, *app.Application.ID())
+	testApplicationsClient_DeletePermanently(t, c, *app.Application.ID())
 }
 
 func testApplicationTemplatesClient_List(t *testing.T, c *test.Test, o odata.Query) (applicationTemplates []msgraph.ApplicationTemplate) {

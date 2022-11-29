@@ -30,9 +30,9 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 			},
 			Users: &msgraph.ConditionalAccessUsers{
 				IncludeUsers:  &[]string{"All"},
-				ExcludeUsers:  &[]string{*testUser.ID, "GuestsOrExternalUsers"},
-				IncludeGroups: &[]string{*testIncGroup.ID},
-				ExcludeGroups: &[]string{*testExcGroup.ID},
+				ExcludeUsers:  &[]string{*testUser.ID(), "GuestsOrExternalUsers"},
+				IncludeGroups: &[]string{*testIncGroup.ID()},
+				ExcludeGroups: &[]string{*testExcGroup.ID()},
 			},
 			Locations: &msgraph.ConditionalAccessLocations{
 				IncludeLocations: &[]string{"All"},
@@ -137,7 +137,7 @@ func testGroup_Create(t *testing.T, c *test.Test, prefix string) (group *msgraph
 }
 
 func testGroup_Delete(t *testing.T, c *test.Test, group *msgraph.Group) {
-	_, err := c.GroupsClient.Delete(c.Context, *group.ID)
+	_, err := c.GroupsClient.Delete(c.Context, *group.ID())
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}
@@ -161,7 +161,7 @@ func testUser_Create(t *testing.T, c *test.Test) (user *msgraph.User) {
 }
 
 func testUser_Delete(t *testing.T, c *test.Test, user *msgraph.User) {
-	_, err := c.UsersClient.Delete(c.Context, *user.ID)
+	_, err := c.UsersClient.Delete(c.Context, *user.ID())
 	if err != nil {
 		t.Fatalf("UsersClient.Delete() - Could not delete test user: %v", err)
 	}

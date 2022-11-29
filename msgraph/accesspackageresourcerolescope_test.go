@@ -37,7 +37,7 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 		CatalogId:   accessPackage.Catalog.ID,
 		RequestType: utils.StringPtr("AdminAdd"),
 		AccessPackageResource: &msgraph.AccessPackageResource{
-			OriginId:     aadGroup.ID,
+			OriginId:     aadGroup.ID(),
 			OriginSystem: msgraph.AccessPackageResourceOriginSystemAadGroup,
 			//ResourceType: utils.StringPtr("Security Group") // This is not mandatory for groups but is seen in sharepoint emails
 		},
@@ -245,7 +245,7 @@ func testAccessPackageResourceRoleScopeGroup_Create(t *testing.T, c *test.Test, 
 }
 
 func testAccessPackageResourceRoleScopeGroup_Delete(t *testing.T, c *test.Test, group *msgraph.Group) {
-	_, err := c.GroupsClient.Delete(c.Context, *group.ID)
+	_, err := c.GroupsClient.Delete(c.Context, *group.ID())
 	if err != nil {
 		t.Fatalf("GroupsClient.Delete() - Could not delete test group: %v", err)
 	}

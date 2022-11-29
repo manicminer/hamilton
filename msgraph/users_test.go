@@ -23,7 +23,7 @@ func TestUsersClient(t *testing.T) {
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
-	testUsersClient_Get(t, c, *user.ID)
+	testUsersClient_Get(t, c, *user.ID())
 	user.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-user-%s", c.RandomString))
 	testUsersClient_Update(t, c, *user)
 	testUsersClient_List(t, c)
@@ -37,7 +37,7 @@ func TestUsersClient(t *testing.T) {
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
-	testUsersClient_Get(t, c, *manager.ID)
+	testUsersClient_Get(t, c, *manager.ID())
 
 	groupParent := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-users"),
@@ -57,21 +57,21 @@ func TestUsersClient(t *testing.T) {
 	groupChild.Members = &msgraph.Members{user.DirectoryObject}
 	testGroupsClient_AddMembers(t, c, groupChild)
 
-	testUsersClient_ListGroupMemberships(t, c, *user.ID)
-	testGroupsClient_Delete(t, c, *groupParent.ID)
-	testGroupsClient_Delete(t, c, *groupChild.ID)
+	testUsersClient_ListGroupMemberships(t, c, *user.ID())
+	testGroupsClient_Delete(t, c, *groupParent.ID())
+	testGroupsClient_Delete(t, c, *groupChild.ID())
 
-	testUsersClient_AssignManager(t, c, *user.ID, *manager)
-	testUsersClient_GetManager(t, c, *user.ID)
-	testUsersClient_DeleteManager(t, c, *user.ID)
-	testUsersClient_Delete(t, c, *manager.ID)
+	testUsersClient_AssignManager(t, c, *user.ID(), *manager)
+	testUsersClient_GetManager(t, c, *user.ID())
+	testUsersClient_DeleteManager(t, c, *user.ID())
+	testUsersClient_Delete(t, c, *manager.ID())
 
-	testUsersClient_Delete(t, c, *user.ID)
-	testUsersClient_ListDeleted(t, c, *user.ID)
-	testUsersClient_GetDeleted(t, c, *user.ID)
-	testUsersClient_RestoreDeleted(t, c, *user.ID)
-	testUsersClient_Delete(t, c, *user.ID)
-	testUsersClient_DeletePermanently(t, c, *user.ID)
+	testUsersClient_Delete(t, c, *user.ID())
+	testUsersClient_ListDeleted(t, c, *user.ID())
+	testUsersClient_GetDeleted(t, c, *user.ID())
+	testUsersClient_RestoreDeleted(t, c, *user.ID())
+	testUsersClient_Delete(t, c, *user.ID())
+	testUsersClient_DeletePermanently(t, c, *user.ID())
 }
 
 func testUsersClient_Create(t *testing.T, c *test.Test, u msgraph.User) (user *msgraph.User) {
@@ -85,7 +85,7 @@ func testUsersClient_Create(t *testing.T, c *test.Test, u msgraph.User) (user *m
 	if user == nil {
 		t.Fatal("UsersClient.Create(): user was nil")
 	}
-	if user.ID == nil {
+	if user.ID() == nil {
 		t.Fatal("UsersClient.Create(): user.ID was nil")
 	}
 	return
@@ -196,7 +196,7 @@ func testUsersClient_ListDeleted(t *testing.T, c *test.Test, expectedId string) 
 	}
 	found := false
 	for _, user := range *deletedUsers {
-		if user.ID != nil && *user.ID == expectedId {
+		if id := user.ID(); id != nil && *id == expectedId {
 			found = true
 			break
 		}
@@ -218,10 +218,10 @@ func testUsersClient_RestoreDeleted(t *testing.T, c *test.Test, id string) {
 	if user == nil {
 		t.Fatal("UsersClient.RestoreDeleted(): user was nil")
 	}
-	if user.ID == nil {
+	if user.ID() == nil {
 		t.Fatal("UsersClient.RestoreDeleted(): user.ID was nil")
 	}
-	if *user.ID != id {
+	if *user.ID() != id {
 		t.Fatal("UsersClient.RestoreDeleted(): user ids do not match")
 	}
 }

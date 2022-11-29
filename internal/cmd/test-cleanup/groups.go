@@ -22,22 +22,22 @@ func cleanupGroups() {
 		return
 	}
 	for _, group := range *groups {
-		if group.ID == nil || group.DisplayName == nil {
+		if group.ID() == nil || group.DisplayName == nil {
 			log.Println("Group returned with nil ID or DisplayName")
 			continue
 		}
 
-		log.Printf("Deleting group %q (DisplayName: %q)\n", *group.ID, *group.DisplayName)
-		_, err := groupsClient.Delete(ctx, *group.ID)
+		log.Printf("Deleting group %q (DisplayName: %q)\n", *group.ID(), *group.DisplayName)
+		_, err := groupsClient.Delete(ctx, *group.ID())
 		if err != nil {
-			log.Printf("Error when deleting group %q: %v\n", *group.ID, err)
+			log.Printf("Error when deleting group %q: %v\n", *group.ID(), err)
 		}
 
 		if group.HasTypes([]msgraph.GroupType{msgraph.GroupTypeUnified}) {
-			log.Printf("Permanently deleting group %q (DisplayName: %q)\n", *group.ID, *group.DisplayName)
-			_, err = groupsClient.DeletePermanently(ctx, *group.ID)
+			log.Printf("Permanently deleting group %q (DisplayName: %q)\n", *group.ID(), *group.DisplayName)
+			_, err = groupsClient.DeletePermanently(ctx, *group.ID())
 			if err != nil {
-				log.Printf("Error when permanently deleting group %q: %v\n", *group.ID, err)
+				log.Printf("Error when permanently deleting group %q: %v\n", *group.ID(), err)
 			}
 		}
 	}

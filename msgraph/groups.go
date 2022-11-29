@@ -206,12 +206,13 @@ func (c *GroupsClient) GetDeleted(ctx context.Context, id string, query odata.Qu
 func (c *GroupsClient) Update(ctx context.Context, group Group) (int, error) {
 	var status int
 
-	if group.ID == nil {
+	if group.ID() == nil {
 		return status, fmt.Errorf("cannot update group with nil ID")
 	}
 
-	groupId := *group.ID
-	group.ID = nil
+	groupId := *group.ID()
+	group.Id = nil
+	group.ObjectId = nil
 
 	body, err := json.Marshal(group)
 	if err != nil {
@@ -477,7 +478,7 @@ func (c *GroupsClient) AddMembers(ctx context.Context, group *Group) (int, error
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkMemberAlreadyExists,
 			Uri: Uri{
-				Entity:      fmt.Sprintf("/groups/%s/members/$ref", *group.ID),
+				Entity:      fmt.Sprintf("/groups/%s/members/$ref", *group.ID()),
 				HasTenantId: true,
 			},
 		})
@@ -643,7 +644,7 @@ func (c *GroupsClient) AddOwners(ctx context.Context, group *Group) (int, error)
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkOwnerAlreadyExists,
 			Uri: Uri{
-				Entity:      fmt.Sprintf("/groups/%s/owners/$ref", *group.ID),
+				Entity:      fmt.Sprintf("/groups/%s/owners/$ref", *group.ID()),
 				HasTenantId: true,
 			},
 		})
