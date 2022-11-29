@@ -883,6 +883,7 @@ type Group struct {
 	HasMembersWithLicenseErrors   *bool                               `json:"hasMembersWithLicenseErrors,omitempty"`
 	HideFromAddressLists          *bool                               `json:"hideFromAddressLists,omitempty"`
 	HideFromOutlookClients        *bool                               `json:"hideFromOutlookClients,omitempty"`
+	IsAssignableToRole            *bool                               `json:"isAssignableToRole,omitempty"`
 	IsSubscribedByMail            *bool                               `json:"isSubscribedByMail,omitempty"`
 	LicenseProcessingState        *string                             `json:"licenseProcessingState,omitempty"`
 	Mail                          *string                             `json:"mail,omitempty"`
@@ -908,7 +909,7 @@ type Group struct {
 	Theme                         *GroupTheme                         `json:"theme,omitempty"`
 	UnseenCount                   *int                                `json:"unseenCount,omitempty"`
 	Visibility                    *GroupVisibility                    `json:"visibility,omitempty"`
-	IsAssignableToRole            *bool                               `json:"isAssignableToRole,omitempty"`
+	WritebackConfiguration        *WritebackConfiguration             `json:"writebackConfiguration,omitempty"`
 }
 
 func (g Group) MarshalJSON() ([]byte, error) {
@@ -987,6 +988,11 @@ type GroupOnPremisesProvisioningError struct {
 	OccurredDateTime     time.Time `json:"occurredDateTime,omitempty"`
 	PropertyCausingError *string   `json:"propertyCausingError,omitempty"`
 	Value                *string   `json:"value,omitempty"`
+}
+
+type WritebackConfiguration struct {
+	IsEnabled           *bool   `json:"isEnabled"`
+	OnPremisesGroupType *string `json:"onPremisesGroupType"`
 }
 
 type Identity struct {
