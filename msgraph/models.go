@@ -761,17 +761,38 @@ type DirectoryAudit struct {
 type DirectoryObject struct {
 	ODataId        *odata.Id              `json:"@odata.id,omitempty"`
 	ODataType      *odata.Type            `json:"@odata.type,omitempty"`
-	ID             *string                `json:"id,omitempty"`
+	Id             *string                `json:"id,omitempty"`
 	ObjectId       *string                `json:"objectId,omitempty"`
 	DisplayName    *string                `json:"displayName,omitempty"`
 	AdditionalData map[string]interface{} `json:"-"`
 }
 
+func (o *DirectoryObject) ID() (id *string) {
+	if o.Id != nil {
+		id = o.Id
+	} else if o.ObjectId != nil {
+		id = o.ObjectId
+	}
+	return
+}
+
+func (o *DirectoryObject) UnmarshalJSONWithAdditionalData(data []byte) error {
+	type directoryObject DirectoryObject
+	obj := (*directoryObject)(o)
+	if err := json.Unmarshal(data, &obj); err != nil {
+		return err
+	}
+	if err := json.Unmarshal(data, &obj.AdditionalData); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (o *DirectoryObject) Uri(endpoint environments.ApiEndpoint, apiVersion ApiVersion) string {
-	if o.ID == nil {
+	if o.Id == nil {
 		return ""
 	}
-	return fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, *o.ID)
+	return fmt.Sprintf("%s/%s/directoryObjects/%s", endpoint, apiVersion, *o.Id)
 }
 
 type DirectoryRole struct {
