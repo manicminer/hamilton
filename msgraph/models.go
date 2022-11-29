@@ -762,6 +762,7 @@ type DirectoryObject struct {
 	ODataId        *odata.Id              `json:"@odata.id,omitempty"`
 	ODataType      *odata.Type            `json:"@odata.type,omitempty"`
 	ID             *string                `json:"id,omitempty"`
+	ObjectId       *string                `json:"objectId,omitempty"`
 	DisplayName    *string                `json:"displayName,omitempty"`
 	AdditionalData map[string]interface{} `json:"-"`
 }
