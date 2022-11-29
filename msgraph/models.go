@@ -991,8 +991,8 @@ type GroupOnPremisesProvisioningError struct {
 }
 
 type WritebackConfiguration struct {
-	IsEnabled           *bool   `json:"isEnabled"`
-	OnPremisesGroupType *string `json:"onPremisesGroupType"`
+	IsEnabled           *bool                `json:"isEnabled"`
+	OnPremisesGroupType *OnPremisesGroupType `json:"onPremisesGroupType"`
 }
 
 type Identity struct {
