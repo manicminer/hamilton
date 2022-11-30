@@ -38,8 +38,8 @@ func TestAdministrativeUnitsClient(t *testing.T) {
 
 	testAdministrativeUnitsClient_AddMembers(t, c, *administrativeUnit.ID, &msgraph.Members{user.DirectoryObject})
 	testAdministrativeUnitsClient_ListMembers(t, c, *administrativeUnit.ID)
-	testAdministrativeUnitsClient_GetMember(t, c, *administrativeUnit.ID, *user.ID)
-	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &([]string{*user.ID}))
+	testAdministrativeUnitsClient_GetMember(t, c, *administrativeUnit.ID, *user.ID())
+	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &([]string{*user.ID()}))
 
 	directoryRoleTemplates := testDirectoryRoleTemplatesClient_List(t, c)
 	var helpdeskAdministratorRoleId string
@@ -52,8 +52,8 @@ func TestAdministrativeUnitsClient(t *testing.T) {
 	directoryRole := testDirectoryRolesClient_GetByTemplateId(t, c, helpdeskAdministratorRoleId)
 
 	membership := testAdministrativeUnitsClient_AddScopedRoleMember(t, c, *administrativeUnit.ID, msgraph.ScopedRoleMembership{
-		RoleId:         directoryRole.ID,
-		RoleMemberInfo: &msgraph.Identity{Id: user.ID},
+		RoleId:         directoryRole.ID(),
+		RoleMemberInfo: &msgraph.Identity{Id: user.ID()},
 	})
 	testAdministrativeUnitsClient_ListScopedRoleMembers(t, c, *administrativeUnit.ID)
 	testAdministrativeUnitsClient_GetRoleScopedMember(t, c, *administrativeUnit.ID, *membership.Id)
@@ -61,7 +61,7 @@ func TestAdministrativeUnitsClient(t *testing.T) {
 
 	testAdministrativeUnitsClient_List(t, c)
 	testAdministrativeUnitsClient_Delete(t, c, *administrativeUnit.ID)
-	testUsersClient_Delete(t, c, *user.ID)
+	testUsersClient_Delete(t, c, *user.ID())
 }
 
 func testAdministrativeUnitsClient_Create(t *testing.T, c *test.Test, g msgraph.AdministrativeUnit) (administrativeUnit *msgraph.AdministrativeUnit) {

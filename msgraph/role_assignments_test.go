@@ -40,16 +40,16 @@ func TestRoleAssignmentsClient(t *testing.T) {
 
 	roleAssignment := testRoleAssignmentsClient_Create(t, c, msgraph.UnifiedRoleAssignment{
 		DirectoryScopeId: utils.StringPtr("/"),
-		PrincipalId:      user.ID,
-		RoleDefinitionId: roleDefinition.ID,
+		PrincipalId:      user.ID(),
+		RoleDefinitionId: roleDefinition.ID(),
 	})
 
-	testRoleAssignmentsClient_Get(t, c, *roleAssignment.ID)
-	testRoleAssignmentsClient_List(t, c, odata.Query{Filter: fmt.Sprintf("roleDefinitionId eq '%s'", *roleDefinition.ID)})
-	testRoleAssignmentsClient_Delete(t, c, *roleAssignment.ID)
-	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID)
-	testUsersClient_Delete(t, c, *user.ID)
-	testUsersClient_DeletePermanently(t, c, *user.ID)
+	testRoleAssignmentsClient_Get(t, c, *roleAssignment.ID())
+	testRoleAssignmentsClient_List(t, c, odata.Query{Filter: fmt.Sprintf("roleDefinitionId eq '%s'", *roleDefinition.ID())})
+	testRoleAssignmentsClient_Delete(t, c, *roleAssignment.ID())
+	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID())
+	testUsersClient_Delete(t, c, *user.ID())
+	testUsersClient_DeletePermanently(t, c, *user.ID())
 }
 
 func testRoleAssignmentsClient_Create(t *testing.T, c *test.Test, r msgraph.UnifiedRoleAssignment) (roleAssignment *msgraph.UnifiedRoleAssignment) {
@@ -63,7 +63,7 @@ func testRoleAssignmentsClient_Create(t *testing.T, c *test.Test, r msgraph.Unif
 	if roleAssignment == nil {
 		t.Fatal("RoleAssignmentsClient.Create(): roleAssignment was nil")
 	}
-	if roleAssignment.ID == nil {
+	if roleAssignment.ID() == nil {
 		t.Fatal("RoleAssignmentsClient.Create(): roleAssignment.ID was nil")
 	}
 	return

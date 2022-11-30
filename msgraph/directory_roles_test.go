@@ -16,7 +16,7 @@ func TestDirectoryRolesClient(t *testing.T) {
 	// list directory roles; usually at least few directory roles are activated within a tenant
 	directoryRoles := testDirectoryRolesClient_List(t, c)
 	directoryRole := (*directoryRoles)[0]
-	testDirectoryRolesClient_Get(t, c, *directoryRole.ID)
+	testDirectoryRolesClient_Get(t, c, *directoryRole.ID())
 	testDirectoryRolesClient_GetByTemplateId(t, c, *directoryRole.RoleTemplateId)
 
 	// create a new test group which can be later assigned as a member of the previously listed directory role
@@ -36,12 +36,12 @@ func TestDirectoryRolesClient(t *testing.T) {
 	testDirectoryRolesClient_AddMembers(t, c, &directoryRole)
 
 	// list members of the directory role; then remove the added group member to clean up
-	testDirectoryRolesClient_ListMembers(t, c, *directoryRole.ID)
-	testDirectoryRolesClient_GetMember(t, c, *directoryRole.ID, *group.ID)
-	testDirectoryRolesClient_RemoveMembers(t, c, *directoryRole.ID, &[]string{*group.ID})
+	testDirectoryRolesClient_ListMembers(t, c, *directoryRole.ID())
+	testDirectoryRolesClient_GetMember(t, c, *directoryRole.ID(), *group.ID())
+	testDirectoryRolesClient_RemoveMembers(t, c, *directoryRole.ID(), &[]string{*group.ID()})
 
 	// remove the test group to clean up
-	testGroupsClient_Delete(t, c, *group.ID)
+	testGroupsClient_Delete(t, c, *group.ID())
 }
 
 func testDirectoryRolesClient_List(t *testing.T, c *test.Test) (directoryRoles *[]msgraph.DirectoryRole) {

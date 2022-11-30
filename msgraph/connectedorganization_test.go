@@ -136,12 +136,12 @@ func testConnectedOrganizationClient_Sponsors(t *testing.T, c *test.Test, connec
 		t.Fatalf("GroupsClient.Create() - Could not create test groups: %v", err)
 	}
 
-	err = c.ConnectedOrganizationClient.AddExternalSponsorGroup(c.Context, *connectedOrganization.ID, *extGroup.ID)
+	err = c.ConnectedOrganizationClient.AddExternalSponsorGroup(c.Context, *connectedOrganization.ID, *extGroup.ID())
 	if err != nil {
 		t.Fatalf("ConnectedOrganizationClient.AddExternalSponsorGroup(): %v", err)
 	}
 
-	err = c.ConnectedOrganizationClient.AddInternalSponsorGroup(c.Context, *connectedOrganization.ID, *intGroup.ID)
+	err = c.ConnectedOrganizationClient.AddInternalSponsorGroup(c.Context, *connectedOrganization.ID, *intGroup.ID())
 	if err != nil {
 		t.Fatalf("ConnectedOrganizationClient.AddInternalSponsorGroup(): %v", err)
 	}
@@ -159,19 +159,19 @@ func testConnectedOrganizationClient_Sponsors(t *testing.T, c *test.Test, connec
 	}
 
 	// Now remove the sponsors
-	err = c.ConnectedOrganizationClient.DeleteExternalSponsor(c.Context, *connectedOrganization.ID, *extGroup.ID)
+	err = c.ConnectedOrganizationClient.DeleteExternalSponsor(c.Context, *connectedOrganization.ID, *extGroup.ID())
 	if err != nil {
 		t.Fatalf("ConnectedOrganizationClient.DeleteExternalSponsor(): %v", err)
 	}
 
-	err = c.ConnectedOrganizationClient.DeleteInternalSponsor(c.Context, *connectedOrganization.ID, *intGroup.ID)
+	err = c.ConnectedOrganizationClient.DeleteInternalSponsor(c.Context, *connectedOrganization.ID, *intGroup.ID())
 	if err != nil {
 		t.Fatalf("ConnectedOrganizationClient.DeleteInternalSponsor(): %v", err)
 	}
 
 	// Remove the test groups.
-	testGroupsClient_Delete(t, c, *extGroup.ID)
-	testGroupsClient_Delete(t, c, *intGroup.ID)
+	testGroupsClient_Delete(t, c, *extGroup.ID())
+	testGroupsClient_Delete(t, c, *intGroup.ID())
 }
 
 func createGroupsForSponsors(c *test.Test) (extGroup *msgraph.Group, intGroup *msgraph.Group, err error) {

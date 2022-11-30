@@ -80,38 +80,38 @@ func TestAppRoleAssignedToClient(t *testing.T) {
 	// assign app role to group
 	groupAssignment := testAppRoleAssignedToClient_Assign(t, c, msgraph.AppRoleAssignment{
 		AppRoleId:   (*resourceApp.AppRoles)[0].ID,
-		PrincipalId: group.ID,
-		ResourceId:  resourceServicePrincipal.ID,
+		PrincipalId: group.ID(),
+		ResourceId:  resourceServicePrincipal.ID(),
 	})
 
 	// assign app role to user
 	userAssignment := testAppRoleAssignedToClient_Assign(t, c, msgraph.AppRoleAssignment{
 		AppRoleId:   (*resourceApp.AppRoles)[0].ID,
-		PrincipalId: user.ID,
-		ResourceId:  resourceServicePrincipal.ID,
+		PrincipalId: user.ID(),
+		ResourceId:  resourceServicePrincipal.ID(),
 	})
 
 	// assign app role to service principal
 	servicePrincipalAssignment := testAppRoleAssignedToClient_Assign(t, c, msgraph.AppRoleAssignment{
 		AppRoleId:   (*resourceApp.AppRoles)[0].ID,
-		PrincipalId: servicePrincipal.ID,
-		ResourceId:  resourceServicePrincipal.ID,
+		PrincipalId: servicePrincipal.ID(),
+		ResourceId:  resourceServicePrincipal.ID(),
 	})
 
 	// list app roles assigned to resource service principal
-	testAppRoleAssignedToClient_List(t, c, *resourceServicePrincipal.ID)
+	testAppRoleAssignedToClient_List(t, c, *resourceServicePrincipal.ID())
 
 	// remove the assigned app roles
-	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID, *groupAssignment.Id)
-	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID, *userAssignment.Id)
-	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID, *servicePrincipalAssignment.Id)
+	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID(), *groupAssignment.Id)
+	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID(), *userAssignment.Id)
+	testAppRoleAssignedToClient_Remove(t, c, *resourceServicePrincipal.ID(), *servicePrincipalAssignment.Id)
 
 	// clean up
-	testGroupsClient_Delete(t, c, *group.ID)
-	testUsersClient_Delete(t, c, *user.ID)
-	testServicePrincipalsClient_Delete(t, c, *servicePrincipal.ID)
-	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID)
-	testApplicationsClient_Delete(t, c, *resourceApp.ID)
+	testGroupsClient_Delete(t, c, *group.ID())
+	testUsersClient_Delete(t, c, *user.ID())
+	testServicePrincipalsClient_Delete(t, c, *servicePrincipal.ID())
+	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID())
+	testApplicationsClient_Delete(t, c, *resourceApp.ID())
 }
 
 func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
@@ -156,21 +156,21 @@ func TestGroupsAppRoleAssignmentsClient(t *testing.T) {
 	})
 
 	// assign resourceApp role to the test group
-	appRoleAssignment := testGroupsAppRoleAssignmentsClient_Assign(t, c, *group.ID, *resourceServicePrincipal.ID, testResourceAppRoleId)
+	appRoleAssignment := testGroupsAppRoleAssignmentsClient_Assign(t, c, *group.ID(), *resourceServicePrincipal.ID(), testResourceAppRoleId)
 
 	// list resourceApp role assignments for a test group
-	appRoleAssignments := testGroupsAppRoleAssignmentsClient_List(t, c, *group.ID)
+	appRoleAssignments := testGroupsAppRoleAssignmentsClient_List(t, c, *group.ID())
 	if len(*appRoleAssignments) == 0 {
 		t.Fatal("expected at least one resourceApp role assignment assigned to the test group")
 	}
 
 	// removes resourceApp role assignment previously set to the test group
-	testGroupsAppRoleAssignmentsClient_Remove(t, c, *group.ID, *appRoleAssignment.Id)
+	testGroupsAppRoleAssignmentsClient_Remove(t, c, *group.ID(), *appRoleAssignment.Id)
 
 	// remove all test resources to clean up
-	testGroupsClient_Delete(t, c, *group.ID)
-	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID)
-	testApplicationsClient_Delete(t, c, *resourceApp.ID)
+	testGroupsClient_Delete(t, c, *group.ID())
+	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID())
+	testApplicationsClient_Delete(t, c, *resourceApp.ID())
 }
 
 func TestUsersAppRoleAssignmentsClient(t *testing.T) {
@@ -218,21 +218,21 @@ func TestUsersAppRoleAssignmentsClient(t *testing.T) {
 	})
 
 	// assign resourceApp role to the test user
-	appRoleAssignment := testUsersAppRoleAssignmentsClient_Assign(t, c, *user.ID, *resourceServicePrincipal.ID, testResourceAppRoleId)
+	appRoleAssignment := testUsersAppRoleAssignmentsClient_Assign(t, c, *user.ID(), *resourceServicePrincipal.ID(), testResourceAppRoleId)
 
 	// list resourceApp role assignments for a test user
-	appRoleAssignments := testUsersAppRoleAssignmentsClient_List(t, c, *user.ID)
+	appRoleAssignments := testUsersAppRoleAssignmentsClient_List(t, c, *user.ID())
 	if len(*appRoleAssignments) == 0 {
 		t.Fatal("expected at least one resourceApp role assignment assigned to the test user")
 	}
 
 	// removes resourceApp role assignment previously set to the test user
-	testUsersAppRoleAssignmentsClient_Remove(t, c, *user.ID, *appRoleAssignment.Id)
+	testUsersAppRoleAssignmentsClient_Remove(t, c, *user.ID(), *appRoleAssignment.Id)
 
 	// remove all test resources to clean up
-	testUsersClient_Delete(t, c, *user.ID)
-	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID)
-	testApplicationsClient_Delete(t, c, *resourceApp.ID)
+	testUsersClient_Delete(t, c, *user.ID())
+	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID())
+	testApplicationsClient_Delete(t, c, *resourceApp.ID())
 }
 
 func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
@@ -293,21 +293,21 @@ func TestServicePrincipalsAppRoleAssignmentsClient(t *testing.T) {
 	})
 
 	// assign resourceApp role to the test client service principal
-	appRoleAssignment := testServicePrincipalsAppRoleAssignmentsClient_Assign(t, c, *clientServicePrincipal.ID, *resourceServicePrincipal.ID, testResourceAppRoleId)
+	appRoleAssignment := testServicePrincipalsAppRoleAssignmentsClient_Assign(t, c, *clientServicePrincipal.ID(), *resourceServicePrincipal.ID(), testResourceAppRoleId)
 
 	// list resourceApp role assignments for a test client service principal
-	appRoleAssignments := testServicePrincipalsAppRoleAssignmentsClient_List(t, c, *clientServicePrincipal.ID)
+	appRoleAssignments := testServicePrincipalsAppRoleAssignmentsClient_List(t, c, *clientServicePrincipal.ID())
 	if len(*appRoleAssignments) == 0 {
 		t.Fatal("expected at least one resourceApp role assignment assigned to the test client service principal")
 	}
 
 	// removes resourceApp role assignment previously set to the test client service principal
-	testServicePrincipalsAppRoleAssignmentsClient_Remove(t, c, *clientServicePrincipal.ID, *appRoleAssignment.Id)
+	testServicePrincipalsAppRoleAssignmentsClient_Remove(t, c, *clientServicePrincipal.ID(), *appRoleAssignment.Id)
 
 	// remove all test resources to clean up
-	testServicePrincipalsClient_Delete(t, c, *clientServicePrincipal.ID)
-	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID)
-	testApplicationsClient_Delete(t, c, *resourceApp.ID)
+	testServicePrincipalsClient_Delete(t, c, *clientServicePrincipal.ID())
+	testServicePrincipalsClient_Delete(t, c, *resourceServicePrincipal.ID())
+	testApplicationsClient_Delete(t, c, *resourceApp.ID())
 }
 
 func testGroupsAppRoleAssignmentsClient_List(t *testing.T, c *test.Test, id string) (appRoleAssignments *[]msgraph.AppRoleAssignment) {

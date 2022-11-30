@@ -31,28 +31,28 @@ func TestSynchronizationClient(t *testing.T) {
 				Value: utils.StringPtr("dummy-token"),
 			},
 		},
-	}, *app.ServicePrincipal.ID)
-	testSynchronizationJobClient_GetSecrets(t, c, *app.ServicePrincipal.ID)
+	}, *app.ServicePrincipal.ID())
+	testSynchronizationJobClient_GetSecrets(t, c, *app.ServicePrincipal.ID())
 	job := testSynchronizationJobClient_Create(t, c, msgraph.SynchronizationJob{
 		Schedule: &msgraph.SynchronizationSchedule{
 			State: utils.StringPtr("Disabled"),
 		},
 		TemplateId: utils.StringPtr("dataBricks"),
-	}, *app.ServicePrincipal.ID)
+	}, *app.ServicePrincipal.ID())
 
-	testSynchronizationJobClient_Get(t, c, *job.ID, *app.ServicePrincipal.ID)
-	testSynchronizationJobClient_Start(t, c, *job.ID, *app.ServicePrincipal.ID)
-	testSynchronizationJobClient_List(t, c, *app.ServicePrincipal.ID)
-	testSynchronizationJobClient_Pause(t, c, *job.ID, *app.ServicePrincipal.ID)
-	testSynchronizationJobClient_Restart(t, c, *job.ID, msgraph.SynchronizationJobRestartCriteria{}, *app.ServicePrincipal.ID)
-	testSynchronizationJobClient_Delete(t, c, *job.ID, *app.ServicePrincipal.ID)
+	testSynchronizationJobClient_Get(t, c, *job.ID, *app.ServicePrincipal.ID())
+	testSynchronizationJobClient_Start(t, c, *job.ID, *app.ServicePrincipal.ID())
+	testSynchronizationJobClient_List(t, c, *app.ServicePrincipal.ID())
+	testSynchronizationJobClient_Pause(t, c, *job.ID, *app.ServicePrincipal.ID())
+	testSynchronizationJobClient_Restart(t, c, *job.ID, msgraph.SynchronizationJobRestartCriteria{}, *app.ServicePrincipal.ID())
+	testSynchronizationJobClient_Delete(t, c, *job.ID, *app.ServicePrincipal.ID())
 
 	// We don't test validateCredentials as this requires provisioning a valid enterprise application
 
-	testServicePrincipalsClient_Delete(t, c, *app.ServicePrincipal.ID)
+	testServicePrincipalsClient_Delete(t, c, *app.ServicePrincipal.ID())
 
-	testApplicationsClient_Delete(t, c, *app.Application.ID)
-	testApplicationsClient_DeletePermanently(t, c, *app.Application.ID)
+	testApplicationsClient_Delete(t, c, *app.Application.ID())
+	testApplicationsClient_DeletePermanently(t, c, *app.Application.ID())
 }
 
 func testSynchronizationJobClient_GetSecrets(t *testing.T, c *test.Test, servicePrincipalId string) (synchronizationSecret *msgraph.SynchronizationSecret) {

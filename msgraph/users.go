@@ -216,7 +216,7 @@ func (c *UsersClient) Update(ctx context.Context, user User) (int, error) {
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/users/%s", *user.ID),
+			Entity:      fmt.Sprintf("/users/%s", *user.ID()),
 			HasTenantId: true,
 		},
 	})

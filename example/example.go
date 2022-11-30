@@ -49,6 +49,6 @@ func main() {
 		return
 	}
 	for _, user := range *users {
-		fmt.Printf("%s: %s <%s>\n", *user.ID, *user.DisplayName, *user.UserPrincipalName)
+		fmt.Printf("%s: %s <%s>\n", *user.ID(), *user.DisplayName, *user.UserPrincipalName)
 	}
 }
