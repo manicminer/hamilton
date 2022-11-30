@@ -2,6 +2,7 @@
 
 - Bugfix: Use `eq` over `startsWith` in `msgraph.AccessPackageResourceClient{}.Get()` to improve accuracy ([#194](https://github.com/manicminer/hamilton/pull/194))
 - Support for reading the [`objectId` field](https://learn.microsoft.com/en-us/graph/api/applicationtemplate-instantiate?view=graph-rest-beta&tabs=http#response-1) in API responses for `directoryObjects`
+- Support for `WritebackConfiguration` in the `Group` model ([#197](https://github.com/manicminer/hamilton/pull/197))
 
 ⚠️ BREAKING CHANGES:
 
