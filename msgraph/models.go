@@ -909,7 +909,7 @@ type Group struct {
 	Theme                         *GroupTheme                         `json:"theme,omitempty"`
 	UnseenCount                   *int                                `json:"unseenCount,omitempty"`
 	Visibility                    *GroupVisibility                    `json:"visibility,omitempty"`
-	WritebackConfiguration        *WritebackConfiguration             `json:"writebackConfiguration,omitempty"`
+	WritebackConfiguration        *GroupWritebackConfiguration        `json:"writebackConfiguration,omitempty"`
 }
 
 func (g Group) MarshalJSON() ([]byte, error) {
@@ -990,7 +990,7 @@ type GroupOnPremisesProvisioningError struct {
 	Value                *string   `json:"value,omitempty"`
 }
 
-type WritebackConfiguration struct {
+type GroupWritebackConfiguration struct {
 	IsEnabled           *bool                `json:"isEnabled"`
 	OnPremisesGroupType *OnPremisesGroupType `json:"onPremisesGroupType"`
 }

@@ -452,8 +452,8 @@ type OnPremisesGroupType = string
 
 const (
 	UniversalDistributionGroup        OnPremisesGroupType = "universalDistributionGroup"
-	UniversalSecurityGroup            OnPremisesGroupType = "universalSecurityGroup"
 	UniversalMailEnabledSecurityGroup OnPremisesGroupType = "universalMailEnabledSecurityGroup"
+	UniversalSecurityGroup            OnPremisesGroupType = "universalSecurityGroup"
 )
 
 type Members []DirectoryObject
