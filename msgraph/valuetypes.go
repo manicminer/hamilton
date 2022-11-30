@@ -448,6 +448,14 @@ const (
 	KeyCredentialUsageVerify KeyCredentialUsage = "Verify"
 )
 
+type OnPremisesGroupType = string
+
+const (
+	UniversalDistributionGroup        OnPremisesGroupType = "universalDistributionGroup"
+	UniversalMailEnabledSecurityGroup OnPremisesGroupType = "universalMailEnabledSecurityGroup"
+	UniversalSecurityGroup            OnPremisesGroupType = "universalSecurityGroup"
+)
+
 type Members []DirectoryObject
 
 func (o Members) MarshalJSON() ([]byte, error) {
