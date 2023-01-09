@@ -1,3 +1,7 @@
+## 0.53.0 (Unreleased)
+
+- Bugfix: Fix casing of values for `OnPremisesGroupType` type ([#199](https://github.com/manicminer/hamilton/pull/199))
+
 ## 0.52.0 (November 30, 2022)
 
 - Bugfix: Use `eq` over `startsWith` in `msgraph.AccessPackageResourceClient{}.Get()` to improve accuracy ([#194](https://github.com/manicminer/hamilton/pull/194))
