@@ -1,5 +1,6 @@
 ## 0.53.0 (Unreleased)
 
+- Add the App ID for `Microsoft.StorageSync` to `PublishedApis` ([#200](https://github.com/manicminer/hamilton/pull/200))
 - Bugfix: Fix casing of values for `OnPremisesGroupType` type ([#199](https://github.com/manicminer/hamilton/pull/199))
 
 ## 0.52.0 (November 30, 2022)
