@@ -1966,3 +1966,14 @@ type UserFlowAttribute struct {
 	UserFlowAttributeType *string                    `json:"userFlowAttributeType,omitempty"`
 	DataType              *UserflowAttributeDataType `json:"dataType,omitempty"`
 }
+
+type UnifiedRoleEligibilityScheduleRequest struct {
+	DirectoryObject
+
+	Action           *string      `json:"action,omitempty"`
+	DirectoryScopeId *string      `json:"directoryScopeId,omitempty"`
+	Justification    *string      `json:"justification,omitempty"`
+	PrincipalId      *string      `json:"principalId,omitempty"`
+	RoleDefinitionId *string      `json:"roleDefinitionId,omitempty"`
+	ScheduleInfo     *interface{} `json:"scheduleInfo,omitempty"`
+}
