@@ -241,15 +241,15 @@ func (c *AdministrativeUnitsClient) GetMember(ctx context.Context, administrativ
 	return &data.Id, status, nil
 }
 
-func (c *AdministrativeUnitsClient) CreateGroup(ctx context.Context, administrativeUnitId string, group *Group) (int, error) {
+func (c *AdministrativeUnitsClient) CreateGroup(ctx context.Context, administrativeUnitId string, group *Group) (*Group, int, error) {
 	var status int
 	odataTypeGroup := odata.TypeGroup
 	group.ODataType = &odataTypeGroup
 	body, err := json.Marshal(group)
 	if err != nil {
-		return status, fmt.Errorf("json.Marshal(): %v", err)
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
-	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
+	response, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:                   body,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusCreated},
@@ -259,9 +259,21 @@ func (c *AdministrativeUnitsClient) CreateGroup(ctx context.Context, administrat
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("AdministrativeUnitsClient.BaseClient.Post(): %v", err)
+		return nil, status, fmt.Errorf("AdministrativeUnitsClient.BaseClient.Post(): %v", err)
 	}
-	return status, nil
+
+	defer response.Body.Close()
+	responseBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var newGroup Group
+	if err := json.Unmarshal(responseBody, &newGroup); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &newGroup, status, nil
 }
 
 // AddMembers adds new members to a AdministrativeUnit.

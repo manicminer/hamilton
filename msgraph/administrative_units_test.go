@@ -11,6 +11,53 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
+//func TestCreateGroup(t *testing.T) {
+//client := test.NewTest(t)
+//defer client.CancelFunc()
+
+//ctx := context.Background()
+//auId := "a36b436e-7b28-4e51-a1c1-8553d3e2cd5b"
+//var odataId odata.Id = "directoryObjects('3c2e469a-bfdb-4240-ab3c-81c167a05172')"
+//var odataType odata.Type = "#microsoft.graph.servicePrincipal"
+//ownerString := "3c2e469a-bfdb-4240-ab3c-81c167a05172"
+//owner := msgraph.DirectoryObject{
+//ODataId:   &odataId,
+//ODataType: &odataType,
+//Id:        &ownerString,
+//}
+//groupName := "hansi-test"
+//var groupDescription msgraph.StringNullWhenEmpty = "hansi-test"
+//groupTypes := []string{"Unified"}
+//behavior := []msgraph.GroupResourceBehaviorOption{
+//msgraph.GroupResourceBehaviorOptionWelcomeEmailDisabled,
+//msgraph.GroupResourceBehaviorOptionSubscribeNewGroupMembers,
+//msgraph.GroupResourceBehaviorOptionSubscribeMembersToCalendarEventsDisabled,
+//}
+//visibility := msgraph.GroupVisibilityPrivate
+//falsePointer := false
+//truePointer := true
+//group := msgraph.Group{
+//Description:        &groupDescription,
+//DisplayName:        &groupName,
+//GroupTypes:         &groupTypes,
+//IsAssignableToRole: &falsePointer,
+//MailEnabled:        &truePointer,
+//MailNickname:       &groupName,
+//Owners: &msgraph.Owners{
+//owner,
+//},
+//ResourceBehaviorOptions: &behavior,
+//SecurityEnabled:         &truePointer,
+//Visibility:              &visibility,
+//}
+//returnValue, err := client.AdministrativeUnitsClient.CreateGroup(ctx, auId, &group)
+//if err != nil {
+//t.Fatalf("AdministrativeUnit.CreateGroup():%s", err)
+//}
+//println(returnValue)
+
+//}
+
 func TestAdministrativeUnitsClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
@@ -40,6 +87,18 @@ func TestAdministrativeUnitsClient(t *testing.T) {
 	testAdministrativeUnitsClient_ListMembers(t, c, *administrativeUnit.ID)
 	testAdministrativeUnitsClient_GetMember(t, c, *administrativeUnit.ID, *user.ID())
 	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &([]string{*user.ID()}))
+
+	self := testDirectoryObjectsClient_Get(t, c, c.Claims.ObjectId)
+	group := msgraph.Group{
+		DisplayName:     utils.StringPtr("test-group"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-%s", c.RandomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+		Owners:          &msgraph.Owners{*self},
+		Members:         &msgraph.Members{*self},
+	}
+	createdGroup := testAdministrativeUnitsClient_CreateGroup(t, c, *administrativeUnit.ID, &group)
+	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &([]string{*createdGroup.ID()}))
 
 	directoryRoleTemplates := testDirectoryRoleTemplatesClient_List(t, c)
 	var helpdeskAdministratorRoleId string
@@ -175,6 +234,17 @@ func testAdministrativeUnitsClient_RemoveMembers(t *testing.T, c *test.Test, adm
 	if status < 200 || status >= 300 {
 		t.Fatalf("AdministrativeUnitsClient.RemoveMembers(): invalid status: %d", status)
 	}
+}
+
+func testAdministrativeUnitsClient_CreateGroup(t *testing.T, c *test.Test, administrativeUnitId string, g *msgraph.Group) (group *msgraph.Group) {
+	group, status, err := c.AdministrativeUnitsClient.CreateGroup(c.Context, administrativeUnitId, g)
+	if err != nil {
+		t.Fatalf("AdministrativeUnitsClient.CreateGroup(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AdministrativeUnitsClient.CreateGroup(): invalid status: %d", status)
+	}
+	return group
 }
 
 func testAdministrativeUnitsClient_ListScopedRoleMembers(t *testing.T, c *test.Test, administrativeUnitId string) (memberships *[]msgraph.ScopedRoleMembership) {
