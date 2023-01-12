@@ -241,6 +241,29 @@ func (c *AdministrativeUnitsClient) GetMember(ctx context.Context, administrativ
 	return &data.Id, status, nil
 }
 
+func (c *AdministrativeUnitsClient) CreateGroup(ctx context.Context, administrativeUnitId string, group *Group) (int, error) {
+	var status int
+	odataTypeGroup := odata.TypeGroup
+	group.ODataType = &odataTypeGroup
+	body, err := json.Marshal(group)
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+	_, status, _, err = c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:                   body,
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusCreated},
+		Uri: Uri{
+			Entity:      fmt.Sprintf("/administrativeUnits/%s/members", administrativeUnitId),
+			HasTenantId: true,
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AdministrativeUnitsClient.BaseClient.Post(): %v", err)
+	}
+	return status, nil
+}
+
 // AddMembers adds new members to a AdministrativeUnit.
 func (c *AdministrativeUnitsClient) AddMembers(ctx context.Context, administrativeUnitId string, members *Members) (int, error) {
 	var status int
