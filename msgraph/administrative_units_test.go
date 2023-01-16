@@ -2,6 +2,7 @@ package msgraph_test
 
 import (
 	"fmt"
+	"net/http"
 	"strings"
 	"testing"
 
@@ -10,53 +11,6 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
-
-//func TestCreateGroup(t *testing.T) {
-//client := test.NewTest(t)
-//defer client.CancelFunc()
-
-//ctx := context.Background()
-//auId := "a36b436e-7b28-4e51-a1c1-8553d3e2cd5b"
-//var odataId odata.Id = "directoryObjects('3c2e469a-bfdb-4240-ab3c-81c167a05172')"
-//var odataType odata.Type = "#microsoft.graph.servicePrincipal"
-//ownerString := "3c2e469a-bfdb-4240-ab3c-81c167a05172"
-//owner := msgraph.DirectoryObject{
-//ODataId:   &odataId,
-//ODataType: &odataType,
-//Id:        &ownerString,
-//}
-//groupName := "hansi-test"
-//var groupDescription msgraph.StringNullWhenEmpty = "hansi-test"
-//groupTypes := []string{"Unified"}
-//behavior := []msgraph.GroupResourceBehaviorOption{
-//msgraph.GroupResourceBehaviorOptionWelcomeEmailDisabled,
-//msgraph.GroupResourceBehaviorOptionSubscribeNewGroupMembers,
-//msgraph.GroupResourceBehaviorOptionSubscribeMembersToCalendarEventsDisabled,
-//}
-//visibility := msgraph.GroupVisibilityPrivate
-//falsePointer := false
-//truePointer := true
-//group := msgraph.Group{
-//Description:        &groupDescription,
-//DisplayName:        &groupName,
-//GroupTypes:         &groupTypes,
-//IsAssignableToRole: &falsePointer,
-//MailEnabled:        &truePointer,
-//MailNickname:       &groupName,
-//Owners: &msgraph.Owners{
-//owner,
-//},
-//ResourceBehaviorOptions: &behavior,
-//SecurityEnabled:         &truePointer,
-//Visibility:              &visibility,
-//}
-//returnValue, err := client.AdministrativeUnitsClient.CreateGroup(ctx, auId, &group)
-//if err != nil {
-//t.Fatalf("AdministrativeUnit.CreateGroup():%s", err)
-//}
-//println(returnValue)
-
-//}
 
 func TestAdministrativeUnitsClient(t *testing.T) {
 	c := test.NewTest(t)
@@ -241,7 +195,7 @@ func testAdministrativeUnitsClient_CreateGroup(t *testing.T, c *test.Test, admin
 	if err != nil {
 		t.Fatalf("AdministrativeUnitsClient.CreateGroup(): %v", err)
 	}
-	if status < 200 || status >= 300 {
+	if status != http.StatusCreated {
 		t.Fatalf("AdministrativeUnitsClient.CreateGroup(): invalid status: %d", status)
 	}
 	return group
