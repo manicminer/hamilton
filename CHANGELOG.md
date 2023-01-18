@@ -1,3 +1,7 @@
+## 0.54.0 (Unreleased)
+
+- Support for `Description` field in the `Application` model ([#205](https://github.com/manicminer/hamilton/pull/205))
+
 ## 0.53.0 (January 11, 2023)
 
 - Add the App ID for `Microsoft.StorageSync` to `PublishedApis` ([#200](https://github.com/manicminer/hamilton/pull/200))
