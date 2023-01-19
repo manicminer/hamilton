@@ -53,6 +53,7 @@ func TestAdministrativeUnitsClient(t *testing.T) {
 	}
 	createdGroup := testAdministrativeUnitsClient_CreateGroup(t, c, *administrativeUnit.ID, &group)
 	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &([]string{*createdGroup.ID()}))
+	testGroup_Delete(t, c, createdGroup)
 
 	directoryRoleTemplates := testDirectoryRoleTemplatesClient_List(t, c)
 	var helpdeskAdministratorRoleId string
