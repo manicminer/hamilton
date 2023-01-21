@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -41,9 +41,9 @@ func (c *TermsOfUseAgreementClient) List(ctx context.Context, filter string) (*[
 	}
 
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var data struct {
 		TermsOfUseAgreements []TermsOfUseAgreement `json:"value"`
@@ -74,9 +74,9 @@ func (c *TermsOfUseAgreementClient) Create(ctx context.Context, termsOfUseAgreem
 		return nil, status, fmt.Errorf("TermsOfUseAgreementClient.BaseClient.Post(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var newTermsOfUseAgreement TermsOfUseAgreement
 	if err := json.Unmarshal(respBody, &newTermsOfUseAgreement); err != nil {
@@ -98,9 +98,9 @@ func (c *TermsOfUseAgreementClient) Get(ctx context.Context, id string) (*TermsO
 		return nil, status, fmt.Errorf("TermsOfUseAgreementClient.BaseClient.Get(): %v", err)
 	}
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 	var termsOfUseAgreement TermsOfUseAgreement
 	if err := json.Unmarshal(respBody, &termsOfUseAgreement); err != nil {

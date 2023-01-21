@@ -1521,7 +1521,8 @@ type TermsOfUseAgreement struct {
 	IsViewingBeforeAcceptanceRequired *bool                          `json:"isViewingBeforeAcceptanceRequired,omitempty"`
 	IsPerDeviceAcceptanceRequired     *bool                          `json:"isPerDeviceAcceptanceRequired,omitempty"`
 	TermsExpiration                   *TermsOfUseAgreementExpiration `json:"termsExpiration,omitempty"` //For some reason this exports the Frequency both here and above AcceptanceExpirationFrequency Request separates them but response groups them. Anticipate this in Tests
-	Files                             *[]TermsOfUseAgreementFilesSet `json:"files,omitempty"`
+	Files                             *[]TermsOfUseAgreementFile     `json:"files,omitempty"`
+	File                              *TermsOfUseAgreementFile       `json:"file,omitempty"`
 }
 
 type TermsOfUseAgreementExpiration struct {
@@ -1531,14 +1532,17 @@ type TermsOfUseAgreementExpiration struct {
 
 type TermsOfUseAgreementFileData struct {
 	//Data is within its own object for some reason
-	Data *string `json:"data,omitempty"`
+	Data *[]byte `json:"data,omitempty"`
 }
 
-type TermsOfUseAgreementFilesSet struct {
-	FileName  *string                      `json:"fileName,omitempty"`
-	Language  *string                      `json:"language,omitempty"`
-	IsDefault *bool                        `json:"isDefault,omitempty"`
-	FileData  *TermsOfUseAgreementFileData `json:"fileData,omitempty"`
+type TermsOfUseAgreementFile struct {
+	ID             *string                      `json:"id,omitempty"`
+	DisplayName    *string                      `json:"displayName,omitempty"`
+	FileName       *string                      `json:"fileName,omitempty"`
+	Language       *string                      `json:"language,omitempty"`
+	IsDefault      *bool                        `json:"isDefault,omitempty"`
+	IsMajorVersion *bool                        `json:"isMajorVersion,omitempty"`
+	FileData       *TermsOfUseAgreementFileData `json:"fileData,omitempty"`
 }
 
 type TemporaryAccessPassAuthenticationMethod struct {
