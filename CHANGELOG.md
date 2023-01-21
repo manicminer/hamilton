@@ -1,4 +1,389 @@
-## 0.19.0 (Unreleased)
+## 0.54.0 (Unreleased)
+
+- Support for `Description` field in the `Application` model ([#205](https://github.com/manicminer/hamilton/pull/205))
+
+## 0.53.0 (January 11, 2023)
+
+- Add the App ID for `Microsoft.StorageSync` to `PublishedApis` ([#200](https://github.com/manicminer/hamilton/pull/200))
+- Bugfix: Fix casing of values for `OnPremisesGroupType` type ([#199](https://github.com/manicminer/hamilton/pull/199))
+
+## 0.52.0 (November 30, 2022)
+
+- Bugfix: Use `eq` over `startsWith` in `msgraph.AccessPackageResourceClient{}.Get()` to improve accuracy ([#194](https://github.com/manicminer/hamilton/pull/194))
+- Support for reading the [`objectId` field](https://learn.microsoft.com/en-us/graph/api/applicationtemplate-instantiate?view=graph-rest-beta&tabs=http#response-1) in API responses for `directoryObjects`
+- Support for `WritebackConfiguration` in the `Group` model ([#197](https://github.com/manicminer/hamilton/pull/197))
+
+⚠️ BREAKING CHANGES:
+
+- The `ID` field of the `DirectoryObject` model has been renamed to `Id` and a method `ID()` has been introduced ([#198](https://github.com/manicminer/hamilton/pull/198))
+
+## 0.51.0 (October 27, 2022)
+
+- Support for [Connected Organizations](https://learn.microsoft.com/en-gb/graph/api/resources/connectedorganization?view=graph-rest-1.0) ([#156](https://github.com/manicminer/hamilton/pull/156))
+- Support for listing [transitive group members](https://learn.microsoft.com/en-us/graph/api/group-list-transitivemembers?view=graph-rest-1.0) ([#191](https://github.com/manicminer/hamilton/pull/191))
+- Bugfix: Add nil slice check in `AccessPackageResourceClient.Get()` ([#187](https://github.com/manicminer/hamilton/pull/187))
+- Bugfix: `AccessPackageResource.Description` has changed from a `*bool` to a `*string` ([#187](https://github.com/manicminer/hamilton/pull/187))
+
+## 0.50.0 (October 14, 2022)
+
+- Environments: add Synapse API in USGovernment ([#186](https://github.com/manicminer/hamilton/pull/186))
+
+## 0.49.0 (September 29, 2022)
+
+- Service Principals: support for the `Oauth2PermissionScopes` field (json `oauth2PermissionScopes`), which is used by the v1.0 API ([#183](https://github.com/manicminer/hamilton/pull/183))
+
+## 0.48.0 (September 29, 2022)
+
+- Bug fix: `SynchronizationTaskExecution.CountEntitled` has changed from a `string` to an `int64` ([#172](https://github.com/manicminer/hamilton/pull/172))
+- Support for [B2C User Flows](https://learn.microsoft.com/en-us/graph/api/resources/b2cidentityuserflow?view=graph-rest-beta) ([#179](https://github.com/manicminer/hamilton/pull/179))
+- Support for [User Flow Attributes](https://learn.microsoft.com/en-us/graph/api/resources/identityuserflowattribute?view=graph-rest-1.0) ([#182](https://github.com/manicminer/hamilton/pull/182))
+- Add an `AdditionalData` field of type `map[string]interface{}` to the `DirectoryObject` model, for returning additional untyped fields ([#171](https://github.com/manicminer/hamilton/pull/171))
+- `AppRoleAssignmentsClient.List()` - support odata query parameters ([#181](https://github.com/manicminer/hamilton/pull/181))
+- Environments: add new well-known App IDs `MicrosoftAzureFrontDoor and `MicrosoftAzureFrontDoorCdn` ([#175](https://github.com/manicminer/hamilton/pull/175))
+- OData: Support for a `ConsistencyLevel` header with the value `session` ([#174](https://github.com/manicminer/hamilton/pull/174))
+
+⚠️ BREAKING CHANGES:
+
+- `Group.GroupTypes` has changed from a `[]GroupType` to a `*[]GroupType` ([#160](https://github.com/manicminer/hamilton/pull/160))
+- `Group.ResourceBehaviorOptions` has changed from a `[]GroupResourceBehaviorOption` to a `*[]GroupResourceBehaviorOption` ([#160](https://github.com/manicminer/hamilton/pull/160))
+- `Group.ResourceProvisioningOptions` has changed from a `[]GroupResourceProvisioningOption` to a `*[]GroupResourceProvisioningOption` ([#160](https://github.com/manicminer/hamilton/pull/160))
+
+## 0.47.1 (August 30, 2022)
+
+- Bugfix: Add missing configuration checks for OIDC methods in the `auth.Config.NewAuthorizer()` method ([#173](https://github.com/manicminer/hamilton/pull/173))
+
+## 0.47.0 (August 25, 2022)
+
+- Support for OIDC federated authentication by supplying an ID token directly ([#166](https://github.com/manicminer/hamilton/pull/166))
+- Support for [Azure AD Synchronization](https://docs.microsoft.com/en-us/graph/api/resources/synchronization-overview?view=graph-rest-beta) ([#167](https://github.com/manicminer/hamilton/pull/167))
+
+## 0.46.0 (April 27, 2022)
+
+- Added Azure Security Insights to `environments.PublishedApis` ([#162](https://github.com/manicminer/hamilton/pull/162))
+- Added `linux` to supported `msgraph.ConditionalAccessDevicePlatform` values ([#163](https://github.com/manicminer/hamilton/pull/163))
+- Added `SubscribeMembersToCalendarEventsDisabled` to supported `msgraph.GroupResourceBehaviorOption` values ([#163](https://github.com/manicminer/hamilton/pull/163))
+
+## 0.45.0 (April 21, 2022)
+
+⚠️ BREAKING CHANGES:
+
+- Removed `omitempty` from the JSON struct tag for the `Locations` and `Platforms` fields of the `msgraph.ConditionalAccessConditionSet` model ([#161](https://github.com/manicminer/hamilton/pull/161))
+
+## 0.44.0 (April 19, 2022)
+
+- Bugfix: Set the correct URL for `environments.KeyVaultUSGovEndpoint` ([#157](https://github.com/manicminer/hamilton/pull/157))
+- Support for [Token Signing Certificates](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-addtokensigningcertificate?view=graph-rest-1.0&tabs=http) for service principals ([#151](https://github.com/manicminer/hamilton/pull/151), [#158](https://github.com/manicminer/hamilton/pull/158))
+
+## 0.43.0 (March 15, 2022)
+
+⚠️ BREAKING CHANGES:
+
+- This release removes the following, which have been replaced by compatible equivalents in the new [hamilton-autorest](https://github.com/manicminer/hamilton-autorest) module ([#154](https://github.com/manicminer/hamilton/pull/154))
+  - `auth.AutorestAuthorizerWrapper{}` struct
+  - `auth.CachedAuthorizer{}.BearerAuthorizerCallback()` method
+  - `auth.CachedAuthorizer{}.WithAuthorization()` method
+  - `auth.NewAutorestAuthorizerWrapper()` function
+  - `auth.ServicePrincipalToken` interface
+  - `environments.EnvironmentFromMetadata()` function
+
+## 0.42.0 (March 9, 2022)
+
+- Broaden the regular expression used for fixing up bad oData IDs when marshaling an `odata.Id` ([#152](https://github.com/manicminer/hamilton/pull/152))
+- Support for [Claims Mapping Policies](https://docs.microsoft.com/en-us/graph/api/resources/claimsmappingpolicy?view=graph-rest-1.0) ([#147](https://github.com/manicminer/hamilton/pull/147))
+
+## 0.41.1 (February 3, 2022)
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `UnifiedRoleDefinition.Description` has changed from a `*string` to a `*StringNullWhenEmpty` ([#148](https://github.com/manicminer/hamilton/pull/148))
+- Bug fix: `UnifiedRolePermission.Condition` has changed from a `*string` to a `*StringNullWhenEmpty` ([#148](https://github.com/manicminer/hamilton/pull/148))
+
+## 0.41.0 (February 3, 2022)
+
+- Support for selecting GitHub OIDC authentication when using the `auth.NewAuthorizer()` helper function ([#145](https://github.com/manicminer/hamilton/pull/145))
+- Bump supported Go version to 1.17.6 ([#145](https://github.com/manicminer/hamilton/pull/145))
+
+## 0.40.1 (January 28, 2022)
+
+- Bug fix: Correct the type for `AllowExternalSenders` field in the `Group` model ([#143](https://github.com/manicminer/hamilton/pull/143))
+- `GroupsClient{}.Update()` - Don't include the ID in the body when updating a group, as this prevents some Unified group fields from being updated ([#143](https://github.com/manicminer/hamilton/pull/143))
+
+## 0.40.0 (January 26, 2022)
+
+- Add a new authorizer `GitHubOIDCAuthorizer` which supports [OIDC token exchange](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect) for authenticating to Azure Active Directory ([#142](https://github.com/manicminer/hamilton/pull/142))
+- Support v1.0 API for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-overview?view=graph-rest-1.0) ([#133](https://github.com/manicminer/hamilton/pull/133))
+  - `AccessPackageQuestion` model - add the `Choices` and `IsSingleLineQuestion` fields
+  - `AccessPackageCatalog` model - add the `State` field
+  - `AssignmentReviewSettings` model - add the `IsAccessRecommendationEnabled`, `IsApprovalJustificationRequired` and `AccessReviewTimeoutBehavior` fields
+  - `UserSet` model - add the `ManagerLevel` field
+  - New model: `AccessPackageMultipleChoiceQuestions`
+- Support for [Role Definitions](https://docs.microsoft.com/en-us/graph/api/resources/unifiedroledefinition?view=graph-rest-1.0) via the unified role management endpoint ([#137](https://github.com/manicminer/hamilton/pull/137))
+- Support for [Role Assignments](https://docs.microsoft.com/en-us/graph/api/resources/unifiedroleassignment?view=graph-rest-1.0) via the unified role management endpoint ([#137](https://github.com/manicminer/hamilton/pull/137))
+
+⚠️ BREAKING CHANGES:
+
+- `AccessPackage` model - the `CatalogId` field is replaced by the `Catalog` field
+- `AssignmentReviewSettings` model - the `RecurrenceType` field now has a custom type
+- `AssignmentReviewSettings` model - the `ReviewerType` field now has a custom type
+
+## 0.39.0 (January 7, 2022)
+
+- Support for [Federated Identity Credentials](https://docs.microsoft.com/en-us/graph/api/resources/federatedidentitycredential?view=graph-rest-beta) (beta-only) ([#134](https://github.com/manicminer/hamilton/pull/134))
+- Bug fix: corrected the `DisplayName` struct tag for the `GroupAssignedLabel` model ([#135](https://github.com/manicminer/hamilton/pull/135))
+- Bug fix: fixed a typo in the constant `AccessPackageResourceRequestTypeAdminRemove` (was `AccessPackageResourceRequestTypeAdmminRemove`) ([#135](https://github.com/manicminer/hamilton/pull/135))
+
+## 0.38.0 (December 8, 2021)
+
+- Add a helper function `environments.EnvironmentFromMetadata()` which is intended to substitute the [`azure.EnvironmentFromURL()` function from go-autorest](https://github.com/Azure/go-autorest/blob/v14.2.0/autorest/azure/metadata_environment.go#L96-L141) ([#131](https://github.com/manicminer/hamilton/pull/131))
+- Fix an incorrect API ID for KeyVault ([#131](https://github.com/manicminer/hamilton/pull/131))
+- Improve support for dynamic group memberships ([#132](https://github.com/manicminer/hamilton/pull/132))
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `Group.MembershipRule` has changed from a `*string` to a `*StringNullWhenEmpty` ([#132](https://github.com/manicminer/hamilton/pull/132))
+
+## 0.37.0 (November 29, 2021)
+
+- Add some missing API endpoints for national cloud environments ([#129](https://github.com/manicminer/hamilton/pull/129))
+- Add an `Api{}.IsAvailable()` method to determine whether a service is supported for an environment  ([#129](https://github.com/manicminer/hamilton/pull/129))
+- Fix an incorrect hostname for `environments.KeyVaultUSGovEndpoint` ([#128](https://github.com/manicminer/hamilton/pull/128))
+- Support for `autorest.BearerAuthorizerCallback` in `auth.CachedAuthorizer` ([#130](https://github.com/manicminer/hamilton/pull/130))
+
+## 0.36.1 (November 25, 2021)
+
+- Fix an incorrect enum value for `ConditionalAccessDevicePlatformAll` ([#127](https://github.com/manicminer/hamilton/pull/127))
+
+## 0.36.0 (November 25, 2021)
+
+- Support for [administrative units](https://docs.microsoft.com/en-us/graph/api/resources/administrativeunit?view=graph-rest-beta) ([#124](https://github.com/manicminer/hamilton/pull/124))
+- Support for [delegated permission grants](https://docs.microsoft.com/en-us/graph/api/resources/oauth2permissiongrant?view=graph-rest-1.0) ([#126](https://github.com/manicminer/hamilton/pull/126))
+- Conditional Access Policies: support for `devices` and `deviceStates` in policy `conditions` ([#125](https://github.com/manicminer/hamilton/pull/125))
+- Conditional Access Policies: add type aliases and constants for enum values ([#125](https://github.com/manicminer/hamilton/pull/125))
+
+## 0.35.0 (November 16, 2021)
+
+- Auth package refactoring ([#123](https://github.com/manicminer/hamilton/pull/123))
+  - Remove the `auth.Api` type and instead use `environments.Api` directly
+  - Use the resource URI instead of the friendly name for Azure CLI auth tokens
+
+- Add the `AuxiliaryTokens()` method to the `auth.Authorizer` interface to support obtaining tokens for additional tenants ([#123](https://github.com/manicminer/hamilton/pull/123))
+- Expand support in `auth.AutorestAuthorizerWrapper` to support any `autorest.Authorizer` ([#123](https://github.com/manicminer/hamilton/pull/123))
+  - `autorest.BearerAuthorizer` and `autorest.MultiTenantBearerAuthorizer` are fully supported with access tokens, refresh tokens and expiry
+  - Other authorizers can supply access tokens only
+- Support auxiliary tenants with client secret and client certificate authorizers ([#123](https://github.com/manicminer/hamilton/pull/123))
+
+- Implement the `autorest.Authorizer` interface with `auth.CachedAuthorizer` (which wraps all supported Authorizers) ([#123](https://github.com/manicminer/hamilton/pull/123))
+  - This allows authorizers to be used with https://github.com/Azure/go-autorest, with multi-tenant support, with the exception of `auth.MsiAuthorizer`
+
+- Export environment configs for more management plane APIs ([#123](https://github.com/manicminer/hamilton/pull/123))
+  - Resource Manager
+  - Batch Management
+  - Data Lake
+  - Gallery
+  - KeyVault
+  - Operational Insights
+  - OSS RDBMS
+  - Service Bus
+  - Service Management (Azure Classic)
+  - SQL Database
+  - Storage
+  - Synapse
+
+- Refactor and tidy up tests for the `msgraph` package ([#123](https://github.com/manicminer/hamilton/pull/123))
+
+- Say goodbye to Azure Germany 🇩🇪 ([#123](https://github.com/manicminer/hamilton/pull/123))
+
+⚠️ BREAKING CHANGES:
+
+- The signatures for `auth.NewClientCertificateAuthorizer`, `auth.NewClientSecretAuthorizer` and `auth.NewAzureCliAuthorizer` have changed to accommodate passing additional tenant IDs for multi-tenant authorization ([#123](https://github.com/manicminer/hamilton/pull/123))
+
+## 0.34.0 (November 12, 2021)
+
+- Remove a surplus configuration check when using Managed Identity authentication, which improves compatibility with Azure Cloud Shell ([#119](https://github.com/manicminer/hamilton/pull/119))
+- Add a new authorizer `AutorestAuthorizerWrapper` which supports obtaining tokens from go-autorest via `autorest.BearerAuthorizer` ([#120](https://github.com/manicminer/hamilton/pull/120))
+
+## 0.33.0 (October 14, 2021)
+
+- Support for specifying the client ID when using managed identity authentication ([#115](https://github.com/manicminer/hamilton/pull/115))
+- Mitigation for breaking API changes around the `@odata.id` field ([#114](https://github.com/manicminer/hamilton/pull/114))
+  - If `@odata.id` is returned in the form `objectType('GUID')` (i.e. not a valid URI), then attempt to reconstruct a URI
+  - This currently hardcodes the `graph.microsoft.com` host in the generated URI but this does not appear to be a problem for other clouds
+  - This field is exported in all structs that reference it, so it's possible to override this if necessary
+- Support for running `msgraph` tests in national clouds ([#114](https://github.com/manicminer/hamilton/pull/114))
+
+⚠️ BREAKING CHANGES:
+
+- The signatures for the `auth.NewMsiAuthorizer()` and `auth.NewMsiConfig()` functions have changed to accommodate the client ID ([#115](https://github.com/manicminer/hamilton/pull/115))
+
+## 0.32.0 (October 6, 2021)
+
+- Support for setting OData-related HTTP headers
+  - Implement a new way to pass the entire `odata.Query` object as part of request inputs
+  - Update all existing clients to pass `odata.Query` in full
+    - The existing method of passing a `url.Values`map still works, maintains compatibility and can be used for passing non-odata related query parameters
+  - Support setting [OData-related HTTP headers](https://docs.oasis-open.org/odata/odata/v4.01/odata-v4.01-part1-protocol.html#_Toc31358856) including `OData-Version` / `OData-MaxVersion`, [odata-json parameters](https://docs.oasis-open.org/odata/odata-json-format/v4.01/odata-json-format-v4.01.html#_Toc38457724) on the `Accept` header, and [the `ConsistencyLevel` header](https://developer.microsoft.com/en-us/identity/blogs/microsoft-graph-advanced-queries-for-directory-objects-are-now-generally-available/) which isn't strictly in the odata 'standard' but heavily related
+  - Set the `odata.metadata` parameter to `full` when retrieving directory objects to [ensure the `@odata.id` field is returned](https://docs.oasis-open.org/odata/odata-json-format/v4.0/errata03/os/odata-json-format-v4.0-errata03-os-complete.html#_Toc453766619)
+    - This dramatically increases the payload volume so we don't default it everywhere
+- Support for [assigning](https://docs.microsoft.com/en-us/graph/api/user-post-manager?view=graph-rest-beta&tabs=http) and [retrieving](https://docs.microsoft.com/en-us/graph/api/user-list-manager?view=graph-rest-beta&tabs=http) a user's manager ([#111](https://github.com/manicminer/hamilton/pull/111))
+- Add application ID for "Azure VPN" to environments package ([#113](https://github.com/manicminer/hamilton/pull/113))
+
+## 0.31.1 (September 30, 2021)
+
+- Bug fix: `User{}.EmployeeType` is a nullable string ([#110](https://github.com/manicminer/hamilton/pull/110))
+
+## 0.31.0 (September 30, 2021)
+
+- Add support for [Entitlement Management](https://docs.microsoft.com/en-us/graph/api/resources/entitlementmanagement-root?view=graph-rest-beta) (beta-only API) ([#93](https://github.com/manicminer/hamilton/pull/93))
+- Bug fix: handle inconsistent 400 error when listing sign-in reports with an OData filter ([#108](https://github.com/manicminer/hamilton/pull/108))
+- Bug fix: work around an API consistency issue when creating service principals for new applications that have not fully replicated ([#109](https://github.com/manicminer/hamilton/pull/109))
+
+## 0.30.0 (September 22, 2021)
+
+- Support for the [appRolesAssignedTo](https://docs.microsoft.com/en-us/graph/api/serviceprincipal-post-approleassignedto?view=graph-rest-1.0) endpoint ([#107](https://github.com/manicminer/hamilton/pull/107))
+- Bug fix: `odata.Odata{}` - the `Count` field is now a `*int` ([#105](https://github.com/manicminer/hamilton/pull/105))
+
+## 0.29.0 (September 15, 2021)
+
+- Applications: add consistency check for roles/scopes that may be in the process of being disabled, when updating an application ([#102](https://github.com/manicminer/hamilton/pull/102))
+- Applications: support for uploading application logos via the `ApplicationsClient{}.UploadLogo()` method([#103](https://github.com/manicminer/hamilton/pull/103))
+- Directory Roles: add the `DirectoryROlesClient{}.GetByTemplateId()` method for retrieving roles by their template ID ([#101](https://github.com/manicminer/hamilton/pull/101))
+- `User` model: support [EmployeeOrgData](https://docs.microsoft.com/en-us/graph/api/resources/employeeorgdata?view=graph-rest-beta) ([#99](https://github.com/manicminer/hamilton/pull/99))
+
+## 0.28.2 (September 10, 2021)
+
+- Bug fix: Correctly handle HTTP responses after retries have been exhausted for a request, so that the correct status and error can be returned ([#100](https://github.com/manicminer/hamilton/pull/100))
+
+## 0.28.1 (September 9, 2021)
+
+- Bug fix: Try to detect when running in Azure Cloud Shell and avoid specifying the tenant ID for Azure CLI authentication ([#98](https://github.com/manicminer/hamilton/pull/98))
+- Bug fix: Use the correct base64 decoder when parsing token claims ([#97](https://github.com/manicminer/hamilton/pull/97))
+
+⚠️ BREAKING CHANGES:
+
+- Bug fix: `User.PasswordPolicies` has changed from a `*string` to a `*StringNullWhenEmpty` ([#96](https://github.com/manicminer/hamilton/pull/96))
+
+## 0.28.0 (September 7, 2021)
+
+- Support for [application templates](https://docs.microsoft.com/en-us/graph/api/resources/applicationtemplate?view=graph-rest-1.0) ([#95](https://github.com/manicminer/hamilton/pull/95))
+
+## 0.27.0 (September 2, 2022)
+
+- Add some value types for `ConditionalAccessPolicyState` and `InvitedUserType` ([#94](https://github.com/manicminer/hamilton/pull/94))
+
+## 0.26.0 (September 1, 2021)
+
+- `auth.CachedAuthorizer` - export this type and its `Source` field so that consumers can inspect it ([#90](https://github.com/manicminer/hamilton/pull/90))
+- Bugfix: set the struct tag for `ServicePrincipal.Owners` field so it is marshaled correctly  ([#91](https://github.com/manicminer/hamilton/pull/91))
+
+⚠️ BREAKING CHANGES:
+
+- The `auth.CachedAuthorizer()` function has been renamed to `auth.NewCachedAuthorizer()` ([#90](https://github.com/manicminer/hamilton/pull/90))
+
+## 0.25.0 (August 24, 2021)
+
+- Support for [authentication methods](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-overview?view=graph-rest-beta) ([#89](https://github.com/manicminer/hamilton/pull/89))
+
+## 0.24.0 (August 17, 2021)
+
+- When authenticating using Azure CLI, access tokens are now cached to avoid repeatedly invoking `az` to get the latest token ([#88](https://github.com/manicminer/hamilton/pull/88))
+- Support for [authentication methods usage reports](https://docs.microsoft.com/en-us/graph/api/resources/authenticationmethods-usage-insights-overview?view=graph-rest-beta) ([#85](https://github.com/manicminer/hamilton/pull/85))
+- Support for [generic directory objects](https://docs.microsoft.com/en-us/graph/api/resources/directoryobject?view=graph-rest-beta) ([#86](https://github.com/manicminer/hamilton/pull/86))
+- Add the `MemberOf` field to the `User` struct ([#84](https://github.com/manicminer/hamilton/pull/84))
+
+⚠️ BREAKING CHANGES:
+
+- The `ID` field of the `Application`, `DirectoryRole`, `Group`, `ServicePrincipal` and `User` models has been removed and is now a field of the embedded `DirectoryObject` struct ([#86](https://github.com/manicminer/hamilton/pull/86))
+- The `Members` and/or `Owners` fields of the `Application`, `DirectoryRole`, `Group` and `ServicePrincipal` models have changed from a `*[]string` to a `*Members` and `*Owners` respectively ([#86](https://github.com/manicminer/hamilton/pull/86))
+  - The `Members` and `Owners` types are based on `[]DirectoryObject` and have methods to marshal/unmarshal the `ODataId` fields of the contained `DirectoryObject`s
+- The `AppendMember()` and/or `AppendOwner()` methods of the `Application`, `Group` and `ServicePrincipal` models are no longer required and have been removed ([#86](https://github.com/manicminer/hamilton/pull/86))
+
+## 0.23.1 (July 21, 2021)
+
+- Disable the default logger for `retryablehttp.Client{}` ([#83](https://github.com/manicminer/hamilton/pull/83))
+
+## 0.23.0 (July 21, 2021)
+
+- Support for schema extension data for Groups and Users  ([#81](https://github.com/manicminer/hamilton/pull/81))
+  - Marshaling of schema extension data is handled automatically by the Group and User structs, enabling use of the existing `Update()` methods on the respective clients.
+  - Unmarshaling is handled by either the provided `msgraph.SchemaExtensionMap` type, or a custom type supplied by the caller. Such a custom type must have an explicit `UnmarshalJSON()` method to satisfy the `SchemaExtensionProperties` interface. Both approaches have examples in the `TestSchemaExtensionsClient()` test.
+- Support for injecting and sequencing middleware functions for manipulating and/or copying requests and responses ([#78](https://github.com/manicminer/hamilton/pull/78))
+  - See [example.go](https://github.com/manicminer/hamilton/blob/main/example/example.go) for an example that logs requests and responses
+- Request retry handling for rate limiting, server errors and replication delays is now handled by [go-retryablehttp](https://github.com/hashicorp/go-retryablehttp) ([#78](https://github.com/manicminer/hamilton/pull/78))
+- `msgraph.Client{}.HttpClient` is now exported so callers can supply their own `http.Client` ([#78](https://github.com/manicminer/hamilton/pull/78))
+
+⚠️ BREAKING CHANGES:
+
+- Support `odata.Query{}` in more client methods ([#80](https://github.com/manicminer/hamilton/pull/80))
+  - `ApplicationsClient{}.Get()`
+  - `ApplicationsClient{}.GetDeleted()`
+  - `ApplicationsClient{}.ListExtensions()`
+  - `ConditionalAccessPolicyClient{}.Get()`
+  - `DirectoryAuditReportsClient{}.Get()`
+  - `DomainsClient{}.List()`
+  - `DomainsClient{}.Get()`
+  - `GroupsClient{}.Get()`
+  - `GroupsClient{}.GetDeleted()`
+  - `MeClient{}.Get()`
+  - `MeClient{}.GetProfile()`
+  - `NamedLocationsClient{}.Get()`
+  - `NamedLocationsClient{}.GetCountry()`
+  - `NamedLocationsClient{}.GetIP()`
+  - `SchemaExtensionsClient{}.Get()`
+  - `ServicePrincipalsClient{}.Get()`
+  - `ServicePrincipalsClient{}.ListAppRoleAssignments()`
+  - `SignInReportsClient{}.Get()`
+  - `UsersClient{}.Get()`
+  - `UsersClient{}.GetDeleted()`
+
+## 0.22.0 (July 13, 2021)
+
+- `msgraph.ServicePrincipal{}` now supports the `Description` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}` now supports the `Notes` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}` now supports the `SamlMetadataUrl` field ([#77](https://github.com/manicminer/hamilton/pull/77))
+
+⚠️ BREAKING CHANGES:
+
+- `environments.ApiAppId` is now a type alias
+- `msgraph.ServicePrincipal{}.LoginUrl` is now a `StringNullWhenEmpty` type ([#77](https://github.com/manicminer/hamilton/pull/77))
+- `msgraph.ServicePrincipal{}.PreferredSingleSignOnMode` is now a type alias pointer (formerly a string pointer) ([#77](https://github.com/manicminer/hamilton/pull/77))
+
+## 0.21.0 (July 6, 2021)
+
+- `msgraph.User{}` now supports the `AgeGroup` field ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}` now supports the `ConsentProvidedForMinor` field ([#76](https://github.com/manicminer/hamilton/pull/76))
+
+⚠️ BREAKING CHANGES:
+
+- `msgraph.Application{}.SignInAudience` is now a pointer reference ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ServicePrincipal{}.SignInAudience` is now a pointer reference ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.Group{}.ResourceBehaviorOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.ResourceProvisioningOptions` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Theme` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.Group{}.Visibility` is now a custom type ([#75](https://github.com/manicminer/hamilton/pull/75))
+- `msgraph.User{}.EmployeeId` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.FaxNumber` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.Mail` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.User{}.PreferredLanguage` is now a `StringNullWhenEmpty` type ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ApplicationExtensionTargetObject` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.AppRoleAllowedMemberType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.BodyType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ExtensionSchemaPropertyDataType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.GroupType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.GroupMembershipClaim` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.KeyCredentialType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.KeyCredentialUsage` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.PermissionScopeType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.ResourceAccessType` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+- `msgraph.SignInAudience` is now a type alias ([#76](https://github.com/manicminer/hamilton/pull/76))
+
+## 0.20.0 (July 1, 2021)
+
+- Support the `spa` field for applications ([#74](https://github.com/manicminer/hamilton/pull/74))
+
+## 0.19.0 (June 29, 2021)
+
+- Support for [schema extensions](https://docs.microsoft.com/en-us/graph/api/resources/schemaextension?view=graph-rest-beta) ([#68](https://github.com/manicminer/hamilton/pull/68))
+- Support for retrieving `SignInActivity` for users ([#72](https://github.com/manicminer/hamilton/pull/72))
 
 ⚠️ BREAKING CHANGES:
 

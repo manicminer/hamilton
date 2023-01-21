@@ -19,3 +19,13 @@ func Int32Ptr(i int32) *int32 {
 func StringPtr(s string) *string {
 	return &s
 }
+
+// ArrayStringPtr returns a pointer to the provided array of strings.
+func ArrayStringPtr(s []string) *[]string {
+	return &s
+}
+
+// Float32Ptr returns a pointer to the provided float32 variable.
+func Float32Ptr(f float32) *float32 {
+	return &f
+}

@@ -2,34 +2,46 @@ package msgraph_test
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
+	"time"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type ApplicationsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.ApplicationsClient
-	randomString string
-}
-
 func TestApplicationsClient(t *testing.T) {
-	c := ApplicationsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-	c.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
+
+	user := testUsersClient_Create(t, c, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-applicationowner"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-applicationowner-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-applicationowner-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
+		},
+	})
+
+	self := testDirectoryObjectsClient_Get(t, c, c.Claims.ObjectId)
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-application-%s", c.RandomString)),
+		GroupMembershipClaims: &[]msgraph.GroupMembershipClaim{
+			msgraph.GroupMembershipClaimApplicationGroup,
+			msgraph.GroupMembershipClaimDirectoryRole,
+			msgraph.GroupMembershipClaimSecurityGroup,
+		},
+		Owners: &msgraph.Owners{*self},
 	})
-	testApplicationsClient_Get(t, c, *app.ID)
-	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.randomString))
+
+	testApplicationsClient_Get(t, c, *app.ID())
+
+	app.DisplayName = utils.StringPtr(fmt.Sprintf("test-app-updated-%s", c.RandomString))
 	targetObject := []msgraph.ApplicationExtensionTargetObject{
 		msgraph.ApplicationExtensionTargetObjectUser,
 	}
@@ -38,43 +50,59 @@ func TestApplicationsClient(t *testing.T) {
 		Name:          utils.StringPtr("extName"),
 		TargetObjects: &targetObject,
 	}
-	extensionId := testApplicationsClient_CreateExtension(t, c, newExtension, *app.ID)
-	testApplicationsClient_ListExtension(t, c, *app.ID)
-	testApplicationsClient_DeleteExtension(t, c, extensionId, *app.ID)
+	extensionId := testApplicationsClient_CreateExtension(t, c, newExtension, *app.ID())
+	testApplicationsClient_ListExtension(t, c, *app.ID())
+	testApplicationsClient_DeleteExtension(t, c, extensionId, *app.ID())
+
 	testApplicationsClient_Update(t, c, *app)
-	owners := testApplicationsClient_ListOwners(t, c, *app.ID)
-	testApplicationsClient_GetOwner(t, c, *app.ID, (*owners)[0])
-	testApplicationsClient_RemoveOwners(t, c, *app.ID, owners)
-	app.AppendOwner(c.client.BaseClient.Endpoint, c.client.BaseClient.ApiVersion, (*owners)[0])
+
+	owners := testApplicationsClient_ListOwners(t, c, *app.ID())
+	testApplicationsClient_GetOwner(t, c, *app.ID(), (*owners)[0])
+	testApplicationsClient_RemoveOwners(t, c, *app.ID(), owners)
+	app.Owners = &msgraph.Owners{user.DirectoryObject}
 	testApplicationsClient_AddOwners(t, c, app)
+
 	pwd := testApplicationsClient_AddPassword(t, c, app)
 	testApplicationsClient_RemovePassword(t, c, app, pwd)
+
+	testApplicationsClient_UploadLogo(t, c, app)
+
+	credential := testApplicationsClient_CreateFederatedIdentityCredential(t, c, *app.ID(), msgraph.FederatedIdentityCredential{
+		Audiences:   &[]string{"api://AzureADTokenExchange"},
+		Description: msgraph.NullableString("such testing many pull request"),
+		Issuer:      utils.StringPtr("https://token.actions.githubusercontent.com"),
+		Name:        utils.StringPtr(fmt.Sprintf("test-credential-%s", c.RandomString)),
+		Subject:     utils.StringPtr("repo:manicminer-test/gha-test:pull-request"),
+	})
+	testApplicationsClient_GetFederatedIdentityCredential(t, c, *app.ID(), *credential.ID)
+
+	credential.Description = msgraph.NullableString("")
+	testApplicationsClient_UpdateFederatedIdentityCredential(t, c, *app.ID(), *credential)
+	testApplicationsClient_ListFederatedIdentityCredentials(t, c, *app.ID())
+	testApplicationsClient_DeleteFederatedIdentityCredential(t, c, *app.ID(), *credential.ID)
+
 	testApplicationsClient_List(t, c)
-	testApplicationsClient_Delete(t, c, *app.ID)
-	testApplicationsClient_ListDeleted(t, c, *app.ID)
-	testApplicationsClient_GetDeleted(t, c, *app.ID)
-	testApplicationsClient_RestoreDeleted(t, c, *app.ID)
-	testApplicationsClient_Delete(t, c, *app.ID)
-	testApplicationsClient_DeletePermanently(t, c, *app.ID)
+	testApplicationsClient_Delete(t, c, *app.ID())
+	testApplicationsClient_ListDeleted(t, c, *app.ID())
+	testApplicationsClient_GetDeleted(t, c, *app.ID())
+	testApplicationsClient_RestoreDeleted(t, c, *app.ID())
+	testApplicationsClient_Delete(t, c, *app.ID())
+	testApplicationsClient_DeletePermanently(t, c, *app.ID())
 }
 
 func TestApplicationsClient_groupMembershipClaims(t *testing.T) {
-	c := ApplicationsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-	c.client = msgraph.NewApplicationsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	app := testApplicationsClient_Create(t, c, msgraph.Application{
-		DisplayName:           utils.StringPtr(fmt.Sprintf("test-application-%s", c.randomString)),
+		DisplayName:           utils.StringPtr(fmt.Sprintf("test-application-%s", c.RandomString)),
 		GroupMembershipClaims: &[]msgraph.GroupMembershipClaim{"SecurityGroup", "ApplicationGroup"},
 	})
-	testApplicationsClient_Delete(t, c, *app.ID)
+	testApplicationsClient_Delete(t, c, *app.ID())
 }
 
-func testApplicationsClient_Create(t *testing.T, c ApplicationsClientTest, a msgraph.Application) (application *msgraph.Application) {
-	application, status, err := c.client.Create(c.connection.Context, a)
+func testApplicationsClient_Create(t *testing.T, c *test.Test, a msgraph.Application) (application *msgraph.Application) {
+	application, status, err := c.ApplicationsClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Create(): %v", err)
 	}
@@ -84,14 +112,14 @@ func testApplicationsClient_Create(t *testing.T, c ApplicationsClientTest, a msg
 	if application == nil {
 		t.Fatal("ApplicationsClient.Create(): application was nil")
 	}
-	if application.ID == nil {
+	if application.ID() == nil {
 		t.Fatal("ApplicationsClient.Create(): application.ID was nil")
 	}
 	return
 }
 
-func testApplicationsClient_Update(t *testing.T, c ApplicationsClientTest, a msgraph.Application) {
-	status, err := c.client.Update(c.connection.Context, a)
+func testApplicationsClient_Update(t *testing.T, c *test.Test, a msgraph.Application) {
+	status, err := c.ApplicationsClient.Update(c.Context, a)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Update(): %v", err)
 	}
@@ -100,8 +128,8 @@ func testApplicationsClient_Update(t *testing.T, c ApplicationsClientTest, a msg
 	}
 }
 
-func testApplicationsClient_List(t *testing.T, c ApplicationsClientTest) (applications *[]msgraph.Application) {
-	applications, _, err := c.client.List(c.connection.Context, odata.Query{})
+func testApplicationsClient_List(t *testing.T, c *test.Test) (applications *[]msgraph.Application) {
+	applications, _, err := c.ApplicationsClient.List(c.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.List(): %v", err)
 	}
@@ -111,8 +139,8 @@ func testApplicationsClient_List(t *testing.T, c ApplicationsClientTest) (applic
 	return
 }
 
-func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
-	application, status, err := c.client.Get(c.connection.Context, id)
+func testApplicationsClient_Get(t *testing.T, c *test.Test, id string) (application *msgraph.Application) {
+	application, status, err := c.ApplicationsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Get(): %v", err)
 	}
@@ -125,8 +153,8 @@ func testApplicationsClient_Get(t *testing.T, c ApplicationsClientTest, id strin
 	return
 }
 
-func testApplicationsClient_CreateExtension(t *testing.T, c ApplicationsClientTest, applicationExtension msgraph.ApplicationExtension, id string) string {
-	extension, status, err := c.client.CreateExtension(c.connection.Context, applicationExtension, id)
+func testApplicationsClient_CreateExtension(t *testing.T, c *test.Test, applicationExtension msgraph.ApplicationExtension, id string) string {
+	extension, status, err := c.ApplicationsClient.CreateExtension(c.Context, applicationExtension, id)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.CreateExtension(): %v", err)
 	}
@@ -142,8 +170,8 @@ func testApplicationsClient_CreateExtension(t *testing.T, c ApplicationsClientTe
 	return *extension.Id
 }
 
-func testApplicationsClient_ListExtension(t *testing.T, c ApplicationsClientTest, id string) {
-	extension, status, err := c.client.ListExtensions(c.connection.Context, id)
+func testApplicationsClient_ListExtension(t *testing.T, c *test.Test, id string) {
+	extension, status, err := c.ApplicationsClient.ListExtensions(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.ListExtensions(): %v", err)
 	}
@@ -155,8 +183,8 @@ func testApplicationsClient_ListExtension(t *testing.T, c ApplicationsClientTest
 	}
 }
 
-func testApplicationsClient_DeleteExtension(t *testing.T, c ApplicationsClientTest, extensionId, id string) {
-	status, err := c.client.DeleteExtension(c.connection.Context, id, extensionId)
+func testApplicationsClient_DeleteExtension(t *testing.T, c *test.Test, extensionId, id string) {
+	status, err := c.ApplicationsClient.DeleteExtension(c.Context, id, extensionId)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.DeleteExtension(): %v", err)
 	}
@@ -165,8 +193,8 @@ func testApplicationsClient_DeleteExtension(t *testing.T, c ApplicationsClientTe
 	}
 }
 
-func testApplicationsClient_GetDeleted(t *testing.T, c ApplicationsClientTest, id string) (application *msgraph.Application) {
-	application, status, err := c.client.GetDeleted(c.connection.Context, id)
+func testApplicationsClient_GetDeleted(t *testing.T, c *test.Test, id string) (application *msgraph.Application) {
+	application, status, err := c.ApplicationsClient.GetDeleted(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("ApplicationsClient.GetDeleted(): %v", err)
 	}
@@ -179,8 +207,8 @@ func testApplicationsClient_GetDeleted(t *testing.T, c ApplicationsClientTest, i
 	return
 }
 
-func testApplicationsClient_Delete(t *testing.T, c ApplicationsClientTest, id string) {
-	status, err := c.client.Delete(c.connection.Context, id)
+func testApplicationsClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.ApplicationsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.Delete(): %v", err)
 	}
@@ -189,8 +217,8 @@ func testApplicationsClient_Delete(t *testing.T, c ApplicationsClientTest, id st
 	}
 }
 
-func testApplicationsClient_DeletePermanently(t *testing.T, c ApplicationsClientTest, id string) {
-	status, err := c.client.DeletePermanently(c.connection.Context, id)
+func testApplicationsClient_DeletePermanently(t *testing.T, c *test.Test, id string) {
+	status, err := c.ApplicationsClient.DeletePermanently(c.Context, id)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.DeletePermanently(): %v", err)
 	}
@@ -199,8 +227,8 @@ func testApplicationsClient_DeletePermanently(t *testing.T, c ApplicationsClient
 	}
 }
 
-func testApplicationsClient_RestoreDeleted(t *testing.T, c ApplicationsClientTest, id string) {
-	application, status, err := c.client.RestoreDeleted(c.connection.Context, id)
+func testApplicationsClient_RestoreDeleted(t *testing.T, c *test.Test, id string) {
+	application, status, err := c.ApplicationsClient.RestoreDeleted(c.Context, id)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.RestoreDeleted(): %v", err)
 	}
@@ -210,16 +238,16 @@ func testApplicationsClient_RestoreDeleted(t *testing.T, c ApplicationsClientTes
 	if application == nil {
 		t.Fatal("ApplicationsClient.RestoreDeleted(): application was nil")
 	}
-	if application.ID == nil {
+	if application.ID() == nil {
 		t.Fatal("ApplicationsClient.RestoreDeleted(): application.ID was nil")
 	}
-	if *application.ID != id {
+	if *application.ID() != id {
 		t.Fatal("ApplicationsClient.RestoreDeleted(): application ids do not match")
 	}
 }
 
-func testApplicationsClient_ListOwners(t *testing.T, c ApplicationsClientTest, id string) (owners *[]string) {
-	owners, status, err := c.client.ListOwners(c.connection.Context, id)
+func testApplicationsClient_ListOwners(t *testing.T, c *test.Test, id string) (owners *[]string) {
+	owners, status, err := c.ApplicationsClient.ListOwners(c.Context, id)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.ListOwners(): %v", err)
 	}
@@ -235,8 +263,8 @@ func testApplicationsClient_ListOwners(t *testing.T, c ApplicationsClientTest, i
 	return
 }
 
-func testApplicationsClient_GetOwner(t *testing.T, c ApplicationsClientTest, appId string, ownerId string) (owner *string) {
-	owner, status, err := c.client.GetOwner(c.connection.Context, appId, ownerId)
+func testApplicationsClient_GetOwner(t *testing.T, c *test.Test, appId string, ownerId string) (owner *string) {
+	owner, status, err := c.ApplicationsClient.GetOwner(c.Context, appId, ownerId)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.GetOwner(): %v", err)
 	}
@@ -249,8 +277,8 @@ func testApplicationsClient_GetOwner(t *testing.T, c ApplicationsClientTest, app
 	return
 }
 
-func testApplicationsClient_AddOwners(t *testing.T, c ApplicationsClientTest, a *msgraph.Application) {
-	status, err := c.client.AddOwners(c.connection.Context, a)
+func testApplicationsClient_AddOwners(t *testing.T, c *test.Test, a *msgraph.Application) {
+	status, err := c.ApplicationsClient.AddOwners(c.Context, a)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.AddOwners(): %v", err)
 	}
@@ -259,8 +287,8 @@ func testApplicationsClient_AddOwners(t *testing.T, c ApplicationsClientTest, a 
 	}
 }
 
-func testApplicationsClient_RemoveOwners(t *testing.T, c ApplicationsClientTest, appId string, ownerIds *[]string) {
-	status, err := c.client.RemoveOwners(c.connection.Context, appId, ownerIds)
+func testApplicationsClient_RemoveOwners(t *testing.T, c *test.Test, appId string, ownerIds *[]string) {
+	status, err := c.ApplicationsClient.RemoveOwners(c.Context, appId, ownerIds)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.RemoveOwners(): %v", err)
 	}
@@ -269,11 +297,13 @@ func testApplicationsClient_RemoveOwners(t *testing.T, c ApplicationsClientTest,
 	}
 }
 
-func testApplicationsClient_AddPassword(t *testing.T, c ApplicationsClientTest, a *msgraph.Application) *msgraph.PasswordCredential {
+func testApplicationsClient_AddPassword(t *testing.T, c *test.Test, a *msgraph.Application) *msgraph.PasswordCredential {
+	expiry := time.Now().Add(24 * 90 * time.Hour)
 	pwd := msgraph.PasswordCredential{
 		DisplayName: utils.StringPtr("test password"),
+		EndDateTime: &expiry,
 	}
-	newPwd, status, err := c.client.AddPassword(c.connection.Context, *a.ID, pwd)
+	newPwd, status, err := c.ApplicationsClient.AddPassword(c.Context, *a.ID(), pwd)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.AddPassword(): %v", err)
 	}
@@ -289,8 +319,8 @@ func testApplicationsClient_AddPassword(t *testing.T, c ApplicationsClientTest, 
 	return newPwd
 }
 
-func testApplicationsClient_RemovePassword(t *testing.T, c ApplicationsClientTest, a *msgraph.Application, p *msgraph.PasswordCredential) {
-	status, err := c.client.RemovePassword(c.connection.Context, *a.ID, *p.KeyId)
+func testApplicationsClient_RemovePassword(t *testing.T, c *test.Test, a *msgraph.Application, p *msgraph.PasswordCredential) {
+	status, err := c.ApplicationsClient.RemovePassword(c.Context, *a.ID(), *p.KeyId)
 	if err != nil {
 		t.Fatalf("ApplicationsClient.RemovePassword(): %v", err)
 	}
@@ -299,8 +329,8 @@ func testApplicationsClient_RemovePassword(t *testing.T, c ApplicationsClientTes
 	}
 }
 
-func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, expectedId string) (deletedApps *[]msgraph.Application) {
-	deletedApps, status, err := c.client.ListDeleted(c.connection.Context, odata.Query{
+func testApplicationsClient_ListDeleted(t *testing.T, c *test.Test, expectedId string) (deletedApps *[]msgraph.Application) {
+	deletedApps, status, err := c.ApplicationsClient.ListDeleted(c.Context, odata.Query{
 		Filter: fmt.Sprintf("id eq '%s'", expectedId),
 		Top:    10,
 	})
@@ -318,7 +348,7 @@ func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, 
 	}
 	found := false
 	for _, app := range *deletedApps {
-		if app.ID != nil && *app.ID == expectedId {
+		if id := app.ID(); id != nil && *id == expectedId {
 			found = true
 			break
 		}
@@ -327,4 +357,83 @@ func testApplicationsClient_ListDeleted(t *testing.T, c ApplicationsClientTest, 
 		t.Fatalf("ApplicationsClient.ListDeleted(): expected app ID %q in result", expectedId)
 	}
 	return
+}
+
+func testApplicationsClient_UploadLogo(t *testing.T, c *test.Test, a *msgraph.Application) {
+	b, err := os.ReadFile(filepath.Join("..", "internal", "test", "testlogo.png"))
+	if err != nil {
+		t.Fatalf("reading testlogo.png: %v", err)
+	}
+	status, err := c.ApplicationsClient.UploadLogo(c.Context, *a.ID(), "image/png", b)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.UploadLogo(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.UploadLogo(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_CreateFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId string, credential msgraph.FederatedIdentityCredential) (newCredential *msgraph.FederatedIdentityCredential) {
+	newCredential, status, err := c.ApplicationsClient.CreateFederatedIdentityCredential(c.Context, applicationId, credential)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.CreateFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.CreateFederatedIdentityCredential(): invalid status: %d", status)
+	}
+	if newCredential == nil {
+		t.Fatal("ApplicationsClient.CreateFederatedIdentityCredential(): credential was nil")
+	}
+	if newCredential.ID == nil {
+		t.Fatal("ApplicationsClient.CreateFederatedIdentityCredential(): credential.ID was nil")
+	}
+	return
+}
+
+func testApplicationsClient_UpdateFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId string, credential msgraph.FederatedIdentityCredential) {
+	status, err := c.ApplicationsClient.UpdateFederatedIdentityCredential(c.Context, applicationId, credential)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.UpdateFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.UpdateFederatedIdentityCredential(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_ListFederatedIdentityCredentials(t *testing.T, c *test.Test, applicationId string) (credentials *[]msgraph.FederatedIdentityCredential) {
+	credentials, status, err := c.ApplicationsClient.ListFederatedIdentityCredentials(c.Context, applicationId, odata.Query{})
+	if err != nil {
+		t.Fatalf("ApplicationsClient.ListFederatedIdentityCredentials(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.ListFederatedIdentityCredentials(): invalid status: %d", status)
+	}
+	if credentials == nil {
+		t.Fatal("ApplicationsClient.ListFederatedIdentityCredentials(): credentials was nil")
+	}
+	return
+}
+
+func testApplicationsClient_GetFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId, credentialId string) (credential *msgraph.FederatedIdentityCredential) {
+	credential, status, err := c.ApplicationsClient.GetFederatedIdentityCredential(c.Context, applicationId, credentialId, odata.Query{})
+	if err != nil {
+		t.Fatalf("ApplicationsClient.GetFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.GetFederatedIdentityCredential(): invalid status: %d", status)
+	}
+	if credential == nil {
+		t.Fatal("ApplicationsClient.GetFederatedIdentityCredential(): credential was nil")
+	}
+	return
+}
+
+func testApplicationsClient_DeleteFederatedIdentityCredential(t *testing.T, c *test.Test, applicationId, credentialId string) {
+	status, err := c.ApplicationsClient.DeleteFederatedIdentityCredential(c.Context, applicationId, credentialId)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.DeleteFederatedIdentityCredential(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.DeleteFederatedIdentityCredential(): invalid status: %d", status)
+	}
 }

@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 // DomainsClient performs operations on Domains.
@@ -21,30 +23,29 @@ func NewDomainsClient(tenantId string) *DomainsClient {
 }
 
 // List returns a list of Domains.
-func (c *DomainsClient) List(ctx context.Context) (*[]Domain, int, error) {
+func (c *DomainsClient) List(ctx context.Context, query odata.Query) (*[]Domain, int, error) {
 	var status int
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
+		OData:            query,
 		Uri: Uri{
 			Entity:      "/domains",
 			HasTenantId: true,
 		},
 	})
-
 	if err != nil {
 		return nil, status, fmt.Errorf("DomainsClient.BaseClient.Get(): %v", err)
 	}
 
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
 	var data struct {
 		Domains []Domain `json:"value"`
 	}
-
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
@@ -53,10 +54,12 @@ func (c *DomainsClient) List(ctx context.Context) (*[]Domain, int, error) {
 }
 
 // Get retrieves a Domain.
-func (c *DomainsClient) Get(ctx context.Context, id string) (*Domain, int, error) {
+func (c *DomainsClient) Get(ctx context.Context, id string, query odata.Query) (*Domain, int, error) {
 	var status int
+
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		OData:                  query,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/domains/%s", id),
@@ -66,14 +69,17 @@ func (c *DomainsClient) Get(ctx context.Context, id string) (*Domain, int, error
 	if err != nil {
 		return nil, status, fmt.Errorf("DomainsClient.BaseClient.Get(): %v", err)
 	}
+
 	defer resp.Body.Close()
-	respBody, err := ioutil.ReadAll(resp.Body)
+	respBody, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, status, fmt.Errorf("ioutil.ReadAll(): %v", err)
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
+
 	var domain Domain
 	if err := json.Unmarshal(respBody, &domain); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
+
 	return &domain, status, nil
 }

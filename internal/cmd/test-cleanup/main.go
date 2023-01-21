@@ -37,21 +37,26 @@ func init() {
 		ClientCertPath:         clientCertificatePath,
 		ClientCertPassword:     clientCertPassword,
 		ClientSecret:           clientSecret,
+		EnableClientCertAuth:   true,
 		EnableClientSecretAuth: true,
 	}
 
 	var err error
-	authorizer, err = authConfig.NewAuthorizer(ctx, auth.MsGraph)
+	authorizer, err = authConfig.NewAuthorizer(ctx, environments.Global.MsGraph)
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
 func main() {
+	log.Println("Starting test cleanup...")
+	cleanupAdministrativeUnits()
 	cleanupConditionalAccessPolicies()
 	cleanupNamedLocations()
 	cleanupServicePrincipals()
 	cleanupApplications()
 	cleanupGroups()
 	cleanupUsers()
+	cleanupSchemaExtensions()
+	log.Println("Finished test cleanup")
 }

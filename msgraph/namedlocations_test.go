@@ -4,26 +4,15 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
 
-type NamedLocationsClientTest struct {
-	connection   *test.Connection
-	client       *msgraph.NamedLocationsClient
-	randomString string
-}
-
 func TestNamedLocationsClient(t *testing.T) {
-	c := NamedLocationsClientTest{
-		connection:   test.NewConnection(auth.MsGraph, auth.TokenVersion2),
-		randomString: test.RandomString(),
-	}
-	c.client = msgraph.NewNamedLocationsClient(c.connection.AuthConfig.TenantID)
-	c.client.BaseClient.Authorizer = c.connection.Authorizer
+	c := test.NewTest(t)
+	defer c.CancelFunc()
 
 	newIPNamedLocation := msgraph.IPNamedLocation{
 		BaseNamedLocation: &msgraph.BaseNamedLocation{
@@ -50,10 +39,10 @@ func TestNamedLocationsClient(t *testing.T) {
 	ipNamedLocation := testNamedLocationsClient_CreateIP(t, c, newIPNamedLocation)
 	countryNamedLocation := testNamedLocationsClient_CreateCountry(t, c, newCountryNamedLocation)
 
-	ipNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-ipnl-%s", c.randomString))
+	ipNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-ipnl-%s", c.RandomString))
 	ipNamedLocation.CreatedDateTime = nil
 	ipNamedLocation.ModifiedDateTime = nil
-	countryNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-cnl-%s", c.randomString))
+	countryNamedLocation.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-cnl-%s", c.RandomString))
 	countryNamedLocation.CreatedDateTime = nil
 	countryNamedLocation.ModifiedDateTime = nil
 
@@ -71,8 +60,8 @@ func TestNamedLocationsClient(t *testing.T) {
 	testNamedLocationsClient_Delete(t, c, *countryNamedLocation.ID)
 }
 
-func testNamedLocationsClient_CreateIP(t *testing.T, c NamedLocationsClientTest, ipnl msgraph.IPNamedLocation) (ipNamedLocation *msgraph.IPNamedLocation) {
-	ipNamedLocation, status, err := c.client.CreateIP(c.connection.Context, ipnl)
+func testNamedLocationsClient_CreateIP(t *testing.T, c *test.Test, ipnl msgraph.IPNamedLocation) (ipNamedLocation *msgraph.IPNamedLocation) {
+	ipNamedLocation, status, err := c.NamedLocationsClient.CreateIP(c.Context, ipnl)
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.CreateIP(): %v", err)
 	}
@@ -88,8 +77,8 @@ func testNamedLocationsClient_CreateIP(t *testing.T, c NamedLocationsClientTest,
 	return
 }
 
-func testNamedLocationsClient_CreateCountry(t *testing.T, c NamedLocationsClientTest, cnl msgraph.CountryNamedLocation) (countryNamedLocation *msgraph.CountryNamedLocation) {
-	countryNamedLocation, status, err := c.client.CreateCountry(c.connection.Context, cnl)
+func testNamedLocationsClient_CreateCountry(t *testing.T, c *test.Test, cnl msgraph.CountryNamedLocation) (countryNamedLocation *msgraph.CountryNamedLocation) {
+	countryNamedLocation, status, err := c.NamedLocationsClient.CreateCountry(c.Context, cnl)
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.CreateCountry(): %v", err)
 	}
@@ -105,8 +94,8 @@ func testNamedLocationsClient_CreateCountry(t *testing.T, c NamedLocationsClient
 	return
 }
 
-func testNamedLocationsClient_GetIP(t *testing.T, c NamedLocationsClientTest, id string) (ipNamedLocation *msgraph.IPNamedLocation) {
-	ipNamedLocation, status, err := c.client.GetIP(c.connection.Context, id)
+func testNamedLocationsClient_GetIP(t *testing.T, c *test.Test, id string) (ipNamedLocation *msgraph.IPNamedLocation) {
+	ipNamedLocation, status, err := c.NamedLocationsClient.GetIP(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("IPNamedLocationsClient.GetIP(): %v", err)
 	}
@@ -119,8 +108,8 @@ func testNamedLocationsClient_GetIP(t *testing.T, c NamedLocationsClientTest, id
 	return
 }
 
-func testNamedLocationsClient_GetCountry(t *testing.T, c NamedLocationsClientTest, id string) (countryNamedLocation *msgraph.CountryNamedLocation) {
-	countryNamedLocation, status, err := c.client.GetCountry(c.connection.Context, id)
+func testNamedLocationsClient_GetCountry(t *testing.T, c *test.Test, id string) (countryNamedLocation *msgraph.CountryNamedLocation) {
+	countryNamedLocation, status, err := c.NamedLocationsClient.GetCountry(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.GetCountry(): %v", err)
 	}
@@ -133,8 +122,8 @@ func testNamedLocationsClient_GetCountry(t *testing.T, c NamedLocationsClientTes
 	return
 }
 
-func testNamedLocationsClient_Get(t *testing.T, c NamedLocationsClientTest, id string) (namedLocation *msgraph.NamedLocation) {
-	namedLocation, status, err := c.client.Get(c.connection.Context, id)
+func testNamedLocationsClient_Get(t *testing.T, c *test.Test, id string) (namedLocation *msgraph.NamedLocation) {
+	namedLocation, status, err := c.NamedLocationsClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.Get(): %v", err)
 	}
@@ -152,8 +141,8 @@ func testNamedLocationsClient_Get(t *testing.T, c NamedLocationsClientTest, id s
 	return
 }
 
-func testNamedLocationsClient_UpdateIP(t *testing.T, c NamedLocationsClientTest, ipnl msgraph.IPNamedLocation) {
-	status, err := c.client.UpdateIP(c.connection.Context, ipnl)
+func testNamedLocationsClient_UpdateIP(t *testing.T, c *test.Test, ipnl msgraph.IPNamedLocation) {
+	status, err := c.NamedLocationsClient.UpdateIP(c.Context, ipnl)
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.UpdateIP(): %v", err)
 	}
@@ -162,8 +151,8 @@ func testNamedLocationsClient_UpdateIP(t *testing.T, c NamedLocationsClientTest,
 	}
 }
 
-func testNamedLocationsClient_UpdateCountry(t *testing.T, c NamedLocationsClientTest, cnl msgraph.CountryNamedLocation) {
-	status, err := c.client.UpdateCountry(c.connection.Context, cnl)
+func testNamedLocationsClient_UpdateCountry(t *testing.T, c *test.Test, cnl msgraph.CountryNamedLocation) {
+	status, err := c.NamedLocationsClient.UpdateCountry(c.Context, cnl)
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.UpdateCountry(): %v", err)
 	}
@@ -172,8 +161,8 @@ func testNamedLocationsClient_UpdateCountry(t *testing.T, c NamedLocationsClient
 	}
 }
 
-func testNamedLocationsClient_List(t *testing.T, c NamedLocationsClientTest) (namedLocations *[]msgraph.NamedLocation) {
-	namedLocations, _, err := c.client.List(c.connection.Context, odata.Query{})
+func testNamedLocationsClient_List(t *testing.T, c *test.Test) (namedLocations *[]msgraph.NamedLocation) {
+	namedLocations, _, err := c.NamedLocationsClient.List(c.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.List(): %v", err)
 	}
@@ -190,8 +179,8 @@ func testNamedLocationsClient_List(t *testing.T, c NamedLocationsClientTest) (na
 	return
 }
 
-func testNamedLocationsClient_Delete(t *testing.T, c NamedLocationsClientTest, id string) {
-	status, err := c.client.Delete(c.connection.Context, id)
+func testNamedLocationsClient_Delete(t *testing.T, c *test.Test, id string) {
+	status, err := c.NamedLocationsClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("NamedLocationsClient.Delete(): %v", err)
 	}

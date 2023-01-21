@@ -8,9 +8,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"strconv"
 	"strings"
-	"time"
+
+	"github.com/hashicorp/go-retryablehttp"
 
 	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/environments"
@@ -24,19 +24,18 @@ const (
 	VersionBeta ApiVersion = "beta"
 )
 
-const (
-	retryBackoffInitialDelay       = 1 * time.Second
-	retryBackoffDelayCap           = 64 * time.Second
-	requestAttemptsForRateLimiting = 10
-	requestAttemptsForConsistency  = 6
-)
-
 // ConsistencyFailureFunc is a function that determines whether an HTTP request has failed due to eventual consistency and should be retried
 type ConsistencyFailureFunc func(*http.Response, *odata.OData) bool
 
+// RequestMiddleware can manipulate or log a request before it is sent
+type RequestMiddleware func(*http.Request) (*http.Request, error)
+
+// ResponseMiddleware can manipulate or log a response before it is parsed and returned
+type ResponseMiddleware func(*http.Request, *http.Response) (*http.Response, error)
+
 // RetryOn404ConsistencyFailureFunc can be used to retry a request when a 404 response is received
 func RetryOn404ConsistencyFailureFunc(resp *http.Response, _ *odata.OData) bool {
-	return resp.StatusCode == http.StatusNotFound
+	return resp != nil && resp.StatusCode == http.StatusNotFound
 }
 
 // ValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
@@ -45,6 +44,8 @@ type ValidStatusFunc func(*http.Response, *odata.OData) bool
 // HttpRequestInput is any type that can validate the response to an HTTP request.
 type HttpRequestInput interface {
 	GetConsistencyFailureFunc() ConsistencyFailureFunc
+	GetContentType() string
+	GetOData() odata.Query
 	GetValidStatusCodes() []int
 	GetValidStatusFunc() ValidStatusFunc
 }
@@ -54,6 +55,12 @@ type Uri struct {
 	Entity      string
 	Params      url.Values
 	HasTenantId bool
+}
+
+// RetryableErrorHandler ensures that the response is returned after exhausting retries for a request
+// We can't return an error here, or net/http will not return the response
+func RetryableErrorHandler(resp *http.Response, err error, numTries int) (*http.Response, error) {
+	return resp, nil
 }
 
 // Client is a base client to be used by clients for specific entities.
@@ -78,17 +85,30 @@ type Client struct {
 	// This does not impact handling of retries related to rate limiting, which are always performed.
 	DisableRetries bool
 
-	httpClient *http.Client
+	// RequestMiddlewares is a slice of functions that are called in order before a request is sent
+	RequestMiddlewares *[]RequestMiddleware
+
+	// ResponseMiddlewares is a slice of functions that are called in order before a response is parsed and returned
+	ResponseMiddlewares *[]ResponseMiddleware
+
+	// HttpClient is the underlying http.Client, which by default uses a retryable client
+	HttpClient      *http.Client
+	RetryableClient *retryablehttp.Client
 }
 
 // NewClient returns a new Client configured with the specified API version and tenant ID.
 func NewClient(apiVersion ApiVersion, tenantId string) Client {
+	r := retryablehttp.NewClient()
+	r.ErrorHandler = RetryableErrorHandler
+	r.Logger = nil
+
 	return Client{
-		Endpoint:   environments.MsGraphGlobal.Endpoint,
-		ApiVersion: apiVersion,
-		TenantId:   tenantId,
-		UserAgent:  "Hamilton (Go-http-client/1.1)",
-		httpClient: &http.Client{},
+		Endpoint:        environments.MsGraphGlobal.Endpoint,
+		ApiVersion:      apiVersion,
+		TenantId:        tenantId,
+		UserAgent:       "Hamilton (Go-http-client/1.1)",
+		HttpClient:      r.StandardClient(),
+		RetryableClient: r,
 	}
 }
 
@@ -113,6 +133,10 @@ func (c Client) buildUri(uri Uri) (string, error) {
 func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http.Response, int, *odata.OData, error) {
 	var status int
 
+	query := input.GetOData()
+	req.Header = query.AppendHeaders(req.Header)
+	req.Header.Add("Content-Type", input.GetContentType())
+
 	if c.Authorizer != nil {
 		token, err := c.Authorizer.Token()
 		if err != nil {
@@ -120,10 +144,6 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 		}
 		token.SetAuthHeader(req)
 	}
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("Content-Type", "application/json; charset=utf-8")
-	//req.Header.Add("ConsistencyLevel", "eventual")
 
 	if c.UserAgent != "" {
 		req.Header.Add("User-Agent", c.UserAgent)
@@ -133,14 +153,6 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	var o *odata.OData
 	var err error
 
-	var backoffPower func(int64, int64) int64
-	backoffPower = func(base, exp int64) int64 {
-		if exp <= 1 {
-			return base
-		}
-		return base * backoffPower(base, exp-1)
-	}
-
 	var reqBody []byte
 	if req.Body != nil {
 		reqBody, err = io.ReadAll(req.Body)
@@ -149,83 +161,83 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 		}
 	}
 
-	var attempts, backoff, multiplier int64
-	for attempts = 0; attempts < requestAttemptsForRateLimiting; attempts++ {
-		// sleep after the previous failed attempt
-		if attempts > 0 {
-			time.Sleep(time.Duration(backoff))
-		}
+	c.RetryableClient.CheckRetry = func(ctx context.Context, resp *http.Response, err error) (bool, error) {
+		if resp != nil && !c.DisableRetries {
+			if resp.StatusCode == http.StatusFailedDependency {
+				return true, nil
+			}
 
-		// default exponential backoff
-		multiplier++
-		backoff = int64(retryBackoffInitialDelay) * backoffPower(2, multiplier)
-		if cap := int64(retryBackoffDelayCap); backoff > cap {
-			backoff = cap
-		}
+			o, err = odata.FromResponse(resp)
+			if err != nil {
+				return false, err
+			}
 
-		req.Body = io.NopCloser(bytes.NewBuffer(reqBody))
-		resp, err = c.httpClient.Do(req)
-		if err != nil {
-			return nil, status, nil, err
-		}
-
-		o, err = odata.FromResponse(resp)
-		if err != nil {
-			return nil, status, o, err
-		}
-
-		if !c.DisableRetries {
 			f := input.GetConsistencyFailureFunc()
 			if f != nil && f(resp, o) {
-				// eventual consistency, just try again
-				if attempts < requestAttemptsForConsistency {
-					continue
-				}
+				return true, nil
 			}
 		}
+		return retryablehttp.DefaultRetryPolicy(ctx, resp, err)
+	}
 
-		status = resp.StatusCode
-		if !containsStatusCode(input.GetValidStatusCodes(), status) {
-			f := input.GetValidStatusFunc()
-			if f != nil && f(resp, o) {
-				return resp, status, o, nil
-			}
+	req.Body = io.NopCloser(bytes.NewBuffer(reqBody))
 
-			rateLimitingStatuses := []int{
-				http.StatusFailedDependency,
-				http.StatusTooManyRequests,
-				http.StatusInternalServerError,
-				http.StatusBadGateway,
-				http.StatusServiceUnavailable,
+	if c.RequestMiddlewares != nil {
+		for _, m := range *c.RequestMiddlewares {
+			r, err := m(req)
+			if err != nil {
+				return nil, status, nil, err
 			}
-			if containsStatusCode(rateLimitingStatuses, status) {
-				// rate limiting
-				if retryAfter := resp.Header.Get("Retry-After"); retryAfter != "" {
-					if r, err := strconv.ParseFloat(retryAfter, 64); err == nil && r > 0 {
-						// Retry-After header detected, use that instead of exponential backoff
-						backoff = int64(r * float64(time.Second))
-						multiplier = 0
-					}
-				}
-				continue
-			}
+			req = r
+		}
+	}
 
-			var errText string
-			switch {
-			case o != nil && o.Error != nil && o.Error.String() != "":
-				errText = fmt.Sprintf("OData error: %s", o.Error)
-			default:
-				defer resp.Body.Close()
-				respBody, err := io.ReadAll(resp.Body)
-				if err != nil {
-					return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", resp.StatusCode)
-				}
-				errText = fmt.Sprintf("response: %s", respBody)
+	resp, err = c.HttpClient.Do(req)
+	if err != nil {
+		return nil, status, nil, err
+	}
+
+	if c.ResponseMiddlewares != nil {
+		for _, m := range *c.ResponseMiddlewares {
+			r, err := m(req, resp)
+			if err != nil {
+				return nil, status, nil, err
 			}
-			return nil, status, o, fmt.Errorf("unexpected status %d with %s", resp.StatusCode, errText)
+			resp = r
+		}
+	}
+
+	o, err = odata.FromResponse(resp)
+	if err != nil {
+		return nil, status, o, err
+	}
+	if resp == nil {
+		return resp, status, o, fmt.Errorf("nil response received")
+	}
+
+	status = resp.StatusCode
+	if !containsStatusCode(input.GetValidStatusCodes(), status) {
+		f := input.GetValidStatusFunc()
+		if f != nil && f(resp, o) {
+			return resp, status, o, nil
 		}
 
-		break
+		var errText string
+		switch {
+		case o != nil && o.Error != nil && o.Error.String() != "":
+			errText = fmt.Sprintf("OData error: %s", o.Error)
+		default:
+			defer resp.Body.Close()
+			respBody, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", status)
+			}
+			if len(respBody) == 0 {
+				return nil, status, o, fmt.Errorf("unexpected status %d received with no body", status)
+			}
+			errText = fmt.Sprintf("response: %s", respBody)
+		}
+		return nil, status, o, fmt.Errorf("unexpected status %d with %s", status, errText)
 	}
 
 	return resp, status, o, nil
@@ -245,6 +257,7 @@ func containsStatusCode(expected []int, actual int) bool {
 // DeleteHttpRequestInput configures a DELETE request.
 type DeleteHttpRequestInput struct {
 	ConsistencyFailureFunc ConsistencyFailureFunc
+	OData                  odata.Query
 	ValidStatusCodes       []int
 	ValidStatusFunc        ValidStatusFunc
 	Uri                    Uri
@@ -253,6 +266,16 @@ type DeleteHttpRequestInput struct {
 // GetConsistencyFailureFunc returns a function used to evaluate whether a failed request is due to eventual consistency and should be retried.
 func (i DeleteHttpRequestInput) GetConsistencyFailureFunc() ConsistencyFailureFunc {
 	return i.ConsistencyFailureFunc
+}
+
+// GetContentType returns the content type for the request, currently only application/json is supported
+func (i DeleteHttpRequestInput) GetContentType() string {
+	return "application/json; charset=utf-8"
+}
+
+// GetOData returns the OData request metadata
+func (i DeleteHttpRequestInput) GetOData() odata.Query {
+	return i.OData
 }
 
 // GetValidStatusCodes returns a []int of status codes considered valid for a DELETE request.
@@ -287,6 +310,7 @@ func (c Client) Delete(ctx context.Context, input DeleteHttpRequestInput) (*http
 type GetHttpRequestInput struct {
 	ConsistencyFailureFunc ConsistencyFailureFunc
 	DisablePaging          bool
+	OData                  odata.Query
 	ValidStatusCodes       []int
 	ValidStatusFunc        ValidStatusFunc
 	Uri                    Uri
@@ -296,6 +320,16 @@ type GetHttpRequestInput struct {
 // GetConsistencyFailureFunc returns a function used to evaluate whether a failed request is due to eventual consistency and should be retried.
 func (i GetHttpRequestInput) GetConsistencyFailureFunc() ConsistencyFailureFunc {
 	return i.ConsistencyFailureFunc
+}
+
+// GetContentType returns the content type for the request, currently only application/json is supported
+func (i GetHttpRequestInput) GetContentType() string {
+	return "application/json; charset=utf-8"
+}
+
+// GetOData returns the OData request metadata
+func (i GetHttpRequestInput) GetOData() odata.Query {
+	return i.OData
 }
 
 // GetValidStatusCodes returns a []int of status codes considered valid for a GET request.
@@ -315,6 +349,9 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 	// Check for a raw uri, else build one from the Uri field
 	url := input.rawUri
 	if url == "" {
+		// Append odata query parameters
+		input.Uri.Params = input.OData.AppendValues(input.Uri.Params)
+
 		var err error
 		url, err = c.buildUri(input.Uri)
 		if err != nil {
@@ -350,7 +387,8 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 			return nil, status, o, err
 		}
 
-		if input.DisablePaging || firstOdata.NextLink == nil || firstOdata.Value == nil {
+		firstValue, ok := firstOdata.Value.([]interface{})
+		if input.DisablePaging || firstOdata.NextLink == nil || firstValue == nil || !ok {
 			// No more pages, reassign response body and return
 			resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 			return resp, status, o, nil
@@ -377,9 +415,9 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 			return resp, status, o, err
 		}
 
-		if nextOdata.Value != nil {
+		if nextValue, ok := nextOdata.Value.([]interface{}); ok {
 			// Next page has results, append to current page
-			value := append(*firstOdata.Value, *nextOdata.Value...)
+			value := append(firstValue, nextValue...)
 			nextOdata.Value = &value
 		}
 
@@ -400,6 +438,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 type PatchHttpRequestInput struct {
 	ConsistencyFailureFunc ConsistencyFailureFunc
 	Body                   []byte
+	OData                  odata.Query
 	ValidStatusCodes       []int
 	ValidStatusFunc        ValidStatusFunc
 	Uri                    Uri
@@ -408,6 +447,16 @@ type PatchHttpRequestInput struct {
 // GetConsistencyFailureFunc returns a function used to evaluate whether a failed request is due to eventual consistency and should be retried.
 func (i PatchHttpRequestInput) GetConsistencyFailureFunc() ConsistencyFailureFunc {
 	return i.ConsistencyFailureFunc
+}
+
+// GetContentType returns the content type for the request, currently only application/json is supported
+func (i PatchHttpRequestInput) GetContentType() string {
+	return "application/json; charset=utf-8"
+}
+
+// GetOData returns the OData request metadata
+func (i PatchHttpRequestInput) GetOData() odata.Query {
+	return i.OData
 }
 
 // GetValidStatusCodes returns a []int of status codes considered valid for a PATCH request.
@@ -442,6 +491,7 @@ func (c Client) Patch(ctx context.Context, input PatchHttpRequestInput) (*http.R
 type PostHttpRequestInput struct {
 	Body                   []byte
 	ConsistencyFailureFunc ConsistencyFailureFunc
+	OData                  odata.Query
 	ValidStatusCodes       []int
 	ValidStatusFunc        ValidStatusFunc
 	Uri                    Uri
@@ -450,6 +500,16 @@ type PostHttpRequestInput struct {
 // GetConsistencyFailureFunc returns a function used to evaluate whether a failed request is due to eventual consistency and should be retried.
 func (i PostHttpRequestInput) GetConsistencyFailureFunc() ConsistencyFailureFunc {
 	return i.ConsistencyFailureFunc
+}
+
+// GetContentType returns the content type for the request, currently only application/json is supported
+func (i PostHttpRequestInput) GetContentType() string {
+	return "application/json; charset=utf-8"
+}
+
+// GetOData returns the OData request metadata
+func (i PostHttpRequestInput) GetOData() odata.Query {
+	return i.OData
 }
 
 // GetValidStatusCodes returns a []int of status codes considered valid for a POST request.
@@ -483,7 +543,9 @@ func (c Client) Post(ctx context.Context, input PostHttpRequestInput) (*http.Res
 // PutHttpRequestInput configures a PUT request.
 type PutHttpRequestInput struct {
 	ConsistencyFailureFunc ConsistencyFailureFunc
+	ContentType            string
 	Body                   []byte
+	OData                  odata.Query
 	ValidStatusCodes       []int
 	ValidStatusFunc        ValidStatusFunc
 	Uri                    Uri
@@ -492,6 +554,19 @@ type PutHttpRequestInput struct {
 // GetConsistencyFailureFunc returns a function used to evaluate whether a failed request is due to eventual consistency and should be retried.
 func (i PutHttpRequestInput) GetConsistencyFailureFunc() ConsistencyFailureFunc {
 	return i.ConsistencyFailureFunc
+}
+
+// GetContentType returns the content type for the request, defaults to application/json
+func (i PutHttpRequestInput) GetContentType() string {
+	if i.ContentType != "" {
+		return i.ContentType
+	}
+	return "application/json; charset=utf-8"
+}
+
+// GetOData returns the OData request metadata
+func (i PutHttpRequestInput) GetOData() odata.Query {
+	return i.OData
 }
 
 // GetValidStatusCodes returns a []int of status codes considered valid for a PUT request.

@@ -22,21 +22,21 @@ func cleanupUsers() {
 		return
 	}
 	for _, user := range *users {
-		if user.ID == nil || user.DisplayName == nil {
+		if user.ID() == nil || user.DisplayName == nil {
 			log.Println("User returned with nil ID or DisplayName")
 			continue
 		}
 
-		log.Printf("Deleting user %q (DisplayName: %q)\n", *user.ID, *user.DisplayName)
-		_, err := usersClient.Delete(ctx, *user.ID)
+		log.Printf("Deleting user %q (DisplayName: %q)\n", *user.ID(), *user.DisplayName)
+		_, err := usersClient.Delete(ctx, *user.ID())
 		if err != nil {
-			log.Printf("Error when deleting user %q: %v\n", *user.ID, err)
+			log.Printf("Error when deleting user %q: %v\n", *user.ID(), err)
 		}
 
-		log.Printf("Permanently deleting user %q (DisplayName: %q)\n", *user.ID, *user.DisplayName)
-		_, err = usersClient.DeletePermanently(ctx, *user.ID)
+		log.Printf("Permanently deleting user %q (DisplayName: %q)\n", *user.ID(), *user.DisplayName)
+		_, err = usersClient.DeletePermanently(ctx, *user.ID())
 		if err != nil {
-			log.Printf("Error when permanently deleting user %q: %v\n", *user.ID, err)
+			log.Printf("Error when permanently deleting user %q: %v\n", *user.ID(), err)
 		}
 	}
 }

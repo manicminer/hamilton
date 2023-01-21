@@ -3,32 +3,79 @@ package odata
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
+
+	"github.com/hashicorp/go-uuid"
 )
 
-const (
-	ErrorAddedObjectReferencesAlreadyExist   = "One or more added object references already exist"
-	ErrorConflictingObjectPresentInDirectory = "A conflicting object with one or more of the specified property values is present in the directory"
-	ErrorRemovedObjectReferencesDoNotExist   = "One or more removed object references do not exist"
-	ErrorServicePrincipalInvalidAppId        = "The appId '.+' of the service principal does not reference a valid application object."
-)
+const ODataVersion = "4.0" // TODO: support 4.01 - https://docs.oasis-open.org/odata/odata-json-format/v4.01/cs01/odata-json-format-v4.01-cs01.html#_Toc499720587
+
+type Id string
+
+func (o Id) MarshalJSON() ([]byte, error) {
+	id := regexp.MustCompile(`/v2/`).ReplaceAllString(string(o), `/v1.0/`)
+
+	u, err := url.Parse(id)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		matches := regexp.MustCompile(`([^()'"]+)\(['"]([^'"]+)['"]\)`).FindStringSubmatch(id)
+		if len(matches) != 3 {
+			return nil, fmt.Errorf("Marshaling odata.Id: could not match a GUID")
+		}
+
+		objectType := matches[1]
+		guid := matches[2]
+		if _, err = uuid.ParseUUID(guid); err != nil {
+			return nil, fmt.Errorf("Marshaling odata.Id: %+v", err)
+		}
+
+		// Although we're hard-coding `graph.microsoft.com` here, this doesn't _appear_ to be a problem
+		// The host can seemingly be anything, even complete nonsense, and the API will accept it provided
+		// it can parse out a version number, an object type and a GUID.
+		id = fmt.Sprintf("https://graph.microsoft.com/v1.0/%s/%s", objectType, guid)
+	}
+
+	return json.Marshal(id)
+}
+
+func (o *Id) UnmarshalJSON(data []byte) error {
+	var id string
+	if err := json.Unmarshal(data, &id); err != nil {
+		return err
+	}
+	*o = Id(regexp.MustCompile(`/v2/`).ReplaceAllString(id, `/v1.0/`))
+
+	return nil
+}
+
+type Link string
+
+func (o *Link) UnmarshalJSON(data []byte) error {
+	var link string
+	if err := json.Unmarshal(data, &link); err != nil {
+		return err
+	}
+	*o = Link(regexp.MustCompile(`/v2/`).ReplaceAllString(link, `/v1.0/`))
+	return nil
+}
 
 // OData is used to unmarshall OData metadata from an API response.
 type OData struct {
 	Context      *string `json:"@odata.context"`
 	MetadataEtag *string `json:"@odata.metadataEtag"`
-	Type         *string `json:"@odata.type"`
-	Count        *string `json:"@odata.count"`
+	Type         *Type   `json:"@odata.type"`
+	Count        *int    `json:"@odata.count"`
 	NextLink     *string `json:"@odata.nextLink"`
 	Delta        *string `json:"@odata.delta"`
 	DeltaLink    *string `json:"@odata.deltaLink"`
-	Id           *string `json:"@odata.id"`
+	Id           *Id     `json:"@odata.id"`
+	EditLink     *Link   `json:"@odata.editLink"`
 	Etag         *string `json:"@odata.etag"`
 
 	Error *Error `json:"-"`
 
-	Value *[]json.RawMessage `json:"value"`
+	Value interface{} `json:"value"`
 }
 
 func (o *OData) UnmarshalJSON(data []byte) error {

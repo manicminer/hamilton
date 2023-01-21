@@ -11,8 +11,12 @@ func MsiStubServer(ctx context.Context, port int, token string) chan bool {
 	handler := http.NewServeMux()
 
 	handler.HandleFunc("/metadata/identity/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
+		q := r.URL.Query()
+		clientId := q.Get("client_id")
+		resource := q.Get("resource")
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
-		fmt.Fprintf(w, `{"access_token":"%s","client_id":"00000000-0000-0000-0000-000000000000","expires_in":"86391","expires_on":"1611701390","ext_expires_in":"86399","not_before":"1611614690","resource":"https://graph.microsoft.com/","token_type":"Bearer"}`, token)
+		fmt.Fprintf(w, `{"access_token":"%s","client_id":"%s","expires_in":"86391","expires_on":"1611701390","ext_expires_in":"86399","not_before":"1611614690","resource":"%s","token_type":"Bearer"}`,
+			token, clientId, resource)
 	})
 
 	handler.HandleFunc("/metadata", func(w http.ResponseWriter, r *http.Request) {

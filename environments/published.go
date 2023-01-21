@@ -1,6 +1,6 @@
 package environments
 
-type ApiAppId string
+type ApiAppId = string
 
 // PublishedApis is a map containing Application IDs for well known APIs published by Microsoft.
 // They can be used to acquire access tokens, but are primarily described here for easy inclusion in
@@ -35,6 +35,7 @@ var PublishedApis = map[string]ApiAppId{
 	"AzureMaps":                         "ba1ea022-5807-41d5-bbeb-292c7e1cf5f6",
 	"AzureMediaServices":                "374b2a64-3b6b-436b-934c-b820eacca870",
 	"AzurePortal":                       "c44b4083-3bb0-49c1-b47d-974e53cbdf3c",
+	"AzureSecurityInsights":             "98785600-1bb7-4fb9-b9fa-19afe2c8a360",
 	"AzureServiceBus":                   "80a10ef9-8168-493d-abf9-3297c4ef6e3c",
 	"AzureServiceDeploy":                "5b306cba-9c71-49db-96c3-d17ca2379c4d",
 	"AzureServiceManagement":            "797f4846-ba00-4fd7-ba43-dac1f8f63013",
@@ -45,6 +46,7 @@ var PublishedApis = map[string]ApiAppId{
 	"AzureSynapseGateway":               "1ac05c7e-12d2-4605-bf9d-549d7041c6b3",
 	"AzureSynapseStudio":                "ec52d13d-2e85-410e-a89a-8c79fb6a32ac",
 	"AzureTimeSeriesInsights":           "120d688d-1518-4cf7-bd38-182f158850b6",
+	"AzureVPN":                          "41b23e61-6c1e-4545-b367-cd054e0ed4b4",
 	"Bing":                              "9ea1ad79-fdb6-4f9a-8bc3-2b70f96e34c7",
 	"BotFrameworkDevPortal":             "f3723d34-6ff5-4ceb-a148-d99dcd2511fc",
 	"BranchConnectWebService":           "57084ef3-d413-4087-a28f-f6f3b1ad7786",
@@ -73,8 +75,11 @@ var PublishedApis = map[string]ApiAppId{
 	"MileIqRestService":                 "b692184e-b47f-4706-b352-84b288d2d9ee",
 	"MixedReality":                      "c7ddd9b4-5172-4e28-bd29-1e0792947d18",
 	"MicrosoftAzureCli":                 "04b07795-8ddb-461a-bbee-02f9e1bf7b46",
+	"MicrosoftAzureFrontDoor":           "ad0e1c7e-6d38-4ba4-9efd-0bc77ba9f037",
+	"MicrosoftAzureFrontDoorCdn":        "205478c0-bd83-4e1b-a9d6-db63a3e1e1c8",
 	"Microsoft365DataAtRestEncryption":  "c066d759-24ae-40e7-a56f-027002b5d3e4",
 	"MicrosoftGraph":                    "00000003-0000-0000-c000-000000000000",
+	"Microsoft.StorageSync":	           "9469b9f5-6722-4481-a2b2-14ed560b706f",
 	"MicrosoftInvoicing":                "b6b84568-6c01-4981-a80f-09da9a20bbed",
 	"Office365Connectors":               "48af08dc-f6d2-435f-b2a7-069abd99c086",
 	"Office365Demeter":                  "982bda36-4632-4165-a46a-9863b1bbcf7d",
