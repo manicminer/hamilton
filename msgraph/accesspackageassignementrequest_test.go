@@ -8,6 +8,7 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
+	"github.com/manicminer/hamilton/odata"
 )
 
 func TestAccessPackageAssignmentRequestClient(t *testing.T) {
@@ -32,6 +33,26 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		},
 	})
 
+	user2 := testUsersClient_Create(t, c, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user2"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user2-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user2-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
+		},
+	})
+
+	approverUser := testUsersClient_Create(t, c, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-approver"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-approver-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-approver-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
+		},
+	})
+
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
 		AccessPackageId: accessPackage.ID,
@@ -44,53 +65,75 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
 			IsAccessRecommendationEnabled:   utils.BoolPtr(true),
 			IsApprovalJustificationRequired: utils.BoolPtr(true),
+			Reviewers: &[]msgraph.UserSet{
+				{
+					ODataType: utils.StringPtr(odata.TypeSingleUser),
+					IsBackup:  utils.BoolPtr(true),
+					ID:        utils.StringPtr(*approverUser.Id),
+				},
+			},
 		},
 		DisplayName: utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.RandomString)),
 		Description: utils.StringPtr("Test AP Policy Assignment Description"),
-		//AccessReviewSettings: utils.BoolPtr()
 		RequestorSettings: &msgraph.RequestorSettings{
 			ScopeType:      msgraph.RequestorSettingsScopeTypeNoSubjects,
 			AcceptRequests: utils.BoolPtr(true),
 		},
 		RequestApprovalSettings: &msgraph.ApprovalSettings{
-			IsApprovalRequired:               utils.BoolPtr(false),
+			IsApprovalRequired:               utils.BoolPtr(true),
 			IsApprovalRequiredForExtension:   utils.BoolPtr(false),
 			IsRequestorJustificationRequired: utils.BoolPtr(false),
-			ApprovalMode:                     msgraph.ApprovalModeNoApproval,
+			ApprovalMode:                     msgraph.ApprovalModeSingleStage,
 		},
-		Questions: &[]msgraph.AccessPackageQuestion{},
 	})
-
-	accessPackageGet := testAccessPackageClient_Get(t, c, *accessPackage.ID)
-	userGet := testUsersClient_Get(t, c, *user.Id)
-	policyGetID := testAccessPackageAssignmentPolicyClient_Get(t, c, *accessPackageAssignmentPolicy.ID)
 
 	ap := testAccessPackageAssignmentRequestClient_Create(t, c, msgraph.AccessPackageAssignmentRequest{
 		RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
 		AccessPackageAssignment: &msgraph.AccessPackageAssignment{
-			TargetID:            userGet.Id,
-			AssignementPolicyID: policyGetID.ID,
-			AccessPackageID:     accessPackageGet.ID,
+			TargetID:            user.Id,
+			AssignementPolicyID: accessPackageAssignmentPolicy.ID,
+			AccessPackageID:     accessPackage.ID,
 		},
 	})
 
-	updatedAPRequest := testAccessPackageAssignmentRequestClient_Get(t, c, *ap.ID)
-	// Can only delete a request if it is in specific states
-	switch updatedAPRequest.State {
-	case utils.StringPtr(msgraph.AccessPackageRequestStateDenied):
-		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *updatedAPRequest.ID)
-	case utils.StringPtr(msgraph.AccessPackageRequestStateCanceled):
-		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *updatedAPRequest.ID)
-	case utils.StringPtr(msgraph.AccessPackageRequestStateDelivered):
-		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *updatedAPRequest.ID)
-	}
+	ap2 := testAccessPackageAssignmentRequestClient_Create(t, c, msgraph.AccessPackageAssignmentRequest{
+		RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
+		AccessPackageAssignment: &msgraph.AccessPackageAssignment{
+			TargetID:            user2.Id,
+			AssignementPolicyID: accessPackageAssignmentPolicy.ID,
+			AccessPackageID:     accessPackage.ID,
+		},
+	})
 
+	_ = testAccessPackageAssignmentRequestClient_List(t, c)
+
+	testAccessPackageAssignmentRequestClient_Cancel(t, c, *ap.ID)
+	testAccessPackageAssignmentRequestClient_Cancel(t, c, *ap2.ID)
+
+	_ = testAccessPackageAssignmentRequestClient_Get(t, c, *ap.ID)
+
+	deleteWhenPossible(t, c, ap)
+	deleteWhenPossible(t, c, ap2)
 	//Cleanup
-	testUser_Delete(t, c, user)
 	testAccessPackageAssignmentPolicyClient_Delete(t, c, *accessPackageAssignmentPolicy.ID)
 	testAccessPackage_Delete(t, c, *accessPackage.ID)
 	testAccessPackageCatalog_Delete(t, c, accessPackageCatalog)
+	testUser_Delete(t, c, user)
+	testUser_Delete(t, c, user2)
+	testUser_Delete(t, c, approverUser)
 
+}
+
+func deleteWhenPossible(t *testing.T, c *test.Test, ap *msgraph.AccessPackageAssignmentRequest) {
+	// Can only delete a request if it is in specific states
+	switch ap.State {
+	case utils.StringPtr(msgraph.AccessPackageRequestStateDenied):
+		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
+	case utils.StringPtr(msgraph.AccessPackageRequestStateCanceled):
+		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
+	case utils.StringPtr(msgraph.AccessPackageRequestStateDelivered):
+		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
+	}
 }
 
 func testAccessPackageAssignmentRequestClient_Create(t *testing.T, c *test.Test, ar msgraph.AccessPackageAssignmentRequest) (request *msgraph.AccessPackageAssignmentRequest) {
@@ -126,6 +169,31 @@ func testAccessPackageAssignmentRequestClient_Get(t *testing.T, c *test.Test, id
 	}
 	return request
 
+}
+
+func testAccessPackageAssignmentRequestClient_Cancel(t *testing.T, c *test.Test, id string) {
+	status, err := c.AccessPackageAssignmentRequestClient.Cancel(c.Context, id)
+	if err != nil {
+		t.Fatalf("AccessPackageAssignmentRequestClient.Cancel(): %v", err)
+	}
+	if status != 204 {
+		t.Fatalf("AccessPackageAssignmentRequestClient.Cancel(): invalid status: %d", status)
+	}
+}
+
+func testAccessPackageAssignmentRequestClient_List(t *testing.T, c *test.Test) (requests *[]msgraph.AccessPackageAssignmentRequest) {
+	requests, status, err := c.AccessPackageAssignmentRequestClient.List(c.Context, odata.Query{})
+	count := len(*requests)
+	if err != nil {
+		t.Fatalf("AccessPackageAssignmentRequestClient.List(): %v", err)
+	}
+	if count != 2 {
+		t.Fatalf("AccessPackageAssignmentRequestClient.List(): incorrect number found: %d, should have been two", count)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AccessPackageAssignementRequestClient.List(): invalid status: %d", status)
+	}
+	return requests
 }
 
 func testAccessPacakgeAssignmentRequestClient_Delete(t *testing.T, c *test.Test, id string) {
