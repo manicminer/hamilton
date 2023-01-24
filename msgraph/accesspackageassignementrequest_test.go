@@ -68,8 +68,8 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			Reviewers: &[]msgraph.UserSet{
 				{
 					ODataType: utils.StringPtr(odata.TypeSingleUser),
-					IsBackup:  utils.BoolPtr(true),
-					ID:        utils.StringPtr(*approverUser.Id),
+					IsBackup:  utils.BoolPtr(false),
+					ID:        approverUser.Id,
 				},
 			},
 		},
@@ -92,8 +92,8 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 					PrimaryApprovers: &[]msgraph.UserSet{
 						{
 							ODataType: utils.StringPtr(odata.TypeSingleUser),
-							IsBackup:  utils.BoolPtr(true),
-							ID:        utils.StringPtr(*approverUser.Id),
+							IsBackup:  utils.BoolPtr(false),
+							ID:        approverUser.Id,
 						},
 					},
 				},
