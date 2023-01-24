@@ -45,9 +45,9 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 
 	approverUser := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("test-user-approver"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-approver-%s", c.RandomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-approver-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		DisplayName:       utils.StringPtr("test-approver"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-approver-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-approver-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
@@ -87,7 +87,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 							ODataType:   utils.StringPtr(odata.TypeSingleUser),
 							Description: utils.StringPtr("approver"),
 							IsBackup:    utils.BoolPtr(false),
-							ID:          approverUser.Id,
+							ID:          approverUser.ID(),
 						},
 					},
 				},
@@ -98,7 +98,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	ap := testAccessPackageAssignmentRequestClient_Create(t, c, msgraph.AccessPackageAssignmentRequest{
 		RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
 		AccessPackageAssignment: &msgraph.AccessPackageAssignment{
-			TargetID:            user.Id,
+			TargetID:            user.ID(),
 			AssignementPolicyID: accessPackageAssignmentPolicy.ID,
 			AccessPackageID:     accessPackage.ID,
 		},
@@ -107,7 +107,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	ap2 := testAccessPackageAssignmentRequestClient_Create(t, c, msgraph.AccessPackageAssignmentRequest{
 		RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
 		AccessPackageAssignment: &msgraph.AccessPackageAssignment{
-			TargetID:            user2.Id,
+			TargetID:            user2.ID(),
 			AssignementPolicyID: accessPackageAssignmentPolicy.ID,
 			AccessPackageID:     accessPackage.ID,
 		},
