@@ -67,7 +67,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			IsApprovalJustificationRequired: utils.BoolPtr(true),
 			Reviewers: &[]msgraph.UserSet{
 				{
-					ODataType: utils.StringPtr(odata.TypeSingleUser),
+					ODataType: utils.StringPtr(odata.TypeUser),
 					IsBackup:  utils.BoolPtr(false),
 					ID:        approverUser.Id,
 				},
@@ -91,7 +91,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 					IsEscalationEnabled:             utils.BoolPtr(false),
 					PrimaryApprovers: &[]msgraph.UserSet{
 						{
-							ODataType: utils.StringPtr(odata.TypeSingleUser),
+							ODataType: utils.StringPtr(odata.TypeUser),
 							IsBackup:  utils.BoolPtr(false),
 							ID:        approverUser.Id,
 						},
