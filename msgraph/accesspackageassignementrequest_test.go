@@ -154,12 +154,16 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	// 	},
 	// }
 
+	accessPackageGet := testAccessPackageClient_Get(t, c, *accessPackage.ID)
+	userGet := testUsersClient_Get(t, c, *user.Id)
+	policyGetID := testAccessPackageAssignmentPolicyClient_Get(t, c, *accessPackageAssignmentPolicy.ID)
+
 	ap := testAccessPackageAssignmentRequestClient_Create(t, c, msgraph.AccessPackageAssignmentRequest{
 		RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
 		AccessPackageAssignment: &msgraph.AccessPackageAssignment{
-			TargetID:            user.Id,
-			AssignementPolicyID: accessPackageAssignmentPolicy.ID,
-			AccessPackageID:     accessPackage.ID,
+			TargetID:            userGet.Id,
+			AssignementPolicyID: policyGetID.ID,
+			AccessPackageID:     accessPackageGet.ID,
 		},
 	})
 	testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
