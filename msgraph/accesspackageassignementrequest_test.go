@@ -84,6 +84,20 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			IsApprovalRequiredForExtension:   utils.BoolPtr(false),
 			IsRequestorJustificationRequired: utils.BoolPtr(false),
 			ApprovalMode:                     msgraph.ApprovalModeSingleStage,
+			ApprovalStages: &[]msgraph.ApprovalStage{
+				{
+					ApprovalStageTimeOutInDays:      utils.Int32Ptr(7),
+					IsApproverJustificationRequired: utils.BoolPtr(false),
+					IsEscalationEnabled:             utils.BoolPtr(false),
+					PrimaryApprovers: &[]msgraph.UserSet{
+						{
+							ODataType: utils.StringPtr(odata.TypeSingleUser),
+							IsBackup:  utils.BoolPtr(true),
+							ID:        utils.StringPtr(*approverUser.Id),
+						},
+					},
+				},
+			},
 		},
 	})
 
