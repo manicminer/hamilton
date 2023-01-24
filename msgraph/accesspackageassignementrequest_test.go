@@ -65,13 +65,6 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
 			IsAccessRecommendationEnabled:   utils.BoolPtr(true),
 			IsApprovalJustificationRequired: utils.BoolPtr(true),
-			Reviewers: &[]msgraph.UserSet{
-				{
-					ODataType: utils.StringPtr(odata.TypeUser),
-					IsBackup:  utils.BoolPtr(false),
-					ID:        approverUser.Id,
-				},
-			},
 		},
 		DisplayName: utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.RandomString)),
 		Description: utils.StringPtr("Test AP Policy Assignment Description"),
@@ -91,9 +84,10 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 					IsEscalationEnabled:             utils.BoolPtr(false),
 					PrimaryApprovers: &[]msgraph.UserSet{
 						{
-							ODataType: utils.StringPtr(odata.TypeUser),
-							IsBackup:  utils.BoolPtr(false),
-							ID:        approverUser.Id,
+							ODataType:   utils.StringPtr(odata.TypeSingleUser),
+							Description: utils.StringPtr("approver"),
+							IsBackup:    utils.BoolPtr(false),
+							ID:          approverUser.Id,
 						},
 					},
 				},
