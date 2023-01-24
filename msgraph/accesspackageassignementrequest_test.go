@@ -2,6 +2,7 @@ package msgraph_test
 
 import (
 	"fmt"
+	"log"
 	"testing"
 	"time"
 
@@ -68,6 +69,8 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			AccessPackageID:     accessPackage.ID,
 		},
 	}
+
+	log.Println(accessPackageAssignementRequest)
 
 	ap := testAccessPackageAssignmentRequestClient_Create(t, c, accessPackageAssignementRequest)
 	testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
