@@ -89,7 +89,7 @@ func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, acce
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      "/identityGovernance/entitlementManagement/assignmentRequests",
 			HasTenantId: true,
