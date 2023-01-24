@@ -8,7 +8,6 @@ import (
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestAccessPackageAssignmentRequestClient(t *testing.T) {
@@ -45,114 +44,22 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
 			IsAccessRecommendationEnabled:   utils.BoolPtr(true),
 			IsApprovalJustificationRequired: utils.BoolPtr(true),
-			// Reviewers: &[]msgraph.UserSet{
-			// 	{
-			// 		ODataType:    utils.StringPtr(odata.TypeRequestorManager),
-			// 		IsBackup:     utils.BoolPtr(false),
-			// 		ManagerLevel: utils.Int32Ptr(1),
-			// 	},
-			// 	{
-			// 		ODataType:    utils.StringPtr(odata.TypeSingleUser),
-			// 		IsBackup:     utils.BoolPtr(true),
-			// 		ID:           utils.StringPtr(""),
-			// 	},
-			// },
 		},
 		DisplayName: utils.StringPtr(fmt.Sprintf("Test-AP-Policy-Assignment-%s", c.RandomString)),
 		Description: utils.StringPtr("Test AP Policy Assignment Description"),
 		//AccessReviewSettings: utils.BoolPtr()
 		RequestorSettings: &msgraph.RequestorSettings{
-			//ScopeType:      msgraph.RequestorSettingsScopeTypeSpecificDirectorySubjects,
 			ScopeType:      msgraph.RequestorSettingsScopeTypeNoSubjects,
 			AcceptRequests: utils.BoolPtr(true),
-			// AllowedRequestors: &[]msgraph.UserSet{
-			// 		{
-			// 			ODataType: utils.StringPtr(odata.TypeGroupMembers),
-			// 			IsBackup: utils.BoolPtr(false),
-			// 			ID: utils.StringPtr("xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"),
-			// 			Description: utils.StringPtr("Sample users group"),
-			// 		},
-			// },
 		},
 		RequestApprovalSettings: &msgraph.ApprovalSettings{
 			IsApprovalRequired:               utils.BoolPtr(false),
 			IsApprovalRequiredForExtension:   utils.BoolPtr(false),
 			IsRequestorJustificationRequired: utils.BoolPtr(false),
 			ApprovalMode:                     msgraph.ApprovalModeNoApproval,
-			//ApprovalStages: &msgraph.ApprovalStages{},
 		},
-		Questions: &[]msgraph.AccessPackageQuestion{
-			{
-				ODataType:  utils.StringPtr(odata.TypeAccessPackageTextInputQuestion),
-				IsRequired: utils.BoolPtr(false),
-				Sequence:   utils.Int32Ptr(1),
-				Text: &msgraph.AccessPackageLocalizedContent{
-					DefaultText: utils.StringPtr("Test"),
-					LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
-						{
-							Text:         utils.StringPtr("abc"),
-							LanguageCode: utils.StringPtr("en"),
-						},
-					},
-				},
-			},
-			{
-				ODataType:  utils.StringPtr(odata.TypeAccessPackageMultipleChoiceQuestion),
-				IsRequired: utils.BoolPtr(false),
-				Sequence:   utils.Int32Ptr(2),
-				Text: &msgraph.AccessPackageLocalizedContent{
-					DefaultText: utils.StringPtr("Test"),
-					LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
-						{
-							Text:         utils.StringPtr("abc 2"),
-							LanguageCode: utils.StringPtr("gb"),
-						},
-					},
-				},
-				Choices: &[]msgraph.AccessPackageMultipleChoiceQuestions{
-					// Choice 1 containing a list of languages
-					{
-						ActualValue: utils.StringPtr("CHOICE1"),
-						DisplayValue: &msgraph.AccessPackageLocalizedContent{
-							DefaultText: utils.StringPtr("One"),
-							LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
-								{
-									Text:         utils.StringPtr("Choice 1"),
-									LanguageCode: utils.StringPtr("gb"),
-								},
-							},
-						},
-					},
-					// Choice 2 containing a list of languages, etc.
-					{
-						ActualValue: utils.StringPtr("CHOICE2"),
-						DisplayValue: &msgraph.AccessPackageLocalizedContent{
-							DefaultText: utils.StringPtr("Two"),
-							LocalizedTexts: &[]msgraph.AccessPackageLocalizedTexts{
-								{
-									Text:         utils.StringPtr("Choice 2"),
-									LanguageCode: utils.StringPtr("gb"),
-								},
-								{
-									Text:         utils.StringPtr("Zwei"),
-									LanguageCode: utils.StringPtr("de"),
-								},
-							},
-						},
-					},
-				},
-			},
-		},
+		Questions: &[]msgraph.AccessPackageQuestion{},
 	})
-
-	// accessPackageAssignementRequest := msgraph.AccessPackageAssignmentRequest{
-	// 	RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
-	// 	AccessPackageAssignment: &msgraph.AccessPackageAssignment{
-	// 		TargetID:            user.ID(),
-	// 		AssignementPolicyID: accessPackageAssignmentPolicy.ID,
-	// 		AccessPackageID:     accessPackage.ID,
-	// 	},
-	// }
 
 	accessPackageGet := testAccessPackageClient_Get(t, c, *accessPackage.ID)
 	userGet := testUsersClient_Get(t, c, *user.Id)
@@ -166,7 +73,17 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			AccessPackageID:     accessPackageGet.ID,
 		},
 	})
-	testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
+
+	updatedAPRequest := testAccessPackageAssignmentRequestClient_Get(t, c, *ap.ID)
+	// Can only delete a request if it is in specific states
+	switch updatedAPRequest.State {
+	case utils.StringPtr(msgraph.AccessPackageRequestStateDenied):
+		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *updatedAPRequest.ID)
+	case utils.StringPtr(msgraph.AccessPackageRequestStateCanceled):
+		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *updatedAPRequest.ID)
+	case utils.StringPtr(msgraph.AccessPackageRequestStateDelivered):
+		testAccessPacakgeAssignmentRequestClient_Delete(t, c, *updatedAPRequest.ID)
+	}
 
 	//Cleanup
 	testUser_Delete(t, c, user)
@@ -191,6 +108,24 @@ func testAccessPackageAssignmentRequestClient_Create(t *testing.T, c *test.Test,
 		t.Fatal("AccessPackageAssignementRequestClient.Create(): AccessPackageAssignmentRequest.ID was nil")
 	}
 	return request
+}
+
+func testAccessPackageAssignmentRequestClient_Get(t *testing.T, c *test.Test, id string) (request *msgraph.AccessPackageAssignmentRequest) {
+	request, status, err := c.AccessPackageAssignmentRequestClient.Get(c.Context, id)
+	if err != nil {
+		t.Fatalf("AccessPackageAssignementRequestClient.Get(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AccessPackageAssignementRequestClient.Get(): invalid status: %d", status)
+	}
+	if request == nil {
+		t.Fatal("AccessPackageAssignementRequestClient.Get(): AccessPackageAssignmentRequest was nil")
+	}
+	if request.ID == nil {
+		t.Fatal("AccessPackageAssignementRequestClient.Get(): AccessPackageAssignmentRequest.ID was nil")
+	}
+	return request
+
 }
 
 func testAccessPacakgeAssignmentRequestClient_Delete(t *testing.T, c *test.Test, id string) {
