@@ -2,7 +2,6 @@ package msgraph_test
 
 import (
 	"fmt"
-	"log"
 	"testing"
 	"time"
 
@@ -61,18 +60,23 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		Questions: &[]msgraph.AccessPackageQuestion{},
 	})
 
-	accessPackageAssignementRequest := msgraph.AccessPackageAssignmentRequest{
+	// accessPackageAssignementRequest := msgraph.AccessPackageAssignmentRequest{
+	// 	RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
+	// 	AccessPackageAssignment: &msgraph.AccessPackageAssignment{
+	// 		TargetID:            user.ID(),
+	// 		AssignementPolicyID: accessPackageAssignmentPolicy.ID,
+	// 		AccessPackageID:     accessPackage.ID,
+	// 	},
+	// }
+
+	ap := testAccessPackageAssignmentRequestClient_Create(t, c, msgraph.AccessPackageAssignmentRequest{
 		RequestType: utils.StringPtr(msgraph.AccessPacakgeRequestTypeAdminAdd),
 		AccessPackageAssignment: &msgraph.AccessPackageAssignment{
-			TargetID:            user.ID(),
+			TargetID:            user.Id,
 			AssignementPolicyID: accessPackageAssignmentPolicy.ID,
 			AccessPackageID:     accessPackage.ID,
 		},
-	}
-
-	log.Println(accessPackageAssignementRequest)
-
-	ap := testAccessPackageAssignmentRequestClient_Create(t, c, accessPackageAssignementRequest)
+	})
 	testAccessPacakgeAssignmentRequestClient_Delete(t, c, *ap.ID)
 
 	//Cleanup
