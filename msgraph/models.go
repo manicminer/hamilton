@@ -27,6 +27,23 @@ type AccessPackage struct {
 	CreatedBy           *string `json:"createdBy,omitempty"`
 }
 
+type AccessPackageAssignment struct {
+	TargetID            *string `json:"targetId,omitempty"`
+	AssignementPolicyID *string `json:"assignmentPolicyId,omitempty"`
+	AccessPackageID     *string `json:"accessPackageId,omitempty"`
+}
+
+type AccessPackageAssignmentRequest struct {
+	ID                      *string                        `json:"id,omitempty"`
+	RequestType             *AccessPacakgeRequestType      `json:"requestType,omitempty"`
+	Status                  *string                        `json:"status"`
+	CompletedDateTime       *time.Time                     `json:"completedDateTime,omitempty"`
+	CreatedDateTime         *time.Time                     `json:"createdDateTime,omitempty"`
+	State                   *AccessPackageRequestState     `json:"state,omitempty"`
+	Schedule                *EntitlementManagementSchedule `json:"schedule,omitempty"`
+	AccessPackageAssignment *AccessPackageAssignment       `json:"assignment,omitempty"`
+}
+
 type AccessPackageAssignmentPolicy struct {
 	AccessPackageId         *string                   `json:"accessPackageId,omitempty"`
 	AccessReviewSettings    *AssignmentReviewSettings `json:"accessReviewSettings,omitempty"`
@@ -855,9 +872,21 @@ type EmailAuthenticationMethod struct {
 	EmailAddress *string `json:"emailAddress,omitempty"`
 }
 
+type EntitlementManagementSchedule struct {
+	StartDateTime *time.Time         `json:"startDateTime,omitempty"`
+	Expiration    *ExpirationPattern `json:"expiration,omitempty"`
+	Recurrence    *RecurrencePattern `json:"recurrence,omitempty"`
+}
+
 type ExtensionSchemaProperty struct {
 	Name *string                         `json:"name,omitempty"`
 	Type ExtensionSchemaPropertyDataType `json:"type,omitempty"`
+}
+
+type ExpirationPattern struct {
+	Duration    *time.Duration         `json:"duration,omitempty"`
+	EndDateTime *time.Time             `json:"endDateTime,omitempty"`
+	Type        *ExpirationPatternType `json:"type,omitempty"`
 }
 
 type FederatedIdentityCredential struct {
@@ -1258,6 +1287,16 @@ type PublicClient struct {
 
 type Recipient struct {
 	EmailAddress *EmailAddress `json:"emailAddress,omitempty"`
+}
+
+type RecurrencePattern struct {
+	DayOfMonth     *int                   `json:"dayOfMonth,omitempty"`
+	Interval       *int                   `json:"interval,omitempty"`
+	Month          *int                   `json:"month,omitempty"`
+	Type           *RecurrencePatternType `json:"type,omitempty"`
+	DaysOfWeek     *[]DaysOfWeekType      `json:"daysOfWeek,omitempty"`
+	FirstDayOfWeek *FirstDayOfWeek        `json:"firstDayOfWeek,omitempty"`
+	Index          *IndexType             `json:"index,omitempty"`
 }
 
 type Ref struct {

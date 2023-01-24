@@ -43,6 +43,37 @@ const (
 	AccessPackageCatalogTypeUserManaged    AccessPackageCatalogType = "UserManaged"
 )
 
+type AccessPackageRequestState = string
+
+const (
+	AccessPackageRequestStateSubmitted           AccessPackageRequestState = "submitted"
+	AccessPackageRequestStatePendingApproval     AccessPackageRequestState = "pendingApproval"
+	AccessPackageRequestStateDelivering          AccessPackageRequestState = "delivering"
+	AccessPackageRequestStateDelivered           AccessPackageRequestState = "delievered"
+	AccessPackageRequestStateDeliveryFailed      AccessPackageRequestState = "deliveryFailed"
+	AccessPackageRequestStateDenied              AccessPackageRequestState = "denied"
+	AccessPackageRequestStateScheduled           AccessPackageRequestState = "scheduled"
+	AccessPackageRequestStateCanceled            AccessPackageRequestState = "canceled"
+	AccessPackageRequestStatePartiallyDelievered AccessPackageRequestState = "partiallyDelivered"
+)
+
+type AccessPacakgeRequestType = string
+
+const (
+	AccessPacakgeRequestTypeNotSpecified AccessPacakgeRequestType = "notSpecified"
+	AccessPacakgeRequestTypeuserAdd      AccessPacakgeRequestType = "userAdd"
+	AccessPacakgeRequestTypeUserExtend   AccessPacakgeRequestType = "UserExtend"
+	AccessPacakgeRequestTypeUserUpdate   AccessPacakgeRequestType = "userUpdate"
+	AccessPacakgeRequestTypeUserRemove   AccessPacakgeRequestType = "userRemove"
+	AccessPacakgeRequestTypeAdminAdd     AccessPacakgeRequestType = "adminAdd"
+	AccessPacakgeRequestTypeAdminUpdate  AccessPacakgeRequestType = "adminUpdate"
+	AccessPacakgeRequestTypeAdminRemove  AccessPacakgeRequestType = "adminRemove"
+	AccessPacakgeRequestTypeSystemAdd    AccessPacakgeRequestType = "systemAdd"
+	AccessPacakgeRequestTypeSystemUpdate AccessPacakgeRequestType = "systemUpdate"
+	AccessPacakgeRequestTypeSystemRemove AccessPacakgeRequestType = "systemRemove"
+	AccessPacakgeRequestTypeOnBehalfAdd  AccessPacakgeRequestType = "onBehalfAdd"
+)
+
 type AccessPackageResourceOriginSystem = string
 
 const (
@@ -327,11 +358,32 @@ const (
 	ConnectedOrganizationStateUnknownFutureValue ConnectedOrganizationState = "unknownFutureValue"
 )
 
+type DaysOfWeekType = string
+
+const (
+	DaysOfWeekTypeSunday    DaysOfWeekType = "sunday"
+	DaysOfWeekTypeMonday    DaysOfWeekType = "monday"
+	DaysOfWeekTypeTuesday   DaysOfWeekType = "tuesday"
+	DaysOfWeekTypeWednesday DaysOfWeekType = "wednesday"
+	DaysOfWeekTypeThursday  DaysOfWeekType = "thursday"
+	DaysOfWeekTypeFriday    DaysOfWeekType = "friday"
+	DaysOfWeekTypeSaturday  DaysOfWeekType = "saturday"
+)
+
 type DelegatedPermissionGrantConsentType = string
 
 const (
 	DelegatedPermissionGrantConsentTypeAllPrincipals DelegatedPermissionGrantConsentType = "AllPrincipals"
 	DelegatedPermissionGrantConsentTypePrincipal     DelegatedPermissionGrantConsentType = "Principal"
+)
+
+type ExpirationPatternType = string
+
+const (
+	ExpirationPatternTypeNotSpecified  ExpirationPatternType = "notSpecified"
+	ExpirationPatternTypeNoExpiration  ExpirationPatternType = "noExpiration"
+	ExpirationPatternTypeAfterDateTime ExpirationPatternType = "afterDateTime"
+	ExpirationPatternTypeAfterDuration ExpirationPatternType = "afterDuration"
 )
 
 type ExtensionSchemaTargetType = string
@@ -364,6 +416,18 @@ const (
 	FeatureTypeRegistration       FeatureType = "registration"
 	FeatureTypeReset              FeatureType = "reset"
 	FeatureTypeUnknownFutureValue FeatureType = "unknownFutureValue"
+)
+
+type FirstDayOfWeek = string
+
+const (
+	FirstDayOfWeekSunday    FirstDayOfWeek = "sunday"
+	FirstDayOfWeekMonday    FirstDayOfWeek = "monday"
+	FirstDayOfWeekTuesday   FirstDayOfWeek = "tuesday"
+	FirstDayOfWeekWednesday FirstDayOfWeek = "wednesday"
+	FirstDayOfWeekThursday  FirstDayOfWeek = "thursday"
+	FirstDayOfWeekFriday    FirstDayOfWeek = "friday"
+	FirstDayOfWeekSaturday  FirstDayOfWeek = "staturday"
 )
 
 type GroupMembershipRuleProcessingState = string
@@ -538,6 +602,17 @@ const (
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
 )
 
+type RecurrencePatternType = string
+
+const (
+	RecurrencePatternTypeDaily           RecurrencePatternType = "daily"
+	RecurrencePatternTypeWeekly          RecurrencePatternType = "weekly"
+	RecurrencePatternTypeAbsoluteMonthly RecurrencePatternType = "absoluteMonthly"
+	RecurrencePatternTypeRelativeMonthly RecurrencePatternType = "relativeMonthly"
+	RecurrencePatternTypeAbsoluteYearly  RecurrencePatternType = "absoluteYearly"
+	RecurrencePatternTypeRelativeYearly  RecurrencePatternType = "relativeYearly"
+)
+
 type RegistrationAuthMethod = string
 
 const (
@@ -650,4 +725,14 @@ const (
 	UserflowAttributeDataTypeString  UserflowAttributeDataType = "string"
 	UserflowAttributeDataTypeBoolean UserflowAttributeDataType = "boolean"
 	UserflowAttributeDataTypeInt64   UserflowAttributeDataType = "int64"
+)
+
+type IndexType = string
+
+const (
+	IndexTypeFirst  IndexType = "first"
+	IndexTypeSecond IndexType = "second"
+	IndexTypeThird  IndexType = "third"
+	IndexTypeFourth IndexType = "fourth"
+	IndexTypeLast   IndexType = "last"
 )
