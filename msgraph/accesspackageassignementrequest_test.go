@@ -21,7 +21,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	// Create AP
 	accessPackage := testAccessPackage_Create(t, c, accessPackageCatalog)
 
-	currentTimePlusDay := time.Now().AddDate(0, 0, 1)
+	currentTime := time.Now()
 
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
@@ -59,7 +59,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		AccessReviewSettings: &msgraph.AssignmentReviewSettings{
 			AccessReviewTimeoutBehavior:     msgraph.AccessReviewTimeoutBehaviorTypeRemoveAccess,
 			IsEnabled:                       utils.BoolPtr(true),
-			StartDateTime:                   &currentTimePlusDay,
+			StartDateTime:                   &currentTime,
 			DurationInDays:                  utils.Int32Ptr(5),
 			RecurrenceType:                  msgraph.AccessReviewRecurranceTypeMonthly,
 			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
