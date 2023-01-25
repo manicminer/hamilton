@@ -43,6 +43,24 @@ const (
 	AccessPackageCatalogTypeUserManaged    AccessPackageCatalogType = "UserManaged"
 )
 
+type AccessPackageCustomExtensionStage = string
+
+const (
+	AccessPackageCustomExtensionStageAssignmentRequestCreated               AccessPackageCustomExtensionStage = "assignmentRequestCreated"
+	AccessPackageCustomExtensionStageAssignmentRequestApproved              AccessPackageCustomExtensionStage = "assignmentRequestApproved"
+	AccessPackageCustomExtensionStageAssignmentRequestGranted               AccessPackageCustomExtensionStage = "assignmentRequestGranted"
+	AccessPackageCustomExtensionStageAssignmentRequestRemoved               AccessPackageCustomExtensionStage = "assignmentRequestRemoved"
+	AccessPackageCustomExtensionStageAssignmentFourteenDaysBeforeExpiration AccessPackageCustomExtensionStage = "assignmentFourteenDaysBeforeExpiration"
+	AccessPackageCustomExtensionStageAssignmentOneDayBeforeExpiration       AccessPackageCustomExtensionStage = "assignmentOneDayBeforeExpiration"
+)
+
+type AccessPackageCustomExtensionHandlerStatus = string
+
+const (
+	AccessPackageCustomExtensionHandlerStatusRequestSent     AccessPackageCustomExtensionHandlerStatus = "requestSent"
+	AccessPackageCustomExtensionHandlerStatusRequestReceived AccessPackageCustomExtensionHandlerStatus = "requestReceived"
+)
+
 type AccessPackageRequestState = string
 
 const (

@@ -27,6 +27,11 @@ type AccessPackage struct {
 	CreatedBy           *string `json:"createdBy,omitempty"`
 }
 
+type AccessPackageAnswer struct {
+	DisplayValue     *string                `json:"displayValue,omitempty"`
+	AnsweredQuestion *AccessPackageQuestion `json:"answeredQuestion,omitempty"`
+}
+
 type AccessPackageAssignment struct {
 	TargetID            *string `json:"targetId,omitempty"`
 	AssignementPolicyID *string `json:"assignmentPolicyId,omitempty"`
@@ -34,14 +39,21 @@ type AccessPackageAssignment struct {
 }
 
 type AccessPackageAssignmentRequest struct {
-	ID                      *string                        `json:"id,omitempty"`
-	RequestType             *AccessPacakgeRequestType      `json:"requestType,omitempty"`
-	Status                  *string                        `json:"status"`
-	CompletedDateTime       *time.Time                     `json:"completedDateTime,omitempty"`
-	CreatedDateTime         *time.Time                     `json:"createdDateTime,omitempty"`
-	State                   *AccessPackageRequestState     `json:"state,omitempty"`
-	Schedule                *EntitlementManagementSchedule `json:"schedule,omitempty"`
-	AccessPackageAssignment *AccessPackageAssignment       `json:"assignment,omitempty"`
+	ID                             *string                         `json:"id,omitempty"`
+	RequestType                    *AccessPacakgeRequestType       `json:"requestType,omitempty"`
+	Status                         *string                         `json:"status"`
+	CompletedDateTime              *time.Time                      `json:"completedDateTime,omitempty"`
+	CreatedDateTime                *time.Time                      `json:"createdDateTime,omitempty"`
+	State                          *AccessPackageRequestState      `json:"state,omitempty"`
+	Schedule                       *EntitlementManagementSchedule  `json:"schedule,omitempty"`
+	AccessPackageAssignment        *AccessPackageAssignment        `json:"assignment,omitempty"`
+	CompletedDate                  *time.Time                      `json:"completedDate,omitempty"`                   // beta property
+	IsValidationOnly               *bool                           `json:"isValidationOnly,omitempty"`                // beta property
+	Justification                  *string                         `json:"justification,omitempty"`                   // beta property
+	RequestState                   *AccessPackageRequestState      `json:"requestState,omitempty"`                    // beta property
+	RequestStatus                  *string                         `json:"requestStatus,omitempty"`                   // beta property
+	CustomExtensionHandlerInstance *CustomExtensionHandlerInstance `json:"customExtensionHandlerInstances,omitempty"` // beta property
+	Answers                        *[]AccessPackageAnswer          `json:"answers,omitempty"`                         // beta property
 }
 
 type AccessPackageAssignmentPolicy struct {
@@ -695,6 +707,13 @@ type ConnectedOrganization struct {
 	State            *ConnectedOrganizationState `json:"state,omitempty"`
 	CreatedDateTime  *time.Time                  `json:"createdDateTime,omitempty"`
 	ModifiedDateTime *time.Time                  `json:"modifiedDateTime,omitempty"`
+}
+
+type CustomExtensionHandlerInstance struct {
+	CustomExensionId      *string                                    `json:"customExtensionId,omitempty"`
+	ExternalCorrelationId *string                                    `json:"externalCorrelationId,omitempty"`
+	Stage                 *AccessPackageCustomExtensionStage         `json:"stage,omitempty"`
+	Status                *AccessPackageCustomExtensionHandlerStatus `json:"status,omitempty"`
 }
 
 type DelegatedPermissionGrant struct {
