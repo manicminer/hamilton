@@ -53,6 +53,9 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		},
 	})
 
+	// Adding a sleep to see if there is an eventual consistency issue with creating a user and applying the user to a policy
+	time.Sleep(time.Second * 30)
+
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
 		AccessPackageId: accessPackage.ID,
@@ -87,7 +90,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 							ODataType:   utils.StringPtr(odata.TypeSingleUser),
 							Description: utils.StringPtr("approver"),
 							IsBackup:    utils.BoolPtr(false),
-							ID:          approverUser.ID(),
+							ID:          user2.ID(),
 						},
 					},
 				},
