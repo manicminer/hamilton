@@ -136,7 +136,7 @@ func (c *AccessPackageAssignementRequestClient) Cancel(ctx context.Context, id s
 	var status int
 
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/assignmentRequests/%s/cancel", id),
 			HasTenantId: true,
