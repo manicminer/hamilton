@@ -54,7 +54,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	})
 
 	// Adding a sleep, original testing showed the policy could not find the user applied as an approver. Adding a sleep solved this issue.
-	// Originally attempted a get of user after create but didn't help.
+	// Originally attempted a get of user after create but didn't help. Seems to be an eventual consistency issue
 	time.Sleep(time.Second * 10)
 
 	// Create Assignment Policy
@@ -188,7 +188,7 @@ func testAccessPackageAssignmentRequestClient_Cancel(t *testing.T, c *test.Test,
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentRequestClient.Cancel(): %v", err)
 	}
-	if status != 204 {
+	if status != 200 {
 		t.Fatalf("AccessPackageAssignmentRequestClient.Cancel(): invalid status: %d", status)
 	}
 }
