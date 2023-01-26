@@ -23,6 +23,16 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 
 	currentTime := time.Now()
 
+	approverUser := testUsersClient_Create(t, c, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-approver"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-approver-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-approver-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
+		},
+	})
+
 	user := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user"),
@@ -42,19 +52,6 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
-
-	approverUser := testUsersClient_Create(t, c, msgraph.User{
-		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("test-approver"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-approver-%s", c.RandomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-approver-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
-		PasswordProfile: &msgraph.UserPasswordProfile{
-			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
-		},
-	})
-
-	// Making a get after create to try and protect against eventual consistency issue
-	approver := testUsersClient_Get(t, c, *approverUser.ID())
 
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
@@ -90,7 +87,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 							ODataType:   utils.StringPtr(odata.TypeSingleUser),
 							Description: utils.StringPtr("approver"),
 							IsBackup:    utils.BoolPtr(false),
-							ID:          approver.ID(),
+							ID:          approverUser.ID(),
 						},
 					},
 				},
