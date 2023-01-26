@@ -53,8 +53,8 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		},
 	})
 
-	// Adding a sleep to see if there is an eventual consistency issue with creating a user and applying the user to a policy
-	time.Sleep(time.Second * 30)
+	// Making a get after create to try and protect against eventual consistency issue
+	approver := testUsersClient_Get(t, c, *approverUser.ID())
 
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
@@ -90,7 +90,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 							ODataType:   utils.StringPtr(odata.TypeSingleUser),
 							Description: utils.StringPtr("approver"),
 							IsBackup:    utils.BoolPtr(false),
-							ID:          user2.ID(),
+							ID:          approver.ID(),
 						},
 					},
 				},
@@ -116,7 +116,8 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		},
 	})
 
-	_ = testAccessPackageAssignmentRequestClient_List(t, c)
+	apIDs := []string{*ap.ID, *ap2.ID}
+	testAccessPackageAssignmentRequestClient_List(t, c, apIDs)
 
 	testAccessPackageAssignmentRequestClient_Cancel(t, c, *ap.ID)
 	testAccessPackageAssignmentRequestClient_Cancel(t, c, *ap2.ID)
@@ -132,7 +133,6 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	testUser_Delete(t, c, user)
 	testUser_Delete(t, c, user2)
 	testUser_Delete(t, c, approverUser)
-
 }
 
 func deleteWhenPossible(t *testing.T, c *test.Test, ap *msgraph.AccessPackageAssignmentRequest) {
@@ -192,19 +192,24 @@ func testAccessPackageAssignmentRequestClient_Cancel(t *testing.T, c *test.Test,
 	}
 }
 
-func testAccessPackageAssignmentRequestClient_List(t *testing.T, c *test.Test) (requests *[]msgraph.AccessPackageAssignmentRequest) {
+func testAccessPackageAssignmentRequestClient_List(t *testing.T, c *test.Test, IDs []string) {
 	requests, status, err := c.AccessPackageAssignmentRequestClient.List(c.Context, odata.Query{})
-	count := len(*requests)
 	if err != nil {
 		t.Fatalf("AccessPackageAssignmentRequestClient.List(): %v", err)
-	}
-	if count != 2 {
-		t.Fatalf("AccessPackageAssignmentRequestClient.List(): incorrect number found: %d, should have been two", count)
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("AccessPackageAssignementRequestClient.List(): invalid status: %d", status)
 	}
-	return requests
+	count := len(IDs)
+
+	for _, request := range *requests {
+		if strContains(IDs, *request.ID) {
+			count--
+		}
+	}
+	if count != 0 {
+		t.Fatalf("AccessPackageAssignementRequestClient.List(): failed to find AP requests that should have existed")
+	}
 }
 
 func testAccessPacakgeAssignmentRequestClient_Delete(t *testing.T, c *test.Test, id string) {
@@ -215,4 +220,13 @@ func testAccessPacakgeAssignmentRequestClient_Delete(t *testing.T, c *test.Test,
 	if status < 200 || status >= 300 {
 		t.Fatalf("AccessPackageAssignmentRequestClient.Delete(): invalid status: %d", status)
 	}
+}
+
+func strContains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
