@@ -53,6 +53,10 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 		},
 	})
 
+	// Adding a sleep, original testing showed the policy could not find the user applied as an approver. Adding a sleep solved this issue.
+	// Originally attempted a get of user after create but didn't help.
+	time.Sleep(time.Second * 10)
+
 	// Create Assignment Policy
 	accessPackageAssignmentPolicy := testAccessPackageAssignmentPolicyClient_Create(t, c, msgraph.AccessPackageAssignmentPolicy{
 		AccessPackageId: accessPackage.ID,
