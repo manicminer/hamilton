@@ -123,11 +123,11 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 	testAccessPackageAssignmentRequestClient_Cancel(t, c, *ap.ID)
 	testAccessPackageAssignmentRequestClient_Cancel(t, c, *ap2.ID)
 
-	_ = testAccessPackageAssignmentRequestClient_Get(t, c, *ap.ID)
+	testAccessPackageAssignmentRequestClient_Get(t, c, *ap.ID)
 
+	//Cleanup
 	deleteWhenPossible(t, c, ap)
 	deleteWhenPossible(t, c, ap2)
-	//Cleanup
 	testAccessPackageAssignmentPolicyClient_Delete(t, c, *accessPackageAssignmentPolicy.ID)
 	testAccessPackage_Delete(t, c, *accessPackage.ID)
 	testAccessPackageCatalog_Delete(t, c, accessPackageCatalog)
@@ -165,7 +165,7 @@ func testAccessPackageAssignmentRequestClient_Create(t *testing.T, c *test.Test,
 	return request
 }
 
-func testAccessPackageAssignmentRequestClient_Get(t *testing.T, c *test.Test, id string) (request *msgraph.AccessPackageAssignmentRequest) {
+func testAccessPackageAssignmentRequestClient_Get(t *testing.T, c *test.Test, id string) {
 	request, status, err := c.AccessPackageAssignmentRequestClient.Get(c.Context, id)
 	if err != nil {
 		t.Fatalf("AccessPackageAssignementRequestClient.Get(): %v", err)
@@ -179,8 +179,6 @@ func testAccessPackageAssignmentRequestClient_Get(t *testing.T, c *test.Test, id
 	if request.ID == nil {
 		t.Fatal("AccessPackageAssignementRequestClient.Get(): AccessPackageAssignmentRequest.ID was nil")
 	}
-	return request
-
 }
 
 func testAccessPackageAssignmentRequestClient_Cancel(t *testing.T, c *test.Test, id string) {
