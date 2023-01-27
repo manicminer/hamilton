@@ -1,4 +1,4 @@
-## 0.54.0 (Unreleased)
+## 0.54.0 (January 27, 2023)
 
 - Support for `Description` field in the `Application` model ([#205](https://github.com/manicminer/hamilton/pull/205))
 - Support for [creating groups in an administrative unit](https://learn.microsoft.com/en-us/azure/active-directory/roles/admin-units-members-add#create-a-new-group-in-an-administrative-unit-2) ([#206](https://github.com/manicminer/hamilton/pull/206))
