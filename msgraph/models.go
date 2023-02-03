@@ -558,6 +558,12 @@ type Chat struct {
 	Topic               *string                    `json:"topic,omitempty"`
 	Viewpoint           *ChatViewpoint             `json:"viewpoint,omitempty"`
 	WebURL              *string                    `json:"webUrl,omitempty"`
+	InstalledApps       *TeamsAppInstallation      `json:"installedApps,omitempty"`
+	LastMessagePreview  *ChatMessageInfo           `json:"lastMessagePreview,omitempty"`
+	Members             *ConversationMember        `json:"members,omitempty"`
+	Messages            *[]ChatMessage             `json:"messages,omitempty"`
+	PinnedMessages      *[]PinnedChatMessageInfo   `json:"pinnedMessages,omitempty"`
+	Tabs                *TeamsTab                  `json:"tabs,omitempty"`
 }
 
 type ChatMessage struct {
@@ -603,6 +609,16 @@ type ChatMessageFromIdentitySet struct {
 		OdataType string `json:"@odata.type"`
 	} `json:"device,omitempty"`
 	User *User `json:"user,omitempty"`
+}
+
+type ChatMessageInfo struct {
+	Body            *ItemBody                   `json:"body"`
+	CreatedDateTime *time.Time                  `json:"createdDateTime"`
+	EventDetail     *EventMessageDetail         `json:"eventDetail"`
+	From            *ChatMessageFromIdentitySet `json:"from"`
+	ID              *string                     `json:"id"`
+	IsDeleted       *bool                       `json:"isDeleted"`
+	MessageType     *ChatMessageType            `json:"messageType"`
 }
 
 type ChatMessageMention struct {
@@ -1382,6 +1398,13 @@ type PhoneAuthenticationMethod struct {
 	PhoneNumber *string                  `json:"phoneNumber,omitempty"`
 	PhoneType   *AuthenticationPhoneType `json:"phoneType,omitempty"`
 }
+
+type PinnedChatMessageInfo struct {
+	ODataType *odata.Type  `json:"@odata.type,omitempty"`
+	ID        *string      `json:"id,omitempty"`
+	Message   *ChatMessage `json:"message,omitempty"`
+}
+
 type PublicClient struct {
 	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
@@ -1662,6 +1685,49 @@ type TeamworkUserIdentity struct {
 	ID               *string                   `json:"id,omitempty"`
 	DisplayName      *string                   `json:"displayName,omitempty"`
 	UserIdentityType *TeamworkUserIdentityType `json:"userIdentityType,omitempty"`
+}
+
+type TeamsApp struct {
+	ID                 *string                     `json:"id,omitempty"`
+	DisplayName        *string                     `json:"displayName,omitempty"`
+	DistributionMethod *TeamsAppDistributionMethod `json:"distributionMethod,omitempty"`
+	ExternalId         *string                     `json:"externalId,omitempty"`
+	AppDefinitions     *[]TeamsAppDefinition       `json:"appDefinitions,omitempty"`
+}
+
+type TeamsAppDefinition struct {
+	ID              *string                  `json:"id,omitempty"`
+	TeamsAppId      *string                  `json:"teamsAppId,omitempty"`
+	Version         *string                  `json:"version,omitempty"`
+	Description     *string                  `json:"description,omitempty"`
+	DisplayName     *string                  `json:"displayName,omitempty"`
+	PublishingState *TeamsAppPublishingState `json:"publishingState,omitempty"`
+	Bot             *TeamWorkBot             `json:"bot,omitempty"`
+}
+
+type TeamsAppInstallation struct {
+	ID       *string   `json:"id,omitempty"`
+	TeamsApp *TeamsApp `json:"teamsApp,omitempty"`
+}
+
+type TeamsTab struct {
+	ID            *string                `json:"id,omitempty"`
+	DisplayName   *string                `json:"displayName,omitempty"`
+	WebUrl        *string                `json:"webUrl,omitempty"`
+	TeamsApp      *TeamsApp              `json:"teamsApp,omitempty"`
+	Configuration *TeamsTabConfiguration `json:"configuration,omitempty"`
+}
+
+type TeamsTabConfiguration struct {
+	EntityId   *string `json:"entityId,omitempty"`
+	ContentUrl *string `json:"contentUrl,omitempty"`
+	RemoveUrl  *string `json:"removeUrl,omitempty"`
+	WebsiteUrl *string `json:"websiteUrl,omitempty"`
+}
+
+type TeamWorkBot struct {
+	ID        *string     `json:"id,omitempty"`
+	ODataType *odata.Type `json:"@odata.type,omitempty"`
 }
 
 type TemporaryAccessPassAuthenticationMethod struct {

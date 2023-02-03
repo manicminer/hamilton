@@ -217,6 +217,14 @@ const (
 	BodyTypeHtml BodyType = "html"
 )
 
+type ChatMessageType = string
+
+const (
+	ChatMessageTypeMessage            ChatMessageType = "message"
+	ChatMessageTypeUnknownFutureValue ChatMessageType = "unknownFutureValue"
+	ChatMessageTypeSystemEventMessage ChatMessageType = "systemEventMessage"
+)
+
 type ChatType = string
 
 const (
@@ -662,6 +670,22 @@ const (
 	TeamworkUserIdentityPhoneUser                    TeamworkUserIdentityType = "phoneUser"
 	TeamworkUserIdentityUnknownFutureValue           TeamworkUserIdentityType = "unknownFutureValue"
 	TeamworkUserIdentityEmailUser                    TeamworkUserIdentityType = "emailUser"
+)
+
+type TeamsAppDistributionMethod = string
+
+const (
+	TeamsAppDistributionMethodStore        TeamsAppDistributionMethod = "store"
+	TeamsAppDistributionMethodOrganization TeamsAppDistributionMethod = "organization"
+	TeamsAppDistributionMethodSideloaded   TeamsAppDistributionMethod = "sideloaded"
+)
+
+type TeamsAppPublishingState = string
+
+const (
+	TeamsAppPublishingStateSubmitted TeamsAppPublishingState = "submitted"
+	TeamsAppPublishingStatePublished TeamsAppPublishingState = "published"
+	TeamsAppPublishingStateRejected  TeamsAppPublishingState = "rejected"
 )
 
 type UsageAuthMethod = string
