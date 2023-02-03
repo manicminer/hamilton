@@ -560,7 +560,7 @@ type Chat struct {
 	WebURL              *string                    `json:"webUrl,omitempty"`
 	InstalledApps       *TeamsAppInstallation      `json:"installedApps,omitempty"`
 	LastMessagePreview  *ChatMessageInfo           `json:"lastMessagePreview,omitempty"`
-	Members             *ConversationMember        `json:"members,omitempty"`
+	Members             *[]ConversationMember      `json:"members,omitempty"`
 	Messages            *[]ChatMessage             `json:"messages,omitempty"`
 	PinnedMessages      *[]PinnedChatMessageInfo   `json:"pinnedMessages,omitempty"`
 	Tabs                *TeamsTab                  `json:"tabs,omitempty"`
