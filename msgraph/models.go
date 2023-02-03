@@ -541,6 +541,122 @@ type BaseNamedLocation struct {
 	ModifiedDateTime *time.Time  `json:"modifiedDateTime,omitempty"`
 }
 
+type ChannelIdentity struct {
+	ODataType *odata.Type `json:"@odata.type,omitempty"`
+	ChannelId *string     `json:"channelId,omitempty"`
+	TeamId    *string     `json:"teamId,omitempty"`
+}
+
+type Chat struct {
+	ODataType           *odata.Type                `json:"@odata.type,omitempty"`
+	ID                  *string                    `json:"id,omitempty"`
+	CreatedDateTIme     *time.Time                 `json:"createdDateTime,omitempty"`
+	ChatType            *ChatType                  `json:"chatType,omitempty"`
+	LastUpdatedDateTime *time.Time                 `json:"lastUpdatedDateTime,omitempty"`
+	OnlineMeetingInfo   *TeamworkOnlineMeetingInfo `json:"onlineMeetingInfo,omitempty"`
+	TenantId            *string                    `json:"tenantId,omitempty"`
+	Topic               *string                    `json:"topic,omitempty"`
+	Viewpoint           *ChatViewpoint             `json:"viewpoint,omitempty"`
+	WebURL              *string                    `json:"webUrl,omitempty"`
+}
+
+type ChatMessage struct {
+	Attachments          *[]ChatMessageAttachment    `json:"attachments"`
+	Body                 *ItemBody                   `json:"body"`
+	ChannelIdentity      *ChannelIdentity            `json:"channelIdentity"`
+	ChatId               *string                     `json:"chatId"`
+	CreatedDateTime      *time.Time                  `json:"createdDateTime"`
+	DeletedDateTime      *time.Time                  `json:"deletedDateTime"`
+	Etag                 *string                     `json:"etag"`
+	EventDetail          *EventMessageDetail         `json:"eventDetail"`
+	From                 *ChatMessageFromIdentitySet `json:"from"`
+	ID                   *string                     `json:"id"`
+	Importance           *string                     `json:"importance"`
+	LastEditedDateTime   *time.Time                  `json:"lastEditedDateTime"`
+	LastModifiedDateTime *time.Time                  `json:"lastModifiedDateTime"`
+	Locale               *string                     `json:"locale"`
+	Mentions             *[]ChatMessageMention       `json:"mentions"`
+	MessageType          *MessageType                `json:"messageType"`
+	PolicyViolation      *ChatMessagePolicyViolation `json:"policyViolation"`
+	Reactions            *[]ChatMessageReaction      `json:"reactions"`
+	ReplyToId            *string                     `json:"replyToId"`
+	Subject              *string                     `json:"subject"`
+	Summary              *string                     `json:"summary"`
+	WebUrl               *string                     `json:"webUrl"`
+}
+
+type ChatMessageAttachment struct {
+	ODataType    *odata.Type `json:"@odata.type,omitempty"`
+	Content      *string     `json:"content"`
+	ContentType  *string     `json:"contentType"`
+	ContentUrl   *string     `json:"contentUrl"`
+	Id           *string     `json:"id"`
+	Name         *string     `json:"name"`
+	TeamsAppId   *string     `json:"teamsAppId"`
+	ThumbnailUrl *string     `json:"thumbnailUrl"`
+}
+
+type ChatMessageFromIdentitySet struct {
+	ODataType   *odata.Type  `json:"@odata.type,omitempty"`
+	Application *Application `json:"application,omitempty"`
+	Device      *struct {
+		OdataType string `json:"@odata.type"`
+	} `json:"device,omitempty"`
+	User *User `json:"user,omitempty"`
+}
+
+type ChatMessageMention struct {
+	ODataType   *odata.Type                      `json:"@odata.type,omitempty"`
+	ID          *int32                           `json:"id,omitempty"`
+	Mentioned   *ChatMessageMentionedIdentitySet `json:"mentioned,omitempty"`
+	MentionText *string                          `json:"mentionText,omitempty"`
+}
+
+type ChatMessageMentionedIdentitySet struct {
+	ODataType    *odata.Type                   `json:"@odata.type,omitempty"`
+	Application  *Application                  `json:"application,omitempty"`
+	Conversation *TeamworkConversationIdentity `json:"conversation,omitempty"`
+	Device       *struct {
+		OdataType string `json:"@odata.type"`
+	} `json:"device,omitempty"`
+	User *User `json:"user,omitempty"`
+}
+
+type ChatMessagePolicyTip struct {
+	ODataType                    *odata.Type `json:"@odata.type,omitempty"`
+	ComplianceURL                *string     `json:"complianceUrl,omitempty"`
+	GeneralText                  *string     `json:"generalText,omitempty"`
+	MatchedConditionDescriptions *[]string   `json:"matchedConditionDescriptions,omitempty"`
+}
+
+type ChatMessagePolicyViolation struct {
+	ODataType         *odata.Type           `json:"@odata.type,omitempty"`
+	DLPAction         *string               `json:"dlpAction,omitempty"`
+	JustificationText *string               `json:"justificationText,omitempty"`
+	PolicyTip         *ChatMessagePolicyTip `json:"policyTip,omitempty"`
+	UserAction        *UserAction           `json:"userAction,omitempty"`
+	VerdictDetails    *VerdictDetails       `json:"verdictDetails,omitempty"`
+}
+
+type ChatMessageReaction struct {
+	ODataType       *odata.Type                     `json:"@odata.type,omitempty"`
+	CreatedDateTime *time.Time                      `json:"createdDateTime,omitempty"` // This is always UTC format according to docs
+	ReactionType    *ReactionType                   `json:"reactionType,omitempty"`
+	User            *ChatMessageReactionIdentitySet `json:"user,omitempty"`
+}
+
+type ChatMessageReactionIdentitySet struct {
+	ODataType *odata.Type `json:"@odata.type,omitempty"`
+	// Application and Device are also returned but omitted as they are never set
+	User *Identity `json:"user,omitempty"`
+}
+
+type ChatViewpoint struct {
+	ODataType               *odata.Type `json:"@odata.type,omitempty"`
+	IsHidden                *bool       `json:"isHidden,omitempty"`
+	LastMessageReadDateTime *time.Time  `json:"lastMessageReadDateTime,omitempty"`
+}
+
 type ClaimsMappingPolicy struct {
 	DirectoryObject
 	Definition            *[]string `json:"definition,omitempty"`
@@ -635,6 +751,14 @@ type ConditionalAccessUsers struct {
 
 type ConnectionInfo struct {
 	Url *string `json:"url,omitempty"`
+}
+
+type ConversationMember struct {
+	ODataType                   *odata.Type `json:"@odata.type,omitempty"`
+	ID                          *string     `json:"id,omitempty"`
+	DisplayName                 *string     `json:"displayName,omitempty"`
+	Roles                       *[]string   `json:"roles,omitempty"`
+	VisibleHistoryStartDateTime *time.Time  `json:"visibleHistoryStartDateTime,omitempty"`
 }
 
 // CountryNamedLocation describes an Country Named Location object.
@@ -853,6 +977,12 @@ type EmailAddress struct {
 type EmailAuthenticationMethod struct {
 	ID           *string `json:"id,omitempty"`
 	EmailAddress *string `json:"emailAddress,omitempty"`
+}
+
+// EventMessageDetail is just an OData representation that is not applied
+// https://learn.microsoft.com/en-us/graph/api/resources/eventmessagedetail?view=graph-rest-1.0
+type EventMessageDetail struct {
+	ODataType *odata.Type `json:"@odata.type,omitempty"`
 }
 
 type ExtensionSchemaProperty struct {
@@ -1512,6 +1642,26 @@ type TargetResource struct {
 	UserPrincipalName  *string             `json:"userPrincipalName,omitempty"`
 	GroupType          *string             `json:"groupType,omitempty"`
 	ModifiedProperties *[]ModifiedProperty `json:"modifiedProperties,omitempty"`
+}
+
+type TeamworkConversationIdentity struct {
+	ODataType                *odata.Type               `json:"@odata.type,omitempty"`
+	ID                       *string                   `json:"id,omitempty"`
+	DisplayName              *string                   `json:"displayName,omitempty"`
+	ConversationIdentityType *ConversationIdentityType `json:"conversationIdentityType,omitempty"`
+}
+
+type TeamworkOnlineMeetingInfo struct {
+	CalendarEventID *string               `json:"calendarEventId,omitempty"`
+	JoinWebURL      *string               `json:"joinWebUrl,omitempty"`
+	Organizer       *TeamworkUserIdentity `json:"organizer,omitempty"`
+}
+
+type TeamworkUserIdentity struct {
+	ODataType        *odata.Type               `json:"@odata.type,omitempty"`
+	ID               *string                   `json:"id,omitempty"`
+	DisplayName      *string                   `json:"displayName,omitempty"`
+	UserIdentityType *TeamworkUserIdentityType `json:"userIdentityType,omitempty"`
 }
 
 type TemporaryAccessPassAuthenticationMethod struct {
