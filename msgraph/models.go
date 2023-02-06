@@ -13,18 +13,21 @@ import (
 )
 
 type AccessPackage struct {
-	ID               *string               `json:"id,omitempty"`
-	Catalog          *AccessPackageCatalog `json:"catalog,omitempty"`
-	CreatedDateTime  *time.Time            `json:"createdDateTime,omitempty"`
-	Description      *string               `json:"description,omitempty"`
-	DisplayName      *string               `json:"displayName,omitempty"`
-	IsHidden         *bool                 `json:"isHidden,omitempty"`
-	ModifiedDateTime *time.Time            `json:"modifiedDateTime,omitempty"`
-	//Beta
-	IsRoleScopesVisible *bool   `json:"isRoleScopesVisible,omitempty"`
-	ModifiedBy          *string `json:"modifiedBy,omitempty"`
-	CatalogId           *string `json:"catalogId,omitempty"`
-	CreatedBy           *string `json:"createdBy,omitempty"`
+	ID                            *string                          `json:"id,omitempty"`
+	Catalog                       *AccessPackageCatalog            `json:"catalog,omitempty"`
+	CreatedDateTime               *time.Time                       `json:"createdDateTime,omitempty"`
+	Description                   *string                          `json:"description,omitempty"`
+	DisplayName                   *string                          `json:"displayName,omitempty"`
+	IsHidden                      *bool                            `json:"isHidden,omitempty"`
+	ModifiedDateTime              *time.Time                       `json:"modifiedDateTime,omitempty"`
+	AccessPackageIncompatibleWith *[]AccessPackage                 `json:"accessPackagesIncompatibleWith,omitempty"` // Relationship
+	AssignmentPolicies            *[]AccessPackageAssignmentPolicy `json:"assignmentPolicies,omitempty"`             // Relationship
+	IncompatibleAccessPackages    *[]AccessPackage                 `json:"incompatibleAccessPackages,omitempty"`     // Relationship
+	IncompatibleGroups            *[]Group                         `json:"incompatibleGroups,omitempty"`             // Relationship
+	IsRoleScopesVisible           *bool                            `json:"isRoleScopesVisible,omitempty"`            // beta property
+	ModifiedBy                    *string                          `json:"modifiedBy,omitempty"`                     // beta property
+	CatalogId                     *string                          `json:"catalogId,omitempty"`                      // beta property
+	CreatedBy                     *string                          `json:"createdBy,omitempty"`                      // beta property
 }
 
 type AccessPackageAnswer struct {
