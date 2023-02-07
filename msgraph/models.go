@@ -543,10 +543,12 @@ type AppRoleAssignment struct {
 }
 
 type ApprovalSettings struct {
-	IsApprovalRequired               *bool            `json:"isApprovalRequired,omitempty"`
-	IsApprovalRequiredForExtension   *bool            `json:"isApprovalRequiredForExtension,omitempty"`
-	IsRequestorJustificationRequired *bool            `json:"isRequestorJustificationRequired,omitempty"`
-	ApprovalMode                     ApprovalMode     `json:"approvalMode,omitempty"`
+	IsApprovalRequiredForAdd         *bool            `json:"isApprovalRequiredForAdd,omitempty"`
+	IsApprovalRequiredForUpdate      *bool            `json:"isApprovalRequiredForUpdate,omitempty"`
+	IsApprovalRequired               *bool            `json:"isApprovalRequired,omitempty"`               //beta property
+	IsApprovalRequiredForExtension   *bool            `json:"isApprovalRequiredForExtension,omitempty"`   //beta property
+	IsRequestorJustificationRequired *bool            `json:"isRequestorJustificationRequired,omitempty"` //beta property
+	ApprovalMode                     ApprovalMode     `json:"approvalMode,omitempty"`                     //beta property
 	ApprovalStages                   *[]ApprovalStage `json:"approvalStages,omitempty"`
 }
 
