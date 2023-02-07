@@ -46,7 +46,7 @@ type AccessPackageAssignment struct {
 type AccessPackageAssignmentRequest struct {
 	ID                             *string                         `json:"id,omitempty"`
 	RequestType                    *AccessPackageRequestType       `json:"requestType,omitempty"`
-	Status                         *string                         `json:"status"`
+	Status                         *string                         `json:"status,omitempty"`
 	CompletedDateTime              *time.Time                      `json:"completedDateTime,omitempty"`
 	CreatedDateTime                *time.Time                      `json:"createdDateTime,omitempty"`
 	State                          *AccessPackageRequestState      `json:"state,omitempty"`
