@@ -75,21 +75,21 @@ const (
 	AccessPackageRequestStatePartiallyDelievered AccessPackageRequestState = "partiallyDelivered"
 )
 
-type AccessPacakgeRequestType = string
+type AccessPackageRequestType = string
 
 const (
-	AccessPacakgeRequestTypeNotSpecified AccessPacakgeRequestType = "notSpecified"
-	AccessPacakgeRequestTypeuserAdd      AccessPacakgeRequestType = "userAdd"
-	AccessPacakgeRequestTypeUserExtend   AccessPacakgeRequestType = "UserExtend"
-	AccessPacakgeRequestTypeUserUpdate   AccessPacakgeRequestType = "userUpdate"
-	AccessPacakgeRequestTypeUserRemove   AccessPacakgeRequestType = "userRemove"
-	AccessPacakgeRequestTypeAdminAdd     AccessPacakgeRequestType = "adminAdd"
-	AccessPacakgeRequestTypeAdminUpdate  AccessPacakgeRequestType = "adminUpdate"
-	AccessPacakgeRequestTypeAdminRemove  AccessPacakgeRequestType = "adminRemove"
-	AccessPacakgeRequestTypeSystemAdd    AccessPacakgeRequestType = "systemAdd"
-	AccessPacakgeRequestTypeSystemUpdate AccessPacakgeRequestType = "systemUpdate"
-	AccessPacakgeRequestTypeSystemRemove AccessPacakgeRequestType = "systemRemove"
-	AccessPacakgeRequestTypeOnBehalfAdd  AccessPacakgeRequestType = "onBehalfAdd"
+	AccessPackageRequestTypeNotSpecified AccessPackageRequestType = "notSpecified"
+	AccessPackageRequestTypeuserAdd      AccessPackageRequestType = "userAdd"
+	AccessPackageRequestTypeUserExtend   AccessPackageRequestType = "UserExtend"
+	AccessPackageRequestTypeUserUpdate   AccessPackageRequestType = "userUpdate"
+	AccessPackageRequestTypeUserRemove   AccessPackageRequestType = "userRemove"
+	AccessPackageRequestTypeAdminAdd     AccessPackageRequestType = "adminAdd"
+	AccessPackageRequestTypeAdminUpdate  AccessPackageRequestType = "adminUpdate"
+	AccessPackageRequestTypeAdminRemove  AccessPackageRequestType = "adminRemove"
+	AccessPackageRequestTypeSystemAdd    AccessPackageRequestType = "systemAdd"
+	AccessPackageRequestTypeSystemUpdate AccessPackageRequestType = "systemUpdate"
+	AccessPackageRequestTypeSystemRemove AccessPackageRequestType = "systemRemove"
+	AccessPackageRequestTypeOnBehalfAdd  AccessPackageRequestType = "onBehalfAdd"
 )
 
 type AccessPackageResourceOriginSystem = string
