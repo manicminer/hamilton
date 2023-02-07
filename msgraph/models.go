@@ -36,9 +36,11 @@ type AccessPackageAnswer struct {
 }
 
 type AccessPackageAssignment struct {
-	TargetID            *string `json:"targetId,omitempty"`
-	AssignementPolicyID *string `json:"assignmentPolicyId,omitempty"`
-	AccessPackageID     *string `json:"accessPackageId,omitempty"`
+	ID                  *string               `json:"id,omitempty"`
+	Target              *AccessPackageSubject `json:"target,omitempty"`
+	TargetID            *string               `json:"targetId,omitempty"`
+	AssignementPolicyID *string               `json:"assignmentPolicyId,omitempty"`
+	AccessPackageID     *string               `json:"accessPackageId,omitempty"`
 }
 
 type AccessPackageAssignmentRequest struct {
@@ -49,7 +51,8 @@ type AccessPackageAssignmentRequest struct {
 	CreatedDateTime                *time.Time                      `json:"createdDateTime,omitempty"`
 	State                          *AccessPackageRequestState      `json:"state,omitempty"`
 	Schedule                       *EntitlementManagementSchedule  `json:"schedule,omitempty"`
-	AccessPackageAssignment        *AccessPackageAssignment        `json:"assignment,omitempty"`
+	Assignment                     *AccessPackageAssignment        `json:"assignment,omitempty"`
+	AccessPackageAssignment        *AccessPackageAssignment        `json:"accessPackageAssignment,omitempty"`         // beta Relationship
 	CompletedDate                  *time.Time                      `json:"completedDate,omitempty"`                   // beta property
 	IsValidationOnly               *bool                           `json:"isValidationOnly,omitempty"`                // beta property
 	Justification                  *string                         `json:"justification,omitempty"`                   // beta property
@@ -189,6 +192,16 @@ type AccessPackageResourceScope struct {
 	OriginId     *string                           `json:"originId,omitempty"`
 	OriginSystem AccessPackageResourceOriginSystem `json:"originSystem,omitempty"`
 	Url          *string                           `json:"url"`
+}
+
+type AccessPackageSubject struct {
+	DisplayName                 *string `json:"displayName,omitempty"`
+	Email                       *string `json:"email,omitempty"`
+	ID                          *string `json:"id,omitempty"`
+	ObjectID                    *string `json:"objectId,omitempty"`
+	OnPremiseSecurityIdentifier *string `json:"onPremisesSecurityIdentifier,omitempty"`
+	PrincipalName               *string `json:"principalName,omitempty"`
+	SubjectType                 *string `json:"subjectType,omitempty"`
 }
 
 type AddIn struct {

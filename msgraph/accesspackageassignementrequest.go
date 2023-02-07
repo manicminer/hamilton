@@ -22,11 +22,13 @@ func NewAccessPackageAssignmentRequestClient(tenantId string) *AccessPackageAssi
 
 // List will list all access package assignment requests
 func (c *AccessPackageAssignementRequestClient) List(ctx context.Context, query odata.Query) (*[]AccessPackageAssignmentRequest, int, error) {
+	entity := getEntity(c.BaseClient.ApiVersion)
+
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		DisablePaging:    query.Top > 0,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      "/identityGovernance/entitlementManagement/assignmentRequests",
+			Entity:      entity,
 			Params:      query.Values(),
 			HasTenantId: true,
 		},
@@ -53,11 +55,12 @@ func (c *AccessPackageAssignementRequestClient) List(ctx context.Context, query 
 
 // Get will get an Access Package request
 func (c *AccessPackageAssignementRequestClient) Get(ctx context.Context, id string) (*AccessPackageAssignmentRequest, int, error) {
+	entity := getEntity(c.BaseClient.ApiVersion)
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/assignmentRequests/%s", id),
+			Entity:      fmt.Sprintf("%s/%s", entity, id),
 			HasTenantId: true,
 		},
 	})
@@ -82,6 +85,7 @@ func (c *AccessPackageAssignementRequestClient) Get(ctx context.Context, id stri
 // Create will create an access package request
 func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, accessPackageAssignementRequest AccessPackageAssignmentRequest) (*AccessPackageAssignmentRequest, int, error) {
 	var status int
+	entity := getEntity(c.BaseClient.ApiVersion)
 	body, err := json.Marshal(accessPackageAssignementRequest)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
@@ -91,7 +95,7 @@ func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, acce
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      "/identityGovernance/entitlementManagement/assignmentRequests",
+			Entity:      entity,
 			HasTenantId: true,
 		},
 	})
@@ -115,11 +119,12 @@ func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, acce
 
 // Delete will delete an access package request
 func (c *AccessPackageAssignementRequestClient) Delete(ctx context.Context, id string) (int, error) {
+	entity := getEntity(c.BaseClient.ApiVersion)
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/assignmentRequests/%s", id),
+			Entity:      fmt.Sprintf("%s/%s", entity, id),
 			HasTenantId: true,
 		},
 	})
@@ -134,11 +139,11 @@ func (c *AccessPackageAssignementRequestClient) Delete(ctx context.Context, id s
 // Cancel will cancel a request is in a cancellable state
 func (c *AccessPackageAssignementRequestClient) Cancel(ctx context.Context, id string) (int, error) {
 	var status int
-
+	entity := getEntity(c.BaseClient.ApiVersion)
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/assignmentRequests/%s/cancel", id),
+			Entity:      fmt.Sprintf("%s/%s/cancel", entity, id),
 			HasTenantId: true,
 		},
 	})
@@ -152,11 +157,11 @@ func (c *AccessPackageAssignementRequestClient) Cancel(ctx context.Context, id s
 // Reprocess re-processes an access package assignment request
 func (c *AccessPackageAssignementRequestClient) Reprocess(ctx context.Context, id string) (int, error) {
 	var status int
-
+	entity := getEntity(c.BaseClient.ApiVersion)
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusAccepted},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/assignmentRequests/%s/reprocess", id),
+			Entity:      fmt.Sprintf("/%s/%s/reprocess", entity, id),
 			HasTenantId: true,
 		},
 	})
@@ -165,4 +170,11 @@ func (c *AccessPackageAssignementRequestClient) Reprocess(ctx context.Context, i
 	}
 
 	return status, nil
+}
+
+func getEntity(api ApiVersion) string {
+	if api == VersionBeta {
+		return "/identityGovernance/entitlementManagement/accessPackageAssignmentRequests"
+	}
+	return "/identityGovernance/entitlementManagement/assignmentRequests"
 }
