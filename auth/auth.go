@@ -27,6 +27,7 @@ type Authorizer interface {
 // - GitHub OIDC authentication
 // - MSI authentication
 // - Azure CLI authentication
+// - Custom command authentication
 //
 // Whether one of these is returned depends on whether it is enabled in the Config, and whether sufficient
 // configuration fields are set to enable that authentication method.
@@ -35,6 +36,7 @@ type Authorizer interface {
 // For client secret authentication, specify TenantID, ClientID and ClientSecret.
 // For GitHub OIDC authentication, specify TenantID, ClientID, IDTokenRequestURL and IDTokenRequestToken.
 // MSI authentication (if enabled) using the Azure Metadata Service is then attempted
+// For Custom command authentication, specify TenantID, AuxiliaryTenantIDs (opt), TokenType (opt) and the command.
 // Azure CLI authentication (if enabled) is attempted last
 //
 // It's recommended to only enable the mechanisms you have configured and are known to work in the execution
@@ -85,6 +87,16 @@ func (c *Config) NewAuthorizer(ctx context.Context, api environments.Api) (Autho
 		a, err := NewMsiAuthorizer(ctx, api, c.MsiEndpoint, c.ClientID)
 		if err != nil {
 			return nil, fmt.Errorf("could not configure MSI Authorizer: %s", err)
+		}
+		if a != nil {
+			return a, nil
+		}
+	}
+
+	if c.EnableCustomCommandAuth && strings.TrimSpace(c.TenantID) != "" && len(c.Command) != 0 {
+		a, err := NewCustomCommandAuthorizer(ctx, api, c.TenantID, c.AuxiliaryTenantIDs, c.TokenType, c.Command)
+		if err != nil {
+			return nil, fmt.Errorf("could not configure Custom Command Authorizer: %s", err)
 		}
 		if a != nil {
 			return a, nil
