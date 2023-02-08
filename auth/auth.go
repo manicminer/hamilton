@@ -104,6 +104,15 @@ func (c *Config) NewAuthorizer(ctx context.Context, api environments.Api) (Autho
 	return nil, fmt.Errorf("no Authorizer could be configured, please check your configuration")
 }
 
+// NewCustomCommandAuthorizer returns an Authorizer which authenticates using a custom command.
+func NewCustomCommandAuthorizer(ctx context.Context, api environments.Api, tenantId string, auxTenantIds []string, tokenType string, command []string) (Authorizer, error) {
+	conf, err := NewCustomCommandConfig(api, tenantId, auxTenantIds, tokenType, command)
+	if err != nil {
+		return nil, err
+	}
+	return conf.TokenSource(ctx), nil
+}
+
 // NewAzureCliAuthorizer returns an Authorizer which authenticates using the Azure CLI.
 func NewAzureCliAuthorizer(ctx context.Context, api environments.Api, tenantId string) (Authorizer, error) {
 	conf, err := NewAzureCliConfig(api, tenantId)

@@ -106,6 +106,45 @@ func testClientSecretAuthorizer(ctx context.Context, t *testing.T, tokenVersion 
 	return
 }
 
+func TestCustomCommandAuthorizer(t *testing.T) {
+	ctx := context.Background()
+	cmds := [][]string{
+		{"az", "account", "get-access-token", "--resource={{.Endpoint}}"},
+		{"echo", "mytoken"},
+	}
+	for _, cmd := range cmds {
+		testCustomCommandAuthorizer(ctx, t, cmd)
+	}
+}
+
+func testCustomCommandAuthorizer(ctx context.Context, t *testing.T, cmd []string) (token *oauth2.Token) {
+	env, err := environments.EnvironmentFromString(environment)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	auth, err := auth.NewCustomCommandAuthorizer(ctx, env.MsGraph, tenantId, nil, "", cmd)
+	if err != nil {
+		t.Fatalf("NewCustomCommandAuthorizer(): %v", err)
+	}
+	if auth == nil {
+		t.Fatal("auth is nil, expected Authorizer")
+	}
+
+	token, err = auth.Token()
+	if err != nil {
+		t.Fatalf("auth.Token(): %v", err)
+	}
+	if token == nil {
+		t.Fatalf("token was nil")
+	}
+	if token.AccessToken == "" {
+		t.Fatalf("token.AccessToken was empty")
+	}
+
+	return
+}
+
 func TestAzureCliAuthorizer(t *testing.T) {
 	ctx := context.Background()
 	testAzureCliAuthorizer(ctx, t)
