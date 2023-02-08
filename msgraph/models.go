@@ -44,22 +44,22 @@ type AccessPackageAssignment struct {
 }
 
 type AccessPackageAssignmentRequest struct {
-	ID                             *string                         `json:"id,omitempty"`
-	RequestType                    *AccessPackageRequestType       `json:"requestType,omitempty"`
-	Status                         *string                         `json:"status,omitempty"`
-	CompletedDateTime              *time.Time                      `json:"completedDateTime,omitempty"`
-	CreatedDateTime                *time.Time                      `json:"createdDateTime,omitempty"`
-	State                          *AccessPackageRequestState      `json:"state,omitempty"`
-	Schedule                       *EntitlementManagementSchedule  `json:"schedule,omitempty"`
-	Assignment                     *AccessPackageAssignment        `json:"assignment,omitempty"`
-	AccessPackageAssignment        *AccessPackageAssignment        `json:"accessPackageAssignment,omitempty"`         // beta Relationship
-	CompletedDate                  *time.Time                      `json:"completedDate,omitempty"`                   // beta property
-	IsValidationOnly               *bool                           `json:"isValidationOnly,omitempty"`                // beta property
-	Justification                  *string                         `json:"justification,omitempty"`                   // beta property
-	RequestState                   *AccessPackageRequestState      `json:"requestState,omitempty"`                    // beta property
-	RequestStatus                  *string                         `json:"requestStatus,omitempty"`                   // beta property
-	CustomExtensionHandlerInstance *CustomExtensionHandlerInstance `json:"customExtensionHandlerInstances,omitempty"` // beta property
-	Answers                        *[]AccessPackageAnswer          `json:"answers,omitempty"`                         // beta property
+	ID                             *string                           `json:"id,omitempty"`
+	RequestType                    *AccessPackageRequestType         `json:"requestType,omitempty"`
+	Status                         *string                           `json:"status,omitempty"`
+	CompletedDateTime              *time.Time                        `json:"completedDateTime,omitempty"`
+	CreatedDateTime                *time.Time                        `json:"createdDateTime,omitempty"`
+	State                          *AccessPackageRequestState        `json:"state,omitempty"`
+	Schedule                       *EntitlementManagementSchedule    `json:"schedule,omitempty"`
+	Assignment                     *AccessPackageAssignment          `json:"assignment,omitempty"`
+	AccessPackageAssignment        *AccessPackageAssignment          `json:"accessPackageAssignment,omitempty"`         // beta Relationship
+	CompletedDate                  *time.Time                        `json:"completedDate,omitempty"`                   // beta property
+	IsValidationOnly               *bool                             `json:"isValidationOnly,omitempty"`                // beta property
+	Justification                  *string                           `json:"justification,omitempty"`                   // beta property
+	RequestState                   *AccessPackageRequestState        `json:"requestState,omitempty"`                    // beta property
+	RequestStatus                  *string                           `json:"requestStatus,omitempty"`                   // beta property
+	CustomExtensionHandlerInstance *[]CustomExtensionHandlerInstance `json:"customExtensionHandlerInstances,omitempty"` // beta property
+	Answers                        *[]AccessPackageAnswer            `json:"answers,omitempty"`                         // beta property
 }
 
 type AccessPackageAssignmentPolicy struct {
