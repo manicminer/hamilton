@@ -129,6 +129,7 @@ type Test struct {
 	SignInReportsClient                       *msgraph.SignInReportsClient
 	SynchronizationJobClient                  *msgraph.SynchronizationJobClient
 	TermsOfUseAgreementClient                 *msgraph.TermsOfUseAgreementClient
+	TokenIssuancePolicyClient                 *msgraph.TokenIssuancePolicyClient
 	UserFlowAttributesClient                  *msgraph.UserFlowAttributesClient
 	UsersAppRoleAssignmentsClient             *msgraph.AppRoleAssignmentsClient
 	UsersClient                               *msgraph.UsersClient
@@ -378,6 +379,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.TermsOfUseAgreementClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.TermsOfUseAgreementClient.BaseClient.Endpoint = *endpoint
 	c.TermsOfUseAgreementClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.TokenIssuancePolicyClient = msgraph.NewTokenIssuancePolicyClient(c.Connections["default"].AuthConfig.TenantID)
+	c.TokenIssuancePolicyClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.TokenIssuancePolicyClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.TokenIssuancePolicyClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.UserFlowAttributesClient = msgraph.NewUserFlowAttributesClient()
 	c.UserFlowAttributesClient.BaseClient.Authorizer = c.Connections["b2c"].Authorizer
