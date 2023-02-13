@@ -243,7 +243,6 @@ type Application struct {
 	AppId                         *string                   `json:"appId,omitempty"`
 	ApplicationTemplateId         *string                   `json:"applicationTemplateId,omitempty"`
 	AppRoles                      *[]AppRole                `json:"appRoles,omitempty"`
-	TokenIssuancePolicies         *[]TokenIssuancePolicy    `json:"tokenIssuancePolicies@odata.bind,omitempty"`
 	CreatedDateTime               *time.Time                `json:"createdDateTime,omitempty"`
 	DefaultRedirectUri            *string                   `json:"defaultRedirectUri,omitempty"`
 	DeletedDateTime               *time.Time                `json:"deletedDateTime,omitempty"`
@@ -272,6 +271,7 @@ type Application struct {
 	Spa                           *ApplicationSpa           `json:"spa,omitempty"`
 	Tags                          *[]string                 `json:"tags,omitempty"`
 	TokenEncryptionKeyId          *string                   `json:"tokenEncryptionKeyId,omitempty"`
+	TokenIssuancePolicies         *[]TokenIssuancePolicy    `json:"tokenIssuancePolicies@odata.bind,omitempty"`
 	UniqueName                    *string                   `json:"uniqueName,omitempty"`
 	VerifiedPublisher             *VerifiedPublisher        `json:"verifiedPublisher,omitempty"`
 	Web                           *ApplicationWeb           `json:"web,omitempty"`
