@@ -125,7 +125,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 
 	testAccessPackageAssignmentRequestClient_Get(t, c, *ap.ID)
 
-	//Cleanup
+	// Cleanup
 	deleteWhenPossible(t, c, ap)
 	deleteWhenPossible(t, c, ap2)
 	testAccessPackageAssignmentPolicyClient_Delete(t, c, *accessPackageAssignmentPolicy.ID)
@@ -151,16 +151,16 @@ func deleteWhenPossible(t *testing.T, c *test.Test, ap *msgraph.AccessPackageAss
 func testAccessPackageAssignmentRequestClient_Create(t *testing.T, c *test.Test, ar msgraph.AccessPackageAssignmentRequest) (request *msgraph.AccessPackageAssignmentRequest) {
 	request, status, err := c.AccessPackageAssignmentRequestClient.Create(c.Context, ar)
 	if err != nil {
-		t.Fatalf("AccessPackageAssignementRequestClient.Create(): %v", err)
+		t.Fatalf("AccessPackageAssignmentRequestClient.Create(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("AccessPackageAssignementRequestClient.Create(): invalid status: %d", status)
+		t.Fatalf("AccessPackageAssignmentRequestClient.Create(): invalid status: %d", status)
 	}
 	if request == nil {
-		t.Fatal("AccessPackageAssignementRequestClient.Create(): AccessPackageAssignmentRequest was nil")
+		t.Fatal("AccessPackageAssignmentRequestClient.Create(): AccessPackageAssignmentRequest was nil")
 	}
 	if request.ID == nil {
-		t.Fatal("AccessPackageAssignementRequestClient.Create(): AccessPackageAssignmentRequest.ID was nil")
+		t.Fatal("AccessPackageAssignmentRequestClient.Create(): AccessPackageAssignmentRequest.ID was nil")
 	}
 	return request
 }
@@ -168,16 +168,16 @@ func testAccessPackageAssignmentRequestClient_Create(t *testing.T, c *test.Test,
 func testAccessPackageAssignmentRequestClient_Get(t *testing.T, c *test.Test, id string) {
 	request, status, err := c.AccessPackageAssignmentRequestClient.Get(c.Context, id)
 	if err != nil {
-		t.Fatalf("AccessPackageAssignementRequestClient.Get(): %v", err)
+		t.Fatalf("AccessPackageAssignmentRequestClient.Get(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("AccessPackageAssignementRequestClient.Get(): invalid status: %d", status)
+		t.Fatalf("AccessPackageAssignmentRequestClient.Get(): invalid status: %d", status)
 	}
 	if request == nil {
-		t.Fatal("AccessPackageAssignementRequestClient.Get(): AccessPackageAssignmentRequest was nil")
+		t.Fatal("AccessPackageAssignmentRequestClient.Get(): AccessPackageAssignmentRequest was nil")
 	}
 	if request.ID == nil {
-		t.Fatal("AccessPackageAssignementRequestClient.Get(): AccessPackageAssignmentRequest.ID was nil")
+		t.Fatal("AccessPackageAssignmentRequestClient.Get(): AccessPackageAssignmentRequest.ID was nil")
 	}
 }
 
@@ -197,7 +197,7 @@ func testAccessPackageAssignmentRequestClient_List(t *testing.T, c *test.Test, I
 		t.Fatalf("AccessPackageAssignmentRequestClient.List(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("AccessPackageAssignementRequestClient.List(): invalid status: %d", status)
+		t.Fatalf("AccessPackageAssignmentRequestClient.List(): invalid status: %d", status)
 	}
 	count := len(IDs)
 
@@ -207,7 +207,7 @@ func testAccessPackageAssignmentRequestClient_List(t *testing.T, c *test.Test, I
 		}
 	}
 	if count != 0 {
-		t.Fatalf("AccessPackageAssignementRequestClient.List(): failed to find AP requests that should have existed")
+		t.Fatalf("AccessPackageAssignmentRequestClient.List(): failed to find AP requests that should have existed")
 	}
 }
 

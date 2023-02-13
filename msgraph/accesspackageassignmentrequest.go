@@ -10,18 +10,18 @@ import (
 	"github.com/manicminer/hamilton/odata"
 )
 
-type AccessPackageAssignementRequestClient struct {
+type AccessPackageAssignmentRequestClient struct {
 	BaseClient Client
 }
 
-func NewAccessPackageAssignmentRequestClient(tenantId string) *AccessPackageAssignementRequestClient {
-	return &AccessPackageAssignementRequestClient{
+func NewAccessPackageAssignmentRequestClient(tenantId string) *AccessPackageAssignmentRequestClient {
+	return &AccessPackageAssignmentRequestClient{
 		BaseClient: NewClient(Version10, tenantId),
 	}
 }
 
 // List will list all access package assignment requests
-func (c *AccessPackageAssignementRequestClient) List(ctx context.Context, query odata.Query) (*[]AccessPackageAssignmentRequest, int, error) {
+func (c *AccessPackageAssignmentRequestClient) List(ctx context.Context, query odata.Query) (*[]AccessPackageAssignmentRequest, int, error) {
 	entity := getEntity(c.BaseClient.ApiVersion)
 
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
@@ -34,7 +34,7 @@ func (c *AccessPackageAssignementRequestClient) List(ctx context.Context, query 
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("AccessPackageAssignementRequestClient.BaseClient.Get(): %v", err)
+		return nil, status, fmt.Errorf("AccessPackageAssignmentRequestClient.BaseClient.Get(): %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -44,17 +44,17 @@ func (c *AccessPackageAssignementRequestClient) List(ctx context.Context, query 
 	}
 
 	var data struct {
-		AccessPacakgeAssignmentRequest []AccessPackageAssignmentRequest `json:"value"`
+		AccessPackageAssignmentRequest []AccessPackageAssignmentRequest `json:"value"`
 	}
 	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	return &data.AccessPacakgeAssignmentRequest, status, nil
+	return &data.AccessPackageAssignmentRequest, status, nil
 }
 
 // Get will get an Access Package request
-func (c *AccessPackageAssignementRequestClient) Get(ctx context.Context, id string) (*AccessPackageAssignmentRequest, int, error) {
+func (c *AccessPackageAssignmentRequestClient) Get(ctx context.Context, id string) (*AccessPackageAssignmentRequest, int, error) {
 	entity := getEntity(c.BaseClient.ApiVersion)
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -65,7 +65,7 @@ func (c *AccessPackageAssignementRequestClient) Get(ctx context.Context, id stri
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("AccessPackageAssignementRequestClient.BaseClient.Get(): %v", err)
+		return nil, status, fmt.Errorf("AccessPackageAssignmentRequestClient.BaseClient.Get(): %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -83,7 +83,7 @@ func (c *AccessPackageAssignementRequestClient) Get(ctx context.Context, id stri
 }
 
 // Create will create an access package request
-func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, accessPackageAssignementRequest AccessPackageAssignmentRequest) (*AccessPackageAssignmentRequest, int, error) {
+func (c *AccessPackageAssignmentRequestClient) Create(ctx context.Context, accessPackageAssignementRequest AccessPackageAssignmentRequest) (*AccessPackageAssignmentRequest, int, error) {
 	var status int
 	entity := getEntity(c.BaseClient.ApiVersion)
 	body, err := json.Marshal(accessPackageAssignementRequest)
@@ -100,7 +100,7 @@ func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, acce
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("AccessPackageAssignementRequestClient.BaseClient.Post(): %v", err)
+		return nil, status, fmt.Errorf("AccessPackageAssignmentRequestClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -118,7 +118,7 @@ func (c *AccessPackageAssignementRequestClient) Create(ctx context.Context, acce
 }
 
 // Delete will delete an access package request
-func (c *AccessPackageAssignementRequestClient) Delete(ctx context.Context, id string) (int, error) {
+func (c *AccessPackageAssignmentRequestClient) Delete(ctx context.Context, id string) (int, error) {
 	entity := getEntity(c.BaseClient.ApiVersion)
 	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
@@ -137,7 +137,7 @@ func (c *AccessPackageAssignementRequestClient) Delete(ctx context.Context, id s
 }
 
 // Cancel will cancel a request is in a cancellable state
-func (c *AccessPackageAssignementRequestClient) Cancel(ctx context.Context, id string) (int, error) {
+func (c *AccessPackageAssignmentRequestClient) Cancel(ctx context.Context, id string) (int, error) {
 	var status int
 	entity := getEntity(c.BaseClient.ApiVersion)
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
@@ -148,14 +148,14 @@ func (c *AccessPackageAssignementRequestClient) Cancel(ctx context.Context, id s
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("AccessPackageAssignementRequestClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("AccessPackageAssignmentRequestClient.BaseClient.Post(): %v", err)
 	}
 
 	return status, nil
 }
 
 // Reprocess re-processes an access package assignment request
-func (c *AccessPackageAssignementRequestClient) Reprocess(ctx context.Context, id string) (int, error) {
+func (c *AccessPackageAssignmentRequestClient) Reprocess(ctx context.Context, id string) (int, error) {
 	var status int
 	entity := getEntity(c.BaseClient.ApiVersion)
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
@@ -166,7 +166,7 @@ func (c *AccessPackageAssignementRequestClient) Reprocess(ctx context.Context, i
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("AccessPackageAssignementRequestClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("AccessPackageAssignmentRequestClient.BaseClient.Post(): %v", err)
 	}
 
 	return status, nil

@@ -96,7 +96,7 @@ type Test struct {
 	Token  *oauth2.Token
 
 	AccessPackageAssignmentPolicyClient       *msgraph.AccessPackageAssignmentPolicyClient
-	AccessPackageAssignmentRequestClient      *msgraph.AccessPackageAssignementRequestClient
+	AccessPackageAssignmentRequestClient      *msgraph.AccessPackageAssignmentRequestClient
 	AccessPackageCatalogClient                *msgraph.AccessPackageCatalogClient
 	AccessPackageClient                       *msgraph.AccessPackageClient
 	AccessPackageResourceClient               *msgraph.AccessPackageResourceClient
