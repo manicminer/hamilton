@@ -96,6 +96,7 @@ type Test struct {
 	Token  *oauth2.Token
 
 	AccessPackageAssignmentPolicyClient       *msgraph.AccessPackageAssignmentPolicyClient
+	AccessPackageAssignmentRequestClient      *msgraph.AccessPackageAssignmentRequestClient
 	AccessPackageCatalogClient                *msgraph.AccessPackageCatalogClient
 	AccessPackageClient                       *msgraph.AccessPackageClient
 	AccessPackageResourceClient               *msgraph.AccessPackageResourceClient
@@ -182,6 +183,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AccessPackageAssignmentPolicyClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.AccessPackageAssignmentPolicyClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
 	c.AccessPackageAssignmentPolicyClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.AccessPackageAssignmentRequestClient = msgraph.NewAccessPackageAssignmentRequestClient(c.Connections["default"].AuthConfig.TenantID)
+	c.AccessPackageAssignmentRequestClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.AccessPackageAssignmentRequestClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.AccessPackageAssignmentRequestClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageCatalogClient = msgraph.NewAccessPackageCatalogClient(c.Connections["default"].AuthConfig.TenantID)
 	c.AccessPackageCatalogClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
