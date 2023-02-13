@@ -117,6 +117,8 @@ type Test struct {
 	DirectoryRoleTemplatesClient              *msgraph.DirectoryRoleTemplatesClient
 	DirectoryRolesClient                      *msgraph.DirectoryRolesClient
 	DomainsClient                             *msgraph.DomainsClient
+	EntitlementRoleAssignmentsClient          *msgraph.EntitlementRoleAssignmentsClient
+	EntitlementRoleDefinitionsClient          *msgraph.EntitlementRoleDefinitionsClient
 	GroupsAppRoleAssignmentsClient            *msgraph.AppRoleAssignmentsClient
 	GroupsClient                              *msgraph.GroupsClient
 	IdentityProvidersClient                   *msgraph.IdentityProvidersClient
@@ -289,6 +291,16 @@ func NewTest(t *testing.T) (c *Test) {
 	c.DomainsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.DomainsClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
 	c.DomainsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.EntitlementRoleAssignmentsClient = msgraph.NewEntitlementRoleAssignmentsClient(c.Connections["default"].AuthConfig.TenantID)
+	c.EntitlementRoleAssignmentsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.EntitlementRoleAssignmentsClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.EntitlementRoleAssignmentsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.EntitlementRoleDefinitionsClient = msgraph.NewEntitlementRoleDefinitionsClient(c.Connections["default"].AuthConfig.TenantID)
+	c.EntitlementRoleDefinitionsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.EntitlementRoleDefinitionsClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.EntitlementRoleDefinitionsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.GroupsAppRoleAssignmentsClient = msgraph.NewGroupsAppRoleAssignmentsClient(c.Connections["default"].AuthConfig.TenantID)
 	c.GroupsAppRoleAssignmentsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
