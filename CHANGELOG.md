@@ -1,6 +1,7 @@
 ## 0.56.0 (Unreleased)
 
 - Auth: support for reading PKCS#12 bundles containing additional CA certificates ([#212](https://github.com/manicminer/hamilton/pull/212))
+- Support for [Access Package Assignment Requests](https://learn.microsoft.com/en-us/graph/api/resources/accesspackageassignmentrequest?view=graph-rest-1.0) ([#210](https://github.com/manicminer/hamilton/pull/210))
 
 ## 0.55.0 (January 27, 2023)
 
