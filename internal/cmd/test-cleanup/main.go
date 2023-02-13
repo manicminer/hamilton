@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/auth"
+	"github.com/hashicorp/go-azure-sdk/sdk/environments"
 	"github.com/manicminer/hamilton/internal/utils"
 )
 
@@ -28,21 +28,22 @@ const displayNamePrefix = "test-"
 
 func init() {
 	ctx = context.Background()
+	env := environments.AzurePublic()
 
-	authConfig := &auth.Config{
-		Environment:            environments.Global,
-		TenantID:               tenantId,
-		ClientID:               clientId,
-		ClientCertData:         utils.Base64DecodeCertificate(clientCertificate),
-		ClientCertPath:         clientCertificatePath,
-		ClientCertPassword:     clientCertPassword,
-		ClientSecret:           clientSecret,
-		EnableClientCertAuth:   true,
-		EnableClientSecretAuth: true,
+	creds := auth.Credentials{
+		Environment:               *env,
+		TenantID:                  tenantId,
+		ClientID:                  clientId,
+		ClientCertificateData:     utils.Base64DecodeCertificate(clientCertificate),
+		ClientCertificatePath:     clientCertificatePath,
+		ClientCertificatePassword: clientCertPassword,
+		ClientSecret:              clientSecret,
+		EnableAuthenticatingUsingClientCertificate: true,
+		EnableAuthenticatingUsingClientSecret:      true,
 	}
 
 	var err error
-	authorizer, err = authConfig.NewAuthorizer(ctx, environments.Global.MsGraph)
+	authorizer, err = auth.NewAuthorizerFromCredentials(ctx, creds, env.MicrosoftGraph)
 	if err != nil {
 		log.Fatalln(err)
 	}

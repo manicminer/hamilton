@@ -16,8 +16,7 @@ See [pkg.go.dev](https://pkg.go.dev/github.com/manicminer/hamilton).
 - Support for both the v1.0 and beta API endpoints
 - Ability to inject middleware functions for logging etc
 - OData parsing in API responses and support for OData queries such as filters, sorting, searching, expand and select
-- Built-in authentication support using methods including client credentials (both client secret and client certificate), obtaining access tokens via Azure CLI, managed identity via the Azure Metadata Service, and federated credentials with a built-in authorizer for GitHub OIDC.
-- Compatibility with [go-autorest](https://github.com/Azure/go-autorest), both for consuming autorest authorizers, and for providing autorest-compatible authorizers (see the [hamilton-autorest](https://github.com/manicminer/hamilton-autorest) add-on module)
+- Authentication now uses [github.com/hashicorp/go-azure-sdk/sdk/auth](https://github.com/hashicorp/go-azure-sdk/tree/main/sdk/auth)
 
 ## Getting Started
 
@@ -30,8 +29,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/auth"
+	"github.com/hashicorp/go-azure-sdk/sdk/environments"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
@@ -44,18 +43,18 @@ var (
 
 func main() {
 	ctx := context.Background()
+	env := environments.AzurePublic()
 
-	environment := environments.Global
+	credentials := auth.Credentials{
+		Environment:  *env,
+		TenantID:     tenantId,
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
 
-	authConfig := &auth.Config{
-		Environment:            environment,
-		TenantID:               tenantId,
-		ClientID:               clientId,
-		ClientSecret:           clientSecret,
-		EnableClientSecretAuth: true,
+		EnableAuthenticatingUsingClientSecret: true,
 	}
 
-	authorizer, err := authConfig.NewAuthorizer(ctx, environment.MsGraph)
+	authorizer, err := auth.NewAuthorizerFromCredentials(ctx, credentials, env.MicrosoftGraph)
 	if err != nil {
 		log.Fatal(err)
 	}
