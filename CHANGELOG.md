@@ -1,3 +1,7 @@
+## 0.56.0 (Unreleased)
+
+- Auth: support for reading PKCS#12 bundles containing additional CA certificates ([#212](https://github.com/manicminer/hamilton/pull/212))
+
 ## 0.55.0 (January 27, 2023)
 
 - Support for [creating groups in an administrative unit](https://learn.microsoft.com/en-us/azure/active-directory/roles/admin-units-members-add#create-a-new-group-in-an-administrative-unit-2) ([#206](https://github.com/manicminer/hamilton/pull/206))
