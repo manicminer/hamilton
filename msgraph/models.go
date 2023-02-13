@@ -1591,6 +1591,37 @@ type TargetResource struct {
 	ModifiedProperties *[]ModifiedProperty `json:"modifiedProperties,omitempty"`
 }
 
+type TermsOfUseAgreement struct {
+	ID                                *string                        `json:"id,omitempty"`
+	DisplayName                       *string                        `json:"displayName,omitempty"`
+	UserReacceptRequiredFrequency     *string                        `json:"userReacceptRequiredFrequency,omitempty"`
+	IsViewingBeforeAcceptanceRequired *bool                          `json:"isViewingBeforeAcceptanceRequired,omitempty"`
+	IsPerDeviceAcceptanceRequired     *bool                          `json:"isPerDeviceAcceptanceRequired,omitempty"`
+	TermsExpiration                   *TermsOfUseAgreementExpiration `json:"termsExpiration,omitempty"` //For some reason this exports the Frequency both here and above AcceptanceExpirationFrequency Request separates them but response groups them. Anticipate this in Tests
+	Files                             *[]TermsOfUseAgreementFile     `json:"files,omitempty"`
+	File                              *TermsOfUseAgreementFile       `json:"file,omitempty"`
+}
+
+type TermsOfUseAgreementExpiration struct {
+	StartDateTime *time.Time `json:"startDateTime,omitempty"`
+	Frequency     *string    `json:"frequency,omitempty"`
+}
+
+type TermsOfUseAgreementFileData struct {
+	//Data is within its own object for some reason
+	Data *[]byte `json:"data,omitempty"`
+}
+
+type TermsOfUseAgreementFile struct {
+	ID             *string                      `json:"id,omitempty"`
+	DisplayName    *string                      `json:"displayName,omitempty"`
+	FileName       *string                      `json:"fileName,omitempty"`
+	Language       *string                      `json:"language,omitempty"`
+	IsDefault      *bool                        `json:"isDefault,omitempty"`
+	IsMajorVersion *bool                        `json:"isMajorVersion,omitempty"`
+	FileData       *TermsOfUseAgreementFileData `json:"fileData,omitempty"`
+}
+
 type TemporaryAccessPassAuthenticationMethod struct {
 	ID                    *string                `json:"id,omitempty"`
 	TemporaryAccessPass   *string                `json:"temporaryAccessPass,omitempty"`
