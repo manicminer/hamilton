@@ -667,6 +667,7 @@ type ConditionalAccessPolicy struct {
 type ConditionalAccessSessionControls struct {
 	ApplicationEnforcedRestrictions *ApplicationEnforcedRestrictionsSessionControl `json:"applicationEnforcedRestrictions,omitempty"`
 	CloudAppSecurity                *CloudAppSecurityControl                       `json:"cloudAppSecurity,omitempty"`
+	DisableResilienceDefaults       *bool                                          `json:"disableResilienceDefaults,omitempty"`
 	PersistentBrowser               *PersistentBrowserSessionControl               `json:"persistentBrowser,omitempty"`
 	SignInFrequency                 *SignInFrequencySessionControl                 `json:"signInFrequency,omitempty"`
 }
