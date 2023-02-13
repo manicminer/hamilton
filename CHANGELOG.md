@@ -1,6 +1,7 @@
 ## 0.56.0 (Unreleased)
 
 - Auth: support for reading PKCS#12 bundles containing additional CA certificates ([#212](https://github.com/manicminer/hamilton/pull/212))
+- Environments: add `MicrosoftOffice`, `MicrosoftTeams`, `MicrosoftTeamsWebClient`, `Office365SuiteUx`, `OfficeHome`, `OfficeUwpPwa` and `OssRdbmsPostgreSqlFlexibleServerAadAuthentication` to `PublishedApis` ([#216](https://github.com/manicminer/hamilton/pull/216))
 - Support for [Access Package Assignment Requests](https://learn.microsoft.com/en-us/graph/api/resources/accesspackageassignmentrequest?view=graph-rest-1.0) ([#210](https://github.com/manicminer/hamilton/pull/210))
 - Support for [Role Definitions](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroledefinition?view=graph-rest-1.0) and [Role Assignments](https://learn.microsoft.com/en-us/graph/api/rbacapplication-post-roleassignments?view=graph-rest-1.0) for [Entitlement Management](https://learn.microsoft.com/en-us/graph/api/resources/entitlementmanagement-overview?view=graph-rest-1.0) ([#208](https://github.com/manicminer/hamilton/pull/208))
 - Support for the [`DisableResilienceDefaults` session control](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesssessioncontrols?view=graph-rest-1.0) for Conditional Access Policies ([#207](https://github.com/manicminer/hamilton/pull/207))
