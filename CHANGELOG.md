@@ -1,4 +1,4 @@
-## 0.56.0 (Unreleased)
+## 0.56.0 (February 13, 2023)
 
 - Auth: support for reading PKCS#12 bundles containing additional CA certificates ([#212](https://github.com/manicminer/hamilton/pull/212))
 - Environments: add `MicrosoftOffice`, `MicrosoftTeams`, `MicrosoftTeamsWebClient`, `Office365SuiteUx`, `OfficeHome`, `OfficeUwpPwa` and `OssRdbmsPostgreSqlFlexibleServerAadAuthentication` to `PublishedApis` ([#216](https://github.com/manicminer/hamilton/pull/216))
