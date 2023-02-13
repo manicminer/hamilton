@@ -2,6 +2,7 @@
 
 - Auth: support for reading PKCS#12 bundles containing additional CA certificates ([#212](https://github.com/manicminer/hamilton/pull/212))
 - Support for [Access Package Assignment Requests](https://learn.microsoft.com/en-us/graph/api/resources/accesspackageassignmentrequest?view=graph-rest-1.0) ([#210](https://github.com/manicminer/hamilton/pull/210))
+- Bugfix: `PreferredTokenSigningKeyThumbprint` in the `ServicePrincipal` model has changed from a `*string` to a `*StringNullWhenEmpty` ([#211](https://github.com/manicminer/hamilton/pull/211))
 
 ## 0.55.0 (January 27, 2023)
 
