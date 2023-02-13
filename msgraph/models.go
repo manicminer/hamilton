@@ -261,6 +261,7 @@ type Application struct {
 	Oauth2RequirePostResponse     *bool                     `json:"oauth2RequirePostResponse,omitempty"`
 	OnPremisesPublishing          *OnPremisesPublishing     `json:"onPremisePublishing,omitempty"`
 	OptionalClaims                *OptionalClaims           `json:"optionalClaims,omitempty"`
+	Notes                         *string                   `json:"notes,omitempty"`
 	ParentalControlSettings       *ParentalControlSettings  `json:"parentalControlSettings,omitempty"`
 	PasswordCredentials           *[]PasswordCredential     `json:"passwordCredentials,omitempty"`
 	PublicClient                  *PublicClient             `json:"publicClient,omitempty"`
