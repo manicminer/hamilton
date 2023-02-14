@@ -12,8 +12,8 @@ import (
 
 	"github.com/hashicorp/go-azure-sdk/sdk/auth"
 	"github.com/hashicorp/go-azure-sdk/sdk/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/hashicorp/go-retryablehttp"
-	"github.com/manicminer/hamilton/odata"
 )
 
 type ApiVersion string
@@ -400,7 +400,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 
 		// Get the next page, recursively
 		nextInput := input
-		nextInput.rawUri = *firstOdata.NextLink
+		nextInput.rawUri = string(*firstOdata.NextLink)
 		nextResp, status, o, err := c.Get(ctx, nextInput)
 		if err != nil {
 			return resp, status, o, err

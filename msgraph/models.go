@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/errors"
-	"github.com/manicminer/hamilton/odata"
 )
 
 type AccessPackage struct {
