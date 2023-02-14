@@ -266,6 +266,23 @@ const (
 	BodyTypeHtml BodyType = "html"
 )
 
+type ChatMessageType = string
+
+const (
+	ChatMessageTypeMessage            ChatMessageType = "message"
+	ChatMessageTypeUnknownFutureValue ChatMessageType = "unknownFutureValue"
+	ChatMessageTypeSystemEventMessage ChatMessageType = "systemEventMessage"
+)
+
+type ChatType = string
+
+const (
+	ChatTypeGroup              ChatType = "group"
+	ChatTypeOneOnOne           ChatType = "oneOnOne"
+	ChatTypeMeeting            ChatType = "meeting"
+	ChatTypeUnknownFutureValue ChatType = "unknownFutureValue"
+)
+
 type ConsentProvidedForMinor = StringNullWhenEmpty
 
 const (
@@ -374,6 +391,15 @@ const (
 	ConnectedOrganizationStateProposed           ConnectedOrganizationState = "proposed"
 	ConnectedOrganizationStateConfigured         ConnectedOrganizationState = "configured"
 	ConnectedOrganizationStateUnknownFutureValue ConnectedOrganizationState = "unknownFutureValue"
+)
+
+type ConversationIdentityType = string
+
+const (
+	ConversationIdentityTypeTeam               ConversationIdentityType = "team"
+	ConversationIdentityTypeChat               ConversationIdentityType = "chat"
+	ConversationIdentityTypeChannel            ConversationIdentityType = "channel"
+	ConversationIdentityTypeUnknownFutureValue ConversationIdentityType = "unknownFutureValue"
 )
 
 type DaysOfWeekType = string
@@ -562,6 +588,16 @@ func (o *Members) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type MessageType = string
+
+const (
+	MessageTypeMessage            MessageType = "Message"
+	MessageTypeChatEvent          MessageType = "ChatEvent"
+	MessageTypeTyping             MessageType = "Typing"
+	MessageTypeUnknownFutureValue MessageType = "UnknownFutureValue"
+	MessageTypeSystemEventMessage MessageType = "SystemEventMessage"
+)
+
 type MethodUsabilityReason string
 
 const (
@@ -618,6 +654,17 @@ const (
 	PreferredSingleSignOnModeOidc         PreferredSingleSignOnMode = "oidc"
 	PreferredSingleSignOnModePassword     PreferredSingleSignOnMode = "password"
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
+)
+
+type ReactionType = string
+
+const (
+	ReactionTypeLike      ReactionType = "like"
+	ReactionTypeAngry     ReactionType = "angry"
+	ReactionTypeSad       ReactionType = "sad"
+	ReactionTypeLaugh     ReactionType = "laugh"
+	ReactionTypeHeart     ReactionType = "heart"
+	ReactionTypeSurprised ReactionType = "surprised"
 )
 
 type RecurrencePatternType = string
@@ -704,6 +751,36 @@ const (
 	SignInAudiencePersonalMicrosoftAccount           SignInAudience = "PersonalMicrosoftAccount"
 )
 
+type TeamsAppDistributionMethod = string
+
+const (
+	TeamsAppDistributionMethodStore        TeamsAppDistributionMethod = "store"
+	TeamsAppDistributionMethodOrganization TeamsAppDistributionMethod = "organization"
+	TeamsAppDistributionMethodSideloaded   TeamsAppDistributionMethod = "sideloaded"
+)
+
+type TeamsAppPublishingState = string
+
+const (
+	TeamsAppPublishingStateSubmitted TeamsAppPublishingState = "submitted"
+	TeamsAppPublishingStatePublished TeamsAppPublishingState = "published"
+	TeamsAppPublishingStateRejected  TeamsAppPublishingState = "rejected"
+)
+
+type TeamworkUserIdentityType string
+
+const (
+	TeamworkUserIdentityTypeAadUser                  TeamworkUserIdentityType = "aadUser"
+	TeamworkUserIdentityOnPremiseAadUser             TeamworkUserIdentityType = "onPremiseAadUser"
+	TeamworkUserIdentityAnonymousGuest               TeamworkUserIdentityType = "anonymousGuest"
+	TeamworkUserIdentityFederatedUser                TeamworkUserIdentityType = "federatedUser"
+	TeamworkUserIdentityPersonalMicrosoftAccountUser TeamworkUserIdentityType = "personalMicrosoftAccountUser"
+	TeamworkUserIdentitySkypeUser                    TeamworkUserIdentityType = "skypeUser"
+	TeamworkUserIdentityPhoneUser                    TeamworkUserIdentityType = "phoneUser"
+	TeamworkUserIdentityUnknownFutureValue           TeamworkUserIdentityType = "unknownFutureValue"
+	TeamworkUserIdentityEmailUser                    TeamworkUserIdentityType = "emailUser"
+)
+
 type UsageAuthMethod = string
 
 const (
@@ -737,6 +814,14 @@ const (
 	IncludedUserTypesGuest  IncludedUserTypes = "guest"
 )
 
+type UserAction = string
+
+const (
+	UserActionNone                UserAction = "none"
+	UserActionOverride            UserAction = "override"
+	UserActionReportFalsePositive UserAction = "reportFalsePositive"
+)
+
 type UserflowAttributeDataType = string
 
 const (
@@ -753,4 +838,13 @@ const (
 	IndexTypeThird  IndexType = "third"
 	IndexTypeFourth IndexType = "fourth"
 	IndexTypeLast   IndexType = "last"
+)
+
+type VerdictDetails = string
+
+const (
+	VerdictDetailsNone                              VerdictDetails = "none"
+	VerdictDetailsAllowFalsePositiveOverride        VerdictDetails = "allowFalsePositiveOverride"
+	VerdictDetailsAllowOverrideWithoutJustification VerdictDetails = "allowOverrideWithoutJustification"
+	VerdictDetailsAllowOverrideWithJustification    VerdictDetails = "allowOverrideWithJustification"
 )
