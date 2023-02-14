@@ -59,7 +59,8 @@ func TestChatClient(t *testing.T) {
 
 	chat := testChatClient_Create(t, c, newChat)
 	testChatClient_Get(t, c, *chat.ID)
-	testChatClient_list(t, c, *self.Id)
+	testChatClient_List(t, c, *self.Id)
+	testChatClient_Update(t, c, *chat)
 
 }
 
@@ -91,13 +92,25 @@ func testChatClient_Get(t *testing.T, c *test.Test, id string) (chat *msgraph.Ch
 	return
 }
 
-func testChatClient_list(t *testing.T, c *test.Test, userID string) (chats *[]msgraph.Chat) {
+func testChatClient_List(t *testing.T, c *test.Test, userID string) (chats *[]msgraph.Chat) {
 	chats, _, err := c.ChatClient.List(c.Context, userID, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("ChatClient.List(): %v", err)
 	}
 	if chats == nil {
 		t.Fatal("ChatClient.List(): chats was nil")
+	}
+	return
+}
+
+func testChatClient_Update(t *testing.T, c *test.Test, chat msgraph.Chat) (updatedChat *msgraph.Chat) {
+	chat.Topic = utils.StringPtr(fmt.Sprintf("test-chat-%s", c.RandomString))
+	status, err := c.ChatClient.Update(c.Context, chat)
+	if err != nil {
+		t.Fatalf("ChatClient.Update(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ChatClient.Update(): invalid status: %d", status)
 	}
 	return
 }
