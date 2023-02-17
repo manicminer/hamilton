@@ -258,7 +258,8 @@ type Application struct {
 	IsFallbackPublicClient        *bool                     `json:"isFallbackPublicClient,omitempty"`
 	IsManagementRestricted        *bool                     `json:"isManagementRestricted,omitempty"`
 	KeyCredentials                *[]KeyCredential          `json:"keyCredentials,omitempty"`
-	Oauth2RequirePostResponse     *bool                     `json:"oauth2RequirePostResponse,omitempty"`
+	Oauth2RequirePostResponse     *bool                     `json:"oauth2RequirePostResponse,omitempty"` // field name has typo in beta API
+	Oauth2RequiredPostResponse    *bool                     `json:"oauth2RequiredPostResponse,omitempty"`
 	OnPremisesPublishing          *OnPremisesPublishing     `json:"onPremisePublishing,omitempty"`
 	OptionalClaims                *OptionalClaims           `json:"optionalClaims,omitempty"`
 	ParentalControlSettings       *ParentalControlSettings  `json:"parentalControlSettings,omitempty"`
