@@ -1,3 +1,7 @@
+## 0.57.0 (Unreleased)
+
+- Bugfix: accommodate field mis-naming for `Oauth2RequiredPostResponse` in `Application` model (see [upstream bug report](https://github.com/microsoftgraph/msgraph-metadata/issues/273)) ([#221](https://github.com/manicminer/hamilton/pull/221))
+
 ## 0.56.0 (February 13, 2023)
 
 - Auth: support for reading PKCS#12 bundles containing additional CA certificates ([#212](https://github.com/manicminer/hamilton/pull/212))
