@@ -1,5 +1,6 @@
 ## 0.57.0 (Unreleased)
 
+- Support for `Notes` field in the `Application` model ([#218](https://github.com/manicminer/hamilton/pull/218))
 - Bugfix: accommodate field mis-naming for `Oauth2RequiredPostResponse` in `Application` model (see [upstream bug report](https://github.com/microsoftgraph/msgraph-metadata/issues/273)) ([#221](https://github.com/manicminer/hamilton/pull/221))
 
 ## 0.56.0 (February 13, 2023)
