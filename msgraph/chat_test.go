@@ -60,6 +60,9 @@ func TestChatClient(t *testing.T) {
 	chat := testChatClient_Create(t, c, newChat)
 	testChatClient_Get(t, c, *chat.ID)
 	testChatClient_List(t, c, *self.Id)
+
+	chat.Topic = utils.StringPtr(fmt.Sprintf("test-chat-archived-%s", c.RandomString))
+	chat.Viewpoint.IsHidden = utils.BoolPtr(true)
 	testChatClient_Update(t, c, *chat)
 
 }
