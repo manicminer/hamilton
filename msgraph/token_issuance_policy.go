@@ -129,6 +129,7 @@ func (c *TokenIssuancePolicyClient) Update(ctx context.Context, tokenIssuancePol
 		return status, fmt.Errorf("cannot update TokenIssuancePolicy with nil ID")
 	}
 
+	tokenIssuancePolicyId := *tokenIssuancePolicy.ID()
 	tokenIssuancePolicy.Id = nil
 	tokenIssuancePolicy.ObjectId = nil
 
@@ -145,7 +146,7 @@ func (c *TokenIssuancePolicyClient) Update(ctx context.Context, tokenIssuancePol
 			http.StatusNoContent,
 		},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/policies/tokenIssuancePolicies/%s", *tokenIssuancePolicy.ID()),
+			Entity:      fmt.Sprintf("/policies/tokenIssuancePolicies/%s", tokenIssuancePolicyId),
 			HasTenantId: true,
 		},
 	})
