@@ -1,3 +1,7 @@
+## 0.57.1 (February 21, 2023)
+
+- Bugfix: `Notes` in the `Application` model has changed from a `*string` to a `*StringNullWhenEmpty` ([#225](https://github.com/manicminer/hamilton/pull/225))
+
 ## 0.57.0 (February 21, 2023)
 
 - Add the `ListAdministrativeUnitMemberships()` method to `GroupsClient` ([#220](https://github.com/manicminer/hamilton/pull/220))
