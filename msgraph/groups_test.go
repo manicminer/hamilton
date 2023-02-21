@@ -27,6 +27,14 @@ func TestGroupsClient(t *testing.T) {
 	group := testGroupsClient_Create(t, c, newGroup)
 	testGroupsClient_Get(t, c, *group.ID())
 
+	administrativeUnit := testAdministrativeUnitsClient_Create(t, c, msgraph.AdministrativeUnit{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-administrative-unit-%s", c.RandomString)),
+	})
+	testAdministrativeUnitsClient_AddMembers(t, c, *administrativeUnit.ID, &msgraph.Members{group.DirectoryObject})
+	testGroupsClient_ListAdministrativeUnitMemberships(t, c, *group.ID())
+	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &[]string{*group.DirectoryObject.Id})
+	testAdministrativeUnitsClient_Delete(t, c, *administrativeUnit.ID)
+
 	owners := testGroupsClient_ListOwners(t, c, *group.ID())
 	testGroupsClient_GetOwner(t, c, *group.ID(), (*owners)[0])
 
@@ -161,6 +169,23 @@ func testGroupsClient_ListOwners(t *testing.T, c *test.Test, id string) (owners 
 	}
 	if len(*owners) == 0 {
 		t.Fatal("GroupsClient.ListOwners(): owners was empty")
+	}
+	return
+}
+
+func testGroupsClient_ListAdministrativeUnitMemberships(t *testing.T, c *test.Test, id string) (administrativeUnitMemberships *[]msgraph.AdministrativeUnit) {
+	administrativeUnitMemberships, status, err := c.GroupsClient.ListAdministrativeUnitMemberships(c.Context, id)
+	if err != nil {
+		t.Fatalf("GroupsClient.ListAdministrativeUnitMemberships(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.ListAdministrativeUnitMemberships(): invalid status: %d", status)
+	}
+	if administrativeUnitMemberships == nil {
+		t.Fatal("GroupsClient.ListAdministrativeUnitMemberships(): administrativeUnitMemberships was nil")
+	}
+	if len(*administrativeUnitMemberships) == 0 {
+		t.Fatal("GroupsClient.ListAdministrativeUnitMemberships(): administrativeUnitMemberships was empty")
 	}
 	return
 }
