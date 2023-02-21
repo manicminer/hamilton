@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/manicminer/hamilton/odata"
 	"io"
 	"net/http"
+
+	"github.com/manicminer/hamilton/odata"
 )
 
 type ChatClient struct {
