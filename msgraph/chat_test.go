@@ -2,10 +2,10 @@ package msgraph_test
 
 import (
 	"fmt"
-	"github.com/manicminer/hamilton/internal/utils"
 	"testing"
 
 	"github.com/manicminer/hamilton/internal/test"
+	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
 	"github.com/manicminer/hamilton/odata"
 )
