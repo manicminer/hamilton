@@ -1,4 +1,4 @@
-## 0.57.0 (Unreleased)
+## 0.57.0 (February 21, 2023)
 
 - Add the `ListAdministrativeUnitMemberships()` method to `GroupsClient` ([#220](https://github.com/manicminer/hamilton/pull/220))
 - Support for `Notes` field in the `Application` model ([#218](https://github.com/manicminer/hamilton/pull/218))
