@@ -81,24 +81,6 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_ListFederatedIdentityCredentials(t, c, *app.ID())
 	testApplicationsClient_DeleteFederatedIdentityCredential(t, c, *app.ID(), *credential.ID)
 
-	tokenIssuancePolicy := testTokenIssuancePolicyClient_Create(t, c, msgraph.TokenIssuancePolicy{
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-token-issuance-policy-%s", c.RandomString)),
-		Definition: utils.ArrayStringPtr(
-			[]string{
-				"{\"TokenIssuancePolicy\":{\"Version\":1,\"SigningAlgorithm\":\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\",\"TokenResponseSigningPolicy\":\"ResponseAndToken\",\"SamlTokenVersion\":\"2.0\",\"EmitSamlNameFormat\":false}}",
-			},
-		),
-	})
-
-	app.TokenIssuancePolicies = &[]msgraph.TokenIssuancePolicy{*tokenIssuancePolicy}
-
-	testApplicationsClient_AssignTokenIssuancePolicy(t, c, app)
-	// ListTokenIssuancePolicy is called within RemoveTokenIssuancePolicy
-	testApplicationsClient_RemoveTokenIssuancePolicy(t, c, app, []string{*tokenIssuancePolicy.Id})
-	// A Second call tests that a remove call on an empty assignment list returns ok
-	testApplicationsClient_RemoveTokenIssuancePolicy(t, c, app, []string{*tokenIssuancePolicy.Id})
-	testTokenIssuancePolicyClient_Delete(t, c, *tokenIssuancePolicy.Id)
-
 	testApplicationsClient_List(t, c)
 	testApplicationsClient_Delete(t, c, *app.ID())
 	testApplicationsClient_ListDeleted(t, c, *app.ID())
@@ -453,25 +435,5 @@ func testApplicationsClient_DeleteFederatedIdentityCredential(t *testing.T, c *t
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.DeleteFederatedIdentityCredential(): invalid status: %d", status)
-	}
-}
-
-func testApplicationsClient_AssignTokenIssuancePolicy(t *testing.T, c *test.Test, a *msgraph.Application) {
-	status, err := c.ApplicationsClient.AssignTokenIssuancePolicy(c.Context, a)
-	if err != nil {
-		t.Fatalf("ApplicationsClient.AssignTokenIssuancePolicy(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("ApplicationsClient.AssignTokenIssuancePolicy(): invalid status: %d", status)
-	}
-}
-
-func testApplicationsClient_RemoveTokenIssuancePolicy(t *testing.T, c *test.Test, a *msgraph.Application, policyIds []string) {
-	status, err := c.ApplicationsClient.RemoveTokenIssuancePolicy(c.Context, a, &policyIds)
-	if err != nil {
-		t.Fatalf("ApplicationsClient.RemoveTokenIssuancePolicy(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("ApplicationsClient.RemoveTokenIssuancePolicy(): invalid status: %d", status)
 	}
 }

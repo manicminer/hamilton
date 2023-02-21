@@ -68,6 +68,24 @@ func TestServicePrincipalsClient(t *testing.T) {
 	testServicePrincipalsClient_RemoveClaimsMappingPolicy(t, c, sp, []string{*claimsMappingPolicy.ID()})
 	testClaimsMappingPolicyClient_Delete(t, c, *claimsMappingPolicy.ID())
 
+	tokenIssuancePolicy := testTokenIssuancePolicyClient_Create(t, c, msgraph.TokenIssuancePolicy{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-token-issuance-policy-%s", c.RandomString)),
+		Definition: utils.ArrayStringPtr(
+			[]string{
+				"{\"TokenIssuancePolicy\":{\"Version\":1,\"SigningAlgorithm\":\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\",\"TokenResponseSigningPolicy\":\"ResponseAndToken\",\"SamlTokenVersion\":\"2.0\",\"EmitSamlNameFormat\":false}}",
+			},
+		),
+	})
+
+	sp.TokenIssuancePolicies = &[]msgraph.TokenIssuancePolicy{*tokenIssuancePolicy}
+
+	testServicePrincipalsClient_AssignTokenIssuancePolicy(t, c, sp)
+	// ListTokenIssuancePolicy is called within RemoveTokenIssuancePolicy
+	testServicePrincipalsClient_RemoveTokenIssuancePolicy(t, c, sp, []string{*tokenIssuancePolicy.Id})
+	// A Second call tests that a remove call on an empty assignment list returns ok
+	testServicePrincipalsClient_RemoveTokenIssuancePolicy(t, c, sp, []string{*tokenIssuancePolicy.Id})
+	testTokenIssuancePolicyClient_Delete(t, c, *tokenIssuancePolicy.Id)
+
 	newGroupParent := msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-servicePrincipal-parent"),
 		MailEnabled:     utils.BoolPtr(false),
@@ -417,6 +435,26 @@ func testServicePrincipalsClient_RemoveClaimsMappingPolicy(t *testing.T, c *test
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ServicePrincipalsClient.RemoveClaimsMappingPolicy(): invalid status: %d", status)
+	}
+}
+
+func testServicePrincipalsClient_AssignTokenIssuancePolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal) {
+	status, err := c.ServicePrincipalsClient.AssignTokenIssuancePolicy(c.Context, sp)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.AssignTokenIssuancePolicy(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.AssignTokenIssuancePolicy(): invalid status: %d", status)
+	}
+}
+
+func testServicePrincipalsClient_RemoveTokenIssuancePolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal, policyIds []string) {
+	status, err := c.ServicePrincipalsClient.RemoveTokenIssuancePolicy(c.Context, sp, &policyIds)
+	if err != nil {
+		t.Fatalf("ServicePrincipalsClient.RemoveTokenIssuancePolicy(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ServicePrincipalsClient.RemoveTokenIssuancePolicy(): invalid status: %d", status)
 	}
 }
 

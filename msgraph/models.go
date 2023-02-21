@@ -271,7 +271,6 @@ type Application struct {
 	Spa                           *ApplicationSpa           `json:"spa,omitempty"`
 	Tags                          *[]string                 `json:"tags,omitempty"`
 	TokenEncryptionKeyId          *string                   `json:"tokenEncryptionKeyId,omitempty"`
-	TokenIssuancePolicies         *[]TokenIssuancePolicy    `json:"tokenIssuancePolicies@odata.bind,omitempty"`
 	UniqueName                    *string                   `json:"uniqueName,omitempty"`
 	VerifiedPublisher             *VerifiedPublisher        `json:"verifiedPublisher,omitempty"`
 	Web                           *ApplicationWeb           `json:"web,omitempty"`
@@ -1430,6 +1429,7 @@ type ServicePrincipal struct {
 	SignInAudience                      *SignInAudience               `json:"signInAudience,omitempty"`
 	Tags                                *[]string                     `json:"tags,omitempty"`
 	TokenEncryptionKeyId                *string                       `json:"tokenEncryptionKeyId,omitempty"`
+	TokenIssuancePolicies               *[]TokenIssuancePolicy        `json:"tokenIssuancePolicies@odata.bind,omitempty"`
 	VerifiedPublisher                   *VerifiedPublisher            `json:"verifiedPublisher,omitempty"`
 }
 
