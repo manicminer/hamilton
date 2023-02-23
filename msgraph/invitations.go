@@ -16,7 +16,7 @@ type InvitationsClient struct {
 // NewInvitationsClient returns a new InvitationsClient.
 func NewInvitationsClient(tenantId string) *InvitationsClient {
 	return &InvitationsClient{
-		BaseClient: NewClient(VersionBeta, tenantId),
+		BaseClient: NewClient(VersionBeta),
 	}
 }
 
@@ -33,8 +33,7 @@ func (c *InvitationsClient) Create(ctx context.Context, invitation Invitation) (
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      "/invitations",
-			HasTenantId: true,
+			Entity: "/invitations",
 		},
 	})
 	if err != nil {

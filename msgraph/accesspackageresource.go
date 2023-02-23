@@ -16,7 +16,7 @@ type AccessPackageResourceClient struct {
 
 func NewAccessPackageResourceClient(tenantId string) *AccessPackageResourceClient {
 	return &AccessPackageResourceClient{
-		BaseClient: NewClient(VersionBeta, tenantId),
+		BaseClient: NewClient(VersionBeta),
 	}
 }
 
@@ -27,8 +27,7 @@ func (c *AccessPackageResourceClient) List(ctx context.Context, catalogId string
 		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
 		},
 	})
 	if err != nil {
@@ -61,8 +60,7 @@ func (c *AccessPackageResourceClient) Get(ctx context.Context, catalogId string,
 		},
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackageCatalogs/%s/accessPackageResources", catalogId),
 		},
 	})
 	if err != nil {
