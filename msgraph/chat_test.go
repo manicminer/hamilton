@@ -43,16 +43,19 @@ func TestChatClient(t *testing.T) {
 		ChatType: utils.StringPtr(msgraph.ChatTypeGroup),
 		Members: &[]msgraph.ConversationMember{
 			{
-				ID:    user1.Id,
-				Roles: &[]string{"owner"},
+				ODataType: utils.StringPtr(odata.TypeConversationMember),
+				ID:        user1.Id,
+				Roles:     &[]string{"owner"},
 			},
 			{
-				ID:    user2.Id,
-				Roles: &[]string{"owner"},
+				ODataType: utils.StringPtr(odata.TypeConversationMember),
+				ID:        user2.Id,
+				Roles:     &[]string{"owner"},
 			},
 			{
-				ID:    self.Id,
-				Roles: &[]string{"owner"},
+				ODataType: utils.StringPtr(odata.TypeConversationMember),
+				ID:        self.Id,
+				Roles:     &[]string{"owner"},
 			},
 		},
 	}
