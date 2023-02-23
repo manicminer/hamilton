@@ -798,6 +798,11 @@ func (d *DelegatedPermissionGrant) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type DeviceAndAppManagementAssignmentTarget struct {
+	DeviceAndAppManagementAssignmentFilterId   *string                                     `json:"deviceAndAppManagementAssignmentFilterId,omitempty"`
+	DeviceAndAppManagementAssignmentFilterType *DeviceAndAppManagementAssignmentFilterType `json:"deviceAndAppManagementAssignmentFilterType,omitempty"`
+}
+
 type DeviceDetail struct {
 	Browser         *string `json:"browser,omitempty"`
 	DeviceId        *string `json:"deviceId,omitempty"`
@@ -1278,6 +1283,15 @@ type OptionalClaims struct {
 	AccessToken *[]OptionalClaim `json:"accessToken,omitempty"`
 	IdToken     *[]OptionalClaim `json:"idToken,omitempty"`
 	Saml2Token  *[]OptionalClaim `json:"saml2Token,omitempty"`
+}
+
+type OutOfBoxExperienceSettings struct {
+	HidePrivacySettings       *bool            `json:"hidePrivacySettings,omitempty"`
+	HideEULA                  *bool            `json:"hideEULA,omitempty"`
+	UserType                  *WindowsUserType `json:"userType,omitempty"`
+	DeviceUsageType           *DeviceUsageType `json:"deviceUsageType,omitempty"`
+	SkipKeyboardSelectionPage *bool            `json:"skipKeyboardSelectionPage,omitempty"`
+	HideEscapeLink            *bool            `json:"hideEscapeLink,omitempty"`
 }
 
 type ParentalControlSettings struct {
@@ -1845,6 +1859,71 @@ type VerifiedPublisher struct {
 	AddedDateTime       *time.Time `json:"addedDateTime,omitempty"`
 	DisplayName         *string    `json:"displayName,omitempty"`
 	VerifiedPublisherId *string    `json:"verifiedPublisherId,omitempty"`
+}
+
+type WindowsAutopilotDeploymentProfile struct {
+	ID                                     *string                                `json:"id,omitempty"`
+	ODataType                              *odata.Type                            `json:"@odata.type,omitempty"`
+	DisplayName                            *string                                `json:"displayName,omitempty"`
+	Description                            *string                                `json:"description,omitempty"`
+	Language                               *string                                `json:"language,omitempty"`
+	CreatedDateTime                        *time.Time                             `json:"createdDateTime,omitempty"`
+	LastModifiedDateTime                   *time.Time                             `json:"lastModifiedDateTime,omitempty"`
+	OutOfBoxExperienceSettings             *OutOfBoxExperienceSettings            `json:"outOfBoxExperienceSettings,omitempty"`
+	EnrollmentStatusScreenSettings         *WindowsEnrollmentStatusScreenSettings `json:"enrollmentStatusScreenSettings,omitempty"`
+	ExtractHardwareHash                    *bool                                  `json:"extractHardwareHash,omitempty"`
+	DeviceNameTemplate                     *string                                `json:"deviceNameTemplate,omitempty"`
+	DeviceType                             *WindowsAutopilotDeviceType            `json:"deviceType,omitempty"`
+	EnableWhiteGlove                       *bool                                  `json:"enableWhiteGlove,omitempty"`
+	RoleScopeTagIds                        *[]string                              `json:"roleScopeTagIds,omitempty"`
+	ManagementServiceAppId                 *string                                `json:"managementServiceAppId,omitempty"`
+	HybridAzureADJoinSkipConnectivityCheck *bool                                  `json:"hybridAzureADJoinSkipConnectivityCheck,omitempty"`
+}
+
+type WindowsAutopilotDeploymentProfileAssignment struct {
+	ID       *string                                 `json:"id,omitempty"`
+	Target   *DeviceAndAppManagementAssignmentTarget `json:"target,omitempty"`
+	Source   *DeviceAndAppManagementAssignmentSource `json:"source,omitempty"`
+	SourceId *string                                 `json:"sourceId,omitempty"`
+}
+
+type WindowsAutopilotDeviceIdentity struct {
+	ID                                        *string                                          `json:"id,omitempty"`
+	DeploymentProfileAssignmentStatus         *DeploymentProfileAssignmentStatus               `json:"deploymentProfileAssignmentStatus,omitempty"`
+	DeploymentProfileAssignmentDetailedStatus *WindowsAutopilotProfileAssignmentDetailedStatus `json:"deploymentProfileAssignmentDetailedStatus,omitempty"`
+	DeploymentProfileAssignedDateTime         *time.Time                                       `json:"deploymentProfileAssignedDateTime,omitempty"`
+	GroupTag                                  *string                                          `json:"groupTag,omitempty"`
+	PurchaseOrderIdentifier                   *string                                          `json:"purchaseOrderIdentifier,omitempty"`
+	SerialNumber                              *string                                          `json:"serialNumber,omitempty"`
+	ProductKey                                *string                                          `json:"productKey,omitempty"`
+	Manufacturer                              *string                                          `json:"manufacturer,omitempty"`
+	Model                                     *string                                          `json:"model,omitempty"`
+	EnrollmentState                           *EnrollmentState                                 `json:"enrollmentState,omitempty"`
+	LastContactedDateTime                     *time.Time                                       `json:"lastContactedDateTime,omitempty"`
+	AddressableUserName                       *string                                          `json:"addressableUserName,omitempty"`
+	UserPrincipalName                         *string                                          `json:"userPrincipalName,omitempty"`
+	ResourceName                              *string                                          `json:"resourceName,omitempty"`
+	SkuNumber                                 *string                                          `json:"skuNumber,omitempty"`
+	SystemFamily                              *string                                          `json:"systemFamily,omitempty"`
+	AzureActiveDirectoryDeviceId              *string                                          `json:"azureActiveDirectoryDeviceId,omitempty"`
+	AzureAdDeviceId                           *string                                          `json:"azureAdDeviceId,omitempty"`
+	ManagedDeviceId                           *string                                          `json:"managedDeviceId,omitempty"`
+	DisplayName                               *string                                          `json:"displayName,omitempty"`
+	DeviceAccountUpn                          *string                                          `json:"deviceAccountUpn,omitempty"`
+	DeviceAccountPassword                     *string                                          `json:"deviceAccountPassword,omitempty"`
+	DeviceFriendlyName                        *string                                          `json:"deviceFriendlyName,omitempty"`
+	RemediationState                          *WindowsAutopilotDeviceRemediationState          `json:"remediationState,omitempty"`
+	RemediationStateLastModifiedDateTime      *time.Time                                       `json:"remediationStateLastModifiedDateTime,omitempty"`
+}
+
+type WindowsEnrollmentStatusScreenSettings struct {
+	HideInstallationProgress                         *bool   `json:"hideInstallationProgress,omitempty"`
+	AllowDeviceUseBeforeProfileAndAppInstallComplete *bool   `json:"allowDeviceUseBeforeProfileAndAppInstallComplete,omitempty"`
+	BlockDeviceSetupRetryByUser                      *bool   `json:"blockDeviceSetupRetryByUser,omitempty"`
+	AllowLogCollectionOnInstallFailure               *bool   `json:"allowLogCollectionOnInstallFailure,omitempty"`
+	CustomErrorMessage                               *string `json:"customErrorMessage,omitempty"`
+	InstallProgressTimeoutInMinutes                  *int32  `json:"installProgressTimeoutInMinutes,omitempty"`
+	AllowDeviceUseOnInstallFailure                   *bool   `json:"allowDeviceUseOnInstallFailure,omitempty"`
 }
 
 type WindowsHelloForBusinessAuthenticationMethod struct {

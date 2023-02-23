@@ -132,6 +132,7 @@ type Test struct {
 	UserFlowAttributesClient                  *msgraph.UserFlowAttributesClient
 	UsersAppRoleAssignmentsClient             *msgraph.AppRoleAssignmentsClient
 	UsersClient                               *msgraph.UsersClient
+	WindowsAutopilotDeploymentProfilesClient  *msgraph.WindowsAutopilotDeploymentProfilesClient
 }
 
 func NewTest(t *testing.T) (c *Test) {
@@ -393,6 +394,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.UsersClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.UsersClient.BaseClient.Endpoint = *endpoint
 	c.UsersClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.WindowsAutopilotDeploymentProfilesClient = msgraph.NewWindowsAutopilotDeploymentProfilesClient(c.Connections["default"].AuthConfig.TenantID)
+	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.RetryableClient.RetryMax = retry
 
 	return
 }
