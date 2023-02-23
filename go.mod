@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/hashicorp/go-azure-sdk v0.20230214.1122757-0.20230214215836-94fd7f7d8e2a
+	github.com/hashicorp/go-azure-sdk v0.20230222.1112900
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.2
 	github.com/hashicorp/go-uuid v1.0.3
