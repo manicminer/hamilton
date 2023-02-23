@@ -108,6 +108,7 @@ type Test struct {
 	AppRoleAssignedToClient                   *msgraph.AppRoleAssignedToClient
 	AuthenticationMethodsClient               *msgraph.AuthenticationMethodsClient
 	B2CUserFlowClient                         *msgraph.B2CUserFlowClient
+	ChatClient                                *msgraph.ChatClient
 	ClaimsMappingPolicyClient                 *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient           *msgraph.ConditionalAccessPoliciesClient
 	ConnectedOrganizationClient               *msgraph.ConnectedOrganizationClient
@@ -247,6 +248,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.B2CUserFlowClient.BaseClient.Authorizer = c.Connections["b2c"].Authorizer
 	c.B2CUserFlowClient.BaseClient.Endpoint = c.Connections["b2c"].AuthConfig.Environment.MsGraph.Endpoint
 	c.B2CUserFlowClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.ChatClient = msgraph.NewChatClient(c.Connections["default"].AuthConfig.TenantID)
+	c.ChatClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.ChatClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.ChatClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ClaimsMappingPolicyClient = msgraph.NewClaimsMappingPolicyClient(c.Connections["default"].AuthConfig.TenantID)
 	c.ClaimsMappingPolicyClient.BaseClient.Authorizer = c.Connections["default"].Authorizer

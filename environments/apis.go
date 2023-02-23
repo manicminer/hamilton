@@ -198,7 +198,7 @@ var (
 		Endpoint: SynapsePublicEndpoint,
 	}
 
-	SynapseUSGov = Api {
+	SynapseUSGov = Api{
 		AppId:    PublishedApis["AzureSynapseGateway"],
 		Endpoint: SynapseUSGovEndpoint,
 	}
