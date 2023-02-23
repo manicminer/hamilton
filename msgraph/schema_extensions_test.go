@@ -60,7 +60,7 @@ func TestSchemaExtensionsClient(t *testing.T) {
 	testSchemaExtensionsClient_Update(t, c, updateExtension)
 
 	// Replication seems to be a problem with schema extensions, no viable workaround as yet
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	testSchemaExtensionsGroup(t, c, schema)
 	testSchemaExtensionsUser(t, c, schema)
@@ -195,7 +195,7 @@ func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.Schema
 	}
 
 	// sleep to defeat eventual consistency
-	time.Sleep(1 * time.Minute)
+	time.Sleep(30 * time.Second)
 
 	// Next, update the user with schema extension data expressed using MyExtensionProperties
 	user.SchemaExtensions = &[]msgraph.SchemaExtensionData{
