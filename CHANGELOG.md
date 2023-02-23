@@ -1,3 +1,10 @@
+## 0.58.0 (February 23, 2023)
+
+⚠️ BREAKING CHANGES:
+
+- This release removes the `auth`, `environments` and `odata` packages, replacing them with equivalent packages from the `github.com/hashicorp/go-azure-sdk` module.
+- In order to use the `msgraph` clients, you will now need to make use of the newer authorizers from the `github.com/hashicorp/go-azure-sdk/sdk/auth` package. The [example](https://github.com/manicminer/hamilton/blob/main/example/example.go) in this repository have been updated accordingly.
+
 ## 0.57.1 (February 21, 2023)
 
 - Bugfix: `Notes` in the `Application` model has changed from a `*string` to a `*StringNullWhenEmpty` ([#225](https://github.com/manicminer/hamilton/pull/225))
