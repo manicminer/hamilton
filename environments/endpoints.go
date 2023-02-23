@@ -57,5 +57,5 @@ const (
 	StoragePublicEndpoint ApiEndpoint = "https://storage.azure.com"
 
 	SynapsePublicEndpoint ApiEndpoint = "https://dev.azuresynapse.net"
-	SynapseUSGovEndpoint ApiEndpoint = "https://dev.azuresynapse.usgovcloudapi.net"
+	SynapseUSGovEndpoint  ApiEndpoint = "https://dev.azuresynapse.usgovcloudapi.net"
 )
