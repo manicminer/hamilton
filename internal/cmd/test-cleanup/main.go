@@ -87,5 +87,6 @@ func main() {
 	cleanupUsers()
 	cleanupSchemaExtensions()
 	cleanupRoleDefinitions()
+	cleanupTermsOfUseAgreements()
 	log.Println("Finished test cleanup")
 }
