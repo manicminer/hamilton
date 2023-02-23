@@ -23,7 +23,7 @@ func cleanupAdministrativeUnits() {
 	}
 	for _, au := range *administrativeUnits {
 		if au.ID == nil || au.DisplayName == nil {
-			log.Println("Group returned with nil ID or DisplayName")
+			log.Println("Administrative Unit returned with nil ID or DisplayName")
 			continue
 		}
 
