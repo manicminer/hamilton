@@ -194,6 +194,9 @@ func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.Schema
 		t.Fatalf("Unexpected value for property2 returned: %+v", val)
 	}
 
+	// sleep to defeat eventual consistency
+	time.Sleep(1 * time.Minute)
+
 	// Next, update the user with schema extension data expressed using MyExtensionProperties
 	user.SchemaExtensions = &[]msgraph.SchemaExtensionData{
 		{

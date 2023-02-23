@@ -206,19 +206,19 @@ func getTestConnectedOrganization(idOrDomain *string) *msgraph.ConnectedOrganiza
 		idSrcs = []msgraph.IdentitySource{{
 			ODataType:   utils.StringPtr(odata.TypeAzureActiveDirectoryTenant),
 			TenantId:    idOrDomain,
-			DisplayName: utils.StringPtr("Test connected organization"),
+			DisplayName: utils.StringPtr("test-connected-organization"),
 		}}
 	} else {
 		idSrcs = []msgraph.IdentitySource{{
 			ODataType:   utils.StringPtr(odata.TypeDomainIdentitySource),
 			DomainName:  idOrDomain,
-			DisplayName: utils.StringPtr("Test connected organization"),
+			DisplayName: utils.StringPtr("test-connected-organization"),
 		}}
 	}
 
 	testConnectedOrg := msgraph.ConnectedOrganization{
 		Description:     utils.StringPtr("Test Connected Organization"),
-		DisplayName:     utils.StringPtr("Test Organization"),
+		DisplayName:     utils.StringPtr("test-organization"),
 		IdentitySources: &idSrcs,
 		State:           utils.StringPtr(msgraph.ConnectedOrganizationStateConfigured),
 	}

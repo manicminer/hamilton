@@ -16,7 +16,7 @@ func TestRoleAssignmentsClient(t *testing.T) {
 
 	roleDefinition := testRoleDefinitionsClient_Create(t, c, msgraph.UnifiedRoleDefinition{
 		Description: msgraph.NullableString("testing custom role assignment"),
-		DisplayName: utils.StringPtr("Test Assignor"),
+		DisplayName: utils.StringPtr("test-assignor"),
 		IsEnabled:   utils.BoolPtr(true),
 		RolePermissions: &[]msgraph.UnifiedRolePermission{
 			{
