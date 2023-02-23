@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func cleanupAdministrativeUnits() {
@@ -23,7 +23,7 @@ func cleanupAdministrativeUnits() {
 	}
 	for _, au := range *administrativeUnits {
 		if au.ID == nil || au.DisplayName == nil {
-			log.Println("Group returned with nil ID or DisplayName")
+			log.Println("Administrative Unit returned with nil ID or DisplayName")
 			continue
 		}
 

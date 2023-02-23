@@ -2,13 +2,11 @@ package aadgraph
 
 import (
 	"encoding/json"
-
-	"github.com/manicminer/hamilton/environments"
 	"github.com/manicminer/hamilton/msgraph"
 )
 
 type ApplicationRef struct {
-	AppId                   *environments.ApiAppId            `json:"appId,omitempty"`
+	AppId                   *string                           `json:"appId,omitempty"`
 	AppCategory             *json.RawMessage                  `json:"appCategory"`
 	AppContextId            *string                           `json:"appContextId"`
 	AppData                 *json.RawMessage                  `json:"appData"`

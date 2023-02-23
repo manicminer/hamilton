@@ -6,10 +6,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/auth"
+	"github.com/hashicorp/go-azure-sdk/sdk/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 var (
@@ -20,18 +20,18 @@ var (
 
 func main() {
 	ctx := context.Background()
+	env := environments.AzurePublic()
 
-	environment := environments.Global
+	credentials := auth.Credentials{
+		Environment:  *env,
+		TenantID:     tenantId,
+		ClientID:     clientId,
+		ClientSecret: clientSecret,
 
-	authConfig := &auth.Config{
-		Environment:            environment,
-		TenantID:               tenantId,
-		ClientID:               clientId,
-		ClientSecret:           clientSecret,
-		EnableClientSecretAuth: true,
+		EnableAuthenticatingUsingClientSecret: true,
 	}
 
-	authorizer, err := authConfig.NewAuthorizer(ctx, environment.MsGraph)
+	authorizer, err := auth.NewAuthorizerFromCredentials(ctx, credentials, env.MicrosoftGraph)
 	if err != nil {
 		log.Fatal(err)
 	}
