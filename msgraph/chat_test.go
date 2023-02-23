@@ -44,17 +44,17 @@ func TestChatClient(t *testing.T) {
 		Members: &[]msgraph.ConversationMember{
 			{
 				ODataType: utils.StringPtr(odata.TypeConversationMember),
-				ID:        user1.Id,
+				User:      utils.StringPtr(fmt.Sprintf("https://graph.microsoft.com/v1.0/users('%s')", *user1.Id)),
 				Roles:     &[]string{"owner"},
 			},
 			{
 				ODataType: utils.StringPtr(odata.TypeConversationMember),
-				ID:        user2.Id,
+				User:      utils.StringPtr(fmt.Sprintf("https://graph.microsoft.com/v1.0/users('%s')", *user2.Id)),
 				Roles:     &[]string{"owner"},
 			},
 			{
 				ODataType: utils.StringPtr(odata.TypeConversationMember),
-				ID:        self.Id,
+				User:      utils.StringPtr(fmt.Sprintf("https://graph.microsoft.com/v1.0/users('%s')", *self.Id)),
 				Roles:     &[]string{"owner"},
 			},
 		},

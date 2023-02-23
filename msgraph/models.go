@@ -819,6 +819,7 @@ type ConnectionInfo struct {
 
 type ConversationMember struct {
 	ODataType                   *odata.Type `json:"@odata.type,omitempty"`
+	User                        *string     `json:"user@odata.bind,omitempty"`
 	ID                          *string     `json:"id,omitempty"`
 	DisplayName                 *string     `json:"displayName,omitempty"`
 	Roles                       *[]string   `json:"roles,omitempty"`
