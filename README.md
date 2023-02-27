@@ -59,7 +59,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	client := msgraph.NewUsersClient(tenantId)
+	client := msgraph.NewUsersClient()
 	client.BaseClient.Authorizer = authorizer
 
 	users, _, err := client.List(ctx, odata.Query{})
