@@ -16,7 +16,7 @@ type MeClient struct {
 }
 
 // NewMeClient returns a new MeClient.
-func NewMeClient(tenantId string) *MeClient {
+func NewMeClient() *MeClient {
 	return &MeClient{
 		BaseClient: NewClient(VersionBeta),
 	}

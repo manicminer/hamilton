@@ -17,7 +17,7 @@ type DelegatedPermissionGrantsClient struct {
 }
 
 // NewDelegatedPermissionGrantsClient returns a new DelegatedPermissionGrantsClient
-func NewDelegatedPermissionGrantsClient(tenantId string) *DelegatedPermissionGrantsClient {
+func NewDelegatedPermissionGrantsClient() *DelegatedPermissionGrantsClient {
 	return &DelegatedPermissionGrantsClient{
 		BaseClient: NewClient(Version10),
 	}

@@ -16,7 +16,7 @@ type DomainsClient struct {
 }
 
 // NewDomainsClient returns a new DomainsClient.
-func NewDomainsClient(tenantId string) *DomainsClient {
+func NewDomainsClient() *DomainsClient {
 	return &DomainsClient{
 		BaseClient: NewClient(Version10),
 	}

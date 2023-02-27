@@ -15,7 +15,7 @@ type ClaimsMappingPolicyClient struct {
 }
 
 // NewClaimsMappingPolicyClient returns a new ClaimsMappingPolicyClient
-func NewClaimsMappingPolicyClient(tenantId string) *ClaimsMappingPolicyClient {
+func NewClaimsMappingPolicyClient() *ClaimsMappingPolicyClient {
 	return &ClaimsMappingPolicyClient{
 		BaseClient: NewClient(Version10),
 	}

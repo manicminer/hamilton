@@ -16,7 +16,7 @@ type SchemaExtensionsClient struct {
 }
 
 // NewSchemaExtensionsClient returns a new SchemaExtensionsClient.
-func NewSchemaExtensionsClient(tenantId string) *SchemaExtensionsClient {
+func NewSchemaExtensionsClient() *SchemaExtensionsClient {
 	return &SchemaExtensionsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

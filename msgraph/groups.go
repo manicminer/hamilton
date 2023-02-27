@@ -16,7 +16,7 @@ type GroupsClient struct {
 }
 
 // NewGroupsClient returns a new GroupsClient.
-func NewGroupsClient(tenantId string) *GroupsClient {
+func NewGroupsClient() *GroupsClient {
 	return &GroupsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

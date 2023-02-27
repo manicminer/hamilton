@@ -16,7 +16,7 @@ type UserFlowAttributesClient struct {
 }
 
 // NewUserFlowAttributesClient returns a new UserFlowAttributesClient.
-func NewUserFlowAttributesClient(tenantId string) *UserFlowAttributesClient {
+func NewUserFlowAttributesClient() *UserFlowAttributesClient {
 	return &UserFlowAttributesClient{
 		BaseClient: NewClient(Version10),
 	}

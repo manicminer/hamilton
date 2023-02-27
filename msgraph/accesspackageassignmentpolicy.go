@@ -15,7 +15,7 @@ type AccessPackageAssignmentPolicyClient struct {
 	BaseClient Client
 }
 
-func NewAccessPackageAssignmentPolicyClient(tenantId string) *AccessPackageAssignmentPolicyClient {
+func NewAccessPackageAssignmentPolicyClient() *AccessPackageAssignmentPolicyClient {
 	return &AccessPackageAssignmentPolicyClient{
 		BaseClient: NewClient(VersionBeta),
 	}

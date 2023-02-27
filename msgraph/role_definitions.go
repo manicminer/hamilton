@@ -16,7 +16,7 @@ type RoleDefinitionsClient struct {
 }
 
 // NewRoleDefinitionsClient returns a new RoleDefinitionsClient
-func NewRoleDefinitionsClient(tenantId string) *RoleDefinitionsClient {
+func NewRoleDefinitionsClient() *RoleDefinitionsClient {
 	return &RoleDefinitionsClient{
 		BaseClient: NewClient(Version10),
 	}

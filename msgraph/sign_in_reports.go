@@ -16,7 +16,7 @@ type SignInReportsClient struct {
 }
 
 // NewSignInReportsClient returns a new SignInReportsClient.
-func NewSignInReportsClient(tenantId string) *SignInReportsClient {
+func NewSignInReportsClient() *SignInReportsClient {
 	return &SignInReportsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

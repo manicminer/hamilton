@@ -17,7 +17,7 @@ type NamedLocationsClient struct {
 }
 
 // NewNamedLocationsClient returns a new NamedLocationsClient.
-func NewNamedLocationsClient(tenantId string) *NamedLocationsClient {
+func NewNamedLocationsClient() *NamedLocationsClient {
 	return &NamedLocationsClient{
 		BaseClient: NewClient(Version10),
 	}

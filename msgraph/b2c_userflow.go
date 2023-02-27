@@ -16,7 +16,7 @@ type B2CUserFlowClient struct {
 }
 
 // NewB2CUserFlowClient returns a new B2CUserFlowClient.
-func NewB2CUserFlowClient(tenantId string) *B2CUserFlowClient {
+func NewB2CUserFlowClient() *B2CUserFlowClient {
 	return &B2CUserFlowClient{
 		BaseClient: NewClient(VersionBeta),
 	}

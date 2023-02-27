@@ -14,7 +14,7 @@ type AccessPackageAssignmentRequestClient struct {
 	BaseClient Client
 }
 
-func NewAccessPackageAssignmentRequestClient(tenantId string) *AccessPackageAssignmentRequestClient {
+func NewAccessPackageAssignmentRequestClient() *AccessPackageAssignmentRequestClient {
 	return &AccessPackageAssignmentRequestClient{
 		BaseClient: NewClient(Version10),
 	}

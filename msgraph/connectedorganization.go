@@ -16,7 +16,7 @@ type ConnectedOrganizationClient struct {
 	BaseClient Client
 }
 
-func NewConnectedOrganizationClient(tenantId string) *ConnectedOrganizationClient {
+func NewConnectedOrganizationClient() *ConnectedOrganizationClient {
 	return &ConnectedOrganizationClient{
 		BaseClient: NewClient(Version10),
 	}

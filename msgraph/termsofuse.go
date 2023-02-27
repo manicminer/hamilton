@@ -16,7 +16,7 @@ type TermsOfUseAgreementClient struct {
 }
 
 // NewTermsOfUseAgreementClient returns a new TermsOfUseAgreementClient
-func NewTermsOfUseAgreementClient(tenantId string) *TermsOfUseAgreementClient {
+func NewTermsOfUseAgreementClient() *TermsOfUseAgreementClient {
 	return &TermsOfUseAgreementClient{
 		BaseClient: NewClient(VersionBeta),
 	}

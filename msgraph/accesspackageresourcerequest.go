@@ -16,7 +16,7 @@ type AccessPackageResourceRequestClient struct {
 	BaseClient Client
 }
 
-func NewAccessPackageResourceRequestClient(tenantId string) *AccessPackageResourceRequestClient {
+func NewAccessPackageResourceRequestClient() *AccessPackageResourceRequestClient {
 	return &AccessPackageResourceRequestClient{
 		BaseClient: NewClient(VersionBeta),
 	}

@@ -17,7 +17,7 @@ type AuthenticationMethodsClient struct {
 }
 
 // NewAuthenticationMethodsClient returns a new AuthenticationMethodsClient
-func NewAuthenticationMethodsClient(tenantId string) *AuthenticationMethodsClient {
+func NewAuthenticationMethodsClient() *AuthenticationMethodsClient {
 	return &AuthenticationMethodsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

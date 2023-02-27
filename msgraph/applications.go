@@ -17,7 +17,7 @@ type ApplicationsClient struct {
 }
 
 // NewApplicationsClient returns a new ApplicationsClient
-func NewApplicationsClient(tenantId string) *ApplicationsClient {
+func NewApplicationsClient() *ApplicationsClient {
 	return &ApplicationsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

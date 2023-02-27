@@ -26,7 +26,7 @@ type AppRoleAssignmentsClient struct {
 }
 
 // NewUsersAppRoleAssignmentsClient returns a new AppRoleAssignmentsClient for users assignments
-func NewUsersAppRoleAssignmentsClient(tenantId string) *AppRoleAssignmentsClient {
+func NewUsersAppRoleAssignmentsClient() *AppRoleAssignmentsClient {
 	return &AppRoleAssignmentsClient{
 		BaseClient:   NewClient(Version10),
 		resourceType: usersAppRoleAssignmentsResource,
@@ -34,7 +34,7 @@ func NewUsersAppRoleAssignmentsClient(tenantId string) *AppRoleAssignmentsClient
 }
 
 // NewGroupsAppRoleAssignmentsClient returns a new AppRoleAssignmentsClient for groups assignments
-func NewGroupsAppRoleAssignmentsClient(tenantId string) *AppRoleAssignmentsClient {
+func NewGroupsAppRoleAssignmentsClient() *AppRoleAssignmentsClient {
 	return &AppRoleAssignmentsClient{
 		BaseClient:   NewClient(Version10),
 		resourceType: groupsAppRoleAssignmentsResource,
@@ -42,7 +42,7 @@ func NewGroupsAppRoleAssignmentsClient(tenantId string) *AppRoleAssignmentsClien
 }
 
 // NewServicePrincipalsAppRoleAssignmentsClient returns a new AppRoleAssignmentsClient for service principal assignments
-func NewServicePrincipalsAppRoleAssignmentsClient(tenantId string) *AppRoleAssignmentsClient {
+func NewServicePrincipalsAppRoleAssignmentsClient() *AppRoleAssignmentsClient {
 	return &AppRoleAssignmentsClient{
 		BaseClient:   NewClient(Version10),
 		resourceType: servicePrincipalsAppRoleAssignmentsResource,
@@ -145,7 +145,7 @@ type AppRoleAssignedToClient struct {
 }
 
 // NewAppRoleAssignedToClient returns a new AppRoleAssignedToClient
-func NewAppRoleAssignedToClient(tenantId string) *AppRoleAssignedToClient {
+func NewAppRoleAssignedToClient() *AppRoleAssignedToClient {
 	return &AppRoleAssignedToClient{
 		BaseClient: NewClient(Version10),
 	}

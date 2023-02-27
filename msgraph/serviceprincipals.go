@@ -17,7 +17,7 @@ type ServicePrincipalsClient struct {
 }
 
 // NewServicePrincipalsClient returns a new ServicePrincipalsClient.
-func NewServicePrincipalsClient(tenantId string) *ServicePrincipalsClient {
+func NewServicePrincipalsClient() *ServicePrincipalsClient {
 	return &ServicePrincipalsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

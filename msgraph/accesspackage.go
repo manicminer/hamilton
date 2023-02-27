@@ -15,7 +15,7 @@ type AccessPackageClient struct {
 	BaseClient Client
 }
 
-func NewAccessPackageClient(tenantId string) *AccessPackageClient {
+func NewAccessPackageClient() *AccessPackageClient {
 	return &AccessPackageClient{
 		BaseClient: NewClient(Version10),
 	}

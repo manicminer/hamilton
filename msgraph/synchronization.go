@@ -16,7 +16,7 @@ type SynchronizationJobClient struct {
 }
 
 // NewSynchronizationJobClient returns a new SynchronizationJobClient
-func NewSynchronizationJobClient(tenantId string) *SynchronizationJobClient {
+func NewSynchronizationJobClient() *SynchronizationJobClient {
 	return &SynchronizationJobClient{
 		BaseClient: NewClient(VersionBeta),
 	}

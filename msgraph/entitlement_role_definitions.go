@@ -16,7 +16,7 @@ type EntitlementRoleDefinitionsClient struct {
 }
 
 // NewEntitlementRoleDefinitionsClient returns a new EntitlementRoleDefinitionsClient
-func NewEntitlementRoleDefinitionsClient(tenantId string) *EntitlementRoleDefinitionsClient {
+func NewEntitlementRoleDefinitionsClient() *EntitlementRoleDefinitionsClient {
 	return &EntitlementRoleDefinitionsClient{
 		BaseClient: NewClient(Version10),
 	}

@@ -17,7 +17,7 @@ type DirectoryObjectsClient struct {
 }
 
 // NewDirectoryObjectsClient returns a new DirectoryObjectsClient.
-func NewDirectoryObjectsClient(tenantId string) *DirectoryObjectsClient {
+func NewDirectoryObjectsClient() *DirectoryObjectsClient {
 	return &DirectoryObjectsClient{
 		BaseClient: NewClient(Version10),
 	}

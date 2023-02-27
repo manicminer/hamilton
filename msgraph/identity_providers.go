@@ -15,7 +15,7 @@ type IdentityProvidersClient struct {
 }
 
 // NewIdentityProvidersClient returns a new IdentityProvidersClient
-func NewIdentityProvidersClient(tenantId string) *IdentityProvidersClient {
+func NewIdentityProvidersClient() *IdentityProvidersClient {
 	return &IdentityProvidersClient{
 		BaseClient: NewClient(VersionBeta),
 	}

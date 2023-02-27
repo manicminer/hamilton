@@ -16,7 +16,7 @@ type DirectoryAuditReportsClient struct {
 }
 
 // NewDirectoryAuditReportsClient returns a new DirectoryAuditReportsClient.
-func NewDirectoryAuditReportsClient(tenantId string) *DirectoryAuditReportsClient {
+func NewDirectoryAuditReportsClient() *DirectoryAuditReportsClient {
 	return &DirectoryAuditReportsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

@@ -17,7 +17,7 @@ type ConditionalAccessPoliciesClient struct {
 }
 
 // NewConditionalAccessPoliciesClient returns a new ConditionalAccessPoliciesClient
-func NewConditionalAccessPoliciesClient(tenantId string) *ConditionalAccessPoliciesClient {
+func NewConditionalAccessPoliciesClient() *ConditionalAccessPoliciesClient {
 	return &ConditionalAccessPoliciesClient{
 		BaseClient: NewClient(VersionBeta),
 	}

@@ -17,7 +17,7 @@ type AccessPackageResourceRoleScopeClient struct {
 	BaseClient Client
 }
 
-func NewAccessPackageResourceRoleScopeClient(tenantId string) *AccessPackageResourceRoleScopeClient {
+func NewAccessPackageResourceRoleScopeClient() *AccessPackageResourceRoleScopeClient {
 	return &AccessPackageResourceRoleScopeClient{
 		BaseClient: NewClient(VersionBeta),
 	}

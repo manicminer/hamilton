@@ -14,7 +14,7 @@ type InvitationsClient struct {
 }
 
 // NewInvitationsClient returns a new InvitationsClient.
-func NewInvitationsClient(tenantId string) *InvitationsClient {
+func NewInvitationsClient() *InvitationsClient {
 	return &InvitationsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

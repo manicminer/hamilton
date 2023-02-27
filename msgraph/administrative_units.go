@@ -16,7 +16,7 @@ type AdministrativeUnitsClient struct {
 }
 
 // NewAdministrativeUnitsClient returns a new AdministrativeUnitsClient.
-func NewAdministrativeUnitsClient(tenantId string) *AdministrativeUnitsClient {
+func NewAdministrativeUnitsClient() *AdministrativeUnitsClient {
 	return &AdministrativeUnitsClient{
 		BaseClient: NewClient(VersionBeta),
 	}

@@ -16,7 +16,7 @@ type UsersClient struct {
 }
 
 // NewUsersClient returns a new UsersClient.
-func NewUsersClient(tenantId string) *UsersClient {
+func NewUsersClient() *UsersClient {
 	return &UsersClient{
 		BaseClient: NewClient(VersionBeta),
 	}

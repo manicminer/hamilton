@@ -14,7 +14,7 @@ type DirectoryRoleTemplatesClient struct {
 }
 
 // NewDirectoryRoleTemplatesClient returns a new DirectoryRoleTemplatesClient
-func NewDirectoryRoleTemplatesClient(tenantId string) *DirectoryRoleTemplatesClient {
+func NewDirectoryRoleTemplatesClient() *DirectoryRoleTemplatesClient {
 	return &DirectoryRoleTemplatesClient{
 		BaseClient: NewClient(Version10),
 	}
