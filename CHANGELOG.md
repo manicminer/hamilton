@@ -1,5 +1,7 @@
 ## 0.59.0 (Unreleased)
 
+- Bugfix: Allow the `SynchronizationJobClient{}.ProvisionOnDemand()` method to recognise HTTP 200 responses ([#226](https://github.com/manicminer/hamilton/pull/226))
+
 ⚠️ BREAKING CHANGES:
 
 - This release removes support for specifying the tenant ID as part of the request URL, as this causes some issues with newer APIs and is no longer supported by Microsoft Graph ([#230](https://github.com/manicminer/hamilton/pull/230))
