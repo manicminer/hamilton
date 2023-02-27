@@ -279,7 +279,7 @@ func (c *SynchronizationJobClient) ProvisionOnDemand(ctx context.Context, id str
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
-		ValidStatusCodes: []int{http.StatusCreated},
+		ValidStatusCodes: []int{http.StatusCreated, http.StatusOK},
 		Uri: Uri{
 			Entity: fmt.Sprintf("/servicePrincipals/%s/synchronization/jobs/%s/provisionOnDemand", servicePrincipalId, id),
 		},
