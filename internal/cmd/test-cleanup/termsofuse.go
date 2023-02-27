@@ -8,7 +8,7 @@ import (
 )
 
 func cleanupTermsOfUseAgreements() {
-	client := msgraph.NewTermsOfUseAgreementClient(tenantId)
+	client := msgraph.NewTermsOfUseAgreementClient()
 	client.BaseClient.Authorizer = authorizer
 
 	result, _, err := client.List(ctx, fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix))

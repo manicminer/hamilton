@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupAdministrativeUnits() {
-	administrativeUnitsClient := msgraph.NewAdministrativeUnitsClient(tenantId)
+	administrativeUnitsClient := msgraph.NewAdministrativeUnitsClient()
 	administrativeUnitsClient.BaseClient.Authorizer = authorizer
 
 	administrativeUnits, _, err := administrativeUnitsClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

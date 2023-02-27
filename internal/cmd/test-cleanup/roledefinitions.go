@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupRoleDefinitions() {
-	client := msgraph.NewRoleDefinitionsClient(tenantId)
+	client := msgraph.NewRoleDefinitionsClient()
 	client.BaseClient.Authorizer = authorizer
 
 	result, _, err := client.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

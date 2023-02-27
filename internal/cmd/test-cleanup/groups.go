@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupGroups() {
-	groupsClient := msgraph.NewGroupsClient(tenantId)
+	groupsClient := msgraph.NewGroupsClient()
 	groupsClient.BaseClient.Authorizer = authorizer
 
 	groups, _, err := groupsClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupApplications() {
-	appsClient := msgraph.NewApplicationsClient(tenantId)
+	appsClient := msgraph.NewApplicationsClient()
 	appsClient.BaseClient.Authorizer = authorizer
 
 	apps, _, err := appsClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

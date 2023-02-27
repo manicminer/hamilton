@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupNamedLocations() {
-	namedLocationsClient := msgraph.NewNamedLocationsClient(tenantId)
+	namedLocationsClient := msgraph.NewNamedLocationsClient()
 	namedLocationsClient.BaseClient.Authorizer = authorizer
 
 	namedLocations, _, err := namedLocationsClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

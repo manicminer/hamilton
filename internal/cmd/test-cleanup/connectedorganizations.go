@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupConnectedOrganizations() {
-	client := msgraph.NewConnectedOrganizationClient(tenantId)
+	client := msgraph.NewConnectedOrganizationClient()
 	client.BaseClient.Authorizer = authorizer
 
 	result, _, err := client.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})
