@@ -1,3 +1,9 @@
+## 0.59.0 (Unreleased)
+
+⚠️ BREAKING CHANGES:
+
+- This release removes support for specifying the tenant ID as part of the request URL, as this causes some issues with newer APIs and is no longer supported by Microsoft Graph ([#230](https://github.com/manicminer/hamilton/pull/230))
+
 ## 0.58.0 (February 23, 2023)
 
 ⚠️ BREAKING CHANGES:
