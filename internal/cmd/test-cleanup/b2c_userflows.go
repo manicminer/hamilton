@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupB2CUserFlows() {
-	client := msgraph.NewB2CUserFlowClient(b2cTenantId)
+	client := msgraph.NewB2CUserFlowClient()
 	client.BaseClient.Authorizer = b2cAuthorizer
 
 	result, _, err := client.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(id, 'B2C_1_%s')", displayNamePrefix)})

@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupAccessPackageAssignmentPolicies() {
-	client := msgraph.NewAccessPackageAssignmentPolicyClient(tenantId)
+	client := msgraph.NewAccessPackageAssignmentPolicyClient()
 	client.BaseClient.Authorizer = authorizer
 
 	result, _, err := client.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

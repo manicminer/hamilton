@@ -8,7 +8,7 @@ import (
 )
 
 func cleanupAccessPackageAssignmentRequests() {
-	client := msgraph.NewAccessPackageAssignmentRequestClient(tenantId)
+	client := msgraph.NewAccessPackageAssignmentRequestClient()
 	client.BaseClient.Authorizer = authorizer
 
 	result, _, err := client.List(ctx, odata.Query{})

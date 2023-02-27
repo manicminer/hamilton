@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupClaimsMappingPolicies() {
-	client := msgraph.NewClaimsMappingPolicyClient(tenantId)
+	client := msgraph.NewClaimsMappingPolicyClient()
 	client.BaseClient.Authorizer = authorizer
 
 	result, _, err := client.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

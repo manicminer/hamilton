@@ -9,7 +9,7 @@ import (
 )
 
 func cleanupConditionalAccessPolicies() {
-	conditionalAccessPoliciesClient := msgraph.NewConditionalAccessPoliciesClient(tenantId)
+	conditionalAccessPoliciesClient := msgraph.NewConditionalAccessPoliciesClient()
 	conditionalAccessPoliciesClient.BaseClient.Authorizer = authorizer
 
 	conditionalAccessPolicies, _, err := conditionalAccessPoliciesClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})
