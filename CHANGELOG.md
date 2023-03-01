@@ -1,4 +1,4 @@
-## 0.59.0 (Unreleased)
+## 0.59.0 (March 1, 2023)
 
 - Bugfix: Allow the `SynchronizationJobClient{}.ProvisionOnDemand()` method to recognise HTTP 200 responses ([#226](https://github.com/manicminer/hamilton/pull/226))
 
