@@ -759,17 +759,14 @@ func (c *ServicePrincipalsClient) AssignAppRoleForResource(ctx context.Context, 
 }
 
 // AssignTokenIssuancePolicy assigns tokenIssuancePolicies to a service principal
-func (c *ServicePrincipalsClient) AssignTokenIssuancePolicy(ctx context.Context, servicePrincipal *ServicePrincipal) (int, error) {
+func (c *ServicePrincipalsClient) AssignTokenIssuancePolicy(ctx context.Context, servicePrincipalId string, policies *[]TokenIssuancePolicy) (int, error) {
 	var status int
 
-	if servicePrincipal.ID() == nil {
-		return status, errors.New("cannot update service principal with nil ID")
-	}
-	if servicePrincipal.TokenIssuancePolicies == nil {
+	if policies == nil {
 		return status, errors.New("cannot update service principal with nil TokenIssuancePolicies")
 	}
 
-	for _, policy := range *servicePrincipal.TokenIssuancePolicies {
+	for _, policy := range *policies {
 		// don't fail if an owner already exists
 		checkPolicyAlreadyExists := func(resp *http.Response, o *odata.OData) bool {
 			if resp != nil && resp.StatusCode == http.StatusBadRequest && o != nil && o.Error != nil {
@@ -789,7 +786,7 @@ func (c *ServicePrincipalsClient) AssignTokenIssuancePolicy(ctx context.Context,
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkPolicyAlreadyExists,
 			Uri: Uri{
-				Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/$ref", *servicePrincipal.ID()),
+				Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/$ref", servicePrincipalId),
 			},
 		})
 		if err != nil {
@@ -801,13 +798,12 @@ func (c *ServicePrincipalsClient) AssignTokenIssuancePolicy(ctx context.Context,
 }
 
 // ListTokenIssuancePolicy retrieves the tokenIssuancePolicies assigned to the specified ServicePrincipal.
-// principalId is the object ID of the service principal.
-func (c *ServicePrincipalsClient) ListTokenIssuancePolicy(ctx context.Context, principalId string) (*[]TokenIssuancePolicy, int, error) {
+func (c *ServicePrincipalsClient) ListTokenIssuancePolicy(ctx context.Context, servicePrincipalId string) (*[]TokenIssuancePolicy, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies", principalId),
+			Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies", servicePrincipalId),
 		},
 	})
 	if err != nil {
@@ -832,17 +828,14 @@ func (c *ServicePrincipalsClient) ListTokenIssuancePolicy(ctx context.Context, p
 }
 
 // RemoveTokenIssuancePolicy removes a tokenIssuancePolicy from a service principal
-func (c *ServicePrincipalsClient) RemoveTokenIssuancePolicy(ctx context.Context, servicePrincipal *ServicePrincipal, policyIds *[]string) (int, error) {
+func (c *ServicePrincipalsClient) RemoveTokenIssuancePolicy(ctx context.Context, servicePrincipalId string, policyIds *[]string) (int, error) {
 	var status int
 
-	if servicePrincipal.ID() == nil {
-		return status, errors.New("cannot update service principal with nil ID")
-	}
 	if policyIds == nil {
 		return status, errors.New("cannot remove, nil TokenIssuancePolicyIds")
 	}
 
-	assignedPolicies, _, err := c.ListTokenIssuancePolicy(ctx, *servicePrincipal.ID())
+	assignedPolicies, _, err := c.ListTokenIssuancePolicy(ctx, servicePrincipalId)
 	if err != nil {
 		return status, fmt.Errorf("ServicePrincipalsClient.BaseClient.ListTokenIssuancePolicy(): %v", err)
 	}
@@ -876,7 +869,7 @@ func (c *ServicePrincipalsClient) RemoveTokenIssuancePolicy(ctx context.Context,
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkPolicyStatus,
 			Uri: Uri{
-				Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/%s/$ref", *servicePrincipal.ID(), policyId),
+				Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/%s/$ref", servicePrincipalId, policyId),
 			},
 		})
 		if err != nil {

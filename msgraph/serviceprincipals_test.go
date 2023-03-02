@@ -439,7 +439,7 @@ func testServicePrincipalsClient_RemoveClaimsMappingPolicy(t *testing.T, c *test
 }
 
 func testServicePrincipalsClient_AssignTokenIssuancePolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal) {
-	status, err := c.ServicePrincipalsClient.AssignTokenIssuancePolicy(c.Context, sp)
+	status, err := c.ServicePrincipalsClient.AssignTokenIssuancePolicy(c.Context, *sp.ID(), sp.TokenIssuancePolicies)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.AssignTokenIssuancePolicy(): %v", err)
 	}
@@ -449,7 +449,7 @@ func testServicePrincipalsClient_AssignTokenIssuancePolicy(t *testing.T, c *test
 }
 
 func testServicePrincipalsClient_RemoveTokenIssuancePolicy(t *testing.T, c *test.Test, sp *msgraph.ServicePrincipal, policyIds []string) {
-	status, err := c.ServicePrincipalsClient.RemoveTokenIssuancePolicy(c.Context, sp, &policyIds)
+	status, err := c.ServicePrincipalsClient.RemoveTokenIssuancePolicy(c.Context, *sp.ID(), &policyIds)
 	if err != nil {
 		t.Fatalf("ServicePrincipalsClient.RemoveTokenIssuancePolicy(): %v", err)
 	}
