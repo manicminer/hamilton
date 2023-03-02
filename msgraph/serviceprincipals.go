@@ -789,8 +789,7 @@ func (c *ServicePrincipalsClient) AssignTokenIssuancePolicy(ctx context.Context,
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkPolicyAlreadyExists,
 			Uri: Uri{
-				Entity:      fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/$ref", *servicePrincipal.ID()),
-				HasTenantId: false,
+				Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/$ref", *servicePrincipal.ID()),
 			},
 		})
 		if err != nil {
@@ -808,8 +807,7 @@ func (c *ServicePrincipalsClient) ListTokenIssuancePolicy(ctx context.Context, p
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies", principalId),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies", principalId),
 		},
 	})
 	if err != nil {
@@ -878,8 +876,7 @@ func (c *ServicePrincipalsClient) RemoveTokenIssuancePolicy(ctx context.Context,
 			ValidStatusCodes:       []int{http.StatusNoContent},
 			ValidStatusFunc:        checkPolicyStatus,
 			Uri: Uri{
-				Entity:      fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/%s/$ref", *servicePrincipal.ID(), policyId),
-				HasTenantId: false,
+				Entity: fmt.Sprintf("/servicePrincipals/%s/tokenIssuancePolicies/%s/$ref", *servicePrincipal.ID(), policyId),
 			},
 		})
 		if err != nil {

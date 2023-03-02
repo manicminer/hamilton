@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/manicminer/hamilton/odata"
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
 
 type TokenIssuancePolicyClient struct {
@@ -15,9 +15,9 @@ type TokenIssuancePolicyClient struct {
 }
 
 // NewTokenIssuancePolicyClient returns a new TokenIssuancePolicyClient
-func NewTokenIssuancePolicyClient(tenantId string) *TokenIssuancePolicyClient {
+func NewTokenIssuancePolicyClient() *TokenIssuancePolicyClient {
 	return &TokenIssuancePolicyClient{
-		BaseClient: NewClient(Version10, tenantId),
+		BaseClient: NewClient(Version10),
 	}
 }
 
@@ -35,8 +35,7 @@ func (c *TokenIssuancePolicyClient) Create(ctx context.Context, policy TokenIssu
 		OData:            odata.Query{Metadata: odata.MetadataFull},
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      "/policies/tokenIssuancePolicies",
-			HasTenantId: false,
+			Entity: "/policies/tokenIssuancePolicies",
 		},
 	})
 	if err != nil {
@@ -66,8 +65,7 @@ func (c *TokenIssuancePolicyClient) List(ctx context.Context, query odata.Query)
 		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      "/policies/tokenIssuancePolicies",
-			HasTenantId: false,
+			Entity: "/policies/tokenIssuancePolicies",
 		},
 	})
 	if err != nil {
@@ -99,8 +97,7 @@ func (c *TokenIssuancePolicyClient) Get(ctx context.Context, id string, query od
 		OData:                  query,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/policies/tokenIssuancePolicies/%s", id),
-			HasTenantId: false,
+			Entity: fmt.Sprintf("/policies/tokenIssuancePolicies/%s", id),
 		},
 	})
 	if err != nil {
@@ -146,8 +143,7 @@ func (c *TokenIssuancePolicyClient) Update(ctx context.Context, tokenIssuancePol
 			http.StatusNoContent,
 		},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/policies/tokenIssuancePolicies/%s", tokenIssuancePolicyId),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/policies/tokenIssuancePolicies/%s", tokenIssuancePolicyId),
 		},
 	})
 	if err != nil {
@@ -163,8 +159,7 @@ func (c *TokenIssuancePolicyClient) Delete(ctx context.Context, id string) (int,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/policies/tokenIssuancePolicies/%s", id),
-			HasTenantId: false,
+			Entity: fmt.Sprintf("/policies/tokenIssuancePolicies/%s", id),
 		},
 	})
 	if err != nil {
