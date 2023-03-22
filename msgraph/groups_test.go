@@ -42,6 +42,7 @@ func TestGroupsClient(t *testing.T) {
 	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID())
 	testGroupsClient_GetMember(t, c, *group.ID(), (*members)[0])
 	testGroupsClient_GetMember(t, c, *group.ID(), (*transitiveMembers)[0])
+	testGroupsClient_GetMembers(t, c, *group.ID(), odata.Query{})
 
 	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.RandomString))
 	testGroupsClient_Update(t, c, *group)
@@ -268,6 +269,20 @@ func testGroupsClient_GetMember(t *testing.T, c *test.Test, groupId string, memb
 	}
 	if member == nil {
 		t.Fatal("GroupsClient.GetMember(): member was nil")
+	}
+	return
+}
+
+func testGroupsClient_GetMembers(t *testing.T, c *test.Test, groupId string, query odata.Query) (members *[]msgraph.User) {
+	members, status, err := c.GroupsClient.GetMembers(c.Context, groupId, query)
+	if err != nil {
+		t.Fatalf("GroupsClient.GetMembers(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.GetMembesr(): invalid status: %d", status)
+	}
+	if members == nil {
+		t.Fatal("GroupsClient.GetMembers(): members was nil")
 	}
 	return
 }
