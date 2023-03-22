@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/manicminer/hamilton/odata"
 	"io"
 	"net/http"
+
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
 
 type WindowsAutopilotDeploymentProfilesClient struct {
@@ -15,9 +16,9 @@ type WindowsAutopilotDeploymentProfilesClient struct {
 }
 
 // NewWindowsAutopilotDeploymentProfilesClient returns a new WindowsAutopilotDeploymentProfilesClient.
-func NewWindowsAutopilotDeploymentProfilesClient(tenantId string) *WindowsAutopilotDeploymentProfilesClient {
+func NewWindowsAutopilotDeploymentProfilesClient() *WindowsAutopilotDeploymentProfilesClient {
 	return &WindowsAutopilotDeploymentProfilesClient{
-		BaseClient: NewClient(VersionBeta, tenantId),
+		BaseClient: NewClient(VersionBeta),
 	}
 }
 
@@ -28,8 +29,7 @@ func (c *WindowsAutopilotDeploymentProfilesClient) List(ctx context.Context, que
 		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      "/deviceManagement/windowsAutopilotDeploymentProfiles",
-			HasTenantId: true,
+			Entity: "/deviceManagement/windowsAutopilotDeploymentProfiles",
 		},
 	})
 	if err != nil {
@@ -59,15 +59,12 @@ func (c *WindowsAutopilotDeploymentProfilesClient) Create(ctx context.Context, p
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
-	hoge := string(body)
-	fmt.Printf(hoge)
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      "/deviceManagement/windowsAutopilotDeploymentProfiles",
-			HasTenantId: true,
+			Entity: "/deviceManagement/windowsAutopilotDeploymentProfiles",
 		},
 	})
 	if err != nil {
@@ -95,8 +92,7 @@ func (c *WindowsAutopilotDeploymentProfilesClient) Get(ctx context.Context, id s
 		OData:                  query,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/deviceManagement/windowsAutopilotDeploymentProfiles/%s", id),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/deviceManagement/windowsAutopilotDeploymentProfiles/%s", id),
 		},
 	})
 	if err != nil {
@@ -135,8 +131,7 @@ func (c *WindowsAutopilotDeploymentProfilesClient) Update(ctx context.Context, p
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK, http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/deviceManagement/windowsAutopilotDeploymentProfiles/%s", *profile.ID),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/deviceManagement/windowsAutopilotDeploymentProfiles/%s", *profile.ID),
 		},
 	})
 	if err != nil {
@@ -152,8 +147,7 @@ func (c *WindowsAutopilotDeploymentProfilesClient) Delete(ctx context.Context, i
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusOK, http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/deviceManagement/windowsAutopilotDeploymentProfiles/%s", id),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/deviceManagement/windowsAutopilotDeploymentProfiles/%s", id),
 		},
 	})
 	if err != nil {

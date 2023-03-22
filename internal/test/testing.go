@@ -395,9 +395,9 @@ func NewTest(t *testing.T) (c *Test) {
 	c.UsersClient.BaseClient.Endpoint = *endpoint
 	c.UsersClient.BaseClient.RetryableClient.RetryMax = retry
 
-	c.WindowsAutopilotDeploymentProfilesClient = msgraph.NewWindowsAutopilotDeploymentProfilesClient(c.Connections["default"].AuthConfig.TenantID)
+	c.WindowsAutopilotDeploymentProfilesClient = msgraph.NewWindowsAutopilotDeploymentProfilesClient()
 	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
-	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.Endpoint = c.Connections["default"].AuthConfig.Environment.MsGraph.Endpoint
+	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.Endpoint = *endpoint
 	c.WindowsAutopilotDeploymentProfilesClient.BaseClient.RetryableClient.RetryMax = retry
 
 	return
