@@ -1,5 +1,6 @@
 ## 0.60.0 (Unreleased)
 
+- Add the `GetMembers()` method to the `GroupsClient` ([#236](https://github.com/manicminer/hamilton/pull/236))
 - Support for the `ClientApplications` field in the `ConditionalAccessConditionSet` model ([#235](https://github.com/manicminer/hamilton/pull/235))
 - Support for the `ServiceManagementReference` field in the `Application` model ([#233](https://github.com/manicminer/hamilton/pull/233))
 
