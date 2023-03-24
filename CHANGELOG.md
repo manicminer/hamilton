@@ -1,5 +1,6 @@
 ## 0.60.0 (Unreleased)
 
+- Support for the `ClientApplications` field in the `ConditionalAccessConditionSet` model ([#235](https://github.com/manicminer/hamilton/pull/235))
 - Support for the `ServiceManagementReference` field in the `Application` model ([#233](https://github.com/manicminer/hamilton/pull/233))
 
 ## 0.59.0 (March 1, 2023)
