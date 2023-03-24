@@ -438,7 +438,6 @@ func (c *GroupsClient) GetMember(ctx context.Context, groupId, memberId string) 
 
 // GetMembers retrieves all member of the specified Group, configurable by an OData Query.
 // groupId is the object ID of the group.
-// memberId is the object ID of the member object.
 func (c *GroupsClient) GetMembers(ctx context.Context, groupId string, query odata.Query) (*[]User, int, error) {
 
 	query.Expand = odata.Expand{Relationship: "*"}
