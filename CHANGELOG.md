@@ -1,3 +1,7 @@
+## 0.60.0 (Unreleased)
+
+- Support for the `ServiceManagementReference` field in the `Application` model ([#233](https://github.com/manicminer/hamilton/pull/233))
+
 ## 0.59.0 (March 1, 2023)
 
 - Bugfix: Allow the `SynchronizationJobClient{}.ProvisionOnDemand()` method to recognise HTTP 200 responses ([#226](https://github.com/manicminer/hamilton/pull/226))
