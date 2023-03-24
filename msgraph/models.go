@@ -267,6 +267,7 @@ type Application struct {
 	PublicClient                  *PublicClient             `json:"publicClient,omitempty"`
 	PublisherDomain               *string                   `json:"publisherDomain,omitempty"`
 	RequiredResourceAccess        *[]RequiredResourceAccess `json:"requiredResourceAccess,omitempty"`
+	ServiceManagementReference    *StringNullWhenEmpty      `json:"serviceManagementReference,omitempty"`
 	SignInAudience                *SignInAudience           `json:"signInAudience,omitempty"`
 	Spa                           *ApplicationSpa           `json:"spa,omitempty"`
 	Tags                          *[]string                 `json:"tags,omitempty"`
