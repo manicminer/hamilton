@@ -1541,10 +1541,10 @@ type SynchronizationJob struct {
 }
 
 type SignInActivity struct {
-	LastSignInDateTime  			 	*time.Time `json:"lastSignInDateTime,omitempty"`
-	LastSignInRequestId					*string    `json:"lastSignInRequestId,omitempty"`
-	LastNonInteractiveSignInDateTime 	*time.Time `json:"lastNonInteractiveSignInDateTime,omitempty"`
-	LastNonInteractiveSignInRequestId 	*string  `json:"lastNonInteractiveSignInRequestId,omitempty"`
+	LastSignInDateTime                *time.Time `json:"lastSignInDateTime,omitempty"`
+	LastSignInRequestId               *string    `json:"lastSignInRequestId,omitempty"`
+	LastNonInteractiveSignInDateTime  *time.Time `json:"lastNonInteractiveSignInDateTime,omitempty"`
+	LastNonInteractiveSignInRequestId *string    `json:"lastNonInteractiveSignInRequestId,omitempty"`
 }
 
 type SignInFrequencySessionControl struct {
