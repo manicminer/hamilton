@@ -740,9 +740,22 @@ const (
 type UserflowAttributeDataType = string
 
 const (
-	UserflowAttributeDataTypeString  UserflowAttributeDataType = "string"
-	UserflowAttributeDataTypeBoolean UserflowAttributeDataType = "boolean"
-	UserflowAttributeDataTypeInt64   UserflowAttributeDataType = "int64"
+	UserflowAttributeDataTypeString           UserflowAttributeDataType = "string"
+	UserflowAttributeDataTypeBoolean          UserflowAttributeDataType = "boolean"
+	UserflowAttributeDataTypeInt64            UserflowAttributeDataType = "int64"
+	UserflowAttributeDataTypeStringCollection UserflowAttributeDataType = "stringCollection"
+	UserflowAttributeDataTypeDateTime         UserflowAttributeDataType = "dateTime"
+)
+
+type UserInputType = string
+
+const (
+	UserInputTypeTextBox              UserInputType = "textBox"
+	UserInputTypeDateTimeDropdown     UserInputType = "dateTimeDropdown"
+	UserInputTypeRadioSingleSelect    UserInputType = "radioSingleSelect"
+	UserInputTypeDropdownSingleSelect UserInputType = "dropdownSingleSelect"
+	UserInputTypeEmailBox             UserInputType = "emailBox"
+	UserInputTypeCheckboxMultiSelect  UserInputType = "checkboxMultiSelect"
 )
 
 type IndexType = string
