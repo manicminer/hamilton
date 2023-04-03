@@ -56,6 +56,12 @@ func TestNamedLocationsClient(t *testing.T) {
 	testNamedLocationsClient_Get(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_Get(t, c, *countryNamedLocation.ID)
 
+	ipNamedLocation.IsTrusted = utils.BoolPtr(false)
+	testNamedLocationsClient_UpdateIP(t, c, *ipNamedLocation)
+
+	countryNamedLocation.IncludeUnknownCountriesAndRegions = utils.BoolPtr(true)
+	testNamedLocationsClient_UpdateCountry(t, c, *countryNamedLocation)
+
 	testNamedLocationsClient_Delete(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_Delete(t, c, *countryNamedLocation.ID)
 }
