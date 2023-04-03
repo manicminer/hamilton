@@ -5,6 +5,7 @@
 - Support for the `ClientApplications` field in the `ConditionalAccessConditionSet` model ([#235](https://github.com/manicminer/hamilton/pull/235))
 - Support for the `ServiceManagementReference` field in the `Application` model ([#233](https://github.com/manicminer/hamilton/pull/233))
 - Support for the `LastNonInteractiveSignInDateTime` and `LastNonInteractiveSignInRequestId` fields in the `SignInActivity` model ([#237](https://github.com/manicminer/hamilton/pull/237))
+- Support for managing [Token Issuance Policies](https://learn.microsoft.com/en-us/graph/api/resources/tokenissuancepolicy?view=graph-rest-1.0) for service principals ([#215](https://github.com/manicminer/hamilton/pull/215))
 - Support for managing [Windows Autopilot Deployment Profiles](https://learn.microsoft.com/en-us/graph/api/resources/intune-enrollment-azureadwindowsautopilotdeploymentprofile?view=graph-rest-beta) ([#228](https://github.com/manicminer/hamilton/pull/228))
 
 ## 0.59.0 (March 1, 2023)
