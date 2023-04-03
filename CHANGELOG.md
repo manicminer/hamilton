@@ -1,9 +1,11 @@
 ## 0.60.0 (Unreleased)
 
+- dependencies: updating to `v0.20230331.1143618` of `github.com/hashicorp/go-azure-sdk` ([#228](https://github.com/manicminer/hamilton/pull/228))
 - Add the `GetMembers()` method to the `GroupsClient` ([#236](https://github.com/manicminer/hamilton/pull/236))
 - Support for the `ClientApplications` field in the `ConditionalAccessConditionSet` model ([#235](https://github.com/manicminer/hamilton/pull/235))
 - Support for the `ServiceManagementReference` field in the `Application` model ([#233](https://github.com/manicminer/hamilton/pull/233))
 - Support for the `LastNonInteractiveSignInDateTime` and `LastNonInteractiveSignInRequestId` fields in the `SignInActivity` model ([#237](https://github.com/manicminer/hamilton/pull/237))
+- Support for managing [Windows Autopilot Deployment Profiles](https://learn.microsoft.com/en-us/graph/api/resources/intune-enrollment-azureadwindowsautopilotdeploymentprofile?view=graph-rest-beta) ([#228](https://github.com/manicminer/hamilton/pull/228))
 
 ## 0.59.0 (March 1, 2023)
 
