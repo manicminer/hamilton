@@ -1,4 +1,4 @@
-## 0.60.0 (Unreleased)
+## 0.60.0 (April 3, 2023)
 
 - dependencies: updating to `v0.20230331.1143618` of `github.com/hashicorp/go-azure-sdk` ([#228](https://github.com/manicminer/hamilton/pull/228))
 - Add the `GetMembers()` method to the `GroupsClient` ([#236](https://github.com/manicminer/hamilton/pull/236))
