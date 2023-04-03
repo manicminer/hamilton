@@ -1450,6 +1450,7 @@ type ServicePrincipal struct {
 	SignInAudience                      *SignInAudience               `json:"signInAudience,omitempty"`
 	Tags                                *[]string                     `json:"tags,omitempty"`
 	TokenEncryptionKeyId                *string                       `json:"tokenEncryptionKeyId,omitempty"`
+	TokenIssuancePolicies               *[]TokenIssuancePolicy        `json:"tokenIssuancePolicies@odata.bind,omitempty"`
 	VerifiedPublisher                   *VerifiedPublisher            `json:"verifiedPublisher,omitempty"`
 }
 
@@ -1655,6 +1656,14 @@ type TemporaryAccessPassAuthenticationMethod struct {
 	IsUsableOnce          *bool                  `json:"isUsableOnce,omitempty"`
 	IsUsable              *bool                  `json:"isUsable,omitempty"`
 	MethodUsabilityReason *MethodUsabilityReason `json:"methodUsabilityReason,omitempty"`
+}
+
+type TokenIssuancePolicy struct {
+	DirectoryObject
+	Definition            *[]string `json:"definition,omitempty"`
+	Description           *string   `json:"description,omitempty"`
+	DisplayName           *string   `json:"displayName,omitempty"`
+	IsOrganizationDefault *bool     `json:"isOrganizationDefault,omitempty"`
 }
 
 type UnifiedRoleAssignment struct {
