@@ -277,6 +277,16 @@ type Application struct {
 	Web                           *ApplicationWeb           `json:"web,omitempty"`
 }
 
+type AssignLicenseRequest struct {
+	AddLicenses *[]AddLicenses `json:"addLicenses"`
+	// Required by API but non-useful in Terraform resource construct.
+	RemoveLicenses *[]string `json:"removeLicenses"`
+}
+
+type AddLicenses struct {
+	SkuId *string `json:"skuId"`
+}
+
 func (a Application) MarshalJSON() ([]byte, error) {
 	var val *StringNullWhenEmpty
 	if a.GroupMembershipClaims != nil {
