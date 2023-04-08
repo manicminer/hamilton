@@ -1113,6 +1113,15 @@ type IdentityProvider struct {
 	Name         *string     `json:"displayName,omitempty"`
 }
 
+type IdentitySet struct {
+	Application              *Identity `json:"application,omitempty"`
+	Conversation             *Identity `json:"conversation,omitempty"`
+	ConversationIdentityType *Identity `json:"conversationIdentityType,omitempty"`
+	Device                   *Identity `json:"device,omitempty"`
+	Phone                    *Identity `json:"phone,omitempty"`
+	User                     *Identity `json:"user,omitempty"`
+}
+
 // Used in the identity sources of a ConnectedOrganization.
 type IdentitySource struct {
 	ODataType   *odata.Type `json:"@odata.type,omitempty"`
@@ -1299,6 +1308,11 @@ type ParentalControlSettings struct {
 	LegalAgeGroupRule         *string   `json:"legalAgeGroupRule,omitempty"`
 }
 
+type PatternedRecurrence struct {
+	Pattern *RecurrencePattern `json:"pattern,omitempty"`
+	Range   *RecurrenceRange   `json:"range,omitempty"`
+}
+
 // PasswordCredential describes a password credential for an object.
 type PasswordCredential struct {
 	CustomKeyIdentifier *string    `json:"customKeyIdentifier,omitempty"`
@@ -1359,8 +1373,22 @@ type RecurrencePattern struct {
 	Index          *IndexType             `json:"index,omitempty"`
 }
 
+type RecurrenceRange struct {
+	EndDate             *time.Time           `json:"endDate,omitempty"`
+	NumberOfOccurrences *int32               `json:"numberOfOccurrences,omitempty"`
+	RecurrenceTimeZone  *string              `json:"recurrenceTimeZone,omitempty"`
+	StartDate           *time.Time           `json:"startDate,omitempty"`
+	Type                *RecurrenceRangeType `json:"type,omitempty"`
+}
+
 type Ref struct {
 	ObjectUri *string `json:"@odata.id,omitempty"`
+}
+
+type RequestSchedule struct {
+	Expiration    *ExpirationPattern   `json:"expiration,omitempty"`
+	Recurrence    *PatternedRecurrence `json:"recurrence,omitempty"`
+	StartDateTime *time.Time           `json:"startDateTime,omitempty"`
 }
 
 type RequestorSettings struct {
@@ -1658,6 +1686,11 @@ type TemporaryAccessPassAuthenticationMethod struct {
 	MethodUsabilityReason *MethodUsabilityReason `json:"methodUsabilityReason,omitempty"`
 }
 
+type TicketInfo struct {
+	TicketNumber *string `json:"ticketNumber,omitempty"`
+	TicketSystem *string `json:"ticketSystem,omitempty"`
+}
+
 type TokenIssuancePolicy struct {
 	DirectoryObject
 	Definition            *[]string `json:"definition,omitempty"`
@@ -1686,6 +1719,26 @@ type UnifiedRoleDefinition struct {
 	RolePermissions *[]UnifiedRolePermission `json:"rolePermissions,omitempty"`
 	TemplateId      *string                  `json:"templateId,omitempty"`
 	Version         *string                  `json:"version,omitempty"`
+}
+
+type UnifiedRoleEligibilityScheduleRequest struct {
+	ID                *string                            `json:"id,omitempty"`
+	Action            *UnifiedRoleScheduleRequestActions `json:"action,omitempty"`
+	ApprovalId        *string                            `json:"approvalId,omitempty"`
+	AppScopeId        *string                            `json:"appScopeId,omitempty"`
+	CompletedDateTime *time.Time                         `json:"completedDateTime,omitempty"`
+	CreatedBy         *IdentitySet                       `json:"createdBy,omitempty"`
+	CreatedDateTime   *time.Time                         `json:"createdDateTime,omitempty"`
+	CustomData        *string                            `json:"customData,omitempty"`
+	DirectoryScopeId  *string                            `json:"directoryScopeId,omitempty"`
+	IsValidationOnly  *bool                              `json:"isValidationOnly,omitempty"`
+	Justification     *string                            `json:"justification,omitempty"`
+	PrincipalId       *string                            `json:"principalId,omitempty"`
+	RoleDefinitionId  *string                            `json:"roleDefinitionId,omitempty"`
+	ScheduleInfo      *RequestSchedule                   `json:"scheduleInfo,omitempty"`
+	Status            *RequestStatus                     `json:"status,omitempty"`
+	TargetScheduleId  *string                            `json:"targetScheduleId,omitempty"`
+	TicketInfo        *TicketInfo                        `json:"ticketInfo,omitempty"`
 }
 
 type UnifiedRolePermission struct {

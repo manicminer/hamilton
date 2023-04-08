@@ -676,6 +676,14 @@ const (
 	RecurrencePatternTypeRelativeYearly  RecurrencePatternType = "relativeYearly"
 )
 
+type RecurrenceRangeType = string
+
+const (
+	RecurrenceRangeTypeEndDate  RecurrenceRangeType = "endDate"
+	RecurrenceRangeTypeNoEnd    RecurrenceRangeType = "noEnd"
+	RecurrenceRangeTypeNumbered RecurrenceRangeType = "numbered"
+)
+
 type RegistrationAuthMethod = string
 
 const (
@@ -713,6 +721,22 @@ const (
 	RequestorSettingsScopeTypeSpecificDirectorySubjects                  RequestorSettingsScopeType = "SpecificDirectorySubjects"
 )
 
+type RequestStatus = string
+
+const (
+	RequestStatusCanceled                RequestStatus = "Canceled"
+	RequestStatusDenied                  RequestStatus = "Denied"
+	RequestStatusFailed                  RequestStatus = "Failed"
+	RequestStatusGranted                 RequestStatus = "Granted"
+	RequestStatusPendingAdminDecision    RequestStatus = "PendingAdminDecision"
+	RequestStatusPendingApproval         RequestStatus = "PendingApproval"
+	RequestStatusPendingProvisioning     RequestStatus = "PendingProvisioning"
+	RequestStatusPendingScheduleCreation RequestStatus = "PendingScheduleCreation"
+	RequestStatusProvisioned             RequestStatus = "Provisioned"
+	RequestStatusRevoked                 RequestStatus = "Revoked"
+	RequestStatusScheduleCreated         RequestStatus = "ScheduleCreated"
+)
+
 type ResourceAccessType = string
 
 const (
@@ -747,6 +771,21 @@ const (
 	SignInAudienceAzureADMultipleOrgs                SignInAudience = "AzureADMultipleOrgs"
 	SignInAudienceAzureADandPersonalMicrosoftAccount SignInAudience = "AzureADandPersonalMicrosoftAccount"
 	SignInAudiencePersonalMicrosoftAccount           SignInAudience = "PersonalMicrosoftAccount"
+)
+
+type UnifiedRoleScheduleRequestActions = string
+
+const (
+	UnifiedRoleScheduleRequestActionsAdminAssign        UnifiedRoleScheduleRequestActions = "adminAssign"
+	UnifiedRoleScheduleRequestActionsAdminUpdate        UnifiedRoleScheduleRequestActions = "adminUpdate"
+	UnifiedRoleScheduleRequestActionsAdminRemove        UnifiedRoleScheduleRequestActions = "adminRemove"
+	UnifiedRoleScheduleRequestActionsSelfActivate       UnifiedRoleScheduleRequestActions = "selfActivate"
+	UnifiedRoleScheduleRequestActionsSelfDeactivate     UnifiedRoleScheduleRequestActions = "selfDeactivate"
+	UnifiedRoleScheduleRequestActionsAdminExtend        UnifiedRoleScheduleRequestActions = "adminExtend"
+	UnifiedRoleScheduleRequestActionsAdminRenew         UnifiedRoleScheduleRequestActions = "adminRenew"
+	UnifiedRoleScheduleRequestActionsSelfExtend         UnifiedRoleScheduleRequestActions = "selfExtend"
+	UnifiedRoleScheduleRequestActionsSelfRenew          UnifiedRoleScheduleRequestActions = "selfRenew"
+	UnifiedRoleScheduleRequestActionsUnknownFutureValue UnifiedRoleScheduleRequestActions = "unknownFutureValue"
 )
 
 type UsageAuthMethod = string
