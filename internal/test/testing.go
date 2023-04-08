@@ -123,6 +123,7 @@ type Test struct {
 	ReportsClient                             *msgraph.ReportsClient
 	RoleAssignmentsClient                     *msgraph.RoleAssignmentsClient
 	RoleDefinitionsClient                     *msgraph.RoleDefinitionsClient
+	RoleEligibilityScheduleRequestsClient     *msgraph.RoleEligibilityScheduleRequestsClient
 	SchemaExtensionsClient                    *msgraph.SchemaExtensionsClient
 	ServicePrincipalsAppRoleAssignmentsClient *msgraph.AppRoleAssignmentsClient
 	ServicePrincipalsClient                   *msgraph.ServicePrincipalsClient
@@ -349,6 +350,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.RoleDefinitionsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.RoleDefinitionsClient.BaseClient.Endpoint = *endpoint
 	c.RoleDefinitionsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.RoleEligibilityScheduleRequestsClient = msgraph.NewRoleEligibilityScheduleRequestsClient()
+	c.RoleEligibilityScheduleRequestsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.RoleEligibilityScheduleRequestsClient.BaseClient.Endpoint = *endpoint
+	c.RoleEligibilityScheduleRequestsClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.SchemaExtensionsClient = msgraph.NewSchemaExtensionsClient()
 	c.SchemaExtensionsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
