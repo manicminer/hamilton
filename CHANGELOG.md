@@ -1,4 +1,4 @@
-## 0.61.0 (Unreleased)
+## 0.61.0 (April 13, 2023)
 
 - Support additional types for UserflowAttributeDataType ([#241](https://github.com/manicminer/hamilton/pull/241))
 - Retry on 404 when creating directory role assignments ([#242](https://github.com/manicminer/hamilton/pull/242))
