@@ -39,30 +39,21 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 		Version: utils.StringPtr("1.5"),
 	})
 
-	var expiration interface{} = struct {
-		Type string `json:"type"`
-	}{
-		Type: "NoExpiration",
-	}
-
-	var scheduleInfo interface{} = struct {
-		StartDateTime string      `json:"startDateTime"`
-		Expiration    interface{} `json:"expiration"`
-	}{
-		StartDateTime: time.Now().UTC().Format(time.RFC3339),
-		Expiration:    expiration,
-	}
-
 	roleEligibilityScheduleRequest := testRoleEligibilityScheduleRequestClient_Create(t, c, msgraph.UnifiedRoleEligibilityScheduleRequest{
 		RoleDefinitionId: roleDefinition.ID(),
 		PrincipalId:      user.ID(),
 		DirectoryScopeId: utils.StringPtr("/"),
 		Justification:    utils.StringPtr("abc"),
-		ScheduleInfo:     &scheduleInfo,
+		ScheduleInfo: &msgraph.ScheduleInfo{
+			StartDateTime: time.Now(),
+			Expiration: msgraph.ExpirationPattern{
+				Type: utils.StringPtr(msgraph.ExpirationPatternTypeNoExpiration),
+			},
+		},
 	})
 
-	testRoleEligibilityScheduleRequestClient_Get(t, c, *roleEligibilityScheduleRequest.ID())
-	testRoleEligibilityScheduleRequestClient_Delete(t, c, *roleEligibilityScheduleRequest.ID())
+	testRoleEligibilityScheduleRequestClient_Get(t, c, *roleEligibilityScheduleRequest.ID)
+	testRoleEligibilityScheduleRequestClient_Delete(t, c, *roleEligibilityScheduleRequest.ID)
 	testUsersClient_Delete(t, c, *user.ID())
 	testUsersClient_DeletePermanently(t, c, *user.ID())
 	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID())
@@ -79,7 +70,7 @@ func testRoleEligibilityScheduleRequestClient_Create(t *testing.T, c *test.Test,
 	if roleEligibilityScheduleRequest == nil {
 		t.Fatal("RoleEligibilityScheduleRequestClient.Create(): roleEligibilityScheduleRequest was nil")
 	}
-	if roleEligibilityScheduleRequest.ID() == nil {
+	if roleEligibilityScheduleRequest.ID == nil {
 		t.Fatal("RoleEligibilityScheduleRequestClient.Create(): roleEligibilityScheduleRequest.ID was nil")
 	}
 	return

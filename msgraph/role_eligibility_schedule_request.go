@@ -8,10 +8,8 @@ import (
 	"net/http"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
+	"github.com/manicminer/hamilton/internal/utils"
 )
-
-var actionAdminAssign string = "adminAssign"
-var actionAdminRemove string = "adminRemove"
 
 // RoleEligibilityScheduleRequestClient performs operations on RoleEligibilityScheduleRequests.
 type RoleEligibilityScheduleRequestClient struct {
@@ -57,7 +55,7 @@ func (c *RoleEligibilityScheduleRequestClient) Get(ctx context.Context, id strin
 func (c *RoleEligibilityScheduleRequestClient) Create(ctx context.Context, resr UnifiedRoleEligibilityScheduleRequest) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
 	var status int
 
-	resr.Action = &actionAdminAssign
+	resr.Action = utils.StringPtr(UnifiedRoleScheduleRequestActionAdminAssign)
 	body, err := json.Marshal(resr)
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
@@ -96,7 +94,7 @@ func (c *RoleEligibilityScheduleRequestClient) Delete(ctx context.Context, id st
 		return status, fmt.Errorf("RoleEligibilityScheduleRequestClient.Get(): %v", err)
 	}
 	resrBody := UnifiedRoleEligibilityScheduleRequest{
-		Action:           &actionAdminRemove,
+		Action:           utils.StringPtr(UnifiedRoleScheduleRequestActionAdminRemove),
 		RoleDefinitionId: resr.RoleDefinitionId,
 		DirectoryScopeId: resr.DirectoryScopeId,
 		PrincipalId:      resr.PrincipalId,
@@ -113,7 +111,7 @@ func (c *RoleEligibilityScheduleRequestClient) Delete(ctx context.Context, id st
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("RoleAssignments.BaseClient.Get(): %v", err)
+		return status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Post(): %v", err)
 	}
 
 	return status, nil
