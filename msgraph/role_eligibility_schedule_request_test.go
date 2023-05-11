@@ -39,14 +39,16 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 		Version: utils.StringPtr("1.5"),
 	})
 
+	now := time.Now()
+
 	roleEligibilityScheduleRequest := testRoleEligibilityScheduleRequestClient_Create(t, c, msgraph.UnifiedRoleEligibilityScheduleRequest{
 		RoleDefinitionId: roleDefinition.ID(),
 		PrincipalId:      user.ID(),
 		DirectoryScopeId: utils.StringPtr("/"),
 		Justification:    utils.StringPtr("abc"),
-		ScheduleInfo: &msgraph.ScheduleInfo{
-			StartDateTime: time.Now(),
-			Expiration: msgraph.ExpirationPattern{
+		ScheduleInfo: &msgraph.RequestSchedule{
+			StartDateTime: &now,
+			Expiration: &msgraph.ExpirationPattern{
 				Type: utils.StringPtr(msgraph.ExpirationPatternTypeNoExpiration),
 			},
 		},

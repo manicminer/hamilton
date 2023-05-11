@@ -43,12 +43,40 @@ func (c *RoleEligibilityScheduleRequestClient) Get(ctx context.Context, id strin
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var dirRole UnifiedRoleEligibilityScheduleRequest
-	if err := json.Unmarshal(respBody, &dirRole); err != nil {
+	var roleEligibilityScheduleRequest UnifiedRoleEligibilityScheduleRequest
+	if err := json.Unmarshal(respBody, &roleEligibilityScheduleRequest); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	return &dirRole, status, nil
+	return &roleEligibilityScheduleRequest, status, nil
+}
+
+// List retrieves all UnifiedRoleEligibilityScheduleRequests.
+func (c *RoleEligibilityScheduleRequestClient) List(ctx context.Context) (*[]UnifiedRoleEligibilityScheduleRequest, int, error) {
+	var status int
+
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ValidStatusCodes: []int{http.StatusOK},
+		Uri: Uri{
+			Entity: "/roleManagement/directory/roleEligibilityScheduleRequests",
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var roleEligibilityScheduleRequests []UnifiedRoleEligibilityScheduleRequest
+	if err := json.Unmarshal(respBody, &roleEligibilityScheduleRequests); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &roleEligibilityScheduleRequests, status, nil
 }
 
 // Create creates a new UnifiedRoleEligibilityScheduleRequest.
@@ -79,12 +107,12 @@ func (c *RoleEligibilityScheduleRequestClient) Create(ctx context.Context, resr 
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var newRoleAssignment UnifiedRoleEligibilityScheduleRequest
-	if err := json.Unmarshal(respBody, &newRoleAssignment); err != nil {
+	var newEligibilityScheduleRequest UnifiedRoleEligibilityScheduleRequest
+	if err := json.Unmarshal(respBody, &newEligibilityScheduleRequest); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	return &newRoleAssignment, status, nil
+	return &newEligibilityScheduleRequest, status, nil
 }
 
 // Delete removes a UnifiedRoleEligibilityScheduleRequest.
@@ -108,6 +136,22 @@ func (c *RoleEligibilityScheduleRequestClient) Delete(ctx context.Context, id st
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
 			Entity: "/roleManagement/directory/roleEligibilityScheduleRequests",
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Post(): %v", err)
+	}
+
+	return status, nil
+}
+
+// Cancel revokes a granted UnifiedRoleEligibilityScheduleRequest
+func (c *RoleEligibilityScheduleRequestClient) Cancel(ctx context.Context, id string, query odata.Query) (int, error) {
+	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		OData:            query,
+		ValidStatusCodes: []int{http.StatusNoContent},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/roleManagement/directory/roleEligibilityScheduleRequests/%s/cancel", id),
 		},
 	})
 	if err != nil {

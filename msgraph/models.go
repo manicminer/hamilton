@@ -1383,9 +1383,9 @@ type SamlSingleSignOnSettings struct {
 	RelayState *string `json:"relayState,omitempty"`
 }
 
-type ScheduleInfo struct {
-	StartDateTime time.Time         `json:"startDateTime"`
-	Expiration    ExpirationPattern `json:"expiration"`
+type RequestSchedule struct {
+	StartDateTime *time.Time         `json:"startDateTime,omitempty"`
+	Expiration    *ExpirationPattern `json:"expiration,omitempty"`
 }
 
 type SchemaExtension struct {
@@ -1664,8 +1664,8 @@ type TemporaryAccessPassAuthenticationMethod struct {
 }
 
 type TicketInfo struct {
-	TicketNumber string `json:"ticketNumber"`
-	TicketSystem string `json:"ticketSystem"`
+	TicketNumber *string `json:"ticketNumber,omitempty"`
+	TicketSystem *string `json:"ticketSystem,omitempty"`
 }
 
 type TokenIssuancePolicy struct {
@@ -1704,13 +1704,13 @@ type UnifiedRoleEligibilityScheduleRequest struct {
 	AppScopeID        *string                           `json:"appScopeId,omitempty"`
 	ApprovalID        *string                           `json:"approvalId,omitempty"`
 	CompletedDateTime *time.Time                        `json:"completedDateTime,omitempty"`
-	CreatedDateTime   *time.Time                        `json:"completedDateTime,omitempty"`
+	CreatedDateTime   *time.Time                        `json:"createdDateTime,omitempty"`
 	DirectoryScopeId  *string                           `json:"directoryScopeId,omitempty"`
 	IsValidationOnly  *bool                             `json:"isValidationOnly,omitempty"`
 	Justification     *string                           `json:"justification,omitempty"`
 	PrincipalId       *string                           `json:"principalId,omitempty"`
 	RoleDefinitionId  *string                           `json:"roleDefinitionId,omitempty"`
-	ScheduleInfo      *ScheduleInfo                     `json:"scheduleInfo,omitempty"`
+	ScheduleInfo      *RequestSchedule                  `json:"scheduleInfo,omitempty"`
 	Status            *string                           `json:"status,omitempty"`
 	TargetScheduleID  *string                           `json:"targetScheduleId,omitempty"`
 	TicketInfo        *TicketInfo                       `json:"ticketInfo,omitempty"`
