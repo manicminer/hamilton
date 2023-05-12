@@ -27,7 +27,7 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 
 	roleDefinition := testRoleDefinitionsClient_Create(t, c, msgraph.UnifiedRoleDefinition{
 		Description: msgraph.NullableString("testing role eligibility schedule request"),
-		DisplayName: utils.StringPtr("test-assignor"),
+		DisplayName: utils.StringPtr("test-eligible"),
 		IsEnabled:   utils.BoolPtr(true),
 		RolePermissions: &[]msgraph.UnifiedRolePermission{
 			{
@@ -42,10 +42,11 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 	now := time.Now()
 
 	roleEligibilityScheduleRequest := testRoleEligibilityScheduleRequestClient_Create(t, c, msgraph.UnifiedRoleEligibilityScheduleRequest{
+		Action:           utils.StringPtr(msgraph.UnifiedRoleScheduleRequestActionAdminAssign),
 		RoleDefinitionId: roleDefinition.ID(),
 		PrincipalId:      user.ID(),
 		DirectoryScopeId: utils.StringPtr("/"),
-		Justification:    utils.StringPtr("abc"),
+		Justification:    utils.StringPtr("Test eligible"),
 		ScheduleInfo: &msgraph.RequestSchedule{
 			StartDateTime: &now,
 			Expiration: &msgraph.ExpirationPattern{
@@ -55,7 +56,9 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 	})
 
 	testRoleEligibilityScheduleRequestClient_Get(t, c, *roleEligibilityScheduleRequest.ID)
-	testRoleEligibilityScheduleRequestClient_Delete(t, c, *roleEligibilityScheduleRequest.ID)
+	testListReturnsID(t, c, *testRoleEligibilityScheduleRequestClient_List(t, c), *roleEligibilityScheduleRequest.ID)
+	roleEligibilityScheduleRequest.Action = utils.StringPtr(msgraph.UnifiedRoleScheduleRequestActionAdminRemove)
+	testRoleEligibilityScheduleRequestClient_Create(t, c, *roleEligibilityScheduleRequest)
 	testUsersClient_Delete(t, c, *user.ID())
 	testUsersClient_DeletePermanently(t, c, *user.ID())
 	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID())
@@ -92,12 +95,25 @@ func testRoleEligibilityScheduleRequestClient_Get(t *testing.T, c *test.Test, id
 	return
 }
 
-func testRoleEligibilityScheduleRequestClient_Delete(t *testing.T, c *test.Test, id string) {
-	status, err := c.RoleEligibilityScheduleRequestClient.Delete(c.Context, id)
+func testRoleEligibilityScheduleRequestClient_List(t *testing.T, c *test.Test) (roleEligibilityScheduleRequests *[]msgraph.UnifiedRoleEligibilityScheduleRequest) {
+	roleEligibilityScheduleRequests, status, err := c.RoleEligibilityScheduleRequestClient.List(c.Context)
 	if err != nil {
-		t.Fatalf("RoleEligibilityScheduleRequestClient.Delete(): %v", err)
+		t.Fatalf("RoleEligibilityScheduleRequestClient.List(): %v", err)
 	}
 	if status < 200 || status >= 300 {
-		t.Fatalf("RoleEligibilityScheduleRequestClient.Delete(): invalid status: %d", status)
+		t.Fatalf("RoleEligibilityScheduleRequestClient.List(): invalid status: %d", status)
 	}
+	if roleEligibilityScheduleRequests == nil {
+		t.Fatal("RoleEligibilityScheduleRequestClient.List(): roleEligibilityScheduleRequests was nil")
+	}
+	return
+}
+
+func testListReturnsID(t *testing.T, c *test.Test, roleEligibilityScheduleRequests []msgraph.UnifiedRoleEligibilityScheduleRequest, id string) {
+	for _, r := range roleEligibilityScheduleRequests {
+		if *r.ID == id {
+			return
+		}
+	}
+	t.Fatalf("RoleEligibilityScheduleRequestClient.List(): didn't return roleEligibilityScheduleRequest with id %s", id)
 }
