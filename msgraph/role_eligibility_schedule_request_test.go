@@ -25,25 +25,14 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 		},
 	})
 
-	roleDefinition := testRoleDefinitionsClient_Create(t, c, msgraph.UnifiedRoleDefinition{
-		Description: msgraph.NullableString("testing role eligibility schedule request"),
-		DisplayName: utils.StringPtr("test-eligible"),
-		IsEnabled:   utils.BoolPtr(true),
-		RolePermissions: &[]msgraph.UnifiedRolePermission{
-			{
-				AllowedResourceActions: &[]string{
-					"microsoft.directory/groups/allProperties/read",
-				},
-			},
-		},
-		Version: utils.StringPtr("1.5"),
-	})
+	directoryRoles := testDirectoryRolesClient_List(t, c)
+	directoryRole := (*directoryRoles)[0]
 
 	now := time.Now()
 
 	roleEligibilityScheduleRequest := testRoleEligibilityScheduleRequestClient_Create(t, c, msgraph.UnifiedRoleEligibilityScheduleRequest{
 		Action:           utils.StringPtr(msgraph.UnifiedRoleScheduleRequestActionAdminAssign),
-		RoleDefinitionId: roleDefinition.ID(),
+		RoleDefinitionId: directoryRole.RoleTemplateId,
 		PrincipalId:      user.ID(),
 		DirectoryScopeId: utils.StringPtr("/"),
 		Justification:    utils.StringPtr("Test eligible"),
@@ -61,7 +50,6 @@ func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 	testRoleEligibilityScheduleRequestClient_Create(t, c, *roleEligibilityScheduleRequest)
 	testUsersClient_Delete(t, c, *user.ID())
 	testUsersClient_DeletePermanently(t, c, *user.ID())
-	testRoleDefinitionsClient_Delete(t, c, *roleDefinition.ID())
 }
 
 func testRoleEligibilityScheduleRequestClient_Create(t *testing.T, c *test.Test, r msgraph.UnifiedRoleEligibilityScheduleRequest) (roleEligibilityScheduleRequest *msgraph.UnifiedRoleEligibilityScheduleRequest) {

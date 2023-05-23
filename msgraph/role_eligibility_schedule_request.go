@@ -70,12 +70,15 @@ func (c *RoleEligibilityScheduleRequestClient) List(ctx context.Context) (*[]Uni
 		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
 	}
 
-	var roleEligibilityScheduleRequests []UnifiedRoleEligibilityScheduleRequest
-	if err := json.Unmarshal(respBody, &roleEligibilityScheduleRequests); err != nil {
+	var data struct {
+		Value []UnifiedRoleEligibilityScheduleRequest `json:"value"`
+	}
+
+	if err := json.Unmarshal(respBody, &data); err != nil {
 		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
 	}
 
-	return &roleEligibilityScheduleRequests, status, nil
+	return &data.Value, status, nil
 }
 
 // Create creates a new UnifiedRoleEligibilityScheduleRequest.
