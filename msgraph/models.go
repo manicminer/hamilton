@@ -259,7 +259,7 @@ type Application struct {
 	KeyCredentials                *[]KeyCredential          `json:"keyCredentials,omitempty"`
 	Oauth2RequirePostResponse     *bool                     `json:"oauth2RequirePostResponse,omitempty"` // field name has typo in beta API
 	Oauth2RequiredPostResponse    *bool                     `json:"oauth2RequiredPostResponse,omitempty"`
-	OnPremisesPublishing          *OnPremisesPublishing     `json:"onPremisePublishing,omitempty"`
+	OnPremisesPublishing          *OnPremisesPublishing     `json:"onPremisesPublishing,omitempty"`
 	OptionalClaims                *OptionalClaims           `json:"optionalClaims,omitempty"`
 	Notes                         *StringNullWhenEmpty      `json:"notes,omitempty"`
 	ParentalControlSettings       *ParentalControlSettings  `json:"parentalControlSettings,omitempty"`
