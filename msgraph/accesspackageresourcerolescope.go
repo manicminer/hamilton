@@ -153,3 +153,19 @@ func (c *AccessPackageResourceRoleScopeClient) Get(ctx context.Context, accessPa
 
 	return &accessPackageResourceRoleScope, status, nil
 }
+
+// Delete removes a AccessPackageResourceRoleScope.
+func (c *AccessPackageResourceRoleScopeClient) Delete(ctx context.Context, accessPackageId string, id string) (int, error) {
+	_, status, _, err := c.BaseClient.Delete(ctx, DeleteHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/identityGovernance/entitlementManagement/accessPackages/%s/accessPackageResourceRoleScopes/%s", accessPackageId, id),
+		},
+	})
+	if err != nil {
+		return status, fmt.Errorf("AccessPackageResourceRoleScopeClient.BaseClient.Delete(): %v", err)
+	}
+
+	return status, nil
+}
