@@ -148,7 +148,7 @@ func (c *AccessPackageResourceRoleScopeClient) Get(ctx context.Context, accessPa
 	}
 
 	if accessPackageResourceRoleScope.ID == nil {
-		return nil, status, fmt.Errorf("AccessPackageResourceRoleScopeClient.BaseClient.Get(): Could not find accessPackageResourceRoleScope ID")
+		return nil, http.StatusNotFound, fmt.Errorf("AccessPackageResourceRoleScopeClient.BaseClient.Get(): Could not find accessPackageResourceRoleScope ID %s", id)
 	}
 
 	return &accessPackageResourceRoleScope, status, nil
