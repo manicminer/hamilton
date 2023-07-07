@@ -368,6 +368,16 @@ const (
 	ConditionalAccessRiskLevelUnknownFutureValue ConditionalAccessRiskLevel = "unknownFutureValue"
 )
 
+type ConditionalAccessServicePrincipalRiskLevel = string
+
+const (
+	ConditionalAccessServicePrincipalRiskLevelHigh               ConditionalAccessServicePrincipalRiskLevel = "high"
+	ConditionalAccessServicePrincipalRiskLevelLow                ConditionalAccessServicePrincipalRiskLevel = "low"
+	ConditionalAccessServicePrincipalRiskLevelMedium             ConditionalAccessServicePrincipalRiskLevel = "medium"
+	CConditionalAccessServicePrincipalRiskLevelNone              ConditionalAccessServicePrincipalRiskLevel = "none"
+	ConditionalAccessServicePrincipalRiskLevelUnknownFutureValue ConditionalAccessServicePrincipalRiskLevel = "unknownFutureValue"
+)
+
 type ConnectedOrganizationState = string
 
 const (
