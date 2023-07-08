@@ -374,7 +374,7 @@ const (
 	ConditionalAccessServicePrincipalRiskLevelHigh               ConditionalAccessServicePrincipalRiskLevel = "high"
 	ConditionalAccessServicePrincipalRiskLevelLow                ConditionalAccessServicePrincipalRiskLevel = "low"
 	ConditionalAccessServicePrincipalRiskLevelMedium             ConditionalAccessServicePrincipalRiskLevel = "medium"
-	CConditionalAccessServicePrincipalRiskLevelNone              ConditionalAccessServicePrincipalRiskLevel = "none"
+	ConditionalAccessServicePrincipalRiskLevelNone               ConditionalAccessServicePrincipalRiskLevel = "none"
 	ConditionalAccessServicePrincipalRiskLevelUnknownFutureValue ConditionalAccessServicePrincipalRiskLevel = "unknownFutureValue"
 )
 
