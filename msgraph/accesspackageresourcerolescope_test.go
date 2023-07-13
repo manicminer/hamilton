@@ -67,6 +67,7 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 	testAccessPackageResourceRoleScopeClient_Get(t, c, *accessPackageResourceRoleScope.AccessPackageId, *accessPackageResourceRoleScope.ID)
 	testAccessPackageResourceRoleScopeResource_Get(t, c, *accessPackageResourceRequest.CatalogId, *accessPackageResourceRequest.AccessPackageResource.OriginId)
 	testAccessPackageResourceRoleScopeClient_List(t, c, *accessPackageResourceRoleScope.AccessPackageId)
+	testAccessPackageResourceRoleScopeClient_Delete(t, c, *accessPackageResourceRoleScope.AccessPackageId, *accessPackageResourceRoleScope.ID)
 
 	// Force-replacement scenario
 	testAccessPackageResourceRoleScopeAP_Delete(t, c, *accessPackage.ID)
@@ -93,7 +94,6 @@ func TestAccessPackageResourceRoleScopeClient(t *testing.T) {
 		},
 	})
 
-	//testAccessPackageResourceRoleScopeClient_Delete(t, c, *accessPackageResourceRoleScope)
 	//testAccessPackageResourceRequestClient_Delete(t, c, accessPackageResourceRequest)
 
 	// Cleanup
@@ -145,6 +145,16 @@ func testAccessPackageResourceRoleScopeClient_List(t *testing.T, c *test.Test, a
 		t.Fatal("AccessPackageResourceRequestClient.List(): accessPackageResourceRequests was nil")
 	}
 	return
+}
+
+func testAccessPackageResourceRoleScopeClient_Delete(t *testing.T, c *test.Test, accessPackageId string, id string) {
+	status, err := c.AccessPackageResourceRoleScopeClient.Delete(c.Context, accessPackageId, id)
+	if err != nil {
+		t.Fatalf("AccessPackageResourceRequestClient.Delete(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AccessPackageResourceRequestClient.Delete(): invalid status: %d", status)
+	}
 }
 
 // AccessPackageResourceRequest
