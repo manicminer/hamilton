@@ -1,4 +1,4 @@
-## 0.62.0 (Unreleased)
+## 0.62.0 (July 14, 2023)
 
 - Support for deleting an `accessPackageResourceRoleScope` ([#245](https://github.com/manicminer/hamilton/pull/245))
 - Support for additional group behaviors `CalendarMemberReadOnly` and `ConnectorsDisabled` ([#247](https://github.com/manicminer/hamilton/pull/247))
