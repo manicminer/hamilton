@@ -2,6 +2,7 @@
 
 - Support for deleting an `accessPackageResourceRoleScope` ([#245](https://github.com/manicminer/hamilton/pull/245))
 - Support for additional group behaviors `CalendarMemberReadOnly` and `ConnectorsDisabled` ([#247](https://github.com/manicminer/hamilton/pull/247))
+- Support for the `ServicePrincipalRiskLevels` field in the `ConditionalAccessConditionSet` model ([#246](https://github.com/manicminer/hamilton/pull/246))
 - Bugfix: fake a 404 response when an `accessPackageResourceRoleScope` could not be found ([#245](https://github.com/manicminer/hamilton/pull/245))
 - Bugfix: correctly unmarshal the `onPremisesPublishing` field in the `Application` model ([#244](https://github.com/manicminer/hamilton/pull/244))
 
