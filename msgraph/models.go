@@ -615,17 +615,17 @@ type ConditionalAccessClientApplications struct {
 }
 
 type ConditionalAccessConditionSet struct {
-	Applications               *ConditionalAccessApplications                `json:"applications,omitempty"`
-	ClientApplications         *ConditionalAccessClientApplications          `json:"clientApplications,omitempty"`
-	ClientAppTypes             *[]ConditionalAccessClientAppType             `json:"clientAppTypes,omitempty"`
-	Devices                    *ConditionalAccessDevices                     `json:"devices,omitempty"`
-	DeviceStates               *ConditionalAccessDeviceStates                `json:"deviceStates,omitempty"`
-	Locations                  *ConditionalAccessLocations                   `json:"locations"`
-	Platforms                  *ConditionalAccessPlatforms                   `json:"platforms"`
-	ServicePrincipalRiskLevels *[]ConditionalAccessServicePrincipalRiskLevel `json:"servicePrincipalRiskLevels,omitempty"`
-	SignInRiskLevels           *[]ConditionalAccessRiskLevel                 `json:"signInRiskLevels,omitempty"`
-	UserRiskLevels             *[]ConditionalAccessRiskLevel                 `json:"userRiskLevels,omitempty"`
-	Users                      *ConditionalAccessUsers                       `json:"users,omitempty"`
+	Applications               *ConditionalAccessApplications       `json:"applications,omitempty"`
+	ClientApplications         *ConditionalAccessClientApplications `json:"clientApplications,omitempty"`
+	ClientAppTypes             *[]ConditionalAccessClientAppType    `json:"clientAppTypes,omitempty"`
+	Devices                    *ConditionalAccessDevices            `json:"devices,omitempty"`
+	DeviceStates               *ConditionalAccessDeviceStates       `json:"deviceStates,omitempty"`
+	Locations                  *ConditionalAccessLocations          `json:"locations"`
+	Platforms                  *ConditionalAccessPlatforms          `json:"platforms"`
+	ServicePrincipalRiskLevels *[]ConditionalAccessRiskLevel        `json:"servicePrincipalRiskLevels,omitempty"`
+	SignInRiskLevels           *[]ConditionalAccessRiskLevel        `json:"signInRiskLevels,omitempty"`
+	UserRiskLevels             *[]ConditionalAccessRiskLevel        `json:"userRiskLevels,omitempty"`
+	Users                      *ConditionalAccessUsers              `json:"users,omitempty"`
 }
 
 type ConditionalAccessDevices struct {
