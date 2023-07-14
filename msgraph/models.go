@@ -1384,6 +1384,11 @@ type SamlSingleSignOnSettings struct {
 	RelayState *string `json:"relayState,omitempty"`
 }
 
+type RequestSchedule struct {
+	StartDateTime *time.Time         `json:"startDateTime,omitempty"`
+	Expiration    *ExpirationPattern `json:"expiration,omitempty"`
+}
+
 type SchemaExtension struct {
 	ID          *string                      `json:"id,omitempty"`
 	Description *string                      `json:"description,omitempty"`
@@ -1659,6 +1664,11 @@ type TemporaryAccessPassAuthenticationMethod struct {
 	MethodUsabilityReason *MethodUsabilityReason `json:"methodUsabilityReason,omitempty"`
 }
 
+type TicketInfo struct {
+	TicketNumber *string `json:"ticketNumber,omitempty"`
+	TicketSystem *string `json:"ticketSystem,omitempty"`
+}
+
 type TokenIssuancePolicy struct {
 	DirectoryObject
 	Definition            *[]string `json:"definition,omitempty"`
@@ -1687,6 +1697,24 @@ type UnifiedRoleDefinition struct {
 	RolePermissions *[]UnifiedRolePermission `json:"rolePermissions,omitempty"`
 	TemplateId      *string                  `json:"templateId,omitempty"`
 	Version         *string                  `json:"version,omitempty"`
+}
+
+type UnifiedRoleEligibilityScheduleRequest struct {
+	ID                *string                           `json:"id,omitempty"`
+	Action            *UnifiedRoleScheduleRequestAction `json:"action,omitempty"`
+	AppScopeID        *string                           `json:"appScopeId,omitempty"`
+	ApprovalID        *string                           `json:"approvalId,omitempty"`
+	CompletedDateTime *time.Time                        `json:"completedDateTime,omitempty"`
+	CreatedDateTime   *time.Time                        `json:"createdDateTime,omitempty"`
+	DirectoryScopeId  *string                           `json:"directoryScopeId,omitempty"`
+	IsValidationOnly  *bool                             `json:"isValidationOnly,omitempty"`
+	Justification     *string                           `json:"justification,omitempty"`
+	PrincipalId       *string                           `json:"principalId,omitempty"`
+	RoleDefinitionId  *string                           `json:"roleDefinitionId,omitempty"`
+	ScheduleInfo      *RequestSchedule                  `json:"scheduleInfo,omitempty"`
+	Status            *string                           `json:"status,omitempty"`
+	TargetScheduleID  *string                           `json:"targetScheduleId,omitempty"`
+	TicketInfo        *TicketInfo                       `json:"ticketInfo,omitempty"`
 }
 
 type UnifiedRolePermission struct {

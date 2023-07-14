@@ -751,6 +751,21 @@ const (
 	SignInAudiencePersonalMicrosoftAccount           SignInAudience = "PersonalMicrosoftAccount"
 )
 
+type UnifiedRoleScheduleRequestAction = string
+
+const (
+	UnifiedRoleScheduleRequestActionAdminAssign        UnifiedRoleScheduleRequestAction = "adminAssign"
+	UnifiedRoleScheduleRequestActionAdminExtend        UnifiedRoleScheduleRequestAction = "adminExtend"
+	UnifiedRoleScheduleRequestActionAdminRemove        UnifiedRoleScheduleRequestAction = "adminRemove"
+	UnifiedRoleScheduleRequestActionAdminRenew         UnifiedRoleScheduleRequestAction = "adminRenew"
+	UnifiedRoleScheduleRequestActionAdminUpdate        UnifiedRoleScheduleRequestAction = "adminUpdate"
+	UnifiedRoleScheduleRequestActionSelfActivate       UnifiedRoleScheduleRequestAction = "selfActivate"
+	UnifiedRoleScheduleRequestActionSelfDeactivate     UnifiedRoleScheduleRequestAction = "selfDeactivate"
+	UnifiedRoleScheduleRequestActionSelfExtend         UnifiedRoleScheduleRequestAction = "selfExtend"
+	UnifiedRoleScheduleRequestActionSelfRenew          UnifiedRoleScheduleRequestAction = "selfRenew"
+	UnifiedRoleScheduleRequestActionUnknownFutureValue UnifiedRoleScheduleRequestAction = "unknownFutureValue"
+)
+
 type UsageAuthMethod = string
 
 const (
