@@ -1,3 +1,8 @@
+## 0.62.0 (Unreleased)
+
+- Support for deleting an `accessPackageResourceRoleScope` ([#245](https://github.com/manicminer/hamilton/pull/245))
+- Bugfix: fake a 404 response when an `accessPackageResourceRoleScope` could not be found ([#245](https://github.com/manicminer/hamilton/pull/245))
+
 ## 0.61.0 (April 13, 2023)
 
 - Support additional types for UserflowAttributeDataType ([#241](https://github.com/manicminer/hamilton/pull/241))
