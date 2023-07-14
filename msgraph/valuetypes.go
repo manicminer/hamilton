@@ -521,6 +521,8 @@ type GroupResourceBehaviorOption = string
 
 const (
 	GroupResourceBehaviorOptionAllowOnlyMembersToPost                   GroupResourceBehaviorOption = "AllowOnlyMembersToPost"
+	GroupResourceBehaviorOptionCalendarMemberReadOnly                   GroupResourceBehaviorOption = "CalendarMemberReadOnly"
+	GroupResourceBehaviorOptionConnectorsDisabled                       GroupResourceBehaviorOption = "ConnectorsDisabled"
 	GroupResourceBehaviorOptionHideGroupInOutlook                       GroupResourceBehaviorOption = "HideGroupInOutlook"
 	GroupResourceBehaviorOptionSubscribeMembersToCalendarEventsDisabled GroupResourceBehaviorOption = "SubscribeMembersToCalendarEventsDisabled"
 	GroupResourceBehaviorOptionSubscribeNewGroupMembers                 GroupResourceBehaviorOption = "SubscribeNewGroupMembers"
