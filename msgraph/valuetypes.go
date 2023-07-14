@@ -251,12 +251,42 @@ const (
 	AuthenticationMethodKeyStrengthUnknown AuthenticationMethodKeyStrength = "unknown"
 )
 
+type AuthenticationMethodModes = string
+
+const (
+	AuthenticationMethodModesEmail                       AuthenticationMethodModes = "email"
+	AuthenticationMethodModesFederatedMultiFactor        AuthenticationMethodModes = "federatedMultiFactor"
+	AuthenticationMethodModesFederatedSingleFactor       AuthenticationMethodModes = "federatedSingleFactor"
+	AuthenticationMethodModesFido2                       AuthenticationMethodModes = "fido2"
+	AuthenticationMethodModesHardwareOath                AuthenticationMethodModes = "hardwareOath"
+	AuthenticationMethodModesMicrosoftAuthenticatorPush  AuthenticationMethodModes = "microsoftAuthenticatorPush"
+	AuthenticationMethodModesMicrosoftDeviceBasedPush    AuthenticationMethodModes = "deviceBasedPush"
+	AuthenticationMethodModesPassword                    AuthenticationMethodModes = "password"
+	AuthenticationMethodModesSms                         AuthenticationMethodModes = "sms"
+	AuthenticationMethodModesSoftwareOath                AuthenticationMethodModes = "softwareOath"
+	AuthenticationMethodModesTemporaryAccessPassMultiUse AuthenticationMethodModes = "temporaryAccessPassMultiUse"
+	AuthenticationMethodModesTemporaryAccessPassOneTime  AuthenticationMethodModes = "temporaryAccessPassOneTime"
+	AuthenticationMethodModesUnknownFutureValue          AuthenticationMethodModes = "unknownFutureValue"
+	AuthenticationMethodModesVoice                       AuthenticationMethodModes = "voice"
+	AuthenticationMethodModesWindowsHelloForBusiness     AuthenticationMethodModes = "windowsHelloForBusiness"
+	AuthenticationMethodModesX509CertificateMultiFactor  AuthenticationMethodModes = "x509CertificateMultiFactor"
+	AuthenticationMethodModesX509CertificateSingleFactor AuthenticationMethodModes = "x509CertificateSingleFactor"
+)
+
 type AuthenticationPhoneType = string
 
 const (
 	AuthenticationPhoneTypeMobile          AuthenticationPhoneType = "mobile"
 	AuthenticationPhoneTypeAlternateMobile AuthenticationPhoneType = "alternateMobile"
 	AuthenticationPhoneTypeOffice          AuthenticationPhoneType = "office"
+)
+
+type AuthenticationStrengthPolicyType = string
+
+const (
+	authenticationStrengthPolicyTypeBuiltIn            AuthenticationStrengthPolicyType = "builtIn"
+	authenticationStrengthPolicyTypeCustom             AuthenticationStrengthPolicyType = "custom"
+	authenticationStrengthPolicyTypeUnknownFutureValue AuthenticationStrengthPolicyType = "unknownFutureValue"
 )
 
 type BodyType = string

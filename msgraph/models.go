@@ -582,6 +582,16 @@ type AuditActivityInitiator struct {
 
 type AuthenticationMethod interface{}
 
+type AuthenticationStrengthPolicy struct {
+	AllowedCombinations *[]AuthenticationMethodModes      `json:"allowedCombinations,omitempty"`
+	CreatedDateTime     *time.Time                        `json:"createdDateTime,omitempty"`
+	ID                  *string                           `json:"id,omitempty"`
+	ModifiedDateTime    *time.Time                        `json:"modifiedDateTime,omitempty"`
+	PolicyType          *AuthenticationStrengthPolicyType `json:"policyType,omitempty"`
+	Description         *string                           `json:"description,omitempty"`
+	DisplayName         *string                           `json:"displayName,omitempty"`
+}
+
 type BaseNamedLocation struct {
 	ODataType        *odata.Type `json:"@odata.type,omitempty"`
 	ID               *string     `json:"id,omitempty"`
