@@ -544,6 +544,11 @@ type AppRoleAssignment struct {
 	ResourceId           *string    `json:"resourceId,omitempty"`
 }
 
+type Approval struct {
+	ID    *string         `json:"id,omitempty"`
+	Steps *[]ApprovalStep `json:"steps,omitempty"`
+}
+
 type ApprovalSettings struct {
 	IsApprovalRequiredForAdd         *bool            `json:"isApprovalRequiredForAdd,omitempty"`
 	IsApprovalRequiredForUpdate      *bool            `json:"isApprovalRequiredForUpdate,omitempty"`
