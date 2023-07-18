@@ -1823,9 +1823,6 @@ type UnifiedRoleManagementPolicyAssignment struct {
 	ScopeType        *UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
 }
 
-// •
-// • unifiedRoleManagementPolicy
-// • unifiedRoleManagementPolicyNotificationRule
 type UnifiedRoleManagementPolicyApprovalRule struct {
 	ID      *string                                `json:"id,omitempty"`
 	Setting *ApprovalSettings                      `json:"setting,omitempty"`
