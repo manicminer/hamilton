@@ -1823,32 +1823,17 @@ type UnifiedRoleManagementPolicyAssignment struct {
 	ScopeType        *UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
 }
 
-type UnifiedRoleManagementPolicyApprovalRule struct {
-	ID      *string                                `json:"id,omitempty"`
-	Setting *ApprovalSettings                      `json:"setting,omitempty"`
-	Target  *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
-}
-
-type UnifiedRoleManagementPolicyAuthenticationContextRule struct {
-	ID         *string                                `json:"id,omitempty"`
-	ClaimValue *string                                `json:"claimValue,omitempty"`
-	IsEnabled  *bool                                  `json:"isEnabled,omitempty"`
-	Target     *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
-}
-
-type UnifiedRoleManagementPolicyEnablementRule struct {
-	ID           *string                                `json:"id,omitempty"`
-	EnabledRules *[]string                              `json:"enabledRules,omitempty"`
-	Target       *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
-}
-
-type UnifiedRoleManagementPolicyExpirationRule struct {
+type UnifiedRoleManagementPolicyRule struct {
 	ID                         *string                                                   `json:"id,omitempty"`
+	ClaimValue                 *string                                                   `json:"claimValue,omitempty"`
+	EnabledRules               *[]string                                                 `json:"enabledRules,omitempty"`
 	IsDefaultRecipientsEnabled *bool                                                     `json:"isDefaultRecipientsEnabled,omitempty"`
+	IsEnabled                  *bool                                                     `json:"isEnabled,omitempty"`
 	NotificationLevel          *UnifiedRoleManagementPolicyRuleNotificationLevel         `json:"notificationLevel,omitempty"`
 	NotificationRecipients     *[]string                                                 `json:"notificationRecipients,omitempty"`
 	NotificationType           *UnifiedRoleManagementPolicyRuleNotificationType          `json:"notificationType,omitempty"`
 	RecipientType              *UnifiedRoleManagementPolicyRuleNotificationRecipientType `json:"recipientType,omitempty"`
+	Setting                    *ApprovalSettings                                         `json:"setting,omitempty"`
 	Target                     *UnifiedRoleManagementPolicyRuleTarget                    `json:"target,omitempty"`
 }
 
