@@ -226,6 +226,15 @@ const (
 	ApprovalModeSingleStage ApprovalMode = "SingleStage"
 )
 
+type ApprovalStepStatus = string
+
+const (
+	ApprovalStepStatusInProgress   ApprovalStepStatus = "InProgress"
+	ApprovalStepStatusInitializing ApprovalStepStatus = "Initializing"
+	ApprovalStepStatusCompleted    ApprovalStepStatus = "Completed"
+	ApprovalStepStatusExpired      ApprovalStepStatus = "Expired"
+)
+
 type AttestationLevel = string
 
 const (

@@ -563,6 +563,17 @@ type ApprovalStage struct {
 	EscalationApprovers             *[]UserSet `json:"escalationApprovers,omitempty"`
 }
 
+type ApprovalStep struct {
+	ID               *string             `json:"id,omitempty"`
+	AssignedToMe     *bool               `json:"assignedToMe,omitempty"`
+	DisplayName      *string             `json:"displayName,omitempty"`
+	Justification    *string             `json:"justification,omitempty"`
+	ReviewResult     *string             `json:"reviewResult,omitempty"`
+	ReviewedBy       *[]UserIdentity     `json:"reviewedBy,omitempty"`
+	ReviewedDateTime *time.Time          `json:"reviewedDateTime,omitempty"`
+	Status           *ApprovalStepStatus `json:"status,omitempty"`
+}
+
 type AssignmentReviewSettings struct {
 	IsEnabled                       *bool                           `json:"isEnabled,omitempty"`
 	RecurrenceType                  AccessReviewRecurranceType      `json:"recurrenceType,omitempty"`
