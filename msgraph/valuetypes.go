@@ -667,6 +667,58 @@ const (
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
 )
 
+type PrivilegedAccessGroupAssignmentType = string
+
+const (
+	PrivilegedAccessGroupAssignmentAssigned  PrivilegedAccessGroupAssignmentType = "assigned"
+	PrivilegedAccessGroupAssignmentActivated PrivilegedAccessGroupAssignmentType = "activated"
+	PrivilegedAccessGroupAssignmentUnknown   PrivilegedAccessGroupAssignmentType = "unknownFutureValue"
+)
+
+type PrivilegedAccessGroupAssignmentAction = string
+
+const (
+	PrivilegedAccessGroupAssignmentActionAdminAssign    PrivilegedAccessGroupAssignmentAction = "adminAssign"
+	PrivilegedAccessGroupAssignmentActionAdminUpdate    PrivilegedAccessGroupAssignmentAction = "adminUpdate"
+	PrivilegedAccessGroupAssignmentActionAdminRemove    PrivilegedAccessGroupAssignmentAction = "adminRemove"
+	PrivilegedAccessGroupAssignmentActionAdminExtend    PrivilegedAccessGroupAssignmentAction = "adminExtend"
+	PrivilegedAccessGroupAssignmentActionAdminRenew     PrivilegedAccessGroupAssignmentAction = "adminRenew"
+	PrivilegedAccessGroupAssignmentActionSelfActivate   PrivilegedAccessGroupAssignmentAction = "selfActivate"
+	PrivilegedAccessGroupAssignmentActionSelfDeactivate PrivilegedAccessGroupAssignmentAction = "selfDeactivate"
+)
+
+type PrivilegedAccessGroupAssignmentStatus = string
+
+const (
+	PrivilegedAccessGroupAssignmentStatusCanceled                 PrivilegedAccessGroupAssignmentStatus = "Canceled"
+	PrivilegedAccessGroupAssignmentStatusDenied                   PrivilegedAccessGroupAssignmentStatus = "Denied"
+	PrivilegedAccessGroupAssignmentStatusFailed                   PrivilegedAccessGroupAssignmentStatus = "Failed"
+	PrivilegedAccessGroupAssignmentStatusGranted                  PrivilegedAccessGroupAssignmentStatus = "Granted"
+	PrivilegedAccessGroupAssignmentStatusPendingAdminDecision     PrivilegedAccessGroupAssignmentStatus = "PendingAdminDecision"
+	PrivilegedAccessGroupAssignmentStatusPendingApproval          PrivilegedAccessGroupAssignmentStatus = "PendingApproval"
+	PrivilegedAccessGroupAssignmentStatusPendingProvisioning      PrivilegedAccessGroupAssignmentStatus = "PendingProvisioning"
+	PrivilegedAccessGroupAssignmentStatusPendingScheduledCreation PrivilegedAccessGroupAssignmentStatus = "PendingScheduleCreation"
+	PrivilegedAccessGroupAssignmentStatusProvisioned              PrivilegedAccessGroupAssignmentStatus = "Provisioned"
+	PrivilegedAccessGroupAssignmentStatusRevoked                  PrivilegedAccessGroupAssignmentStatus = "Revoked"
+	PrivilegedAccessGroupAssignmentStatusScheduleCreated          PrivilegedAccessGroupAssignmentStatus = "ScheduleCreated"
+)
+
+type PrivilegedAccessGroupMemberType = string
+
+const (
+	PrivilegedAccessGroupMemberDirect  PrivilegedAccessGroupMemberType = "direct"
+	PrivilegedAccessGroupMemberGroup   PrivilegedAccessGroupMemberType = "group"
+	PrivilegedAccessGroupMemberUnknown PrivilegedAccessGroupMemberType = "unknownFutureValue"
+)
+
+type PrivilegedAccessGroupRelationship = string
+
+const (
+	PrivilegedAccessGroupRelationshipOwner   PrivilegedAccessGroupRelationship = "owner"
+	PrivilegedAccessGroupRelationshipMember  PrivilegedAccessGroupRelationship = "member"
+	PrivilegedAccessGroupRelationshipUnknown PrivilegedAccessGroupRelationship = "unknownFutureValue"
+)
+
 type RecurrencePatternType = string
 
 const (
@@ -764,6 +816,64 @@ const (
 	UnifiedRoleScheduleRequestActionSelfExtend         UnifiedRoleScheduleRequestAction = "selfExtend"
 	UnifiedRoleScheduleRequestActionSelfRenew          UnifiedRoleScheduleRequestAction = "selfRenew"
 	UnifiedRoleScheduleRequestActionUnknownFutureValue UnifiedRoleScheduleRequestAction = "unknownFutureValue"
+)
+
+type UnifiedRoleManagementPolicyScope = string
+
+const (
+	UnifiedRoleManagementPolicyScopeDirectory     UnifiedRoleManagementPolicyScope = "Directory"
+	UnifiedRoleManagementPolicyScopeDirectoryRole UnifiedRoleManagementPolicyScope = "DirectoryRole"
+	UnifiedRoleManagementPolicyScopeGroup         UnifiedRoleManagementPolicyScope = "Group"
+)
+
+type UnifiedRoleManagementPolicyRuleTargetCallerType = string
+
+const (
+	UnifiedRoleManagementPolicyRuleTargetCallerTypeNone    UnifiedRoleManagementPolicyRuleTargetCallerType = "None"
+	UnifiedRoleManagementPolicyRuleTargetCallerTypeAdmin   UnifiedRoleManagementPolicyRuleTargetCallerType = "Admin"
+	UnifiedRoleManagementPolicyRuleTargetCallerTypeEndUser UnifiedRoleManagementPolicyRuleTargetCallerType = "EndUser"
+)
+
+type UnifiedRoleManagementPolicyRuleLevel = string
+
+const (
+	UnifiedRoleManagementPolicyRuleLevelEligibility UnifiedRoleManagementPolicyRuleLevel = "Eligibility"
+	UnifiedRoleManagementPolicyRuleLevelAssignment  UnifiedRoleManagementPolicyRuleLevel = "Assignment"
+)
+
+type UnifiedRoleManagementPolicyRuleNotificationLevel = string
+
+const (
+	UnifiedRoleManagementPolicyRuleNotificationLevelNone     UnifiedRoleManagementPolicyRuleNotificationLevel = "None"
+	UnifiedRoleManagementPolicyRuleNotificationLevelCritical UnifiedRoleManagementPolicyRuleNotificationLevel = "Critical"
+	UnifiedRoleManagementPolicyRuleNotificationLevelAll      UnifiedRoleManagementPolicyRuleNotificationLevel = "All"
+)
+
+type UnifiedRoleManagementPolicyRuleNotificationRecipientType = string
+
+const (
+	UnifiedRoleManagementPolicyRuleNotificationRecipientTypeRequestor UnifiedRoleManagementPolicyRuleNotificationRecipientType = "Requestor"
+	UnifiedRoleManagementPolicyRuleNotificationRecipientTypeApprover  UnifiedRoleManagementPolicyRuleNotificationRecipientType = "Approver"
+	UnifiedRoleManagementPolicyRuleNotificationRecipientTypeAdmin     UnifiedRoleManagementPolicyRuleNotificationRecipientType = "Admin"
+)
+
+type UnifiedRoleManagementPolicyRuleNotificationType = string
+
+const (
+	UnifiedRoleManagementPolicyRuleNotificationTypeEmail UnifiedRoleManagementPolicyRuleNotificationType = "Email"
+)
+
+type UnifiedRoleManagementPolicyRuleOperation = string
+
+const (
+	UnifiedRoleManagementPolicyRuleOperationAll        UnifiedRoleManagementPolicyRuleOperation = "All"
+	UnifiedRoleManagementPolicyRuleOperationActivate   UnifiedRoleManagementPolicyRuleOperation = "Activate"
+	UnifiedRoleManagementPolicyRuleOperationDeactivate UnifiedRoleManagementPolicyRuleOperation = "Deactivate"
+	UnifiedRoleManagementPolicyRuleOperationAssign     UnifiedRoleManagementPolicyRuleOperation = "Assign"
+	UnifiedRoleManagementPolicyRuleOperationUpdate     UnifiedRoleManagementPolicyRuleOperation = "Update"
+	UnifiedRoleManagementPolicyRuleOperationRemove     UnifiedRoleManagementPolicyRuleOperation = "Remove"
+	UnifiedRoleManagementPolicyRuleOperationExtend     UnifiedRoleManagementPolicyRuleOperation = "Extend"
+	UnifiedRoleManagementPolicyRuleOperationRenew      UnifiedRoleManagementPolicyRuleOperation = "Renew"
 )
 
 type UsageAuthMethod = string

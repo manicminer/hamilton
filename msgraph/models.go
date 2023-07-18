@@ -1342,6 +1342,93 @@ type PhoneAuthenticationMethod struct {
 	PhoneNumber *string                  `json:"phoneNumber,omitempty"`
 	PhoneType   *AuthenticationPhoneType `json:"phoneType,omitempty"`
 }
+
+type PrivilegedAccessGroupAssignmentSchedule struct {
+	ID               *string                              `json:"id,omitempty"`
+	AccessId         *PrivilegedAccessGroupRelationship   `json:"accessId,omitempty"`
+	AssignmentType   *PrivilegedAccessGroupAssignmentType `json:"assignmentType,omitempty"`
+	CreatedDateTime  *time.Time                           `json:"createdDateTime,omitempty"`
+	CreatedUsing     *string                              `json:"createdUsing,omitempty"`
+	GroupId          *string                              `json:"groupId,omitempty"`
+	MemberType       *PrivilegedAccessGroupMemberType     `json:"memberType,omitempty"`
+	ModifiedDateTime *time.Time                           `json:"modifiedDateTime,omitempty"`
+	PrincipalId      *string                              `json:"principalId,omitempty"`
+	ScheduleInfo     *RequestSchedule                     `json:"scheduleInfo,omitempty"`
+	Status           *string                              `json:"status,omitempty"`
+}
+
+type PrivilegedAccessGroupAssignmentScheduleInstance struct {
+	ID                   *string                              `json:"id,omitempty"`
+	AccessId             *PrivilegedAccessGroupRelationship   `json:"accessId,omitempty"`
+	AssignmentScheduleId *string                              `json:"assignmentScheduleId,omitempty"`
+	AssignmentType       *PrivilegedAccessGroupAssignmentType `json:"assignmentType,omitempty"`
+	EndDateTime          *time.Time                           `json:"createdDateTime,omitempty"`
+	GroupId              *string                              `json:"groupId,omitempty"`
+	MemberType           *PrivilegedAccessGroupMemberType     `json:"memberType,omitempty"`
+	PrincipalId          *string                              `json:"principalId,omitempty"`
+	StartDateTime        *time.Time                           `json:"startDateTime,omitempty"`
+}
+
+type PrivilegedAccessGroupAssignmentScheduleRequest struct {
+	ID                *string                                `json:"id,omitempty"`
+	AccessId          *PrivilegedAccessGroupRelationship     `json:"accessId,omitempty"`
+	Action            *PrivilegedAccessGroupAssignmentAction `json:"action,omitempty"`
+	ApprovalId        *string                                `json:"approvalId,omitempty"`
+	CompletedDateTime *time.Time                             `json:"completedDateTime,omitempty"`
+	CreatedDateTime   *time.Time                             `json:"createdDateTime,omitempty"`
+	CustomData        *string                                `json:"customData,omitempty"`
+	GroupId           *string                                `json:"groupId,omitempty"`
+	IsValidationOnly  *bool                                  `json:"isValidationOnly,omitempty"`
+	Justification     *string                                `json:"justification,omitempty"`
+	PrincipalId       *string                                `json:"principalId,omitempty"`
+	ScheduleInfo      *RequestSchedule                       `json:"scheduleInfo,omitempty"`
+	Status            *string                                `json:"status,omitempty"`
+	TargetScheduleId  *string                                `json:"targetScheduleId,omitempty"`
+	TicketInfo        *TicketInfo                            `json:"ticketInfo,omitempty"`
+}
+
+type PrivilegedAccessGroupEligibilitySchedule struct {
+	ID               *string                            `json:"id,omitempty"`
+	AccessId         *PrivilegedAccessGroupRelationship `json:"accessId,omitempty"`
+	CreatedDateTime  *time.Time                         `json:"createdDateTime,omitempty"`
+	CreatedUsing     *string                            `json:"createdUsing,omitempty"`
+	GroupId          *string                            `json:"groupId,omitempty"`
+	MemberType       *PrivilegedAccessGroupMemberType   `json:"memberType,omitempty"`
+	ModifiedDateTime *time.Time                         `json:"modifiedDateTime,omitempty"`
+	PrincipalId      *string                            `json:"principalId,omitempty"`
+	ScheduleInfo     *RequestSchedule                   `json:"scheduleInfo,omitempty"`
+	Status           *string                            `json:"status,omitempty"`
+}
+
+type PrivilegedAccessGroupEligibilityScheduleInstance struct {
+	ID                    *string                            `json:"id,omitempty"`
+	AccessId              *PrivilegedAccessGroupRelationship `json:"accessId,omitempty"`
+	EligibilityScheduleId *string                            `json:"eligibilityScheduleId,omitempty"`
+	EndDateTime           *time.Time                         `json:"createdDateTime,omitempty"`
+	GroupId               *string                            `json:"groupId,omitempty"`
+	MemberType            *PrivilegedAccessGroupMemberType   `json:"memberType,omitempty"`
+	PrincipalId           *string                            `json:"principalId,omitempty"`
+	StartDateTime         *time.Time                         `json:"startDateTime,omitempty"`
+}
+
+type PrivilegedAccessGroupEligibilityScheduleRequest struct {
+	ID                *string                            `json:"id,omitempty"`
+	AccessId          *PrivilegedAccessGroupRelationship `json:"accessId,omitempty"`
+	Action            *string                            `json:"action,omitempty"`
+	ApprovalId        *string                            `json:"approvalId,omitempty"`
+	CompletedDateTime *time.Time                         `json:"completedDateTime,omitempty"`
+	CreatedDateTime   *time.Time                         `json:"createdDateTime,omitempty"`
+	CustomData        *string                            `json:"customData,omitempty"`
+	GroupId           *string                            `json:"groupId,omitempty"`
+	IsValidationOnly  *bool                              `json:"isValidationOnly,omitempty"`
+	Justification     *string                            `json:"justification,omitempty"`
+	PrincipalId       *string                            `json:"principalId,omitempty"`
+	ScheduleInfo      *RequestSchedule                   `json:"scheduleInfo,omitempty"`
+	Status            *string                            `json:"status,omitempty"`
+	TargetScheduleId  *string                            `json:"targetScheduleId,omitempty"`
+	TicketInfo        *TicketInfo                        `json:"ticketInfo,omitempty"`
+}
+
 type PublicClient struct {
 	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
@@ -1715,6 +1802,65 @@ type UnifiedRoleEligibilityScheduleRequest struct {
 	Status            *string                           `json:"status,omitempty"`
 	TargetScheduleID  *string                           `json:"targetScheduleId,omitempty"`
 	TicketInfo        *TicketInfo                       `json:"ticketInfo,omitempty"`
+}
+
+type UnifiedRoleManagementPolicy struct {
+	ID                    *string                           `json:"id,omitempty"`
+	Description           *string                           `json:"description,omitempty"`
+	DisplayName           *string                           `json:"displayName,omitempty"`
+	IsOrganizationDefault *bool                             `json:"isOrganizationDefault,omitempty"`
+	LastModifiedBy        *Identity                         `json:"lastModifiedBy,omitempty"`
+	LastModifiedDateTime  *time.Time                        `json:"lastModifiedDateTime,omitempty"`
+	ScopeId               *string                           `json:"scopeId,omitempty"`
+	ScopeType             *UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyAssignment struct {
+	ID               *string                           `json:"id,omitempty"`
+	PolicyId         *string                           `json:"policyId,omitempty"`
+	RoleDefinitionId *string                           `json:"roleDefinitionId,omitempty"`
+	ScopeId          *string                           `json:"scopeId,omitempty"`
+	ScopeType        *UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
+}
+
+// •
+// • unifiedRoleManagementPolicy
+// • unifiedRoleManagementPolicyNotificationRule
+type UnifiedRoleManagementPolicyApprovalRule struct {
+	ID      *string                                `json:"id,omitempty"`
+	Setting *ApprovalSettings                      `json:"setting,omitempty"`
+	Target  *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyAuthenticationContextRule struct {
+	ID         *string                                `json:"id,omitempty"`
+	ClaimValue *string                                `json:"claimValue,omitempty"`
+	IsEnabled  *bool                                  `json:"isEnabled,omitempty"`
+	Target     *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyEnablementRule struct {
+	ID           *string                                `json:"id,omitempty"`
+	EnabledRules *[]string                              `json:"enabledRules,omitempty"`
+	Target       *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyExpirationRule struct {
+	ID                         *string                                                   `json:"id,omitempty"`
+	IsDefaultRecipientsEnabled *bool                                                     `json:"isDefaultRecipientsEnabled,omitempty"`
+	NotificationLevel          *UnifiedRoleManagementPolicyRuleNotificationLevel         `json:"notificationLevel,omitempty"`
+	NotificationRecipients     *[]string                                                 `json:"notificationRecipients,omitempty"`
+	NotificationType           *UnifiedRoleManagementPolicyRuleNotificationType          `json:"notificationType,omitempty"`
+	RecipientType              *UnifiedRoleManagementPolicyRuleNotificationRecipientType `json:"recipientType,omitempty"`
+	Target                     *UnifiedRoleManagementPolicyRuleTarget                    `json:"target,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyRuleTarget struct {
+	Caller              *UnifiedRoleManagementPolicyRuleTargetCallerType `json:"caller,omitempty"`
+	EnforcedSettings    *[]string                                        `json:"enforcedSettings,omitempty"`
+	InheritableSettings *[]string                                        `json:"inheritableSettings,omitempty"`
+	Level               *UnifiedRoleManagementPolicyRuleLevel            `json:"level,omitempty"`
+	Operations          *[]UnifiedRoleManagementPolicyRuleOperation      `json:"operations,omitempty"`
 }
 
 type UnifiedRolePermission struct {
