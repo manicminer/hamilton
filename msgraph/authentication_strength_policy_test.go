@@ -25,11 +25,11 @@ func TestAuthenticationStrengthPolicyClient(t *testing.T) {
 		ID:          policy.ID,
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.RandomString)),
 	}
-	testAuthenticationStrengthPolicysClient_Update(t, c, updatePolicy)
+	testAuthenticationStrengthPoliciesClient_Update(t, c, updatePolicy)
 
-	testAuthenticationStrengthPolicysClient_List(t, c)
-	testAuthenticationStrengthPolicysClient_Get(t, c, *policy.ID)
-	testAuthenticationStrengthPolicysClient_Delete(t, c, *policy.ID)
+	testAuthenticationStrengthPoliciesClient_List(t, c)
+	testAuthenticationStrengthPoliciesClient_Get(t, c, *policy.ID)
+	testAuthenticationStrengthPoliciesClient_Delete(t, c, *policy.ID)
 
 }
 
@@ -50,7 +50,7 @@ func testAuthenticationStrengthPoliciesClient_Create(t *testing.T, c *test.Test,
 	return
 }
 
-func testAuthenticationStrengthPolicysClient_Get(t *testing.T, c *test.Test, id string) (policy *msgraph.AuthenticationStrengthPolicy) {
+func testAuthenticationStrengthPoliciesClient_Get(t *testing.T, c *test.Test, id string) (policy *msgraph.AuthenticationStrengthPolicy) {
 	policy, status, err := c.AuthenticationStrengthPoliciesClient.Get(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("AuthenticationStrengthPolicyClient.Get(): %v", err)
@@ -64,7 +64,7 @@ func testAuthenticationStrengthPolicysClient_Get(t *testing.T, c *test.Test, id 
 	return
 }
 
-func testAuthenticationStrengthPolicysClient_Update(t *testing.T, c *test.Test, policy msgraph.AuthenticationStrengthPolicy) {
+func testAuthenticationStrengthPoliciesClient_Update(t *testing.T, c *test.Test, policy msgraph.AuthenticationStrengthPolicy) {
 	status, err := c.AuthenticationStrengthPoliciesClient.Update(c.Context, policy)
 	if err != nil {
 		t.Fatalf("AuthenticationStrengthPolicyClient.Update(): %v", err)
@@ -74,7 +74,7 @@ func testAuthenticationStrengthPolicysClient_Update(t *testing.T, c *test.Test, 
 	}
 }
 
-func testAuthenticationStrengthPolicysClient_List(t *testing.T, c *test.Test) (policies *[]msgraph.AuthenticationStrengthPolicy) {
+func testAuthenticationStrengthPoliciesClient_List(t *testing.T, c *test.Test) (policies *[]msgraph.AuthenticationStrengthPolicy) {
 	policies, _, err := c.AuthenticationStrengthPoliciesClient.List(c.Context, odata.Query{Top: 10})
 	if err != nil {
 		t.Fatalf("AuthenticationStrengthPolicyClient.List(): %v", err)
@@ -85,7 +85,7 @@ func testAuthenticationStrengthPolicysClient_List(t *testing.T, c *test.Test) (p
 	return
 }
 
-func testAuthenticationStrengthPolicysClient_Delete(t *testing.T, c *test.Test, id string) {
+func testAuthenticationStrengthPoliciesClient_Delete(t *testing.T, c *test.Test, id string) {
 	status, err := c.AuthenticationStrengthPoliciesClient.Delete(c.Context, id)
 	if err != nil {
 		t.Fatalf("AuthenticationStrengthPolicyClient.Delete(): %v", err)
