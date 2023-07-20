@@ -14,7 +14,7 @@ func TestAuthenticationStrengthPolicyClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	policy := testAuthenticationStrengthPolicysClient_Create(t, c, msgraph.AuthenticationStrengthPolicy{
+	policy := testAuthenticationStrengthPoliciesClient_Create(t, c, msgraph.AuthenticationStrengthPolicy{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
 		Description:         utils.StringPtr("FIDO2"),
 		AllowedCombinations: &[]string{"password", "hardwareOath"},
@@ -33,7 +33,7 @@ func TestAuthenticationStrengthPolicyClient(t *testing.T) {
 
 }
 
-func testAuthenticationStrengthPolicysClient_Create(t *testing.T, c *test.Test, a msgraph.AuthenticationStrengthPolicy) (authenticationStrengthPolicy *msgraph.AuthenticationStrengthPolicy) {
+func testAuthenticationStrengthPoliciesClient_Create(t *testing.T, c *test.Test, a msgraph.AuthenticationStrengthPolicy) (authenticationStrengthPolicy *msgraph.AuthenticationStrengthPolicy) {
 	authenticationStrengthPolicy, status, err := c.AuthenticationStrengthPoliciesClient.Create(c.Context, a)
 	if err != nil {
 		t.Fatalf("AuthenticationStrengthPolicyClient.Create(): %v", err)
