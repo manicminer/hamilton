@@ -26,7 +26,6 @@ func NewAuthenticationStrengthPoliciesClient() *AuthenticationStrengthPoliciesCl
 // List returns a list of AuthenticationStrengthPolicy, optionally queried using OData.
 func (c *AuthenticationStrengthPoliciesClient) List(ctx context.Context, query odata.Query) (*[]AuthenticationStrengthPolicy, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		DisablePaging:    query.Top > 0,
 		OData:            query,
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
