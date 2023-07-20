@@ -16,7 +16,7 @@ func TestAuthenticationStrengthPolicyClient(t *testing.T) {
 
 	policy := testAuthenticationStrengthPoliciesClient_Create(t, c, msgraph.AuthenticationStrengthPolicy{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
-		Description:         utils.StringPtr("FIDO2"),
+		Description:         utils.StringPtr("Password and Hardware OATH"),
 		AllowedCombinations: &[]string{"password, hardwareOath"},
 	},
 	)
