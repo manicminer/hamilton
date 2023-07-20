@@ -102,6 +102,7 @@ type Test struct {
 	ApplicationsClient                        *msgraph.ApplicationsClient
 	AppRoleAssignedToClient                   *msgraph.AppRoleAssignedToClient
 	AuthenticationMethodsClient               *msgraph.AuthenticationMethodsClient
+	AuthenticationStrengthPoliciesClient      *msgraph.AuthenticationStrengthPoliciesClient
 	B2CUserFlowClient                         *msgraph.B2CUserFlowClient
 	ClaimsMappingPolicyClient                 *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient           *msgraph.ConditionalAccessPoliciesClient
