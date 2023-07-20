@@ -247,6 +247,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AuthenticationMethodsClient.BaseClient.Endpoint = *endpoint
 	c.AuthenticationMethodsClient.BaseClient.RetryableClient.RetryMax = retry
 
+	c.AuthenticationStrengthPoliciesClient = msgraph.NewAuthenticationStrengthPoliciesClient()
+	c.AuthenticationStrengthPoliciesClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.AuthenticationStrengthPoliciesClient.BaseClient.Endpoint = *endpoint
+	c.AuthenticationStrengthPoliciesClient.BaseClient.RetryableClient.RetryMax = retry
+
 	c.B2CUserFlowClient = msgraph.NewB2CUserFlowClient()
 	c.B2CUserFlowClient.BaseClient.Authorizer = c.Connections["b2c"].Authorizer
 	c.B2CUserFlowClient.BaseClient.Endpoint = *endpoint
