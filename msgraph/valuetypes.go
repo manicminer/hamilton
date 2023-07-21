@@ -281,14 +281,6 @@ const (
 	AuthenticationPhoneTypeOffice          AuthenticationPhoneType = "office"
 )
 
-type AuthenticationStrengthPolicyType = string
-
-const (
-	authenticationStrengthPolicyTypeBuiltIn            AuthenticationStrengthPolicyType = "builtIn"
-	authenticationStrengthPolicyTypeCustom             AuthenticationStrengthPolicyType = "custom"
-	authenticationStrengthPolicyTypeUnknownFutureValue AuthenticationStrengthPolicyType = "unknownFutureValue"
-)
-
 type BodyType = string
 
 const (
