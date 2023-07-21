@@ -147,7 +147,7 @@ func (c *AuthenticationStrengthPoliciesClient) Delete(ctx context.Context, id st
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity: fmt.Sprintf("/policies/authenticationStrengthPolicies/%s/#ref", id),
+			Entity: fmt.Sprintf("/policies/authenticationStrengthPolicies/%s/$ref", id),
 		},
 	})
 	if err != nil {
