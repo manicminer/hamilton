@@ -75,7 +75,7 @@ func testAuthenticationStrengthPoliciesClient_Update(t *testing.T, c *test.Test,
 }
 
 func testAuthenticationStrengthPoliciesClient_List(t *testing.T, c *test.Test) (policies *[]msgraph.AuthenticationStrengthPolicy) {
-	policies, _, err := c.AuthenticationStrengthPoliciesClient.List(c.Context, odata.Query{Top: 10})
+	policies, _, err := c.AuthenticationStrengthPoliciesClient.List(c.Context, odata.Query{})
 	if err != nil {
 		t.Fatalf("AuthenticationStrengthPolicyClient.List(): %v", err)
 	}
