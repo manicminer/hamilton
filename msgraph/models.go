@@ -656,6 +656,7 @@ type ConditionalAccessFilter struct {
 
 type ConditionalAccessGrantControls struct {
 	Operator                    *string                          `json:"operator,omitempty"`
+	AuthenticationStrength      *[]AuthenticationStrengthPolicy  `json:"authenticationStrength,omitempty"`
 	BuiltInControls             *[]ConditionalAccessGrantControl `json:"builtInControls,omitempty"`
 	CustomAuthenticationFactors *[]string                        `json:"customAuthenticationFactors,omitempty"`
 	TermsOfUse                  *[]string                        `json:"termsOfUse,omitempty"`
