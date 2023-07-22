@@ -284,9 +284,9 @@ const (
 type AuthenticationStrengthPolicyType = string
 
 const (
-	authenticationStrengthPolicyTypeBuiltIn            AuthenticationStrengthPolicyType = "builtIn"
-	authenticationStrengthPolicyTypeCustom             AuthenticationStrengthPolicyType = "custom"
-	authenticationStrengthPolicyTypeUnknownFutureValue AuthenticationStrengthPolicyType = "unknownFutureValue"
+	AuthenticationStrengthPolicyTypeBuiltIn            AuthenticationStrengthPolicyType = "builtIn"
+	AuthenticationStrengthPolicyTypeCustom             AuthenticationStrengthPolicyType = "custom"
+	AuthenticationStrengthPolicyTypeUnknownFutureValue AuthenticationStrengthPolicyType = "unknownFutureValue"
 )
 
 type BodyType = string
