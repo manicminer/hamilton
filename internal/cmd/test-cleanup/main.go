@@ -81,6 +81,7 @@ func main() {
 	cleanupConditionalAccessPolicies()
 	cleanupConnectedOrganizations()
 	cleanupNamedLocations()
+	cleanupAuthenticationStrengthPolicies()
 	cleanupServicePrincipals()
 	cleanupApplications()
 	cleanupGroups()
