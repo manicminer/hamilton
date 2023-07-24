@@ -68,6 +68,8 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testGroup_Delete(t, c, testIncGroup)
 	testGroup_Delete(t, c, testExcGroup)
 	testUser_Delete(t, c, testUser)
+	testAuthenticationStrengthPoliciesClient_Delete(t, c, *policy.ID)
+
 }
 
 func testConditionalAccessPolicysClient_Create(t *testing.T, c *test.Test, a msgraph.ConditionalAccessPolicy) (conditionalAccessPolicy *msgraph.ConditionalAccessPolicy) {
