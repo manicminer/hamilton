@@ -20,6 +20,13 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testExcGroup := testGroup_Create(t, c, "test-conditionalAccessPolicy-exc")
 	testUser := testUser_Create(t, c)
 
+	authStrengthPolicy := testAuthenticationStrengthPoliciesClient_Create(t, c, msgraph.AuthenticationStrengthPolicy{
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
+		Description:         utils.StringPtr("Password and Hardware OATH token"),
+		AllowedCombinations: &[]string{"password, hardwareOath"},
+	},
+	)
+
 	policy := testConditionalAccessPolicysClient_Create(t, c, msgraph.ConditionalAccessPolicy{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
 		State:       utils.StringPtr("enabled"),
@@ -42,6 +49,9 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 		GrantControls: &msgraph.ConditionalAccessGrantControls{
 			Operator:        utils.StringPtr("OR"),
 			BuiltInControls: &[]string{"block"},
+			AuthenticationStrength: &msgraph.AuthenticationStrengthPolicy{
+				ID: authStrengthPolicy.ID,
+			},
 		},
 	})
 
@@ -58,6 +68,8 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testGroup_Delete(t, c, testIncGroup)
 	testGroup_Delete(t, c, testExcGroup)
 	testUser_Delete(t, c, testUser)
+	testAuthenticationStrengthPoliciesClient_Delete(t, c, *authStrengthPolicy.ID)
+
 }
 
 func testConditionalAccessPolicysClient_Create(t *testing.T, c *test.Test, a msgraph.ConditionalAccessPolicy) (conditionalAccessPolicy *msgraph.ConditionalAccessPolicy) {
