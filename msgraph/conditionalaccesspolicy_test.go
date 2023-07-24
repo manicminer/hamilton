@@ -68,7 +68,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testGroup_Delete(t, c, testIncGroup)
 	testGroup_Delete(t, c, testExcGroup)
 	testUser_Delete(t, c, testUser)
-	testAuthenticationStrengthPoliciesClient_Delete(t, c, *policy.ID)
+	testAuthenticationStrengthPoliciesClient_Delete(t, c, *authStrengthPolicy.ID)
 
 }
 
