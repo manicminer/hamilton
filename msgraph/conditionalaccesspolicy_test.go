@@ -22,7 +22,7 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 
 	authStrengthPolicy := testAuthenticationStrengthPoliciesClient_Create(t, c, msgraph.AuthenticationStrengthPolicy{
 		DisplayName:         utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
-		Description:         utils.StringPtr("Password and Hardware OATH methods"),
+		Description:         utils.StringPtr("Password and Hardware OATH"),
 		AllowedCombinations: &[]string{"password, hardwareOath"},
 	},
 	)
