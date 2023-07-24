@@ -1,3 +1,7 @@
+## 0.63.0 (Unreleased)
+
+- Support for [Authentication Strength Policies](https://learn.microsoft.com/en-us/graph/api/resources/authenticationstrengthpolicy?view=graph-rest-1.0) ([#249](https://github.com/manicminer/hamilton/pull/249))
+
 ## 0.62.0 (July 14, 2023)
 
 - Support for deleting an `accessPackageResourceRoleScope` ([#245](https://github.com/manicminer/hamilton/pull/245))
