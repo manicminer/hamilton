@@ -693,10 +693,10 @@ type ConditionalAccessPolicy struct {
 	Conditions       *ConditionalAccessConditionSet    `json:"conditions,omitempty"`
 	CreatedDateTime  *time.Time                        `json:"createdDateTime,omitempty"`
 	DisplayName      *string                           `json:"displayName,omitempty"`
-	GrantControls    *ConditionalAccessGrantControls   `json:"grantControls,omitempty"`
+	GrantControls    *ConditionalAccessGrantControls   `json:"grantControls"`
 	ID               *string                           `json:"id,omitempty"`
 	ModifiedDateTime *time.Time                        `json:"modifiedDateTime,omitempty"`
-	SessionControls  *ConditionalAccessSessionControls `json:"sessionControls,omitempty"`
+	SessionControls  *ConditionalAccessSessionControls `json:"sessionControls"`
 	State            *ConditionalAccessPolicyState     `json:"state,omitempty"`
 }
 
