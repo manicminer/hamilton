@@ -131,8 +131,9 @@ const (
 type AccessReviewReviewerType = string
 
 const (
-	AccessReviewReviewerTypeSelf      AccessReviewReviewerType = "Self"
+	AccessReviewReviewerTypeManager   AccessReviewReviewerType = "Manager"
 	AccessReviewReviewerTypeReviewers AccessReviewReviewerType = "Reviewers"
+	AccessReviewReviewerTypeSelf      AccessReviewReviewerType = "Self"
 )
 
 type AccessReviewRecurranceType = string
