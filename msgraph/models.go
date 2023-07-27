@@ -565,7 +565,7 @@ type ApprovalStage struct {
 
 type AssignmentReviewSettings struct {
 	IsEnabled                       *bool                           `json:"isEnabled,omitempty"`
-	RecurrenceType                  AccessReviewRecurranceType      `json:"recurrenceType,omitempty"`
+	RecurrenceType                  AccessReviewRecurrenceType      `json:"recurrenceType,omitempty"`
 	ReviewerType                    AccessReviewReviewerType        `json:"reviewerType,omitempty"`
 	StartDateTime                   *time.Time                      `json:"startDateTime,omitempty"`
 	DurationInDays                  *int32                          `json:"durationInDays,omitempty"`

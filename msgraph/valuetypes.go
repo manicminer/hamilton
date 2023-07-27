@@ -67,7 +67,7 @@ const (
 	AccessPackageRequestStateSubmitted           AccessPackageRequestState = "submitted"
 	AccessPackageRequestStatePendingApproval     AccessPackageRequestState = "pendingApproval"
 	AccessPackageRequestStateDelivering          AccessPackageRequestState = "delivering"
-	AccessPackageRequestStateDelivered           AccessPackageRequestState = "delievered"
+	AccessPackageRequestStateDelivered           AccessPackageRequestState = "delivered"
 	AccessPackageRequestStateDeliveryFailed      AccessPackageRequestState = "deliveryFailed"
 	AccessPackageRequestStateDenied              AccessPackageRequestState = "denied"
 	AccessPackageRequestStateScheduled           AccessPackageRequestState = "scheduled"
@@ -79,7 +79,7 @@ type AccessPackageRequestType = string
 
 const (
 	AccessPackageRequestTypeNotSpecified AccessPackageRequestType = "notSpecified"
-	AccessPackageRequestTypeuserAdd      AccessPackageRequestType = "userAdd"
+	AccessPackageRequestTypeUserAdd      AccessPackageRequestType = "userAdd"
 	AccessPackageRequestTypeUserExtend   AccessPackageRequestType = "UserExtend"
 	AccessPackageRequestTypeUserUpdate   AccessPackageRequestType = "userUpdate"
 	AccessPackageRequestTypeUserRemove   AccessPackageRequestType = "userRemove"
@@ -136,14 +136,14 @@ const (
 	AccessReviewReviewerTypeSelf      AccessReviewReviewerType = "Self"
 )
 
-type AccessReviewRecurranceType = string
+type AccessReviewRecurrenceType = string
 
 const (
-	AccessReviewRecurranceTypeWeekly     AccessReviewRecurranceType = "weekly"
-	AccessReviewRecurranceTypeMonthly    AccessReviewRecurranceType = "monthly"
-	AccessReviewRecurranceTypeQuarterly  AccessReviewRecurranceType = "quarterly"
-	AccessReviewRecurranceTypeHalfYearly AccessReviewRecurranceType = "halfyearly"
-	AccessReviewRecurranceTypeAnnual     AccessReviewRecurranceType = "annual"
+	AccessReviewRecurrenceTypeWeekly     AccessReviewRecurrenceType = "weekly"
+	AccessReviewRecurrenceTypeMonthly    AccessReviewRecurrenceType = "monthly"
+	AccessReviewRecurrenceTypeQuarterly  AccessReviewRecurrenceType = "quarterly"
+	AccessReviewRecurrenceTypeHalfYearly AccessReviewRecurrenceType = "halfyearly"
+	AccessReviewRecurrenceTypeAnnual     AccessReviewRecurrenceType = "annual"
 )
 
 type AdministrativeUnitVisibility = string
