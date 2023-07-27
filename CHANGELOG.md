@@ -1,6 +1,7 @@
 ## 0.63.0 (Unreleased)
 
 - Support for [Authentication Strength Policies](https://learn.microsoft.com/en-us/graph/api/resources/authenticationstrengthpolicy?view=graph-rest-1.0) ([#249](https://github.com/manicminer/hamilton/pull/249))
+- Support `Manager` value for `AccessReviewReviewerType` ([#251](https://github.com/manicminer/hamilton/pull/251))
 - Bugfix: Support for specifying `null` values for `grantControls` or `sessionControls` within [Conditional Access Policies](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesspolicy?view=graph-rest-1.0) ([#250](https://github.com/manicminer/hamilton/pull/250))
 
 ## 0.62.0 (July 14, 2023)
