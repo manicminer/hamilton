@@ -31,7 +31,7 @@ func TestAccessPackageAssignmentPolicyClient(t *testing.T) {
 			IsEnabled:                       utils.BoolPtr(true),
 			StartDateTime:                   &currentTimePlusDay,
 			DurationInDays:                  utils.Int32Ptr(5),
-			RecurrenceType:                  msgraph.AccessReviewRecurranceTypeMonthly,
+			RecurrenceType:                  msgraph.AccessReviewRecurrenceTypeMonthly,
 			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
 			IsAccessRecommendationEnabled:   utils.BoolPtr(true),
 			IsApprovalJustificationRequired: utils.BoolPtr(true),
