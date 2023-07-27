@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/auth"
 	"github.com/hashicorp/go-azure-sdk/sdk/claims"
@@ -140,10 +141,12 @@ type Test struct {
 
 func NewTest(t *testing.T) (c *Test) {
 	ctx := context.Background()
-	var cancel context.CancelFunc = func() {}
+	var cancel context.CancelFunc
 
 	if deadline, ok := t.Deadline(); ok {
-		ctx, cancel = context.WithDeadline(context.Background(), deadline)
+		ctx, cancel = context.WithDeadline(ctx, deadline)
+	} else {
+		ctx, cancel = context.WithTimeout(ctx, 5*time.Minute)
 	}
 
 	c = &Test{
