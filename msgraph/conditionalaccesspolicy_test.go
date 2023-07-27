@@ -58,6 +58,26 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	updatePolicy := msgraph.ConditionalAccessPolicy{
 		ID:          policy.ID,
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.RandomString)),
+		Conditions: &msgraph.ConditionalAccessConditionSet{
+			ClientAppTypes: &[]string{"all"},
+			Applications: &msgraph.ConditionalAccessApplications{
+				IncludeApplications: &[]string{testAppId},
+			},
+			Users: &msgraph.ConditionalAccessUsers{
+				IncludeUsers:  &[]string{"All"},
+				ExcludeUsers:  &[]string{*testUser.ID(), "GuestsOrExternalUsers"},
+				IncludeGroups: &[]string{*testIncGroup.ID()},
+				ExcludeGroups: &[]string{*testExcGroup.ID()},
+			},
+			Locations: &msgraph.ConditionalAccessLocations{
+				IncludeLocations: &[]string{"All"},
+				ExcludeLocations: &[]string{"AllTrusted"},
+			},
+		},
+		GrantControls: &msgraph.ConditionalAccessGrantControls{
+			Operator:        utils.StringPtr("OR"),
+			BuiltInControls: &[]string{"block"},
+		},
 	}
 	testConditionalAccessPolicysClient_Update(t, c, updatePolicy)
 
