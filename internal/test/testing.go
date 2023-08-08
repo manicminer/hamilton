@@ -122,6 +122,7 @@ type Test struct {
 	InvitationsClient                                    *msgraph.InvitationsClient
 	MeClient                                             *msgraph.MeClient
 	NamedLocationsClient                                 *msgraph.NamedLocationsClient
+	PrivilegedAccessGroupClient                          *msgraph.PrivilegedAccessGroupClient
 	PrivilegedAccessGroupAssignmentScheduleClient        *msgraph.PrivilegedAccessGroupAssignmentScheduleClient
 	PrivilegedAccessGroupAssignmentScheduleRequestClient *msgraph.PrivilegedAccessGroupAssignmentScheduleRequestClient
 	ReportsClient                                        *msgraph.ReportsClient
@@ -346,6 +347,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.NamedLocationsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.NamedLocationsClient.BaseClient.Endpoint = *endpoint
 	c.NamedLocationsClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.PrivilegedAccessGroupClient = msgraph.NewPrivilegedAccessGroupClient()
+	c.PrivilegedAccessGroupClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.PrivilegedAccessGroupClient.BaseClient.Endpoint = *endpoint
+	c.PrivilegedAccessGroupClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ReportsClient = msgraph.NewReportsClient()
 	c.ReportsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
