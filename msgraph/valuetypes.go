@@ -698,6 +698,50 @@ const (
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
 )
 
+type PrivilegedAccessGroupAction = string
+
+const (
+	PrivilegedAccessGroupActionAdminAssign    PrivilegedAccessGroupAction = "adminAssign"
+	PrivilegedAccessGroupActionAdminUpdate    PrivilegedAccessGroupAction = "adminUpdate"
+	PrivilegedAccessGroupActionAdminRemove    PrivilegedAccessGroupAction = "adminRemove"
+	PrivilegedAccessGroupActionAdminExtend    PrivilegedAccessGroupAction = "adminExtend"
+	PrivilegedAccessGroupActionAdminRenew     PrivilegedAccessGroupAction = "adminRenew"
+	PrivilegedAccessGroupActionSelfActivate   PrivilegedAccessGroupAction = "selfActivate"
+	PrivilegedAccessGroupActionSelfDeactivate PrivilegedAccessGroupAction = "selfDeactivate"
+)
+
+type PrivilegedAccessGroupEligibilityStatus = string
+
+const (
+	PrivilegedAccessGroupEligibilityStatusCanceled                 PrivilegedAccessGroupEligibilityStatus = "Canceled"
+	PrivilegedAccessGroupEligibilityStatusDenied                   PrivilegedAccessGroupEligibilityStatus = "Denied"
+	PrivilegedAccessGroupEligibilityStatusFailed                   PrivilegedAccessGroupEligibilityStatus = "Failed"
+	PrivilegedAccessGroupEligibilityStatusGranted                  PrivilegedAccessGroupEligibilityStatus = "Granted"
+	PrivilegedAccessGroupEligibilityStatusPendingAdminDecision     PrivilegedAccessGroupEligibilityStatus = "PendingAdminDecision"
+	PrivilegedAccessGroupEligibilityStatusPendingApproval          PrivilegedAccessGroupEligibilityStatus = "PendingApproval"
+	PrivilegedAccessGroupEligibilityStatusPendingProvisioning      PrivilegedAccessGroupEligibilityStatus = "PendingProvisioning"
+	PrivilegedAccessGroupEligibilityStatusPendingScheduledCreation PrivilegedAccessGroupEligibilityStatus = "PendingScheduleCreation"
+	PrivilegedAccessGroupEligibilityStatusProvisioned              PrivilegedAccessGroupEligibilityStatus = "Provisioned"
+	PrivilegedAccessGroupEligibilityStatusRevoked                  PrivilegedAccessGroupEligibilityStatus = "Revoked"
+	PrivilegedAccessGroupEligibilityStatusScheduleCreated          PrivilegedAccessGroupEligibilityStatus = "ScheduleCreated"
+)
+
+type PrivilegedAccessGroupMemberType = string
+
+const (
+	PrivilegedAccessGroupMemberDirect  PrivilegedAccessGroupMemberType = "direct"
+	PrivilegedAccessGroupMemberGroup   PrivilegedAccessGroupMemberType = "group"
+	PrivilegedAccessGroupMemberUnknown PrivilegedAccessGroupMemberType = "unknownFutureValue"
+)
+
+type PrivilegedAccessGroupRelationship = string
+
+const (
+	PrivilegedAccessGroupRelationshipOwner   PrivilegedAccessGroupRelationship = "owner"
+	PrivilegedAccessGroupRelationshipMember  PrivilegedAccessGroupRelationship = "member"
+	PrivilegedAccessGroupRelationshipUnknown PrivilegedAccessGroupRelationship = "unknownFutureValue"
+)
+
 type RecurrencePatternType = string
 
 const (
