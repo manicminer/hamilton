@@ -1,6 +1,6 @@
 module github.com/manicminer/hamilton
 
-go 1.16
+go 1.20
 
 require (
 	github.com/hashicorp/go-azure-sdk v0.20230331.1143618
