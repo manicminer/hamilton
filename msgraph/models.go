@@ -1381,21 +1381,21 @@ type PrivilegedAccessGroupAssignmentScheduleInstance struct {
 }
 
 type PrivilegedAccessGroupAssignmentScheduleRequest struct {
-	ID                *string                                `json:"id,omitempty"`
-	AccessId          *PrivilegedAccessGroupRelationship     `json:"accessId,omitempty"`
-	Action            *PrivilegedAccessGroupAssignmentAction `json:"action,omitempty"`
-	ApprovalId        *string                                `json:"approvalId,omitempty"`
-	CompletedDateTime *time.Time                             `json:"completedDateTime,omitempty"`
-	CreatedDateTime   *time.Time                             `json:"createdDateTime,omitempty"`
-	CustomData        *string                                `json:"customData,omitempty"`
-	GroupId           *string                                `json:"groupId,omitempty"`
-	IsValidationOnly  *bool                                  `json:"isValidationOnly,omitempty"`
-	Justification     *string                                `json:"justification,omitempty"`
-	PrincipalId       *string                                `json:"principalId,omitempty"`
-	ScheduleInfo      *RequestSchedule                       `json:"scheduleInfo,omitempty"`
-	Status            *string                                `json:"status,omitempty"`
-	TargetScheduleId  *string                                `json:"targetScheduleId,omitempty"`
-	TicketInfo        *TicketInfo                            `json:"ticketInfo,omitempty"`
+	ID                *string                            `json:"id,omitempty"`
+	AccessId          *PrivilegedAccessGroupRelationship `json:"accessId,omitempty"`
+	Action            *PrivilegedAccessGroupAction       `json:"action,omitempty"`
+	ApprovalId        *string                            `json:"approvalId,omitempty"`
+	CompletedDateTime *time.Time                         `json:"completedDateTime,omitempty"`
+	CreatedDateTime   *time.Time                         `json:"createdDateTime,omitempty"`
+	CustomData        *string                            `json:"customData,omitempty"`
+	GroupId           *string                            `json:"groupId,omitempty"`
+	IsValidationOnly  *bool                              `json:"isValidationOnly,omitempty"`
+	Justification     *string                            `json:"justification,omitempty"`
+	PrincipalId       *string                            `json:"principalId,omitempty"`
+	ScheduleInfo      *RequestSchedule                   `json:"scheduleInfo,omitempty"`
+	Status            *string                            `json:"status,omitempty"`
+	TargetScheduleId  *string                            `json:"targetScheduleId,omitempty"`
+	TicketInfo        *TicketInfo                        `json:"ticketInfo,omitempty"`
 }
 
 type PublicClient struct {

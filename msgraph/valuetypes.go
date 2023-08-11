@@ -698,24 +698,24 @@ const (
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
 )
 
+type PrivilegedAccessGroupAction = string
+
+const (
+	PrivilegedAccessGroupActionAdminAssign    PrivilegedAccessGroupAction = "adminAssign"
+	PrivilegedAccessGroupActionAdminUpdate    PrivilegedAccessGroupAction = "adminUpdate"
+	PrivilegedAccessGroupActionAdminRemove    PrivilegedAccessGroupAction = "adminRemove"
+	PrivilegedAccessGroupActionAdminExtend    PrivilegedAccessGroupAction = "adminExtend"
+	PrivilegedAccessGroupActionAdminRenew     PrivilegedAccessGroupAction = "adminRenew"
+	PrivilegedAccessGroupActionSelfActivate   PrivilegedAccessGroupAction = "selfActivate"
+	PrivilegedAccessGroupActionSelfDeactivate PrivilegedAccessGroupAction = "selfDeactivate"
+)
+
 type PrivilegedAccessGroupAssignmentType = string
 
 const (
 	PrivilegedAccessGroupAssignmentAssigned  PrivilegedAccessGroupAssignmentType = "assigned"
 	PrivilegedAccessGroupAssignmentActivated PrivilegedAccessGroupAssignmentType = "activated"
 	PrivilegedAccessGroupAssignmentUnknown   PrivilegedAccessGroupAssignmentType = "unknownFutureValue"
-)
-
-type PrivilegedAccessGroupAssignmentAction = string
-
-const (
-	PrivilegedAccessGroupAssignmentActionAdminAssign    PrivilegedAccessGroupAssignmentAction = "adminAssign"
-	PrivilegedAccessGroupAssignmentActionAdminUpdate    PrivilegedAccessGroupAssignmentAction = "adminUpdate"
-	PrivilegedAccessGroupAssignmentActionAdminRemove    PrivilegedAccessGroupAssignmentAction = "adminRemove"
-	PrivilegedAccessGroupAssignmentActionAdminExtend    PrivilegedAccessGroupAssignmentAction = "adminExtend"
-	PrivilegedAccessGroupAssignmentActionAdminRenew     PrivilegedAccessGroupAssignmentAction = "adminRenew"
-	PrivilegedAccessGroupAssignmentActionSelfActivate   PrivilegedAccessGroupAssignmentAction = "selfActivate"
-	PrivilegedAccessGroupAssignmentActionSelfDeactivate PrivilegedAccessGroupAssignmentAction = "selfDeactivate"
 )
 
 type PrivilegedAccessGroupAssignmentStatus = string

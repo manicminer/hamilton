@@ -61,7 +61,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 
 	reqOwner := testPrivilegedAccessGroupAssignmentScheduleClient_RequestsCreate(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipOwner),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupAssignmentActionAdminAssign),
+		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
 		GroupId:       utils.StringPtr(pimGroupId),
 		PrincipalId:   userOwner.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -76,7 +76,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 
 	reqMemberUser := testPrivilegedAccessGroupAssignmentScheduleClient_RequestsCreate(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupAssignmentActionAdminAssign),
+		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
 		GroupId:       utils.StringPtr(pimGroupId),
 		PrincipalId:   userMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -91,7 +91,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 
 	reqMemberGroup := testPrivilegedAccessGroupAssignmentScheduleClient_RequestsCreate(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupAssignmentActionAdminAssign),
+		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
 		GroupId:       utils.StringPtr(pimGroupId),
 		PrincipalId:   groupMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
