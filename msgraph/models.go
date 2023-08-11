@@ -1353,6 +1353,51 @@ type PhoneAuthenticationMethod struct {
 	PhoneNumber *string                  `json:"phoneNumber,omitempty"`
 	PhoneType   *AuthenticationPhoneType `json:"phoneType,omitempty"`
 }
+
+type PrivilegedAccessGroupAssignmentSchedule struct {
+	ID               *string                              `json:"id,omitempty"`
+	AccessId         *PrivilegedAccessGroupRelationship   `json:"accessId,omitempty"`
+	AssignmentType   *PrivilegedAccessGroupAssignmentType `json:"assignmentType,omitempty"`
+	CreatedDateTime  *time.Time                           `json:"createdDateTime,omitempty"`
+	CreatedUsing     *string                              `json:"createdUsing,omitempty"`
+	GroupId          *string                              `json:"groupId,omitempty"`
+	MemberType       *PrivilegedAccessGroupMemberType     `json:"memberType,omitempty"`
+	ModifiedDateTime *time.Time                           `json:"modifiedDateTime,omitempty"`
+	PrincipalId      *string                              `json:"principalId,omitempty"`
+	ScheduleInfo     *RequestSchedule                     `json:"scheduleInfo,omitempty"`
+	Status           *string                              `json:"status,omitempty"`
+}
+
+type PrivilegedAccessGroupAssignmentScheduleInstance struct {
+	ID                   *string                              `json:"id,omitempty"`
+	AccessId             *PrivilegedAccessGroupRelationship   `json:"accessId,omitempty"`
+	AssignmentScheduleId *string                              `json:"assignmentScheduleId,omitempty"`
+	AssignmentType       *PrivilegedAccessGroupAssignmentType `json:"assignmentType,omitempty"`
+	EndDateTime          *time.Time                           `json:"createdDateTime,omitempty"`
+	GroupId              *string                              `json:"groupId,omitempty"`
+	MemberType           *PrivilegedAccessGroupMemberType     `json:"memberType,omitempty"`
+	PrincipalId          *string                              `json:"principalId,omitempty"`
+	StartDateTime        *time.Time                           `json:"startDateTime,omitempty"`
+}
+
+type PrivilegedAccessGroupAssignmentScheduleRequest struct {
+	ID                *string                                `json:"id,omitempty"`
+	AccessId          *PrivilegedAccessGroupRelationship     `json:"accessId,omitempty"`
+	Action            *PrivilegedAccessGroupAssignmentAction `json:"action,omitempty"`
+	ApprovalId        *string                                `json:"approvalId,omitempty"`
+	CompletedDateTime *time.Time                             `json:"completedDateTime,omitempty"`
+	CreatedDateTime   *time.Time                             `json:"createdDateTime,omitempty"`
+	CustomData        *string                                `json:"customData,omitempty"`
+	GroupId           *string                                `json:"groupId,omitempty"`
+	IsValidationOnly  *bool                                  `json:"isValidationOnly,omitempty"`
+	Justification     *string                                `json:"justification,omitempty"`
+	PrincipalId       *string                                `json:"principalId,omitempty"`
+	ScheduleInfo      *RequestSchedule                       `json:"scheduleInfo,omitempty"`
+	Status            *string                                `json:"status,omitempty"`
+	TargetScheduleId  *string                                `json:"targetScheduleId,omitempty"`
+	TicketInfo        *TicketInfo                            `json:"ticketInfo,omitempty"`
+}
+
 type PublicClient struct {
 	RedirectUris *[]string `json:"redirectUris,omitempty"`
 }
