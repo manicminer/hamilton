@@ -20,7 +20,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	if v := os.Getenv("PIM_GROUP_ID"); v != "" {
 		pimGroupId = v
 	} else {
-		pimGroupId = "8647a803-6803-46d6-bad4-bec15c5989d6"
+		pimGroupId = ""
 	}
 
 	now := time.Now()
