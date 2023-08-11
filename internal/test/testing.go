@@ -91,53 +91,55 @@ type Test struct {
 	Claims *claims.Claims
 	Token  *oauth2.Token
 
-	AccessPackageAssignmentPolicyClient            *msgraph.AccessPackageAssignmentPolicyClient
-	AccessPackageAssignmentRequestClient           *msgraph.AccessPackageAssignmentRequestClient
-	AccessPackageCatalogClient                     *msgraph.AccessPackageCatalogClient
-	AccessPackageClient                            *msgraph.AccessPackageClient
-	AccessPackageResourceClient                    *msgraph.AccessPackageResourceClient
-	AccessPackageResourceRequestClient             *msgraph.AccessPackageResourceRequestClient
-	AccessPackageResourceRoleScopeClient           *msgraph.AccessPackageResourceRoleScopeClient
-	AdministrativeUnitsClient                      *msgraph.AdministrativeUnitsClient
-	ApplicationTemplatesClient                     *msgraph.ApplicationTemplatesClient
-	ApplicationsClient                             *msgraph.ApplicationsClient
-	AppRoleAssignedToClient                        *msgraph.AppRoleAssignedToClient
-	AuthenticationMethodsClient                    *msgraph.AuthenticationMethodsClient
-	AuthenticationStrengthPoliciesClient           *msgraph.AuthenticationStrengthPoliciesClient
-	B2CUserFlowClient                              *msgraph.B2CUserFlowClient
-	ClaimsMappingPolicyClient                      *msgraph.ClaimsMappingPolicyClient
-	ConditionalAccessPoliciesClient                *msgraph.ConditionalAccessPoliciesClient
-	ConnectedOrganizationClient                    *msgraph.ConnectedOrganizationClient
-	DelegatedPermissionGrantsClient                *msgraph.DelegatedPermissionGrantsClient
-	DirectoryAuditReportsClient                    *msgraph.DirectoryAuditReportsClient
-	DirectoryObjectsClient                         *msgraph.DirectoryObjectsClient
-	DirectoryRoleTemplatesClient                   *msgraph.DirectoryRoleTemplatesClient
-	DirectoryRolesClient                           *msgraph.DirectoryRolesClient
-	DomainsClient                                  *msgraph.DomainsClient
-	EntitlementRoleAssignmentsClient               *msgraph.EntitlementRoleAssignmentsClient
-	EntitlementRoleDefinitionsClient               *msgraph.EntitlementRoleDefinitionsClient
-	GroupsAppRoleAssignmentsClient                 *msgraph.AppRoleAssignmentsClient
-	GroupsClient                                   *msgraph.GroupsClient
-	IdentityProvidersClient                        *msgraph.IdentityProvidersClient
-	InvitationsClient                              *msgraph.InvitationsClient
-	MeClient                                       *msgraph.MeClient
-	NamedLocationsClient                           *msgraph.NamedLocationsClient
-	PrivilegedAccessGroupEligibilityScheduleClient *msgraph.PrivilegedAccessGroupEligibilityScheduleClient
-	ReportsClient                                  *msgraph.ReportsClient
-	RoleAssignmentsClient                          *msgraph.RoleAssignmentsClient
-	RoleDefinitionsClient                          *msgraph.RoleDefinitionsClient
-	RoleEligibilityScheduleRequestClient           *msgraph.RoleEligibilityScheduleRequestClient
-	SchemaExtensionsClient                         *msgraph.SchemaExtensionsClient
-	ServicePrincipalsAppRoleAssignmentsClient      *msgraph.AppRoleAssignmentsClient
-	ServicePrincipalsClient                        *msgraph.ServicePrincipalsClient
-	SignInReportsClient                            *msgraph.SignInReportsClient
-	SynchronizationJobClient                       *msgraph.SynchronizationJobClient
-	TermsOfUseAgreementClient                      *msgraph.TermsOfUseAgreementClient
-	TokenIssuancePolicyClient                      *msgraph.TokenIssuancePolicyClient
-	UserFlowAttributesClient                       *msgraph.UserFlowAttributesClient
-	UsersAppRoleAssignmentsClient                  *msgraph.AppRoleAssignmentsClient
-	UsersClient                                    *msgraph.UsersClient
-	WindowsAutopilotDeploymentProfilesClient       *msgraph.WindowsAutopilotDeploymentProfilesClient
+	AccessPackageAssignmentPolicyClient                     *msgraph.AccessPackageAssignmentPolicyClient
+	AccessPackageAssignmentRequestClient                    *msgraph.AccessPackageAssignmentRequestClient
+	AccessPackageCatalogClient                              *msgraph.AccessPackageCatalogClient
+	AccessPackageClient                                     *msgraph.AccessPackageClient
+	AccessPackageResourceClient                             *msgraph.AccessPackageResourceClient
+	AccessPackageResourceRequestClient                      *msgraph.AccessPackageResourceRequestClient
+	AccessPackageResourceRoleScopeClient                    *msgraph.AccessPackageResourceRoleScopeClient
+	AdministrativeUnitsClient                               *msgraph.AdministrativeUnitsClient
+	ApplicationTemplatesClient                              *msgraph.ApplicationTemplatesClient
+	ApplicationsClient                                      *msgraph.ApplicationsClient
+	AppRoleAssignedToClient                                 *msgraph.AppRoleAssignedToClient
+	AuthenticationMethodsClient                             *msgraph.AuthenticationMethodsClient
+	AuthenticationStrengthPoliciesClient                    *msgraph.AuthenticationStrengthPoliciesClient
+	B2CUserFlowClient                                       *msgraph.B2CUserFlowClient
+	ClaimsMappingPolicyClient                               *msgraph.ClaimsMappingPolicyClient
+	ConditionalAccessPoliciesClient                         *msgraph.ConditionalAccessPoliciesClient
+	ConnectedOrganizationClient                             *msgraph.ConnectedOrganizationClient
+	DelegatedPermissionGrantsClient                         *msgraph.DelegatedPermissionGrantsClient
+	DirectoryAuditReportsClient                             *msgraph.DirectoryAuditReportsClient
+	DirectoryObjectsClient                                  *msgraph.DirectoryObjectsClient
+	DirectoryRoleTemplatesClient                            *msgraph.DirectoryRoleTemplatesClient
+	DirectoryRolesClient                                    *msgraph.DirectoryRolesClient
+	DomainsClient                                           *msgraph.DomainsClient
+	EntitlementRoleAssignmentsClient                        *msgraph.EntitlementRoleAssignmentsClient
+	EntitlementRoleDefinitionsClient                        *msgraph.EntitlementRoleDefinitionsClient
+	GroupsAppRoleAssignmentsClient                          *msgraph.AppRoleAssignmentsClient
+	GroupsClient                                            *msgraph.GroupsClient
+	IdentityProvidersClient                                 *msgraph.IdentityProvidersClient
+	InvitationsClient                                       *msgraph.InvitationsClient
+	MeClient                                                *msgraph.MeClient
+	NamedLocationsClient                                    *msgraph.NamedLocationsClient
+	PrivilegedAccessGroupEligibilityScheduleClient          *msgraph.PrivilegedAccessGroupEligibilityScheduleClient
+	PrivilegedAccessGroupEligibilityScheduleInstancesClient *msgraph.PrivilegedAccessGroupEligibilityScheduleInstancesClient
+	PrivilegedAccessGroupEligibilityScheduleRequestClient   *msgraph.PrivilegedAccessGroupEligibilityScheduleRequestClient
+	ReportsClient                                           *msgraph.ReportsClient
+	RoleAssignmentsClient                                   *msgraph.RoleAssignmentsClient
+	RoleDefinitionsClient                                   *msgraph.RoleDefinitionsClient
+	RoleEligibilityScheduleRequestClient                    *msgraph.RoleEligibilityScheduleRequestClient
+	SchemaExtensionsClient                                  *msgraph.SchemaExtensionsClient
+	ServicePrincipalsAppRoleAssignmentsClient               *msgraph.AppRoleAssignmentsClient
+	ServicePrincipalsClient                                 *msgraph.ServicePrincipalsClient
+	SignInReportsClient                                     *msgraph.SignInReportsClient
+	SynchronizationJobClient                                *msgraph.SynchronizationJobClient
+	TermsOfUseAgreementClient                               *msgraph.TermsOfUseAgreementClient
+	TokenIssuancePolicyClient                               *msgraph.TokenIssuancePolicyClient
+	UserFlowAttributesClient                                *msgraph.UserFlowAttributesClient
+	UsersAppRoleAssignmentsClient                           *msgraph.AppRoleAssignmentsClient
+	UsersClient                                             *msgraph.UsersClient
+	WindowsAutopilotDeploymentProfilesClient                *msgraph.WindowsAutopilotDeploymentProfilesClient
 }
 
 func NewTest(t *testing.T) (c *Test) {
@@ -350,6 +352,16 @@ func NewTest(t *testing.T) (c *Test) {
 	c.PrivilegedAccessGroupEligibilityScheduleClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.PrivilegedAccessGroupEligibilityScheduleClient.BaseClient.Endpoint = *endpoint
 	c.PrivilegedAccessGroupEligibilityScheduleClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.PrivilegedAccessGroupEligibilityScheduleInstancesClient = msgraph.NewPrivilegedAccessGroupEligibilityScheduleInstancesClient()
+	c.PrivilegedAccessGroupEligibilityScheduleInstancesClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.PrivilegedAccessGroupEligibilityScheduleInstancesClient.BaseClient.Endpoint = *endpoint
+	c.PrivilegedAccessGroupEligibilityScheduleInstancesClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.PrivilegedAccessGroupEligibilityScheduleRequestClient = msgraph.NewPrivilegedAccessGroupEligibilityScheduleRequestClient()
+	c.PrivilegedAccessGroupEligibilityScheduleRequestClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.PrivilegedAccessGroupEligibilityScheduleRequestClient.BaseClient.Endpoint = *endpoint
+	c.PrivilegedAccessGroupEligibilityScheduleRequestClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ReportsClient = msgraph.NewReportsClient()
 	c.ReportsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer

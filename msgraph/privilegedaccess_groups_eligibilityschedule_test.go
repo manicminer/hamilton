@@ -57,9 +57,9 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 	})
 	defer testUsersClient_Delete(t, c, *userOwner.ID())
 
-	testPrivilegedAccessGroupEligibilityScheduleClient_RequestsList(t, c)
+	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_List(t, c)
 
-	reqOwner := testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCreate(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
+	reqOwner := testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipOwner),
 		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
 		GroupId:       utils.StringPtr(pimGroupId),
@@ -74,7 +74,7 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 		},
 	})
 
-	reqMemberUser := testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCreate(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
+	reqMemberUser := testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
 		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
 		GroupId:       utils.StringPtr(pimGroupId),
@@ -89,7 +89,7 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 		},
 	})
 
-	reqMemberGroup := testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCreate(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
+	reqMemberGroup := testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
 		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
 		GroupId:       utils.StringPtr(pimGroupId),
@@ -104,9 +104,9 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 		},
 	})
 
-	testPrivilegedAccessGroupEligibilityScheduleClient_RequestsGet(t, c, *reqOwner.ID)
-	testPrivilegedAccessGroupEligibilityScheduleClient_RequestsGet(t, c, *reqMemberUser.ID)
-	testPrivilegedAccessGroupEligibilityScheduleClient_RequestsGet(t, c, *reqMemberGroup.ID)
+	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Get(t, c, *reqOwner.ID)
+	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Get(t, c, *reqMemberUser.ID)
+	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Get(t, c, *reqMemberGroup.ID)
 
 	schedules := testPrivilegedAccessGroupEligibilityScheduleClient_List(t, c, odata.Query{
 		Filter: fmt.Sprintf("groupId eq '%s'", pimGroupId),
@@ -115,15 +115,15 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 		testPrivilegedAccessGroupEligibilityScheduleClient_Get(t, c, *sch.ID)
 	}
 
-	instances := testPrivilegedAccessGroupEligibilityScheduleClient_InstancesList(t, c, odata.Query{
+	instances := testPrivilegedAccessGroupEligibilityScheduleInstancesClient_List(t, c, odata.Query{
 		Filter: fmt.Sprintf("groupId eq '%s'", pimGroupId),
 	})
 	for _, inst := range *instances {
-		testPrivilegedAccessGroupEligibilityScheduleClient_InstancesGet(t, c, *inst.ID)
+		testPrivilegedAccessGroupEligibilityScheduleInstancesClient_Get(t, c, *inst.ID)
 	}
 
-	testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCancel(t, c, *reqMemberUser.ID)
-	testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCancel(t, c, *reqMemberGroup.ID)
+	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Cancel(t, c, *reqMemberUser.ID)
+	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Cancel(t, c, *reqMemberGroup.ID)
 }
 
 func testPrivilegedAccessGroupEligibilityScheduleClient_List(t *testing.T, c *test.Test, query odata.Query) (schedules *[]msgraph.PrivilegedAccessGroupEligibilitySchedule) {
@@ -155,90 +155,4 @@ func testPrivilegedAccessGroupEligibilityScheduleClient_Get(t *testing.T, c *tes
 		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.Get(): PrivilegedAccessGroupEligibilitySchedule was nil")
 	}
 	return
-}
-
-func testPrivilegedAccessGroupEligibilityScheduleClient_InstancesList(t *testing.T, c *test.Test, query odata.Query) (instances *[]msgraph.PrivilegedAccessGroupEligibilityScheduleInstance) {
-	instances, status, err := c.PrivilegedAccessGroupEligibilityScheduleClient.InstancesList(c.Context, query)
-	if err != nil {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.InstancesList(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.InstancesList(): invalid status: %d", status)
-	}
-	if instances == nil {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.InstancesList(): PrivilegedAccessGroupEligibilitySchedule was nil")
-	}
-	if len(*instances) == 0 {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.List(): Returned zero results")
-	}
-	return
-}
-
-func testPrivilegedAccessGroupEligibilityScheduleClient_InstancesGet(t *testing.T, c *test.Test, id string) (request *msgraph.PrivilegedAccessGroupEligibilityScheduleInstance) {
-	request, status, err := c.PrivilegedAccessGroupEligibilityScheduleClient.InstancesGet(c.Context, id)
-	if err != nil {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.InstancesGet(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.InstancesGet(): invalid status: %d", status)
-	}
-	if request == nil {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.InstancesGet(): PrivilegedAccessGroupEligibilitySchedule was nil")
-	}
-	return
-}
-
-func testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCreate(t *testing.T, c *test.Test, r msgraph.PrivilegedAccessGroupEligibilityScheduleRequest) (request *msgraph.PrivilegedAccessGroupEligibilityScheduleRequest) {
-	request, status, err := c.PrivilegedAccessGroupEligibilityScheduleClient.RequestsCreate(c.Context, r)
-	if err != nil {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.Create(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.Create(): invalid status: %d", status)
-	}
-	if request == nil {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.Create(): PrivilegedAccessGroupEligibilityScheduleRequest was nil")
-	}
-	if request.ID == nil {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.Create(): PrivilegedAccessGroupEligibilityScheduleRequest.ID was nil")
-	}
-	return
-}
-
-func testPrivilegedAccessGroupEligibilityScheduleClient_RequestsList(t *testing.T, c *test.Test) (requests *[]msgraph.PrivilegedAccessGroupEligibilityScheduleRequest) {
-	requests, status, err := c.PrivilegedAccessGroupEligibilityScheduleClient.RequestsList(c.Context, odata.Query{})
-	if err != nil {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.List(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.List(): invalid status: %d", status)
-	}
-	if requests == nil {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.List(): PrivilegedAccessGroupEligibilityScheduleRequest was nil")
-	}
-	return
-}
-
-func testPrivilegedAccessGroupEligibilityScheduleClient_RequestsGet(t *testing.T, c *test.Test, id string) (request *msgraph.PrivilegedAccessGroupEligibilityScheduleRequest) {
-	request, status, err := c.PrivilegedAccessGroupEligibilityScheduleClient.RequestsGet(c.Context, id)
-	if err != nil {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.Get(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.Get(): invalid status: %d", status)
-	}
-	if request == nil {
-		t.Fatal("PrivilegedAccessGroupEligibilityScheduleClient.Get(): PrivilegedAccessGroupEligibilityScheduleRequest was nil")
-	}
-	return
-}
-
-func testPrivilegedAccessGroupEligibilityScheduleClient_RequestsCancel(t *testing.T, c *test.Test, id string) {
-	status, err := c.PrivilegedAccessGroupEligibilityScheduleClient.RequestsCancel(c.Context, id)
-	if err != nil {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.Cancel(): %v", err)
-	}
-	if status < 200 || status >= 300 {
-		t.Fatalf("PrivilegedAccessGroupEligibilityScheduleClient.Cancel(): invalid status: %d", status)
-	}
 }
