@@ -1,3 +1,7 @@
+## 0.64.0 (Unreleased)
+
+- Add the `UpdateAllowedCombinations()` method to `AuthenticationStrengthPoliciesClient` ([#257](https://github.com/manicminer/hamilton/pull/257))
+
 ## 0.63.0 (July 27, 2023)
 
 - Support for [Authentication Strength Policies](https://learn.microsoft.com/en-us/graph/api/resources/authenticationstrengthpolicy?view=graph-rest-1.0) ([#249](https://github.com/manicminer/hamilton/pull/249))
