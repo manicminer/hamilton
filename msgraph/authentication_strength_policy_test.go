@@ -27,6 +27,14 @@ func TestAuthenticationStrengthPolicyClient(t *testing.T) {
 	}
 	testAuthenticationStrengthPoliciesClient_Update(t, c, updatePolicy)
 
+	updateAllowedCombinations := msgraph.AuthenticationStrengthPolicy{
+		ID:                  policy.ID,
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.RandomString)),
+		AllowedCombinations: &[]string{"password, hardwareOath", "deviceBasedPush"},
+	}
+
+	testAuthenticationStrengthPoliciesClient_UpdateAllowedCombinations(t, c, updateAllowedCombinations)
+
 	testAuthenticationStrengthPoliciesClient_List(t, c)
 	testAuthenticationStrengthPoliciesClient_Get(t, c, *policy.ID)
 	testAuthenticationStrengthPoliciesClient_Delete(t, c, *policy.ID)
@@ -71,6 +79,16 @@ func testAuthenticationStrengthPoliciesClient_Update(t *testing.T, c *test.Test,
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("AuthenticationStrengthPolicyClient.Update(): invalid status: %d", status)
+	}
+}
+
+func testAuthenticationStrengthPoliciesClient_UpdateAllowedCombinations(t *testing.T, c *test.Test, policy msgraph.AuthenticationStrengthPolicy) {
+	status, err := c.AuthenticationStrengthPoliciesClient.UpdateAllowedCombinations(c.Context, policy)
+	if err != nil {
+		t.Fatalf("AuthenticationStrengthPolicyClient.UpdateAllowedCombinations(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("AuthenticationStrengthPolicyClient.UpdateAllowedCombinations(): invalid status: %d", status)
 	}
 }
 
