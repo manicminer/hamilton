@@ -2,6 +2,15 @@
 
 - Add the `UpdateAllowedCombinations()` method to `AuthenticationStrengthPoliciesClient` ([#257](https://github.com/manicminer/hamilton/pull/257))
 - Support for the `AppMetadata` field in the `ServicePrincipal` model ([#259](https://github.com/manicminer/hamilton/pull/259))
+- Add the `SetFallbackPublicClient()` method to `ApplicationsClient` ([#260](https://github.com/manicminer/hamilton/pull/260))
+
+⚠️ BREAKING CHANGES:
+
+- `InformationalUrl.LogoUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.MarketingUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.PrivacyStatementUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.SupportUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.TermsOfServiceUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
 
 ## 0.63.0 (July 27, 2023)
 
