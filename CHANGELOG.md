@@ -1,4 +1,4 @@
-## 0.64.0 (Unreleased)
+## 0.64.0 (October 18, 2023)
 
 - Add the `UpdateAllowedCombinations()` method to `AuthenticationStrengthPoliciesClient` ([#257](https://github.com/manicminer/hamilton/pull/257))
 - Support for the `AppMetadata` field in the `ServicePrincipal` model ([#259](https://github.com/manicminer/hamilton/pull/259))
