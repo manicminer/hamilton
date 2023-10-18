@@ -54,6 +54,12 @@ func TestApplicationsClient(t *testing.T) {
 	testApplicationsClient_ListExtension(t, c, *app.ID())
 	testApplicationsClient_DeleteExtension(t, c, extensionId, *app.ID())
 
+	testApplicationsClient_SetFallbackPublicClient(t, c, *app.ID(), utils.BoolPtr(true))
+	testApplicationsClient_SetFallbackPublicClient(t, c, *app.ID(), utils.BoolPtr(false))
+	testApplicationsClient_SetFallbackPublicClient(t, c, *app.ID(), nil)
+	testApplicationsClient_Get(t, c, *app.ID())
+
+	testApplicationsClient_Update(t, c, *app)
 	testApplicationsClient_Update(t, c, *app)
 
 	owners := testApplicationsClient_ListOwners(t, c, *app.ID())
@@ -125,6 +131,16 @@ func testApplicationsClient_Update(t *testing.T, c *test.Test, a msgraph.Applica
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ApplicationsClient.Update(): invalid status: %d", status)
+	}
+}
+
+func testApplicationsClient_SetFallbackPublicClient(t *testing.T, c *test.Test, appId string, fallbackPublicClient *bool) {
+	status, err := c.ApplicationsClient.SetFallbackPublicClient(c.Context, appId, fallbackPublicClient)
+	if err != nil {
+		t.Fatalf("ApplicationsClient.SetFallbackPublicClient(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ApplicationsClient.SetFallbackPublicClient(): invalid status: %d", status)
 	}
 }
 
