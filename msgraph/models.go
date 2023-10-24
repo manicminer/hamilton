@@ -699,8 +699,8 @@ type ConditionalAccessUsers struct {
 	ExcludeGroups                *[]string                               `json:"excludeGroups,omitempty"`
 	IncludeRoles                 *[]string                               `json:"includeRoles,omitempty"`
 	ExcludeRoles                 *[]string                               `json:"excludeRoles,omitempty"`
-	IncludeGuestsOrExternalUsers *ConditionalAccessGuestsOrExternalUsers `json:"includeGuestsOrExternalUsers,omitempty"`
-	ExcludeGuestsOrExternalUsers *ConditionalAccessGuestsOrExternalUsers `json:"excludeGuestsOrExternalUsers,omitempty"`
+	IncludeGuestsOrExternalUsers *ConditionalAccessGuestsOrExternalUsers `json:"includeGuestsOrExternalUsers"`
+	ExcludeGuestsOrExternalUsers *ConditionalAccessGuestsOrExternalUsers `json:"excludeGuestsOrExternalUsers"`
 }
 
 type ConditionalAccessGuestsOrExternalUsers struct {
