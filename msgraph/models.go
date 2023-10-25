@@ -704,7 +704,7 @@ type ConditionalAccessUsers struct {
 }
 
 type ConditionalAccessGuestsOrExternalUsers struct {
-	GuestOrExternalUserTypes *[]ConditionalAccessGuestOrExternalUserType `json:"guestOrExternalUserTypes,omitempty"`
+	GuestOrExternalUserTypes *[]ConditionalAccessGuestOrExternalUserType `json:"-"` // see ConditionalAccessGuestsOrExternalUsers.MarshalJSON / ConditionalAccessGuestsOrExternalUsers.UnmarshalJSON
 	ExternalTenants          *ConditionalAccessExternalTenants           `json:"externalTenants,omitempty"`
 }
 
