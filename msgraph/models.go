@@ -709,8 +709,9 @@ type ConditionalAccessGuestsOrExternalUsers struct {
 }
 
 type ConditionalAccessExternalTenants struct {
-	MembershipKind *string   `json:"membershipKind,omitempty"`
-	Members        *[]string `json:"members,omitempty"`
+	MembershipKind *ConditionalAccessExternalTenantsMembershipKind `json:"membershipKind,omitempty"`
+	Members        *[]string                                       `json:"members,omitempty"`
+
 }
 
 func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
