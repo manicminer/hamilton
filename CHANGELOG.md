@@ -1,3 +1,7 @@
+## 0.65.0 (Unreleased)
+
+- Support for configuring [GuestsOrExternalUsers](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccessusers?view=graph-rest-1.0) for Conditional Access Policies ([#262](https://github.com/manicminer/hamilton/pull/262))
+
 ## 0.64.0 (October 18, 2023)
 
 - Add the `UpdateAllowedCombinations()` method to `AuthenticationStrengthPoliciesClient` ([#257](https://github.com/manicminer/hamilton/pull/257))
