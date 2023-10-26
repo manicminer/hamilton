@@ -319,6 +319,14 @@ const (
 	CredentialUsageSummaryPeriod1  CredentialUsageSummaryPeriod = "D1"
 )
 
+type ConditionalAccessAuthenticationType = string
+
+const (
+	ConditionalAccessAuthenticationTypePrimaryAndSecondaryAuthentication ConditionalAccessAuthenticationType = "primaryAndSecondaryAuthentication"
+	ConditionalAccessAuthenticationTypeSecondaryAuthentication           ConditionalAccessAuthenticationType = "secondaryAuthentication"
+	ConditionalAccessAuthenticationTypeUnknownFutureValue                ConditionalAccessAuthenticationType = "unknownFutureValue"
+)
+
 type ConditionalAccessClientAppType = string
 
 const (
@@ -370,6 +378,21 @@ type ConditionalAccessFilterMode = string
 const (
 	ConditionalAccessFilterModeExclude ConditionalAccessFilterMode = "exclude"
 	ConditionalAccessFilterModeInclude ConditionalAccessFilterMode = "include"
+)
+
+type ConditionalAccessFrequencyInterval = string
+
+const (
+	ConditionalAccessFrequencyIntervalTimeBased          ConditionalAccessFrequencyInterval = "timeBased"
+	ConditionalAccessFrequencyIntervalEveryTime          ConditionalAccessFrequencyInterval = "everyTime"
+	ConditionalAccessFrequencyIntervalUnknownFutureValue ConditionalAccessFrequencyInterval = "unknownFutureValue"
+)
+
+type ConditionalAccessFrequencyType = string
+
+const (
+	ConditionalAccessFrequencyTypeDays  ConditionalAccessFrequencyType = "days"
+	ConditionalAccessFrequencyTypeHours ConditionalAccessFrequencyType = "hours"
 )
 
 type ConditionalAccessGrantControl = string

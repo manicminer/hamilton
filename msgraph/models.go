@@ -1641,9 +1641,11 @@ type SignInActivity struct {
 }
 
 type SignInFrequencySessionControl struct {
-	IsEnabled *bool   `json:"isEnabled,omitempty"`
-	Type      *string `json:"type,omitempty"`
-	Value     *int32  `json:"value,omitempty"`
+	AuthenticationType *ConditionalAccessAuthenticationType `json:"authenticationType,omitempty"`
+	FrequencyInterval  *ConditionalAccessFrequencyInterval  `json:"frequencyInterval,omitempty"`
+	IsEnabled          *bool                                `json:"isEnabled,omitempty"`
+	Type               *string                              `json:"type,omitempty"`
+	Value              *int32                               `json:"value,omitempty"`
 }
 
 type SignInReport struct {
