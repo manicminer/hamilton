@@ -36,10 +36,20 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 				IncludeApplications: &[]string{testAppId},
 			},
 			Users: &msgraph.ConditionalAccessUsers{
-				IncludeUsers:  &[]string{"All"},
-				ExcludeUsers:  &[]string{*testUser.ID(), "GuestsOrExternalUsers"},
+				ExcludeUsers:  &[]string{*testUser.ID()},
 				IncludeGroups: &[]string{*testIncGroup.ID()},
 				ExcludeGroups: &[]string{*testExcGroup.ID()},
+				IncludeGuestsOrExternalUsers: &msgraph.ConditionalAccessGuestsOrExternalUsers{
+					GuestOrExternalUserTypes: &[]msgraph.ConditionalAccessGuestOrExternalUserType{
+						msgraph.ConditionalAccessGuestOrExternalUserTypeB2bCollaborationGuest,
+						msgraph.ConditionalAccessGuestOrExternalUserTypeB2bCollaborationMember,
+						msgraph.ConditionalAccessGuestOrExternalUserTypeB2bDirectConnectUser,
+					},
+					ExternalTenants: &msgraph.ConditionalAccessExternalTenants{
+						MembershipKind: utils.StringPtr(msgraph.ConditionalAccessExternalTenantsMembershipKindAll),
+						Members:        nil,
+					},
+				},
 			},
 			Locations: &msgraph.ConditionalAccessLocations{
 				IncludeLocations: &[]string{"All"},
@@ -55,7 +65,9 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 		},
 	})
 
-	updatePolicy := msgraph.ConditionalAccessPolicy{
+	testConditionalAccessPolicysClient_Get(t, c, *policy.ID)
+
+	testConditionalAccessPolicysClient_Update(t, c, msgraph.ConditionalAccessPolicy{
 		ID:          policy.ID,
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.RandomString)),
 		Conditions: &msgraph.ConditionalAccessConditionSet{
@@ -78,11 +90,19 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 			Operator:        utils.StringPtr("OR"),
 			BuiltInControls: &[]string{"block"},
 		},
-	}
-	testConditionalAccessPolicysClient_Update(t, c, updatePolicy)
+		SessionControls: &msgraph.ConditionalAccessSessionControls{
+			SignInFrequency: &msgraph.SignInFrequencySessionControl{
+				AuthenticationType: utils.StringPtr(msgraph.ConditionalAccessAuthenticationTypePrimaryAndSecondaryAuthentication),
+				FrequencyInterval:  utils.StringPtr(msgraph.ConditionalAccessFrequencyIntervalTimeBased),
+				IsEnabled:          utils.BoolPtr(true),
+				Type:               utils.StringPtr(msgraph.ConditionalAccessFrequencyTypeHours),
+				Value:              utils.Int32Ptr(6),
+			},
+		},
+	})
 
-	testConditionalAccessPolicysClient_List(t, c)
 	testConditionalAccessPolicysClient_Get(t, c, *policy.ID)
+	testConditionalAccessPolicysClient_List(t, c)
 	testConditionalAccessPolicysClient_Delete(t, c, *policy.ID)
 
 	testGroup_Delete(t, c, testIncGroup)
