@@ -628,7 +628,7 @@ type ConditionalAccessConditionSet struct {
 	Applications               *ConditionalAccessApplications       `json:"applications,omitempty"`
 	ClientApplications         *ConditionalAccessClientApplications `json:"clientApplications,omitempty"`
 	ClientAppTypes             *[]ConditionalAccessClientAppType    `json:"clientAppTypes,omitempty"`
-	Devices                    *ConditionalAccessDevices            `json:"devices,omitempty"`
+	Devices                    *ConditionalAccessDevices            `json:"devices"`
 	DeviceStates               *ConditionalAccessDeviceStates       `json:"deviceStates,omitempty"`
 	Locations                  *ConditionalAccessLocations          `json:"locations"`
 	Platforms                  *ConditionalAccessPlatforms          `json:"platforms"`
@@ -711,7 +711,6 @@ type ConditionalAccessGuestsOrExternalUsers struct {
 type ConditionalAccessExternalTenants struct {
 	MembershipKind *ConditionalAccessExternalTenantsMembershipKind `json:"membershipKind,omitempty"`
 	Members        *[]string                                       `json:"members,omitempty"`
-
 }
 
 func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
