@@ -1,7 +1,6 @@
 package msgraph_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -200,24 +199,15 @@ func testUser_Delete(t *testing.T, c *test.Test, user *msgraph.User) {
 	}
 }
 
-func assertJsonMarshalEquals(t *testing.T, value interface{}, expected string) {
-	bytes, err := json.MarshalIndent(value, "", "  ")
-	if err != nil {
-		t.Fatalf("Marshalling failed with error %s", err)
-	}
-	actual := string(bytes)
-	if actual != expected {
-		t.Errorf("Expected marshalled json to equal %s but was %s", expected, actual)
-	}
-}
-
 func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersNull(t *testing.T) {
 	usersCondition := &msgraph.ConditionalAccessUsers{}
 	expected := `{
   "includeGuestsOrExternalUsers": null,
   "excludeGuestsOrExternalUsers": null
 }`
-	assertJsonMarshalEquals(t, usersCondition, expected)
+	if err := test.AssertJsonMarshalEquals(usersCondition, expected); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersAll(t *testing.T) {
@@ -242,7 +232,9 @@ func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersAll(
   },
   "excludeGuestsOrExternalUsers": null
 }`
-	assertJsonMarshalEquals(t, usersCondition, expected)
+	if err := test.AssertJsonMarshalEquals(usersCondition, expected); err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersEnumerated(t *testing.T) {
@@ -272,5 +264,7 @@ func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersEnum
   },
   "excludeGuestsOrExternalUsers": null
 }`
-	assertJsonMarshalEquals(t, usersCondition, expected)
+	if err := test.AssertJsonMarshalEquals(usersCondition, expected); err != nil {
+		t.Fatal(err)
+	}
 }

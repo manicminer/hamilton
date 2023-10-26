@@ -732,26 +732,14 @@ func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
 		conditionalAccessGuestsOrExternalUsers: (*conditionalAccessGuestsOrExternalUsers)(&c),
 	}
 
-	const externalTenantsTypeAll = "#microsoft.graph.conditionalAccessAllExternalTenants"
-	const externalTenantsTypeEnumerated = "#microsoft.graph.conditionalAccessEnumeratedExternalTenants"
-	setExternalTenantsObjectType := func(c *conditionalAccessGuestsOrExternalUsers) {
-		if c == nil {
-			return
-		}
-		if c.ExternalTenants == nil {
-			return
-		}
-		if c.ExternalTenants.MembershipKind == nil {
-			return
-		}
+	if c.ExternalTenants != nil && c.ExternalTenants.MembershipKind != nil {
 		switch *c.ExternalTenants.MembershipKind {
 		case ConditionalAccessExternalTenantsMembershipKindAll:
-			c.ExternalTenants.ODataType = utils.StringPtr(externalTenantsTypeAll)
+			c.ExternalTenants.ODataType = utils.StringPtr("#microsoft.graph.conditionalAccessAllExternalTenants")
 		case ConditionalAccessExternalTenantsMembershipKindEnumerated:
-			c.ExternalTenants.ODataType = utils.StringPtr(externalTenantsTypeEnumerated)
+			c.ExternalTenants.ODataType = utils.StringPtr("#microsoft.graph.conditionalAccessEnumeratedExternalTenants")
 		}
 	}
-	setExternalTenantsObjectType(guestOrExternalUsers.conditionalAccessGuestsOrExternalUsers)
 
 	buf, err := json.Marshal(&guestOrExternalUsers)
 	return buf, err
