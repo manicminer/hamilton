@@ -1,6 +1,7 @@
 ## 0.65.0 (Unreleased)
 
 - Support for configuring [GuestsOrExternalUsers](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccessusers?view=graph-rest-1.0) for Conditional Access Policies ([#262](https://github.com/manicminer/hamilton/pull/262))
+- Support for the `AuthenticationType` and `FrequencyInterval` fields in the `SignInFrequencySessionControl` model ([#263](https://github.com/manicminer/hamilton/pull/263))
 
 ## 0.64.0 (October 18, 2023)
 
