@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -197,4 +198,79 @@ func testUser_Delete(t *testing.T, c *test.Test, user *msgraph.User) {
 	if err != nil {
 		t.Fatalf("UsersClient.Delete() - Could not delete test user: %v", err)
 	}
+}
+
+func assertJsonMarshalEquals(t *testing.T, value interface{}, expected string) {
+	bytes, err := json.MarshalIndent(value, "", "  ")
+	if err != nil {
+		t.Fatalf("Marshalling failed with error %s", err)
+	}
+	actual := string(bytes)
+	if actual != expected {
+		t.Errorf("Expected marshalled json to equal %s but was %s", expected, actual)
+	}
+}
+
+func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersNull(t *testing.T) {
+	usersCondition := &msgraph.ConditionalAccessUsers{}
+	expected := `{
+  "includeGuestsOrExternalUsers": null,
+  "excludeGuestsOrExternalUsers": null
+}`
+	assertJsonMarshalEquals(t, usersCondition, expected)
+}
+
+func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersAll(t *testing.T) {
+	usersCondition := &msgraph.ConditionalAccessUsers{
+		IncludeGuestsOrExternalUsers: &msgraph.ConditionalAccessGuestsOrExternalUsers{
+			GuestOrExternalUserTypes: &[]string{
+				msgraph.ConditionalAccessGuestOrExternalUserTypeInternalGuest,
+				msgraph.ConditionalAccessGuestOrExternalUserTypeServiceProvider,
+			},
+			ExternalTenants: &msgraph.ConditionalAccessExternalTenants{
+				MembershipKind: utils.StringPtr(msgraph.ConditionalAccessExternalTenantsMembershipKindAll),
+			},
+		},
+	}
+	expected := `{
+  "includeGuestsOrExternalUsers": {
+    "guestOrExternalUserTypes": "internalGuest,serviceProvider",
+    "externalTenants": {
+      "@odata.type": "#microsoft.graph.conditionalAccessAllExternalTenants",
+      "membershipKind": "all"
+    }
+  },
+  "excludeGuestsOrExternalUsers": null
+}`
+	assertJsonMarshalEquals(t, usersCondition, expected)
+}
+
+func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersEnumerated(t *testing.T) {
+	usersCondition := &msgraph.ConditionalAccessUsers{
+		IncludeGuestsOrExternalUsers: &msgraph.ConditionalAccessGuestsOrExternalUsers{
+			GuestOrExternalUserTypes: &[]string{
+				msgraph.ConditionalAccessGuestOrExternalUserTypeInternalGuest,
+				msgraph.ConditionalAccessGuestOrExternalUserTypeServiceProvider,
+			},
+			ExternalTenants: &msgraph.ConditionalAccessExternalTenants{
+				MembershipKind: utils.StringPtr(msgraph.ConditionalAccessExternalTenantsMembershipKindEnumerated),
+				Members:        &[]string{"member-a", "member-b"},
+			},
+		},
+	}
+	expected := `{
+  "includeGuestsOrExternalUsers": {
+    "guestOrExternalUserTypes": "internalGuest,serviceProvider",
+    "externalTenants": {
+      "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
+      "membershipKind": "enumerated",
+      "members": [
+        "member-a",
+        "member-b"
+      ]
+    }
+  },
+  "excludeGuestsOrExternalUsers": null
+}`
+	assertJsonMarshalEquals(t, usersCondition, expected)
 }

@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/errors"
+	"github.com/manicminer/hamilton/internal/utils"
 )
 
 type AccessPackage struct {
@@ -709,9 +710,9 @@ type ConditionalAccessGuestsOrExternalUsers struct {
 }
 
 type ConditionalAccessExternalTenants struct {
+	ODataType      *odata.Type                                     `json:"@odata.type,omitempty"`
 	MembershipKind *ConditionalAccessExternalTenantsMembershipKind `json:"membershipKind,omitempty"`
 	Members        *[]string                                       `json:"members,omitempty"`
-
 }
 
 func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
@@ -730,6 +731,28 @@ func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
 		GuestOrExternalUserTypes:               val,
 		conditionalAccessGuestsOrExternalUsers: (*conditionalAccessGuestsOrExternalUsers)(&c),
 	}
+
+	const externalTenantsTypeAll = "#microsoft.graph.conditionalAccessAllExternalTenants"
+	const externalTenantsTypeEnumerated = "#microsoft.graph.conditionalAccessEnumeratedExternalTenants"
+	setExternalTenantsObjectType := func(c *conditionalAccessGuestsOrExternalUsers) {
+		if c == nil {
+			return
+		}
+		if c.ExternalTenants == nil {
+			return
+		}
+		if c.ExternalTenants.MembershipKind == nil {
+			return
+		}
+		switch *c.ExternalTenants.MembershipKind {
+		case ConditionalAccessExternalTenantsMembershipKindAll:
+			c.ExternalTenants.ODataType = utils.StringPtr(externalTenantsTypeAll)
+		case ConditionalAccessExternalTenantsMembershipKindEnumerated:
+			c.ExternalTenants.ODataType = utils.StringPtr(externalTenantsTypeEnumerated)
+		}
+	}
+	setExternalTenantsObjectType(guestOrExternalUsers.conditionalAccessGuestsOrExternalUsers)
+
 	buf, err := json.Marshal(&guestOrExternalUsers)
 	return buf, err
 }
