@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/errors"
+	"github.com/manicminer/hamilton/internal/utils"
 )
 
 type AccessPackage struct {
@@ -709,6 +710,7 @@ type ConditionalAccessGuestsOrExternalUsers struct {
 }
 
 type ConditionalAccessExternalTenants struct {
+	ODataType      *odata.Type                                     `json:"@odata.type,omitempty"`
 	MembershipKind *ConditionalAccessExternalTenantsMembershipKind `json:"membershipKind,omitempty"`
 	Members        *[]string                                       `json:"members,omitempty"`
 }
@@ -729,6 +731,16 @@ func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
 		GuestOrExternalUserTypes:               val,
 		conditionalAccessGuestsOrExternalUsers: (*conditionalAccessGuestsOrExternalUsers)(&c),
 	}
+
+	if c.ExternalTenants != nil && c.ExternalTenants.MembershipKind != nil {
+		switch *c.ExternalTenants.MembershipKind {
+		case ConditionalAccessExternalTenantsMembershipKindAll:
+			c.ExternalTenants.ODataType = utils.StringPtr("#microsoft.graph.conditionalAccessAllExternalTenants")
+		case ConditionalAccessExternalTenantsMembershipKindEnumerated:
+			c.ExternalTenants.ODataType = utils.StringPtr("#microsoft.graph.conditionalAccessEnumeratedExternalTenants")
+		}
+	}
+
 	buf, err := json.Marshal(&guestOrExternalUsers)
 	return buf, err
 }
