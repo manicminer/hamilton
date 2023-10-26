@@ -693,12 +693,67 @@ type ConditionalAccessSessionControls struct {
 }
 
 type ConditionalAccessUsers struct {
-	IncludeUsers  *[]string `json:"includeUsers,omitempty"`
-	ExcludeUsers  *[]string `json:"excludeUsers,omitempty"`
-	IncludeGroups *[]string `json:"includeGroups,omitempty"`
-	ExcludeGroups *[]string `json:"excludeGroups,omitempty"`
-	IncludeRoles  *[]string `json:"includeRoles,omitempty"`
-	ExcludeRoles  *[]string `json:"excludeRoles,omitempty"`
+	IncludeUsers                 *[]string                               `json:"includeUsers,omitempty"`
+	ExcludeUsers                 *[]string                               `json:"excludeUsers,omitempty"`
+	IncludeGroups                *[]string                               `json:"includeGroups,omitempty"`
+	ExcludeGroups                *[]string                               `json:"excludeGroups,omitempty"`
+	IncludeRoles                 *[]string                               `json:"includeRoles,omitempty"`
+	ExcludeRoles                 *[]string                               `json:"excludeRoles,omitempty"`
+	IncludeGuestsOrExternalUsers *ConditionalAccessGuestsOrExternalUsers `json:"includeGuestsOrExternalUsers"`
+	ExcludeGuestsOrExternalUsers *ConditionalAccessGuestsOrExternalUsers `json:"excludeGuestsOrExternalUsers"`
+}
+
+type ConditionalAccessGuestsOrExternalUsers struct {
+	GuestOrExternalUserTypes *[]ConditionalAccessGuestOrExternalUserType `json:"-"` // see ConditionalAccessGuestsOrExternalUsers.MarshalJSON / ConditionalAccessGuestsOrExternalUsers.UnmarshalJSON
+	ExternalTenants          *ConditionalAccessExternalTenants           `json:"externalTenants,omitempty"`
+}
+
+type ConditionalAccessExternalTenants struct {
+	MembershipKind *ConditionalAccessExternalTenantsMembershipKind `json:"membershipKind,omitempty"`
+	Members        *[]string                                       `json:"members,omitempty"`
+
+}
+
+func (c ConditionalAccessGuestsOrExternalUsers) MarshalJSON() ([]byte, error) {
+	var val *StringNullWhenEmpty
+	if c.GuestOrExternalUserTypes != nil {
+		theTypes := StringNullWhenEmpty(strings.Join(*c.GuestOrExternalUserTypes, ","))
+		val = &theTypes
+	}
+
+	// Local type needed to avoid recursive MarshalJSON calls
+	type conditionalAccessGuestsOrExternalUsers ConditionalAccessGuestsOrExternalUsers
+	guestOrExternalUsers := struct {
+		GuestOrExternalUserTypes *StringNullWhenEmpty `json:"guestOrExternalUserTypes,omitempty"`
+		*conditionalAccessGuestsOrExternalUsers
+	}{
+		GuestOrExternalUserTypes:               val,
+		conditionalAccessGuestsOrExternalUsers: (*conditionalAccessGuestsOrExternalUsers)(&c),
+	}
+	buf, err := json.Marshal(&guestOrExternalUsers)
+	return buf, err
+}
+
+func (c *ConditionalAccessGuestsOrExternalUsers) UnmarshalJSON(data []byte) error {
+	// Local type needed to avoid recursive UnmarshalJSON calls
+	type conditionalAccessGuestsOrExternalUsers ConditionalAccessGuestsOrExternalUsers
+	guestOrExternalUsers := struct {
+		GuestOrExternalUserTypes *string `json:"guestOrExternalUserTypes"`
+		*conditionalAccessGuestsOrExternalUsers
+	}{
+		conditionalAccessGuestsOrExternalUsers: (*conditionalAccessGuestsOrExternalUsers)(c),
+	}
+	if err := json.Unmarshal(data, &guestOrExternalUsers); err != nil {
+		return err
+	}
+	if guestOrExternalUsers.GuestOrExternalUserTypes != nil {
+		var types []string
+		for _, s := range strings.Split(*guestOrExternalUsers.GuestOrExternalUserTypes, ",") {
+			types = append(types, strings.TrimSpace(s))
+		}
+		c.GuestOrExternalUserTypes = &types
+	}
+	return nil
 }
 
 type ConnectionInfo struct {

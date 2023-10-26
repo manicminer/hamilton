@@ -404,6 +404,27 @@ const (
 	ConditionalAccessRiskLevelUnknownFutureValue ConditionalAccessRiskLevel = "unknownFutureValue"
 )
 
+type ConditionalAccessGuestOrExternalUserType = string
+
+const (
+	ConditionalAccessGuestOrExternalUserTypeNone                   ConditionalAccessGuestOrExternalUserType = "none"
+	ConditionalAccessGuestOrExternalUserTypeInternalGuest          ConditionalAccessGuestOrExternalUserType = "internalGuest"
+	ConditionalAccessGuestOrExternalUserTypeB2bCollaborationGuest  ConditionalAccessGuestOrExternalUserType = "b2bCollaborationGuest"
+	ConditionalAccessGuestOrExternalUserTypeB2bCollaborationMember ConditionalAccessGuestOrExternalUserType = "b2bCollaborationMember"
+	ConditionalAccessGuestOrExternalUserTypeB2bDirectConnectUser   ConditionalAccessGuestOrExternalUserType = "b2bDirectConnectUser"
+	ConditionalAccessGuestOrExternalUserTypeOtherExternalUser      ConditionalAccessGuestOrExternalUserType = "otherExternalUser"
+	ConditionalAccessGuestOrExternalUserTypeServiceProvider        ConditionalAccessGuestOrExternalUserType = "serviceProvider"
+	ConditionalAccessGuestOrExternalUserTypeUnknownFutureValue     ConditionalAccessGuestOrExternalUserType = "unknownFutureValue"
+)
+
+type ConditionalAccessExternalTenantsMembershipKind = string
+
+const (
+	ConditionalAccessExternalTenantsMembershipKindAll                ConditionalAccessExternalTenantsMembershipKind = "all"
+	ConditionalAccessExternalTenantsMembershipKindEnumerated         ConditionalAccessExternalTenantsMembershipKind = "enumerated"
+	ConditionalAccessExternalTenantsMembershipKindUnknownFutureValue ConditionalAccessExternalTenantsMembershipKind = "unknownFutureValue"
+)
+
 type ConnectedOrganizationState = string
 
 const (
