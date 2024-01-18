@@ -146,7 +146,7 @@ func NewTest(t *testing.T) (c *Test) {
 	if deadline, ok := t.Deadline(); ok {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
 	} else {
-		ctx, cancel = context.WithTimeout(ctx, 5*time.Minute)
+		ctx, cancel = context.WithTimeout(ctx, 50*time.Minute)
 	}
 
 	c = &Test{

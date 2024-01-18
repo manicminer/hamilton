@@ -10,6 +10,8 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
+const childGroupCount = 1200
+
 func TestUsersClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
@@ -39,27 +41,37 @@ func TestUsersClient(t *testing.T) {
 	})
 	testUsersClient_Get(t, c, *manager.ID())
 
-	groupParent := testGroupsClient_Create(t, c, msgraph.Group{
+	parentGroup := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-parent-users"),
 		MailEnabled:     utils.BoolPtr(false),
 		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-parent-%s", c.RandomString)),
 		SecurityEnabled: utils.BoolPtr(true),
 	})
-	groupChild := testGroupsClient_Create(t, c, msgraph.Group{
-		DisplayName:     utils.StringPtr("test-group-child-users"),
-		MailEnabled:     utils.BoolPtr(false),
-		MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-%s", c.RandomString)),
-		SecurityEnabled: utils.BoolPtr(true),
-	})
 
-	groupParent.Members = &msgraph.Members{groupChild.DirectoryObject}
-	testGroupsClient_AddMembers(t, c, groupParent)
-	groupChild.Members = &msgraph.Members{user.DirectoryObject}
-	testGroupsClient_AddMembers(t, c, groupChild)
+	childGroupIds := []string{}
+	for i := 0; i < childGroupCount; i++ {
+		childGroup := testGroupsClient_Create(t, c, msgraph.Group{
+			DisplayName:     utils.StringPtr(fmt.Sprintf("test-group-child-users-%d", i)),
+			MailEnabled:     utils.BoolPtr(false),
+			MailNickname:    utils.StringPtr(fmt.Sprintf("test-group-child-users-%d-%s", i, c.RandomString)),
+			SecurityEnabled: utils.BoolPtr(true),
+		})
 
-	testUsersClient_ListGroupMemberships(t, c, *user.ID())
-	testGroupsClient_Delete(t, c, *groupParent.ID())
-	testGroupsClient_Delete(t, c, *groupChild.ID())
+		parentGroup.Members = &msgraph.Members{childGroup.DirectoryObject}
+		testGroupsClient_AddMembers(t, c, parentGroup)
+
+		childGroup.Members = &msgraph.Members{user.DirectoryObject}
+		testGroupsClient_AddMembers(t, c, childGroup)
+
+		childGroupIds = append(childGroupIds, *childGroup.ID())
+	}
+
+	testUsersClient_ListGroupMemberships(t, c, *user.ID(), childGroupIds)
+
+	testGroupsClient_Delete(t, c, *parentGroup.ID())
+	for _, id := range childGroupIds {
+		testGroupsClient_Delete(t, c, id)
+	}
 
 	testUsersClient_AssignManager(t, c, *user.ID(), *manager)
 	testUsersClient_GetManager(t, c, *user.ID())
@@ -160,7 +172,7 @@ func testUsersClient_DeletePermanently(t *testing.T, c *test.Test, id string) {
 	}
 }
 
-func testUsersClient_ListGroupMemberships(t *testing.T, c *test.Test, id string) (groups *[]msgraph.Group) {
+func testUsersClient_ListGroupMemberships(t *testing.T, c *test.Test, id string, expected []string) (groups *[]msgraph.Group) {
 	groups, _, err := c.UsersClient.ListGroupMemberships(c.Context, id, odata.Query{})
 	if err != nil {
 		t.Fatalf("UsersClient.ListGroupMemberships(): %v", err)
@@ -170,8 +182,15 @@ func testUsersClient_ListGroupMemberships(t *testing.T, c *test.Test, id string)
 		t.Fatal("UsersClient.ListGroupMemberships(): groups was nil")
 	}
 
-	if len(*groups) != 2 {
-		t.Fatalf("UsersClient.ListGroupMemberships(): expected groups length 2. was: %d", len(*groups))
+	actualGroupIds := map[string]bool{}
+	for _, group := range *groups {
+		actualGroupIds[*group.ID()] = true
+	}
+
+	for _, expectedId := range expected {
+		if !actualGroupIds[expectedId] {
+			t.Fatalf("UsersClient.ListGroupMemberships(): expected group %q in result", expectedId)
+		}
 	}
 
 	return
