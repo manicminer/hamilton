@@ -128,6 +128,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 	var resp *http.Response
 	var o *OData
 	var result interface{}
+	var nextLink *odata.Link
 	var err error
 
 	var reqBody []byte
@@ -144,7 +145,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 				return true, nil
 			}
 
-			o, result, _, err = FasterFromResponse(resp, resultType)
+			o, result, nextLink, err = FasterFromResponse(resp, resultType)
 			if err != nil {
 				return false, err
 			}
@@ -173,6 +174,9 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 	if err != nil {
 		return status, nil, nil, err
 	}
+	if resp == nil {
+		return status, nil, nil, fmt.Errorf("nil response received")
+	}
 
 	if c.ResponseMiddlewares != nil {
 		for _, m := range *c.ResponseMiddlewares {
@@ -182,14 +186,6 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 			}
 			resp = r
 		}
-	}
-
-	o, result, nextLink, err := FasterFromResponse(resp, resultType)
-	if err != nil {
-		return status, nil, nil, err
-	}
-	if resp == nil {
-		return status, nil, nil, fmt.Errorf("nil response received")
 	}
 
 	status = resp.StatusCode
