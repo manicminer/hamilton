@@ -30,6 +30,9 @@ type OData struct {
 	Error *odata.Error `json:"-"`
 
 	Value json.RawMessage `json:"value"`
+
+	InternalError1 json.RawMessage `json:"error"`
+	InternalError2 json.RawMessage `json:"odata.error"`
 }
 
 func (o *OData) UnmarshalJSON(data []byte) error {
@@ -41,21 +44,22 @@ func (o *OData) UnmarshalJSON(data []byte) error {
 	}
 	*o = OData(o2)
 
-	// Look for errors in the "error" and "odata.error" fields
-	var e map[string]json.RawMessage
-	if err := json.Unmarshal(data, &e); err != nil {
-		return err
-	}
-	for _, k := range []string{"error", "odata.error"} {
-		if v, ok := e[k]; ok {
-			var e2 odata.Error
-			if err := json.Unmarshal(v, &e2); err != nil {
-				return err
-			}
-			o.Error = &e2
-			break
+	// Look for errors in the "error" and "odata.error" fields, unmarshal separately if any
+	if o.InternalError1 != nil {
+		var e odata.Error
+		if err := json.Unmarshal(o.InternalError1, &e); err != nil {
+			return err
 		}
+		o.Error = &e
 	}
+	if o.InternalError2 != nil {
+		var e odata.Error
+		if err := json.Unmarshal(o.InternalError2, &e); err != nil {
+			return err
+		}
+		o.Error = &e
+	}
+
 	return nil
 }
 
