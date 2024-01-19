@@ -13,6 +13,40 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 )
 
+// FasterFromResponse parses an http.Response and returns an unmarshaled OData
+// If no odata is present in the response, or the content type is invalid, returns nil
+func FasterFromResponse(resp *http.Response) (*odata.OData, error) {
+	if resp == nil {
+		return nil, nil
+	}
+
+	var o odata.OData
+
+	// Check for json content before looking for odata metadata
+	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
+	if strings.HasPrefix(contentType, "application/json") {
+		// Read the response body and close it
+		respBody, err := io.ReadAll(resp.Body)
+		resp.Body.Close()
+
+		// Always reassign the response body
+		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
+
+		if err != nil {
+			return nil, fmt.Errorf("could not read response body: %s", err)
+		}
+
+		// Unmarshal odata
+		if err := json.Unmarshal(respBody, &o); err != nil {
+			return nil, err
+		}
+
+		return &o, nil
+	}
+
+	return nil, nil
+}
+
 // fasterPerformRequest is used by the package to send an HTTP request to the API.
 func (c Client) fasterPerformRequest(req *http.Request, input HttpRequestInput) (*http.Response, int, *odata.OData, error) {
 	var status int
@@ -51,7 +85,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input HttpRequestInput) 
 				return true, nil
 			}
 
-			o, err = odata.FromResponse(resp)
+			o, err = FasterFromResponse(resp)
 			if err != nil {
 				return false, err
 			}
@@ -91,7 +125,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input HttpRequestInput) 
 		}
 	}
 
-	o, err = odata.FromResponse(resp)
+	o, err = FasterFromResponse(resp)
 	if err != nil {
 		return nil, status, o, err
 	}
