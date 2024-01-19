@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
@@ -28,7 +29,7 @@ type OData struct {
 
 	Error *odata.Error `json:"-"`
 
-	Value interface{} `json:"value"`
+	Value json.RawMessage `json:"value"`
 }
 
 func (o *OData) UnmarshalJSON(data []byte) error {
@@ -58,11 +59,13 @@ func (o *OData) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// FasterFromResponse parses an http.Response and returns an unmarshaled OData
-// If no odata is present in the response, or the content type is invalid, returns nil
-func FasterFromResponse(resp *http.Response) (*OData, error) {
+// FasterFromResponse parses an http.Response and returns:
+// - unmarshaled OData (if no odata is present in the response, or the content type is invalid, returns nil)
+// - unmarshaled result (as pointer to the specified resultType, normally a slice of structs)
+// - link to the next page (if present)
+func FasterFromResponse(resp *http.Response, resultType reflect.Type) (*OData, interface{}, *odata.Link, error) {
 	if resp == nil {
-		return nil, nil
+		return nil, nil, nil, nil
 	}
 
 	var o OData
@@ -78,22 +81,28 @@ func FasterFromResponse(resp *http.Response) (*OData, error) {
 		resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
 
 		if err != nil {
-			return nil, fmt.Errorf("could not read response body: %s", err)
+			return nil, nil, nil, fmt.Errorf("could not read response body: %s", err)
 		}
 
 		// Unmarshal odata
 		if err := json.Unmarshal(respBody, &o); err != nil {
-			return nil, err
+			return nil, nil, nil, err
 		}
 
-		return &o, nil
+		// Unmarshal result
+		result := reflect.New(resultType).Interface()
+		if err := json.Unmarshal(o.Value, result); err != nil {
+			return nil, nil, nil, err
+		}
+
+		return &o, result, o.NextLink, nil
 	}
 
-	return nil, nil
+	return nil, nil, nil, nil
 }
 
 // fasterPerformRequest is used by the package to send an HTTP request to the API.
-func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpRequestInput) (*http.Response, int, *OData, error) {
+func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpRequestInput, resultType reflect.Type) (int, interface{}, *odata.Link, error) {
 	var status int
 
 	query := input.GetOData()
@@ -103,7 +112,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 	if c.Authorizer != nil {
 		token, err := c.Authorizer.Token(req.Context(), req)
 		if err != nil {
-			return nil, status, nil, err
+			return status, nil, nil, err
 		}
 		token.SetAuthHeader(req)
 	}
@@ -114,13 +123,14 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 
 	var resp *http.Response
 	var o *OData
+	var result interface{}
 	var err error
 
 	var reqBody []byte
 	if req.Body != nil {
 		reqBody, err = io.ReadAll(req.Body)
 		if err != nil {
-			return nil, status, nil, fmt.Errorf("reading request body: %v", err)
+			return status, nil, nil, fmt.Errorf("reading request body: %v", err)
 		}
 	}
 
@@ -130,7 +140,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 				return true, nil
 			}
 
-			o, err = FasterFromResponse(resp)
+			o, result, _, err = FasterFromResponse(resp, resultType)
 			if err != nil {
 				return false, err
 			}
@@ -149,7 +159,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 		for _, m := range *c.RequestMiddlewares {
 			r, err := m(req)
 			if err != nil {
-				return nil, status, nil, err
+				return status, nil, nil, err
 			}
 			req = r
 		}
@@ -157,32 +167,32 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 
 	resp, err = c.HttpClient.Do(req)
 	if err != nil {
-		return nil, status, nil, err
+		return status, nil, nil, err
 	}
 
 	if c.ResponseMiddlewares != nil {
 		for _, m := range *c.ResponseMiddlewares {
 			r, err := m(req, resp)
 			if err != nil {
-				return nil, status, nil, err
+				return status, nil, nil, err
 			}
 			resp = r
 		}
 	}
 
-	o, err = FasterFromResponse(resp)
+	o, result, nextLink, err := FasterFromResponse(resp, resultType)
 	if err != nil {
-		return nil, status, o, err
+		return status, nil, nil, err
 	}
 	if resp == nil {
-		return resp, status, o, fmt.Errorf("nil response received")
+		return status, nil, nil, fmt.Errorf("nil response received")
 	}
 
 	status = resp.StatusCode
 	if !containsStatusCode(input.GetValidStatusCodes(), status) {
 		f := input.GetValidStatusFunc()
 		if f != nil && f(resp, o) {
-			return resp, status, o, nil
+			return status, result, nextLink, nil
 		}
 
 		var errText string
@@ -193,21 +203,21 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 			defer resp.Body.Close()
 			respBody, err := io.ReadAll(resp.Body)
 			if err != nil {
-				return nil, status, o, fmt.Errorf("unexpected status %d, could not read response body", status)
+				return status, result, nil, fmt.Errorf("unexpected status %d, could not read response body", status)
 			}
 			if len(respBody) == 0 {
-				return nil, status, o, fmt.Errorf("unexpected status %d received with no body", status)
+				return status, result, nil, fmt.Errorf("unexpected status %d received with no body", status)
 			}
 			errText = fmt.Sprintf("response: %s", respBody)
 		}
-		return nil, status, o, fmt.Errorf("unexpected status %d with %s", status, errText)
+		return status, result, nil, fmt.Errorf("unexpected status %d with %s", status, errText)
 	}
 
-	return resp, status, o, nil
+	return status, result, nextLink, nil
 }
 
 // FasterGet performs a GET request.
-func (c Client) FasterGet(ctx context.Context, input FasterGetHttpRequestInput) (*http.Response, int, *OData, error) {
+func (c Client) FasterGet(ctx context.Context, input FasterGetHttpRequestInput, result interface{}) (int, error) {
 	var status int
 
 	// Check for a raw uri, else build one from the Uri field
@@ -219,83 +229,34 @@ func (c Client) FasterGet(ctx context.Context, input FasterGetHttpRequestInput) 
 		var err error
 		url, err = c.buildUri(input.Uri)
 		if err != nil {
-			return nil, status, nil, fmt.Errorf("unable to make request: %v", err)
+			return status, fmt.Errorf("unable to make request: %v", err)
 		}
 	}
 
 	// Build a new request
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, http.NoBody)
 	if err != nil {
-		return nil, status, nil, err
+		return status, err
 	}
 
 	// Perform the request
-	resp, status, o, err := c.fasterPerformRequest(req, input)
+	status, partial, nextLink, err := c.fasterPerformRequest(req, input, reflect.TypeOf(result).Elem())
 	if err != nil {
-		return nil, status, o, err
+		return status, err
 	}
 
-	// Check for json content before handling pagination
-	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
-	if strings.HasPrefix(contentType, "application/json") {
-		// Read the response body and close it
-		respBody, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, status, o, fmt.Errorf("could not parse response body")
-		}
-		resp.Body.Close()
+	// equivalent of *result = append(*result, partial)
+	reflect.ValueOf(result).Elem().Set(reflect.AppendSlice(reflect.ValueOf(result).Elem(), reflect.ValueOf(partial).Elem()))
 
-		// Unmarshall firstOdata
-		var firstOdata odata.OData
-		if err := json.Unmarshal(respBody, &firstOdata); err != nil {
-			return nil, status, o, err
-		}
-
-		firstValue, ok := firstOdata.Value.([]interface{})
-		if input.DisablePaging || firstOdata.NextLink == nil || firstValue == nil || !ok {
-			// No more pages, reassign response body and return
-			resp.Body = io.NopCloser(bytes.NewBuffer(respBody))
-			return resp, status, o, nil
-		}
-
-		// Get the next page, recursively
-		nextInput := input
-		nextInput.rawUri = string(*firstOdata.NextLink)
-		nextResp, status, o, err := c.FasterGet(ctx, nextInput)
-		if err != nil {
-			return resp, status, o, err
-		}
-
-		// Read the next page response body and close it
-		nextRespBody, err := io.ReadAll(nextResp.Body)
-		if err != nil {
-			return nil, status, o, fmt.Errorf("could not parse response body")
-		}
-		nextResp.Body.Close()
-
-		// Unmarshall firstOdata from the next page
-		var nextOdata odata.OData
-		if err := json.Unmarshal(nextRespBody, &nextOdata); err != nil {
-			return resp, status, o, err
-		}
-
-		if nextValue, ok := nextOdata.Value.([]interface{}); ok {
-			// Next page has results, append to current page
-			value := append(firstValue, nextValue...)
-			nextOdata.Value = &value
-		}
-
-		// Marshal the entire result, along with fields from the final page
-		newJson, err := json.Marshal(nextOdata)
-		if err != nil {
-			return resp, status, o, err
-		}
-
-		// Reassign the response body
-		resp.Body = io.NopCloser(bytes.NewBuffer(newJson))
+	if input.DisablePaging || nextLink == nil || partial == nil {
+		// No more pages, reassign result and return
+		return status, nil
 	}
 
-	return resp, status, o, nil
+	// Get the next page, recursively
+	nextInput := input
+	nextInput.rawUri = string(*nextLink)
+	return c.FasterGet(ctx, nextInput, result)
 }
 
 // FasterConsistencyFailureFunc is a function that determines whether an HTTP request has failed due to eventual consistency and should be retried

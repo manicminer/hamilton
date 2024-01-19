@@ -308,7 +308,8 @@ func (c *UsersClient) RestoreDeleted(ctx context.Context, id string) (*User, int
 
 // ListGroupMemberships returns a list of Groups the user is member of, optionally queried using OData.
 func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, query odata.Query) (*[]Group, int, error) {
-	resp, status, _, err := c.BaseClient.FasterGet(ctx, FasterGetHttpRequestInput{
+	result := &[]Group{}
+	status, err := c.BaseClient.FasterGet(ctx, FasterGetHttpRequestInput{
 		ConsistencyFailureFunc: FasterRetryOn404ConsistencyFailureFunc,
 		DisablePaging:          query.Top > 0,
 		OData:                  query,
@@ -316,25 +317,12 @@ func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, query
 		Uri: Uri{
 			Entity: fmt.Sprintf("/users/%s/transitiveMemberOf", id),
 		},
-	})
+	}, result)
 	if err != nil {
 		return nil, status, fmt.Errorf("UsersClient.BaseClient.Get(): %v", err)
 	}
 
-	defer resp.Body.Close()
-	respBody, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
-	}
-
-	var data struct {
-		Groups []Group `json:"value"`
-	}
-	if err := json.Unmarshal(respBody, &data); err != nil {
-		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
-	}
-
-	return &data.Groups, status, nil
+	return result, status, nil
 }
 
 // SendMail sends message specified in the request body.
