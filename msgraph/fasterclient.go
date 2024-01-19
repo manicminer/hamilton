@@ -13,14 +13,59 @@ import (
 	"github.com/hashicorp/go-retryablehttp"
 )
 
+// OData is used to unmarshall OData metadata from an API response.
+type OData struct {
+	Context      *string     `json:"@odata.context"`
+	MetadataEtag *string     `json:"@odata.metadataEtag"`
+	Type         *odata.Type `json:"@odata.type"`
+	Count        *int        `json:"@odata.count"`
+	NextLink     *odata.Link `json:"@odata.nextLink"`
+	Delta        *string     `json:"@odata.delta"`
+	DeltaLink    *odata.Link `json:"@odata.deltaLink"`
+	Id           *odata.Id   `json:"@odata.id"`
+	EditLink     *odata.Link `json:"@odata.editLink"`
+	Etag         *string     `json:"@odata.etag"`
+
+	Error *odata.Error `json:"-"`
+
+	Value interface{} `json:"value"`
+}
+
+func (o *OData) UnmarshalJSON(data []byte) error {
+	// Unmarshal using a local type
+	type od OData
+	var o2 od
+	if err := json.Unmarshal(data, &o2); err != nil {
+		return err
+	}
+	*o = OData(o2)
+
+	// Look for errors in the "error" and "odata.error" fields
+	var e map[string]json.RawMessage
+	if err := json.Unmarshal(data, &e); err != nil {
+		return err
+	}
+	for _, k := range []string{"error", "odata.error"} {
+		if v, ok := e[k]; ok {
+			var e2 odata.Error
+			if err := json.Unmarshal(v, &e2); err != nil {
+				return err
+			}
+			o.Error = &e2
+			break
+		}
+	}
+	return nil
+}
+
 // FasterFromResponse parses an http.Response and returns an unmarshaled OData
 // If no odata is present in the response, or the content type is invalid, returns nil
-func FasterFromResponse(resp *http.Response) (*odata.OData, error) {
+func FasterFromResponse(resp *http.Response) (*OData, error) {
 	if resp == nil {
 		return nil, nil
 	}
 
-	var o odata.OData
+	var o OData
 
 	// Check for json content before looking for odata metadata
 	contentType := strings.ToLower(resp.Header.Get("Content-Type"))
@@ -48,7 +93,7 @@ func FasterFromResponse(resp *http.Response) (*odata.OData, error) {
 }
 
 // fasterPerformRequest is used by the package to send an HTTP request to the API.
-func (c Client) fasterPerformRequest(req *http.Request, input HttpRequestInput) (*http.Response, int, *odata.OData, error) {
+func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpRequestInput) (*http.Response, int, *OData, error) {
 	var status int
 
 	query := input.GetOData()
@@ -68,7 +113,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input HttpRequestInput) 
 	}
 
 	var resp *http.Response
-	var o *odata.OData
+	var o *OData
 	var err error
 
 	var reqBody []byte
@@ -162,7 +207,7 @@ func (c Client) fasterPerformRequest(req *http.Request, input HttpRequestInput) 
 }
 
 // FasterGet performs a GET request.
-func (c Client) FasterGet(ctx context.Context, input GetHttpRequestInput) (*http.Response, int, *odata.OData, error) {
+func (c Client) FasterGet(ctx context.Context, input FasterGetHttpRequestInput) (*http.Response, int, *OData, error) {
 	var status int
 
 	// Check for a raw uri, else build one from the Uri field
@@ -251,4 +296,51 @@ func (c Client) FasterGet(ctx context.Context, input GetHttpRequestInput) (*http
 	}
 
 	return resp, status, o, nil
+}
+
+// FasterConsistencyFailureFunc is a function that determines whether an HTTP request has failed due to eventual consistency and should be retried
+type FasterConsistencyFailureFunc func(*http.Response, *OData) bool
+
+// FasterValidStatusFunc is a function that tests whether an HTTP response is considered valid for the particular request.
+type FasterValidStatusFunc func(*http.Response, *OData) bool
+
+// FasterRetryOn404ConsistencyFailureFunc can be used to retry a request when a 404 response is received
+func FasterRetryOn404ConsistencyFailureFunc(resp *http.Response, _ *OData) bool {
+	return resp != nil && resp.StatusCode == http.StatusNotFound
+}
+
+// FasterGetHttpRequestInput configures a GET request.
+type FasterGetHttpRequestInput struct {
+	ConsistencyFailureFunc FasterConsistencyFailureFunc
+	DisablePaging          bool
+	OData                  odata.Query
+	ValidStatusCodes       []int
+	ValidStatusFunc        FasterValidStatusFunc
+	Uri                    Uri
+	rawUri                 string
+}
+
+// GetConsistencyFailureFunc returns a function used to evaluate whether a failed request is due to eventual consistency and should be retried.
+func (i FasterGetHttpRequestInput) GetConsistencyFailureFunc() FasterConsistencyFailureFunc {
+	return i.ConsistencyFailureFunc
+}
+
+// GetContentType returns the content type for the request, currently only application/json is supported
+func (i FasterGetHttpRequestInput) GetContentType() string {
+	return "application/json; charset=utf-8"
+}
+
+// GetOData returns the OData request metadata
+func (i FasterGetHttpRequestInput) GetOData() odata.Query {
+	return i.OData
+}
+
+// GetValidStatusCodes returns a []int of status codes considered valid for a GET request.
+func (i FasterGetHttpRequestInput) GetValidStatusCodes() []int {
+	return i.ValidStatusCodes
+}
+
+// GetValidStatusFunc returns a function used to evaluate whether the response to a GET request is considered valid.
+func (i FasterGetHttpRequestInput) GetValidStatusFunc() FasterValidStatusFunc {
+	return i.ValidStatusFunc
 }

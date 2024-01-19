@@ -308,8 +308,8 @@ func (c *UsersClient) RestoreDeleted(ctx context.Context, id string) (*User, int
 
 // ListGroupMemberships returns a list of Groups the user is member of, optionally queried using OData.
 func (c *UsersClient) ListGroupMemberships(ctx context.Context, id string, query odata.Query) (*[]Group, int, error) {
-	resp, status, _, err := c.BaseClient.FasterGet(ctx, GetHttpRequestInput{
-		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+	resp, status, _, err := c.BaseClient.FasterGet(ctx, FasterGetHttpRequestInput{
+		ConsistencyFailureFunc: FasterRetryOn404ConsistencyFailureFunc,
 		DisablePaging:          query.Top > 0,
 		OData:                  query,
 		ValidStatusCodes:       []int{http.StatusOK},
