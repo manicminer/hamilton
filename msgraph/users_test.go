@@ -66,7 +66,9 @@ func TestUsersClient(t *testing.T) {
 		childGroupIds = append(childGroupIds, *childGroup.ID())
 	}
 
-	testUsersClient_ListGroupMemberships(t, c, *user.ID(), childGroupIds)
+	test.WithMetrics(func() {
+		testUsersClient_ListGroupMemberships(t, c, *user.ID(), childGroupIds)
+	})
 
 	testGroupsClient_Delete(t, c, *parentGroup.ID())
 	for _, id := range childGroupIds {
