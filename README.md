@@ -131,22 +131,77 @@ Please raise a pull request [on GitHub][gh-project] to submit contributions. Bug
 
 ## Testing
 
-Testing requires an Azure AD tenant and real credentials. Note that some tests require an Azure AD Premium P2 license and/or an Office 365 license.
-You can authenticate with any supported method for the client tests, and the auth tests are split by authentication method.
+Testing requires at least one Azure AD tenant and real credentials.
 
-> ℹ️ You can sign up for the [Microsoft 365 Developer Program](https://developer.microsoft.com/en-us/microsoft-365/dev-program) which offers a Microsoft 365 E5 subscription for 25 users, at no cost for development purposes.
+Note that running all tests requires three separate tenants, and that some tests require an Azure AD Premium P2 license and/or an Office 365 license.
+
+> ℹ️ You can sign up for the [Microsoft 365 Developer Program](https://developer.microsoft.com/en-us/microsoft-365/dev-program) which offers a Microsoft 365 E5 subscription for 25 users, at no cost for development purposes. That will suffice for most tests.
+
+It's recommended to use an isolated tenant for testing and _not_ a production tenant.
+
+You can authenticate with any supported method for the client tests, and the auth tests are split by authentication method.
 
 Note that each client generally has a single test that exercises all methods. This is to help ensure that test objects
 are cleaned up where possible. Where tests fail, often objects will be left behind and should be cleaned up separately.
 The [test-cleanup](https://github.com/manicminer/hamilton/tree/main/internal/cmd/test-cleanup) command can be used to
 delete leftover test objects in the event of test failure.
 
-It's recommended to use an isolated tenant for testing and _not_ a production tenant.
+### Configuring single-tenant tests (eg. with a no-cost subscription from Microsoft 365 Developer Program)
+To set up environment variables:
+```shell
+az login --allow-no-subscriptions
+
+# create one in the Azure Portal -> Entra ID -> App registrations -> New Registration
+# set "hamilton" as name, accept other defaults. Then copy Essentials -> Application (client) ID
+export CLIENT_ID=...
+# find this on the Azure Portal -> Entra ID -> Basic Information -> Tenant ID
+export TENANT_ID=...
+# find this on the Azure Portal -> Entra ID -> Basic Information -> Primary domain
+export TENANT_DOMAIN=...
+
+export DEFAULT_TENANT_ID=${TENANT_ID}
+export DEFAULT_TENANT_DOMAIN=${TENANT_DOMAIN}
+export CONNECTED_TENANT_ID=${TENANT_ID}
+export CONNECTED_TENANT_DOMAIN=${TENANT_DOMAIN}
+export B2C_TENANT_ID=${TENANT_ID}
+export B2C_TENANT_DOMAIN=${TENANT_DOMAIN}
+```
+
+To run one test (eg. `TestUsersClient`):
+```shell
+go test --race '-run=^TestUsersClient$' ./...
+```
+
+
+### Configuring and running all tests
+To set up environment variables:
+```shell
+az login
+
+# find this on the Azure Portal -> Entra ID -> Basic Information -> Tenant ID
+export DEFAULT_TENANT_ID=...
+# find this on the Azure Portal -> Entra ID -> Basic Information -> Primary domain
+export DEFAULT_TENANT_DOMAIN=...
+
+# same as above, but from a separate tenant, to run TestConnectedOrganizationClient
+export CONNECTED_TENANT_ID=...
+export CONNECTED_TENANT_DOMAIN=${TENANT_DOMAIN}
+
+# same as above, but from yet another separate tenant, to run TestB2CUserFlowClient
+export B2C_TENANT_ID=${TENANT_ID}
+export B2C_TENANT_DOMAIN=${TENANT_DOMAIN}
+```
 
 To run all the tests:
 ```shell
 $ make test
 ```
+
+
+
+
+
+
 
 [gh-project]: https://github.com/manicminer/hamilton
 [ms-graph-docs]: https://docs.microsoft.com/en-us/graph/overview
