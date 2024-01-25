@@ -246,7 +246,7 @@ func (c Client) FasterGet(ctx context.Context, input FasterGetHttpRequestInput, 
 	}
 
 	// Append the partial result to the result
-	if !reflect.ValueOf(partial).IsZero() {
+	if reflect.ValueOf(partial).IsValid() && !reflect.ValueOf(partial).IsZero() {
 		// equivalent of *result = append(*result, partial)
 		reflect.ValueOf(result).Elem().Set(reflect.AppendSlice(reflect.ValueOf(result).Elem(), reflect.ValueOf(partial).Elem()))
 	}
