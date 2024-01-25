@@ -245,8 +245,11 @@ func (c Client) FasterGet(ctx context.Context, input FasterGetHttpRequestInput, 
 		return status, err
 	}
 
-	// equivalent of *result = append(*result, partial)
-	reflect.ValueOf(result).Elem().Set(reflect.AppendSlice(reflect.ValueOf(result).Elem(), reflect.ValueOf(partial).Elem()))
+	// Append the partial result to the result
+	if !reflect.ValueOf(partial).IsZero() {
+		// equivalent of *result = append(*result, partial)
+		reflect.ValueOf(result).Elem().Set(reflect.AppendSlice(reflect.ValueOf(result).Elem(), reflect.ValueOf(partial).Elem()))
+	}
 
 	if input.DisablePaging || nextLink == nil || partial == nil {
 		// No more pages, reassign result and return
