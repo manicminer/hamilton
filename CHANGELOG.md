@@ -1,3 +1,7 @@
+## v0.66.0 (January 25, 2024)
+
+- This is a maintenance release to update to the latest published module for `github.com/hashicorp/go-azure-sdk/sdk` ([#272](https://github.com/manicminer/hamilton/pull/272))
+
 ## 0.65.0 (October 26, 2023)
 
 - Support for configuring [GuestsOrExternalUsers](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccessusers?view=graph-rest-1.0) for Conditional Access Policies ([#262](https://github.com/manicminer/hamilton/pull/262))
