@@ -188,6 +188,16 @@ func (c Client) fasterPerformRequest(req *http.Request, input FasterGetHttpReque
 		}
 	}
 
+	if c.DisableRetries || c.ResponseMiddlewares != nil {
+		o, result, nextLink, err = FasterFromResponse(resp, resultType)
+		if err != nil {
+			return status, nil, nil, err
+		}
+		if resp == nil {
+			return status, nil, nil, fmt.Errorf("nil response received")
+		}
+	}
+
 	status = resp.StatusCode
 	if !containsStatusCode(input.GetValidStatusCodes(), status) {
 		f := input.GetValidStatusFunc()
