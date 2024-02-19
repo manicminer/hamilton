@@ -576,6 +576,12 @@ type AssignmentReviewSettings struct {
 	AccessReviewTimeoutBehavior     AccessReviewTimeoutBehaviorType `json:"accessReviewTimeoutBehavior,omitempty"`
 }
 
+type AttributeSet struct {
+	Description         *string `json:"description,omitempty"`
+	ID                  *string `json:"id,omitempty"`
+	MaxAttributesPerSet *int32  `json:"maxAttributesPerSet,omitempty"`
+}
+
 type AuditActivityInitiator struct {
 	App  *AppIdentity  `json:"app,omitempty"`
 	User *UserIdentity `json:"user,omitempty"`
