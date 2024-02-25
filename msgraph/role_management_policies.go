@@ -91,7 +91,7 @@ func (c *RoleManagementPolicyClient) Update(ctx context.Context, policy UnifiedR
 
 	_, status, _, err = c.BaseClient.Patch(ctx, PatchHttpRequestInput{
 		Body:             body,
-		ValidStatusCodes: []int{http.StatusNoContent},
+		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
 			Entity: fmt.Sprintf("/policies/roleManagementPolicies/%s", *policy.ID),
 		},
