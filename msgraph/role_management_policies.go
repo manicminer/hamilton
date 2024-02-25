@@ -24,8 +24,9 @@ func NewRoleManagementPolicyClient() *RoleManagementPolicyClient {
 func (c *RoleManagementPolicyClient) List(ctx context.Context, query odata.Query) (*[]UnifiedRoleManagementPolicy, int, error) {
 	query.Expand = odata.Expand{Relationship: "*"}
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
-		OData:            query,
-		ValidStatusCodes: []int{http.StatusOK},
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		OData:                  query,
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
 			Entity: "/policies/roleManagementPolicies",
 		},
