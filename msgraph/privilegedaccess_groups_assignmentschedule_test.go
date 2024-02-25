@@ -2,7 +2,6 @@ package msgraph_test
 
 import (
 	"fmt"
-	"os"
 	"testing"
 	"time"
 
@@ -16,16 +15,17 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	var pimGroupId string
-	if v := os.Getenv("PIM_GROUP_ID"); v != "" {
-		pimGroupId = v
-	} else {
-		pimGroupId = ""
-	}
-
 	now := time.Now()
 	future := now.AddDate(0, 0, 7)
 	end := now.AddDate(0, 2, 0)
+
+	pimGroup := testGroupsClient_Create(t, c, msgraph.Group{
+		DisplayName:     utils.StringPtr("test-pim-group"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-pim-group-%s", c.RandomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+	})
+	defer testGroupsClient_Delete(t, c, *pimGroup.ID())
 
 	groupMember := testGroupsClient_Create(t, c, msgraph.Group{
 		DisplayName:     utils.StringPtr("test-group-member"),
@@ -62,7 +62,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	reqOwner := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipOwner),
 		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
-		GroupId:       utils.StringPtr(pimGroupId),
+		GroupId:       pimGroup.ID(),
 		PrincipalId:   userOwner.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
 		ScheduleInfo: &msgraph.RequestSchedule{
@@ -77,7 +77,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	reqMemberUser := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
 		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
-		GroupId:       utils.StringPtr(pimGroupId),
+		GroupId:       pimGroup.ID(),
 		PrincipalId:   userMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
 		ScheduleInfo: &msgraph.RequestSchedule{
@@ -92,7 +92,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	reqMemberGroup := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
 		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
-		GroupId:       utils.StringPtr(pimGroupId),
+		GroupId:       pimGroup.ID(),
 		PrincipalId:   groupMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
 		ScheduleInfo: &msgraph.RequestSchedule{
@@ -109,14 +109,14 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Get(t, c, *reqMemberGroup.ID)
 
 	schedules := testPrivilegedAccessGroupAssignmentScheduleClient_List(t, c, odata.Query{
-		Filter: fmt.Sprintf("groupId eq '%s'", pimGroupId),
+		Filter: fmt.Sprintf("groupId eq '%s'", *pimGroup.ID()),
 	})
 	for _, sch := range *schedules {
 		testPrivilegedAccessGroupAssignmentScheduleClient_Get(t, c, *sch.ID)
 	}
 
 	instances := testPrivilegedAccessGroupAssignmentScheduleInstancesClient_List(t, c, odata.Query{
-		Filter: fmt.Sprintf("groupId eq '%s'", pimGroupId),
+		Filter: fmt.Sprintf("groupId eq '%s'", *pimGroup.ID()),
 	})
 	for _, inst := range *instances {
 		testPrivilegedAccessGroupAssignmentScheduleInstancesClient_Get(t, c, *inst.ID)
