@@ -2,7 +2,6 @@ package msgraph_test
 
 import (
 	"fmt"
-	"os"
 	"testing"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
@@ -50,20 +49,21 @@ func testRoleManagementPolicyClient_DirectoryRoles(t *testing.T, c *test.Test) {
 }
 
 func testRoleManagementPolicyClient_GroupRoles(t *testing.T, c *test.Test) {
-	var pimGroupId string
-	if v := os.Getenv("PIM_GROUP_ID"); v != "" {
-		pimGroupId = v
-	} else {
-		pimGroupId = ""
-	}
+	pimGroup := testGroupsClient_Create(t, c, msgraph.Group{
+		DisplayName:     utils.StringPtr("test-pim-group"),
+		MailEnabled:     utils.BoolPtr(false),
+		MailNickname:    utils.StringPtr(fmt.Sprintf("test-pim-group-%s", c.RandomString)),
+		SecurityEnabled: utils.BoolPtr(true),
+	})
+	defer testGroupsClient_Delete(t, c, *pimGroup.ID())
 
 	policies := testRoleManagementPolicyClient_List(t, c, odata.Query{
-		Filter: fmt.Sprintf("scopeId eq '%s' and scopeType eq 'Group'", pimGroupId),
+		Filter: fmt.Sprintf("scopeId eq '%s' and scopeType eq 'Group'", *pimGroup.ID()),
 	})
 	policy := testRoleManagementPolicyClient_Get(t, c, *(*policies)[0].ID)
 
 	assignments := testRoleManagementPolicyAssignmentClient_List(t, c, odata.Query{
-		Filter: fmt.Sprintf("scopeId eq '%s' and scopeType eq 'Group'", pimGroupId),
+		Filter: fmt.Sprintf("scopeId eq '%s' and scopeType eq 'Group'", *pimGroup.ID()),
 	})
 	testRoleManagementPolicyAssignmentClient_Get(t, c, *(*assignments)[0].ID)
 
