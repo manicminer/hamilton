@@ -1013,7 +1013,7 @@ type ExtensionSchemaProperty struct {
 }
 
 type ExpirationPattern struct {
-	Duration    *time.Duration         `json:"duration,omitempty"`
+	Duration    *string                `json:"duration,omitempty"`
 	EndDateTime *time.Time             `json:"endDateTime,omitempty"`
 	Type        *ExpirationPatternType `json:"type,omitempty"`
 }
