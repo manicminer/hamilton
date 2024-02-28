@@ -569,14 +569,14 @@ type ApprovalStage struct {
 }
 
 type ApprovalStep struct {
-	ID               *string             `json:"id,omitempty"`
-	AssignedToMe     *bool               `json:"assignedToMe,omitempty"`
-	DisplayName      *string             `json:"displayName,omitempty"`
-	Justification    *string             `json:"justification,omitempty"`
-	ReviewResult     *string             `json:"reviewResult,omitempty"`
-	ReviewedBy       *[]UserIdentity     `json:"reviewedBy,omitempty"`
-	ReviewedDateTime *time.Time          `json:"reviewedDateTime,omitempty"`
-	Status           *ApprovalStepStatus `json:"status,omitempty"`
+	ID               *string            `json:"id,omitempty"`
+	AssignedToMe     *bool              `json:"assignedToMe,omitempty"`
+	DisplayName      *string            `json:"displayName,omitempty"`
+	Justification    *string            `json:"justification,omitempty"`
+	ReviewResult     *string            `json:"reviewResult,omitempty"`
+	ReviewedBy       *[]UserIdentity    `json:"reviewedBy,omitempty"`
+	ReviewedDateTime *time.Time         `json:"reviewedDateTime,omitempty"`
+	Status           ApprovalStepStatus `json:"status,omitempty"`
 }
 
 type AssignmentReviewSettings struct {
@@ -1754,15 +1754,15 @@ type UnifiedRoleManagementPolicy struct {
 	LastModifiedDateTime  *time.Time                         `json:"lastModifiedDateTime,omitempty"`
 	Rules                 *[]UnifiedRoleManagementPolicyRule `json:"rules,omitempty"`
 	ScopeId               *string                            `json:"scopeId,omitempty"`
-	ScopeType             *UnifiedRoleManagementPolicyScope  `json:"scopeType,omitempty"`
+	ScopeType             UnifiedRoleManagementPolicyScope   `json:"scopeType,omitempty"`
 }
 
 type UnifiedRoleManagementPolicyAssignment struct {
-	ID               *string                           `json:"id,omitempty"`
-	PolicyId         *string                           `json:"policyId,omitempty"`
-	RoleDefinitionId *string                           `json:"roleDefinitionId,omitempty"`
-	ScopeId          *string                           `json:"scopeId,omitempty"`
-	ScopeType        *UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
+	ID               *string                          `json:"id,omitempty"`
+	PolicyId         *string                          `json:"policyId,omitempty"`
+	RoleDefinitionId *string                          `json:"roleDefinitionId,omitempty"`
+	ScopeId          *string                          `json:"scopeId,omitempty"`
+	ScopeType        UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
 }
 
 type UnifiedRoleManagementPolicyRule struct {
@@ -1785,19 +1785,19 @@ type UnifiedRoleManagementPolicyRule struct {
 	MaximumDuration      *string `json:"maximumDuration,omitempty"`
 
 	//
-	IsDefaultRecipientsEnabled *bool                                                     `json:"isDefaultRecipientsEnabled,omitempty"`
-	NotificationLevel          *UnifiedRoleManagementPolicyRuleNotificationLevel         `json:"notificationLevel,omitempty"`
-	NotificationRecipients     *[]string                                                 `json:"notificationRecipients,omitempty"`
-	NotificationType           *UnifiedRoleManagementPolicyRuleNotificationType          `json:"notificationType,omitempty"`
-	RecipientType              *UnifiedRoleManagementPolicyRuleNotificationRecipientType `json:"recipientType,omitempty"`
+	IsDefaultRecipientsEnabled *bool                                                    `json:"isDefaultRecipientsEnabled,omitempty"`
+	NotificationLevel          UnifiedRoleManagementPolicyRuleNotificationLevel         `json:"notificationLevel,omitempty"`
+	NotificationRecipients     *[]string                                                `json:"notificationRecipients,omitempty"`
+	NotificationType           UnifiedRoleManagementPolicyRuleNotificationType          `json:"notificationType,omitempty"`
+	RecipientType              UnifiedRoleManagementPolicyRuleNotificationRecipientType `json:"recipientType,omitempty"`
 }
 
 type UnifiedRoleManagementPolicyRuleTarget struct {
-	Caller              *UnifiedRoleManagementPolicyRuleTargetCallerType `json:"caller,omitempty"`
-	EnforcedSettings    *[]string                                        `json:"enforcedSettings,omitempty"`
-	InheritableSettings *[]string                                        `json:"inheritableSettings,omitempty"`
-	Level               *UnifiedRoleManagementPolicyRuleLevel            `json:"level,omitempty"`
-	Operations          *[]UnifiedRoleManagementPolicyRuleOperation      `json:"operations,omitempty"`
+	Caller              UnifiedRoleManagementPolicyRuleTargetCallerType `json:"caller,omitempty"`
+	EnforcedSettings    *[]string                                       `json:"enforcedSettings,omitempty"`
+	InheritableSettings *[]string                                       `json:"inheritableSettings,omitempty"`
+	Level               UnifiedRoleManagementPolicyRuleLevel            `json:"level,omitempty"`
+	Operations          *[]UnifiedRoleManagementPolicyRuleOperation     `json:"operations,omitempty"`
 }
 
 type UnifiedRolePermission struct {
