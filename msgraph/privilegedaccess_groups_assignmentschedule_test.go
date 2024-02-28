@@ -60,8 +60,8 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_List(t, c)
 
 	reqOwner := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
-		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipOwner),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipOwner,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
 		PrincipalId:   userOwner.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -69,14 +69,14 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &now,
 			Expiration: &msgraph.ExpirationPattern{
 				EndDateTime: &end,
-				Type:        utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
+				Type:        msgraph.ExpirationPatternTypeAfterDateTime,
 			},
 		},
 	})
 
 	reqMemberUser := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
-		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipMember,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
 		PrincipalId:   userMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -84,14 +84,14 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &future,
 			Expiration: &msgraph.ExpirationPattern{
 				EndDateTime: &end,
-				Type:        utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
+				Type:        msgraph.ExpirationPatternTypeAfterDateTime,
 			},
 		},
 	})
 
 	reqMemberGroup := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
-		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipMember,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
 		PrincipalId:   groupMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -99,7 +99,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &future,
 			Expiration: &msgraph.ExpirationPattern{
 				EndDateTime: &end,
-				Type:        utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
+				Type:        msgraph.ExpirationPatternTypeAfterDateTime,
 			},
 		},
 	})
