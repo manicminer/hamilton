@@ -35,16 +35,27 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	})
 	defer testGroupsClient_Delete(t, c, *groupMember.ID())
 
-	userMember := testUsersClient_Create(t, c, msgraph.User{
+	userMemberDuration := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
-		DisplayName:       utils.StringPtr("test-user-groupmember"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-groupmember-%s", c.RandomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-groupmember-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		DisplayName:       utils.StringPtr("test-user-groupmember-duration"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-groupmember-duration-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-groupmember-duration-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
-	defer testUsersClient_Delete(t, c, *userMember.ID())
+	defer testUsersClient_Delete(t, c, *userMemberDuration.ID())
+
+	userMemberFixed := testUsersClient_Create(t, c, msgraph.User{
+		AccountEnabled:    utils.BoolPtr(true),
+		DisplayName:       utils.StringPtr("test-user-groupmember-fixed"),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-groupmember-fixed-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-groupmember-fixed-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		PasswordProfile: &msgraph.UserPasswordProfile{
+			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
+		},
+	})
+	defer testUsersClient_Delete(t, c, *userMemberFixed.ID())
 
 	userOwner := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
@@ -74,11 +85,26 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 		},
 	})
 
-	reqMemberUser := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
+	reqMemberUserDuration := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
 		AccessId:      msgraph.PrivilegedAccessGroupRelationshipMember,
 		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
-		PrincipalId:   userMember.ID(),
+		PrincipalId:   userMemberDuration.ID(),
+		Justification: utils.StringPtr("Hamilton Testing"),
+		ScheduleInfo: &msgraph.RequestSchedule{
+			StartDateTime: &future,
+			Expiration: &msgraph.ExpirationPattern{
+				Duration: utils.StringPtr("P30D"),
+				Type:     msgraph.ExpirationPatternTypeAfterDuration,
+			},
+		},
+	})
+
+	reqMemberUserFixed := testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupAssignmentScheduleRequest{
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipMember,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
+		GroupId:       pimGroup.ID(),
+		PrincipalId:   userMemberFixed.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
 		ScheduleInfo: &msgraph.RequestSchedule{
 			StartDateTime: &future,
@@ -105,7 +131,8 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 	})
 
 	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Get(t, c, *reqOwner.ID)
-	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Get(t, c, *reqMemberUser.ID)
+	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Get(t, c, *reqMemberUserDuration.ID)
+	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Get(t, c, *reqMemberUserFixed.ID)
 	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Get(t, c, *reqMemberGroup.ID)
 
 	schedules := testPrivilegedAccessGroupAssignmentScheduleClient_List(t, c, odata.Query{
@@ -122,7 +149,8 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 		testPrivilegedAccessGroupAssignmentScheduleInstancesClient_Get(t, c, *inst.ID)
 	}
 
-	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Cancel(t, c, *reqMemberUser.ID)
+	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Cancel(t, c, *reqMemberUserDuration.ID)
+	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Cancel(t, c, *reqMemberUserFixed.ID)
 	testPrivilegedAccessGroupAssignmentScheduleRequestsClient_Cancel(t, c, *reqMemberGroup.ID)
 }
 
