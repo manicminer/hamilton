@@ -1963,7 +1963,9 @@ type UserRegistrationMethodSummary struct {
 type UserSet struct {
 	ODataType    *odata.Type `json:"@odata.type,omitempty"`
 	IsBackup     *bool       `json:"isBackup,omitempty"`
-	ID           *string     `json:"id,omitempty"` // Either user or group ID
+	ID           *string     `json:"id,omitempty"`      // Either user or group ID
+	GroupID      *string     `json:"groupId,omitempty"` // oData groupMembers
+	UserID       *string     `json:"userId,omitempty"`  // oData singleUser
 	Description  *string     `json:"description,omitempty"`
 	ManagerLevel *int32      `json:"managerLevel,omitempty"`
 }
