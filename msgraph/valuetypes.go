@@ -756,6 +756,58 @@ const (
 	PreferredSingleSignOnModeSaml         PreferredSingleSignOnMode = "saml"
 )
 
+type PrivilegedAccessGroupAction = string
+
+const (
+	PrivilegedAccessGroupActionAdminAssign    PrivilegedAccessGroupAction = "adminAssign"
+	PrivilegedAccessGroupActionAdminUpdate    PrivilegedAccessGroupAction = "adminUpdate"
+	PrivilegedAccessGroupActionAdminRemove    PrivilegedAccessGroupAction = "adminRemove"
+	PrivilegedAccessGroupActionAdminExtend    PrivilegedAccessGroupAction = "adminExtend"
+	PrivilegedAccessGroupActionAdminRenew     PrivilegedAccessGroupAction = "adminRenew"
+	PrivilegedAccessGroupActionSelfActivate   PrivilegedAccessGroupAction = "selfActivate"
+	PrivilegedAccessGroupActionSelfDeactivate PrivilegedAccessGroupAction = "selfDeactivate"
+)
+
+type PrivilegedAccessGroupAssignmentType = string
+
+const (
+	PrivilegedAccessGroupAssignmentAssigned  PrivilegedAccessGroupAssignmentType = "assigned"
+	PrivilegedAccessGroupAssignmentActivated PrivilegedAccessGroupAssignmentType = "activated"
+	PrivilegedAccessGroupAssignmentUnknown   PrivilegedAccessGroupAssignmentType = "unknownFutureValue"
+)
+
+type PrivilegedAccessGroupAssignmentStatus = string
+
+const (
+	PrivilegedAccessGroupAssignmentStatusCanceled                 PrivilegedAccessGroupAssignmentStatus = "Canceled"
+	PrivilegedAccessGroupAssignmentStatusDenied                   PrivilegedAccessGroupAssignmentStatus = "Denied"
+	PrivilegedAccessGroupAssignmentStatusFailed                   PrivilegedAccessGroupAssignmentStatus = "Failed"
+	PrivilegedAccessGroupAssignmentStatusGranted                  PrivilegedAccessGroupAssignmentStatus = "Granted"
+	PrivilegedAccessGroupAssignmentStatusPendingAdminDecision     PrivilegedAccessGroupAssignmentStatus = "PendingAdminDecision"
+	PrivilegedAccessGroupAssignmentStatusPendingApproval          PrivilegedAccessGroupAssignmentStatus = "PendingApproval"
+	PrivilegedAccessGroupAssignmentStatusPendingProvisioning      PrivilegedAccessGroupAssignmentStatus = "PendingProvisioning"
+	PrivilegedAccessGroupAssignmentStatusPendingScheduledCreation PrivilegedAccessGroupAssignmentStatus = "PendingScheduleCreation"
+	PrivilegedAccessGroupAssignmentStatusProvisioned              PrivilegedAccessGroupAssignmentStatus = "Provisioned"
+	PrivilegedAccessGroupAssignmentStatusRevoked                  PrivilegedAccessGroupAssignmentStatus = "Revoked"
+	PrivilegedAccessGroupAssignmentStatusScheduleCreated          PrivilegedAccessGroupAssignmentStatus = "ScheduleCreated"
+)
+
+type PrivilegedAccessGroupMemberType = string
+
+const (
+	PrivilegedAccessGroupMemberDirect  PrivilegedAccessGroupMemberType = "direct"
+	PrivilegedAccessGroupMemberGroup   PrivilegedAccessGroupMemberType = "group"
+	PrivilegedAccessGroupMemberUnknown PrivilegedAccessGroupMemberType = "unknownFutureValue"
+)
+
+type PrivilegedAccessGroupRelationship = string
+
+const (
+	PrivilegedAccessGroupRelationshipOwner   PrivilegedAccessGroupRelationship = "owner"
+	PrivilegedAccessGroupRelationshipMember  PrivilegedAccessGroupRelationship = "member"
+	PrivilegedAccessGroupRelationshipUnknown PrivilegedAccessGroupRelationship = "unknownFutureValue"
+)
+
 type RecurrencePatternType = string
 
 const (
