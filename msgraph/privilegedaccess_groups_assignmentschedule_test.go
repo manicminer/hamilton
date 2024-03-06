@@ -80,7 +80,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &now,
 			Expiration: &msgraph.ExpirationPattern{
 				EndDateTime: &end,
-				Type:        msgraph.ExpirationPatternTypeAfterDateTime,
+				Type:        utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
 			},
 		},
 	})
@@ -95,7 +95,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &future,
 			Expiration: &msgraph.ExpirationPattern{
 				Duration: utils.StringPtr("P30D"),
-				Type:     msgraph.ExpirationPatternTypeAfterDuration,
+				Type:     utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
 			},
 		},
 	})
@@ -110,7 +110,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &future,
 			Expiration: &msgraph.ExpirationPattern{
 				EndDateTime: &end,
-				Type:        msgraph.ExpirationPatternTypeAfterDateTime,
+				Type:        utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
 			},
 		},
 	})
@@ -125,7 +125,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &future,
 			Expiration: &msgraph.ExpirationPattern{
 				EndDateTime: &end,
-				Type:        msgraph.ExpirationPatternTypeAfterDateTime,
+				Type:        utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
 			},
 		},
 	})

@@ -39,7 +39,7 @@ func TestRoleEligibilityScheduleRequestsClient(t *testing.T) {
 		ScheduleInfo: &msgraph.RequestSchedule{
 			StartDateTime: &now,
 			Expiration: &msgraph.ExpirationPattern{
-				Type: msgraph.ExpirationPatternTypeNoExpiration,
+				Type: utils.StringPtr(msgraph.ExpirationPatternTypeNoExpiration),
 			},
 		},
 	})

@@ -60,8 +60,8 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 	testPrivilegedAccessGroupEligibilityScheduleRequestsClient_List(t, c)
 
 	reqOwner := testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
-		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipOwner),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipOwner,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
 		PrincipalId:   userOwner.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -75,8 +75,8 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 	})
 
 	reqMemberUser := testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
-		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipMember,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
 		PrincipalId:   userMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
@@ -90,8 +90,8 @@ func TestPrivilegedAccessGroupEligibilityScheduleClient(t *testing.T) {
 	})
 
 	reqMemberGroup := testPrivilegedAccessGroupEligibilityScheduleRequestsClient_Create(t, c, msgraph.PrivilegedAccessGroupEligibilityScheduleRequest{
-		AccessId:      utils.StringPtr(msgraph.PrivilegedAccessGroupRelationshipMember),
-		Action:        utils.StringPtr(msgraph.PrivilegedAccessGroupActionAdminAssign),
+		AccessId:      msgraph.PrivilegedAccessGroupRelationshipMember,
+		Action:        msgraph.PrivilegedAccessGroupActionAdminAssign,
 		GroupId:       pimGroup.ID(),
 		PrincipalId:   groupMember.ID(),
 		Justification: utils.StringPtr("Hamilton Testing"),
