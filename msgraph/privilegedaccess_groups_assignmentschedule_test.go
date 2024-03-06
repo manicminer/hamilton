@@ -95,7 +95,7 @@ func TestPrivilegedAccessGroupAssignmentScheduleClient(t *testing.T) {
 			StartDateTime: &future,
 			Expiration: &msgraph.ExpirationPattern{
 				Duration: utils.StringPtr("P30D"),
-				Type:     utils.StringPtr(msgraph.ExpirationPatternTypeAfterDateTime),
+				Type:     utils.StringPtr(msgraph.ExpirationPatternTypeAfterDuration),
 			},
 		},
 	})
