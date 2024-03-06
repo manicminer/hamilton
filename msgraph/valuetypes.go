@@ -232,6 +232,15 @@ const (
 	ApprovalModeSingleStage ApprovalMode = "SingleStage"
 )
 
+type ApprovalStepStatus = string
+
+const (
+	ApprovalStepStatusInProgress   ApprovalStepStatus = "InProgress"
+	ApprovalStepStatusInitializing ApprovalStepStatus = "Initializing"
+	ApprovalStepStatusCompleted    ApprovalStepStatus = "Completed"
+	ApprovalStepStatusExpired      ApprovalStepStatus = "Expired"
+)
+
 type AttestationLevel = string
 
 const (
@@ -844,6 +853,64 @@ const (
 	UnifiedRoleScheduleRequestActionSelfExtend         UnifiedRoleScheduleRequestAction = "selfExtend"
 	UnifiedRoleScheduleRequestActionSelfRenew          UnifiedRoleScheduleRequestAction = "selfRenew"
 	UnifiedRoleScheduleRequestActionUnknownFutureValue UnifiedRoleScheduleRequestAction = "unknownFutureValue"
+)
+
+type UnifiedRoleManagementPolicyScope = string
+
+const (
+	UnifiedRoleManagementPolicyScopeDirectory     UnifiedRoleManagementPolicyScope = "Directory"
+	UnifiedRoleManagementPolicyScopeDirectoryRole UnifiedRoleManagementPolicyScope = "DirectoryRole"
+	UnifiedRoleManagementPolicyScopeGroup         UnifiedRoleManagementPolicyScope = "Group"
+)
+
+type UnifiedRoleManagementPolicyRuleTargetCallerType = string
+
+const (
+	UnifiedRoleManagementPolicyRuleTargetCallerTypeNone    UnifiedRoleManagementPolicyRuleTargetCallerType = "None"
+	UnifiedRoleManagementPolicyRuleTargetCallerTypeAdmin   UnifiedRoleManagementPolicyRuleTargetCallerType = "Admin"
+	UnifiedRoleManagementPolicyRuleTargetCallerTypeEndUser UnifiedRoleManagementPolicyRuleTargetCallerType = "EndUser"
+)
+
+type UnifiedRoleManagementPolicyRuleLevel = string
+
+const (
+	UnifiedRoleManagementPolicyRuleLevelEligibility UnifiedRoleManagementPolicyRuleLevel = "Eligibility"
+	UnifiedRoleManagementPolicyRuleLevelAssignment  UnifiedRoleManagementPolicyRuleLevel = "Assignment"
+)
+
+type UnifiedRoleManagementPolicyRuleNotificationLevel = string
+
+const (
+	UnifiedRoleManagementPolicyRuleNotificationLevelNone     UnifiedRoleManagementPolicyRuleNotificationLevel = "None"
+	UnifiedRoleManagementPolicyRuleNotificationLevelCritical UnifiedRoleManagementPolicyRuleNotificationLevel = "Critical"
+	UnifiedRoleManagementPolicyRuleNotificationLevelAll      UnifiedRoleManagementPolicyRuleNotificationLevel = "All"
+)
+
+type UnifiedRoleManagementPolicyRuleNotificationRecipientType = string
+
+const (
+	UnifiedRoleManagementPolicyRuleNotificationRecipientTypeRequestor UnifiedRoleManagementPolicyRuleNotificationRecipientType = "Requestor"
+	UnifiedRoleManagementPolicyRuleNotificationRecipientTypeApprover  UnifiedRoleManagementPolicyRuleNotificationRecipientType = "Approver"
+	UnifiedRoleManagementPolicyRuleNotificationRecipientTypeAdmin     UnifiedRoleManagementPolicyRuleNotificationRecipientType = "Admin"
+)
+
+type UnifiedRoleManagementPolicyRuleNotificationType = string
+
+const (
+	UnifiedRoleManagementPolicyRuleNotificationTypeEmail UnifiedRoleManagementPolicyRuleNotificationType = "Email"
+)
+
+type UnifiedRoleManagementPolicyRuleOperation = string
+
+const (
+	UnifiedRoleManagementPolicyRuleOperationAll        UnifiedRoleManagementPolicyRuleOperation = "All"
+	UnifiedRoleManagementPolicyRuleOperationActivate   UnifiedRoleManagementPolicyRuleOperation = "Activate"
+	UnifiedRoleManagementPolicyRuleOperationDeactivate UnifiedRoleManagementPolicyRuleOperation = "Deactivate"
+	UnifiedRoleManagementPolicyRuleOperationAssign     UnifiedRoleManagementPolicyRuleOperation = "Assign"
+	UnifiedRoleManagementPolicyRuleOperationUpdate     UnifiedRoleManagementPolicyRuleOperation = "Update"
+	UnifiedRoleManagementPolicyRuleOperationRemove     UnifiedRoleManagementPolicyRuleOperation = "Remove"
+	UnifiedRoleManagementPolicyRuleOperationExtend     UnifiedRoleManagementPolicyRuleOperation = "Extend"
+	UnifiedRoleManagementPolicyRuleOperationRenew      UnifiedRoleManagementPolicyRuleOperation = "Renew"
 )
 
 type UsageAuthMethod = string

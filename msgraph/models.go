@@ -545,6 +545,11 @@ type AppRoleAssignment struct {
 	ResourceId           *string    `json:"resourceId,omitempty"`
 }
 
+type Approval struct {
+	ID    *string         `json:"id,omitempty"`
+	Steps *[]ApprovalStep `json:"steps,omitempty"`
+}
+
 type ApprovalSettings struct {
 	IsApprovalRequiredForAdd         *bool            `json:"isApprovalRequiredForAdd,omitempty"`
 	IsApprovalRequiredForUpdate      *bool            `json:"isApprovalRequiredForUpdate,omitempty"`
@@ -562,6 +567,17 @@ type ApprovalStage struct {
 	EscalationTimeInMinutes         *int32     `json:"escalationTimeInMinutes,omitempty"`
 	PrimaryApprovers                *[]UserSet `json:"primaryApprovers,omitempty"`
 	EscalationApprovers             *[]UserSet `json:"escalationApprovers,omitempty"`
+}
+
+type ApprovalStep struct {
+	ID               *string            `json:"id,omitempty"`
+	AssignedToMe     *bool              `json:"assignedToMe,omitempty"`
+	DisplayName      *string            `json:"displayName,omitempty"`
+	Justification    *string            `json:"justification,omitempty"`
+	ReviewResult     *string            `json:"reviewResult,omitempty"`
+	ReviewedBy       *[]UserIdentity    `json:"reviewedBy,omitempty"`
+	ReviewedDateTime *time.Time         `json:"reviewedDateTime,omitempty"`
+	Status           ApprovalStepStatus `json:"status,omitempty"`
 }
 
 type AssignmentReviewSettings struct {
@@ -1802,6 +1818,62 @@ type UnifiedRoleEligibilityScheduleRequest struct {
 	TicketInfo        *TicketInfo                       `json:"ticketInfo,omitempty"`
 }
 
+type UnifiedRoleManagementPolicy struct {
+	ID                    *string                            `json:"id,omitempty"`
+	Description           *string                            `json:"description,omitempty"`
+	DisplayName           *string                            `json:"displayName,omitempty"`
+	EffectiveRules        *[]UnifiedRoleManagementPolicyRule `json:"effectiveRules,omitempty"`
+	IsOrganizationDefault *bool                              `json:"isOrganizationDefault,omitempty"`
+	LastModifiedBy        *Identity                          `json:"lastModifiedBy,omitempty"`
+	LastModifiedDateTime  *time.Time                         `json:"lastModifiedDateTime,omitempty"`
+	Rules                 *[]UnifiedRoleManagementPolicyRule `json:"rules,omitempty"`
+	ScopeId               *string                            `json:"scopeId,omitempty"`
+	ScopeType             UnifiedRoleManagementPolicyScope   `json:"scopeType,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyAssignment struct {
+	ID               *string                          `json:"id,omitempty"`
+	PolicyId         *string                          `json:"policyId,omitempty"`
+	RoleDefinitionId *string                          `json:"roleDefinitionId,omitempty"`
+	ScopeId          *string                          `json:"scopeId,omitempty"`
+	ScopeType        UnifiedRoleManagementPolicyScope `json:"scopeType,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyRule struct {
+	ID        *string                                `json:"id,omitempty"`
+	ODataType *odata.Type                            `json:"@odata.type,omitempty"`
+	Target    *UnifiedRoleManagementPolicyRuleTarget `json:"target,omitempty"`
+
+	// unifiedRoleManagementPolicyApprovalRule
+	Setting *ApprovalSettings `json:"setting,omitempty"`
+
+	// unifiedRoleManagementPolicyAuthenticationContextRule
+	ClaimValue *string `json:"claimValue,omitempty"`
+	IsEnabled  *bool   `json:"isEnabled,omitempty"`
+
+	// unifiedRoleManagementPolicyEnablementRule
+	EnabledRules *[]string `json:"enabledRules,omitempty"`
+
+	// unifiedRoleManagementPolicyExpirationRule
+	IsExpirationRequired *bool   `json:"isExpirationRequired,omitempty"`
+	MaximumDuration      *string `json:"maximumDuration,omitempty"`
+
+	//
+	IsDefaultRecipientsEnabled *bool                                                    `json:"isDefaultRecipientsEnabled,omitempty"`
+	NotificationLevel          UnifiedRoleManagementPolicyRuleNotificationLevel         `json:"notificationLevel,omitempty"`
+	NotificationRecipients     *[]string                                                `json:"notificationRecipients,omitempty"`
+	NotificationType           UnifiedRoleManagementPolicyRuleNotificationType          `json:"notificationType,omitempty"`
+	RecipientType              UnifiedRoleManagementPolicyRuleNotificationRecipientType `json:"recipientType,omitempty"`
+}
+
+type UnifiedRoleManagementPolicyRuleTarget struct {
+	Caller              UnifiedRoleManagementPolicyRuleTargetCallerType `json:"caller,omitempty"`
+	EnforcedSettings    *[]string                                       `json:"enforcedSettings,omitempty"`
+	InheritableSettings *[]string                                       `json:"inheritableSettings,omitempty"`
+	Level               UnifiedRoleManagementPolicyRuleLevel            `json:"level,omitempty"`
+	Operations          *[]UnifiedRoleManagementPolicyRuleOperation     `json:"operations,omitempty"`
+}
+
 type UnifiedRolePermission struct {
 	AllowedResourceActions  *[]string            `json:"allowedResourceActions,omitempty"`
 	Condition               *StringNullWhenEmpty `json:"condition,omitempty"`
@@ -1965,7 +2037,9 @@ type UserRegistrationMethodSummary struct {
 type UserSet struct {
 	ODataType    *odata.Type `json:"@odata.type,omitempty"`
 	IsBackup     *bool       `json:"isBackup,omitempty"`
-	ID           *string     `json:"id,omitempty"` // Either user or group ID
+	ID           *string     `json:"id,omitempty"`      // Either user or group ID
+	GroupID      *string     `json:"groupId,omitempty"` // oData groupMembers
+	UserID       *string     `json:"userId,omitempty"`  // oData singleUser
 	Description  *string     `json:"description,omitempty"`
 	ManagerLevel *int32      `json:"managerLevel,omitempty"`
 }

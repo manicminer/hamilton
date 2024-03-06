@@ -126,6 +126,9 @@ type Test struct {
 	RoleAssignmentsClient                     *msgraph.RoleAssignmentsClient
 	RoleDefinitionsClient                     *msgraph.RoleDefinitionsClient
 	RoleEligibilityScheduleRequestClient      *msgraph.RoleEligibilityScheduleRequestClient
+	RoleManagementPolicyClient                *msgraph.RoleManagementPolicyClient
+	RoleManagementPolicyAssignmentClient      *msgraph.RoleManagementPolicyAssignmentClient
+	RoleManagementPolicyRuleClient            *msgraph.RoleManagementPolicyRuleClient
 	SchemaExtensionsClient                    *msgraph.SchemaExtensionsClient
 	ServicePrincipalsAppRoleAssignmentsClient *msgraph.AppRoleAssignmentsClient
 	ServicePrincipalsClient                   *msgraph.ServicePrincipalsClient
@@ -364,6 +367,21 @@ func NewTest(t *testing.T) (c *Test) {
 	c.RoleEligibilityScheduleRequestClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.RoleEligibilityScheduleRequestClient.BaseClient.Endpoint = *endpoint
 	c.RoleEligibilityScheduleRequestClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.RoleManagementPolicyClient = msgraph.NewRoleManagementPolicyClient()
+	c.RoleManagementPolicyClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.RoleManagementPolicyClient.BaseClient.Endpoint = *endpoint
+	c.RoleManagementPolicyClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.RoleManagementPolicyAssignmentClient = msgraph.NewRoleManagementPolicyAssignmentClient()
+	c.RoleManagementPolicyAssignmentClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.RoleManagementPolicyAssignmentClient.BaseClient.Endpoint = *endpoint
+	c.RoleManagementPolicyAssignmentClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.RoleManagementPolicyRuleClient = msgraph.NewRoleManagementPolicyRuleClient()
+	c.RoleManagementPolicyRuleClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.RoleManagementPolicyRuleClient.BaseClient.Endpoint = *endpoint
+	c.RoleManagementPolicyRuleClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.SchemaExtensionsClient = msgraph.NewSchemaExtensionsClient()
 	c.SchemaExtensionsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
