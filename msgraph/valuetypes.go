@@ -792,6 +792,22 @@ const (
 	PrivilegedAccessGroupAssignmentStatusScheduleCreated          PrivilegedAccessGroupAssignmentStatus = "ScheduleCreated"
 )
 
+type PrivilegedAccessGroupEligibilityStatus = string
+
+const (
+	PrivilegedAccessGroupEligibilityStatusCanceled                 PrivilegedAccessGroupEligibilityStatus = "Canceled"
+	PrivilegedAccessGroupEligibilityStatusDenied                   PrivilegedAccessGroupEligibilityStatus = "Denied"
+	PrivilegedAccessGroupEligibilityStatusFailed                   PrivilegedAccessGroupEligibilityStatus = "Failed"
+	PrivilegedAccessGroupEligibilityStatusGranted                  PrivilegedAccessGroupEligibilityStatus = "Granted"
+	PrivilegedAccessGroupEligibilityStatusPendingAdminDecision     PrivilegedAccessGroupEligibilityStatus = "PendingAdminDecision"
+	PrivilegedAccessGroupEligibilityStatusPendingApproval          PrivilegedAccessGroupEligibilityStatus = "PendingApproval"
+	PrivilegedAccessGroupEligibilityStatusPendingProvisioning      PrivilegedAccessGroupEligibilityStatus = "PendingProvisioning"
+	PrivilegedAccessGroupEligibilityStatusPendingScheduledCreation PrivilegedAccessGroupEligibilityStatus = "PendingScheduleCreation"
+	PrivilegedAccessGroupEligibilityStatusProvisioned              PrivilegedAccessGroupEligibilityStatus = "Provisioned"
+	PrivilegedAccessGroupEligibilityStatusRevoked                  PrivilegedAccessGroupEligibilityStatus = "Revoked"
+	PrivilegedAccessGroupEligibilityStatusScheduleCreated          PrivilegedAccessGroupEligibilityStatus = "ScheduleCreated"
+)
+
 type PrivilegedAccessGroupMemberType = string
 
 const (

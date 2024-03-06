@@ -10,20 +10,20 @@ import (
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
 
-// RoleEligibilityScheduleRequestClient performs operations on RoleEligibilityScheduleRequests.
-type RoleEligibilityScheduleRequestClient struct {
+// RoleEligibilityScheduleRequestsClient performs operations on RoleEligibilityScheduleRequests.
+type RoleEligibilityScheduleRequestsClient struct {
 	BaseClient Client
 }
 
-// NewRoleEligibilityScheduleRequest returns a new RoleEligibilityScheduleRequestClient
-func NewRoleEligibilityScheduleRequestClient() *RoleEligibilityScheduleRequestClient {
-	return &RoleEligibilityScheduleRequestClient{
+// NewRoleEligibilityScheduleRequest returns a new RoleEligibilityScheduleRequestsClient
+func NewRoleEligibilityScheduleRequestsClient() *RoleEligibilityScheduleRequestsClient {
+	return &RoleEligibilityScheduleRequestsClient{
 		BaseClient: NewClient(Version10),
 	}
 }
 
 // Get retrieves a UnifiedRoleEligibilityScheduleRequest
-func (c *RoleEligibilityScheduleRequestClient) Get(ctx context.Context, id string, query odata.Query) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
+func (c *RoleEligibilityScheduleRequestsClient) Get(ctx context.Context, id string, query odata.Query) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		OData:                  query,
@@ -33,7 +33,7 @@ func (c *RoleEligibilityScheduleRequestClient) Get(ctx context.Context, id strin
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Get(): %v", err)
+		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestsClient.BaseClient.Get(): %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -51,7 +51,7 @@ func (c *RoleEligibilityScheduleRequestClient) Get(ctx context.Context, id strin
 }
 
 // List retrieves all UnifiedRoleEligibilityScheduleRequests.
-func (c *RoleEligibilityScheduleRequestClient) List(ctx context.Context) (*[]UnifiedRoleEligibilityScheduleRequest, int, error) {
+func (c *RoleEligibilityScheduleRequestsClient) List(ctx context.Context) (*[]UnifiedRoleEligibilityScheduleRequest, int, error) {
 	var status int
 
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
@@ -61,7 +61,7 @@ func (c *RoleEligibilityScheduleRequestClient) List(ctx context.Context) (*[]Uni
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Get(): %v", err)
+		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestsClient.BaseClient.Get(): %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -82,7 +82,7 @@ func (c *RoleEligibilityScheduleRequestClient) List(ctx context.Context) (*[]Uni
 }
 
 // Create creates a new UnifiedRoleEligibilityScheduleRequest.
-func (c *RoleEligibilityScheduleRequestClient) Create(ctx context.Context, resr UnifiedRoleEligibilityScheduleRequest) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
+func (c *RoleEligibilityScheduleRequestsClient) Create(ctx context.Context, resr UnifiedRoleEligibilityScheduleRequest) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
 	var status int
 
 	body, err := json.Marshal(resr)
@@ -99,7 +99,7 @@ func (c *RoleEligibilityScheduleRequestClient) Create(ctx context.Context, resr 
 		},
 	})
 	if err != nil {
-		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Post(): %v", err)
+		return nil, status, fmt.Errorf("RoleEligibilityScheduleRequestsClient.BaseClient.Post(): %v", err)
 	}
 
 	defer resp.Body.Close()
@@ -117,7 +117,7 @@ func (c *RoleEligibilityScheduleRequestClient) Create(ctx context.Context, resr 
 }
 
 // Cancel revokes a granted UnifiedRoleEligibilityScheduleRequest
-func (c *RoleEligibilityScheduleRequestClient) Cancel(ctx context.Context, id string, query odata.Query) (int, error) {
+func (c *RoleEligibilityScheduleRequestsClient) Cancel(ctx context.Context, id string, query odata.Query) (int, error) {
 	_, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		OData:            query,
 		ValidStatusCodes: []int{http.StatusNoContent},
@@ -126,7 +126,7 @@ func (c *RoleEligibilityScheduleRequestClient) Cancel(ctx context.Context, id st
 		},
 	})
 	if err != nil {
-		return status, fmt.Errorf("RoleEligibilityScheduleRequestClient.BaseClient.Post(): %v", err)
+		return status, fmt.Errorf("RoleEligibilityScheduleRequestsClient.BaseClient.Post(): %v", err)
 	}
 
 	return status, nil
