@@ -21,7 +21,7 @@ func NewAccessPackageResourceRoleClient() *AccessPackageResourceRoleClient {
 }
 
 // List retrieves a list of AccessPackageResourceRoles for a specific accessPackageResource for a particular catalog / originSystem
-// This uses OData Filter as there is no native Get method
+// This method requires us to use an Odata Filter / Expand to function correctly
 func (c *AccessPackageResourceRoleClient) List(ctx context.Context, catalogId string, originSystem AccessPackageResourceOriginSystem, accessPackageResourceId string) (*[]AccessPackageResourceRole, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
