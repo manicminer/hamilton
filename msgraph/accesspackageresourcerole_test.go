@@ -43,7 +43,7 @@ func TestAccessPackageResourceRoleClient(t *testing.T) {
 	}, true)
 
 	// Try to get roles for group we added to Catalog
-	testAccessPackageResourceRoleClient_Get(t, c, *accessPackage.Catalog.ID, msgraph.AccessPackageResourceOriginSystemAadGroup, *accessPackageResourceRequest.AccessPackageResource.ID)
+	testAccessPackageResourceRoleClient_List(t, c, *accessPackage.Catalog.ID, msgraph.AccessPackageResourceOriginSystemAadGroup, *accessPackageResourceRequest.AccessPackageResource.ID)
 
 	// Cleanup
 	testAccessPackageResourceRoleAP_Delete(t, c, *accessPackage.ID)
@@ -53,8 +53,8 @@ func TestAccessPackageResourceRoleClient(t *testing.T) {
 }
 
 // AccessPackageResourceRole
-func testAccessPackageResourceRoleClient_Get(t *testing.T, c *test.Test, catalogId string, originSystem msgraph.AccessPackageResourceOriginSystem, accessPackageResourceId string) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
-	accessPackageResourceRole, status, err := c.AccessPackageResourceRoleClient.Get(c.Context, catalogId, originSystem, accessPackageResourceId)
+func testAccessPackageResourceRoleClient_List(t *testing.T, c *test.Test, catalogId string, originSystem msgraph.AccessPackageResourceOriginSystem, accessPackageResourceId string) (accessPackageResourceRoleScope *msgraph.AccessPackageResourceRoleScope) {
+	accessPackageResourceRole, status, err := c.AccessPackageResourceRoleClient.List(c.Context, catalogId, originSystem, accessPackageResourceId)
 	if err != nil {
 		t.Fatalf("AccessPackageResourceRequestClient.Get(): %v", err)
 	}
