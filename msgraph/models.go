@@ -615,9 +615,10 @@ type CloudAppSecurityControl struct {
 }
 
 type ConditionalAccessApplications struct {
-	IncludeApplications *[]string `json:"includeApplications,omitempty"`
-	ExcludeApplications *[]string `json:"excludeApplications,omitempty"`
-	IncludeUserActions  *[]string `json:"includeUserActions,omitempty"`
+	ApplicationFilter   *ConditionalAccessFilter `json:"applicationFilter,omitempty"`
+	IncludeApplications *[]string                `json:"includeApplications,omitempty"`
+	ExcludeApplications *[]string                `json:"excludeApplications,omitempty"`
+	IncludeUserActions  *[]string                `json:"includeUserActions,omitempty"`
 }
 
 type ConditionalAccessClientApplications struct {
