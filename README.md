@@ -192,15 +192,12 @@ export B2C_TENANT_ID=${TENANT_ID}
 export B2C_TENANT_DOMAIN=${TENANT_DOMAIN}
 ```
 
+> ℹ️ View all supported environment variables in the [`envDefault()` testing helper function](https://github.com/manicminer/hamilton/blob/main/internal/test/testing.go).
+
 To run all the tests:
 ```shell
 $ make test
 ```
-
-
-
-
-
 
 
 [gh-project]: https://github.com/manicminer/hamilton
