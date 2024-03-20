@@ -1,6 +1,6 @@
 ## v0.67.0 (Unreleased)
 
-- Support for the `ApplicationFilter` field in the `ConditionalAccessApplications` model ((#268)[https://github.com/manicminer/hamilton/pull/268])
+- Support for the `ApplicationFilter` field in the `ConditionalAccessApplications` model ([#268](https://github.com/manicminer/hamilton/pull/268))
 
 ## v0.66.0 (January 25, 2024)
 
