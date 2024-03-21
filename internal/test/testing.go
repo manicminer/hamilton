@@ -131,7 +131,7 @@ type Test struct {
 	ReportsClient                                           *msgraph.ReportsClient
 	RoleAssignmentsClient                                   *msgraph.RoleAssignmentsClient
 	RoleDefinitionsClient                                   *msgraph.RoleDefinitionsClient
-	RoleEligibilityScheduleRequestsClient                   *msgraph.RoleEligibilityScheduleRequestsClient
+	RoleEligibilityScheduleRequestClient                    *msgraph.RoleEligibilityScheduleRequestClient
 	RoleManagementPolicyClient                              *msgraph.RoleManagementPolicyClient
 	RoleManagementPolicyAssignmentClient                    *msgraph.RoleManagementPolicyAssignmentClient
 	RoleManagementPolicyRuleClient                          *msgraph.RoleManagementPolicyRuleClient
@@ -399,10 +399,10 @@ func NewTest(t *testing.T) (c *Test) {
 	c.RoleDefinitionsClient.BaseClient.Endpoint = *endpoint
 	c.RoleDefinitionsClient.BaseClient.RetryableClient.RetryMax = retry
 
-	c.RoleEligibilityScheduleRequestsClient = msgraph.NewRoleEligibilityScheduleRequestsClient()
-	c.RoleEligibilityScheduleRequestsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
-	c.RoleEligibilityScheduleRequestsClient.BaseClient.Endpoint = *endpoint
-	c.RoleEligibilityScheduleRequestsClient.BaseClient.RetryableClient.RetryMax = retry
+	c.RoleEligibilityScheduleRequestClient = msgraph.NewRoleEligibilityScheduleRequestClient()
+	c.RoleEligibilityScheduleRequestClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.RoleEligibilityScheduleRequestClient.BaseClient.Endpoint = *endpoint
+	c.RoleEligibilityScheduleRequestClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.RoleManagementPolicyClient = msgraph.NewRoleManagementPolicyClient()
 	c.RoleManagementPolicyClient.BaseClient.Authorizer = c.Connections["default"].Authorizer

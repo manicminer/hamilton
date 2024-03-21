@@ -11,7 +11,7 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
-func TestRoleEligibilityScheduleRequestsClient(t *testing.T) {
+func TestRoleEligibilityScheduleRequestClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 

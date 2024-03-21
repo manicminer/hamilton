@@ -10,20 +10,20 @@ import (
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
 
-// RoleEligibilityScheduleRequestsClient performs operations on RoleEligibilityScheduleRequests.
-type RoleEligibilityScheduleRequestsClient struct {
+// RoleEligibilityScheduleRequestClient performs operations on RoleEligibilityScheduleRequests.
+type RoleEligibilityScheduleRequestClient struct {
 	BaseClient Client
 }
 
-// NewRoleEligibilityScheduleRequest returns a new RoleEligibilityScheduleRequestsClient
-func NewRoleEligibilityScheduleRequestsClient() *RoleEligibilityScheduleRequestsClient {
-	return &RoleEligibilityScheduleRequestsClient{
+// NewRoleEligibilityScheduleRequest returns a new RoleEligibilityScheduleRequestClient
+func NewRoleEligibilityScheduleRequestClient() *RoleEligibilityScheduleRequestClient {
+	return &RoleEligibilityScheduleRequestClient{
 		BaseClient: NewClient(Version10),
 	}
 }
 
 // Get retrieves a UnifiedRoleEligibilityScheduleRequest
-func (c *RoleEligibilityScheduleRequestsClient) Get(ctx context.Context, id string, query odata.Query) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
+func (c *RoleEligibilityScheduleRequestClient) Get(ctx context.Context, id string, query odata.Query) (*UnifiedRoleEligibilityScheduleRequest, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		OData:                  query,
