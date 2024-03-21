@@ -3,6 +3,7 @@ name: Scheduled cleanup
 on:
   schedule:
     - cron: "58 */6 * * *"
+  workflow_dispatch:
 
 jobs:
   cleanup:

@@ -6,6 +6,7 @@ on:
     paths:
       - "msgraph/**.go"
       - ".github/workflows/msgraph-tests.yml"
+  workflow_dispatch:
 
 permissions:
   contents: 'read'
