@@ -11,14 +11,11 @@ jobs:
   golint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - id: go-version
-        run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
-
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
-          go-version: '${{ steps.go-version.outputs.go_version }}'
+          go-version-file: ./.go-version
 
       - uses: golangci/golangci-lint-action@v3
         with:
