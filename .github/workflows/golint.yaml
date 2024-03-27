@@ -17,8 +17,8 @@ jobs:
         with:
           go-version-file: ./.go-version
 
-      - uses: golangci/golangci-lint-action@v3
+      - uses: golangci/golangci-lint-action@v4
         with:
-          version: 'v1.50.0'
+          version: 'v1.57.1'
 
 # vim: set ts=2 sts=2 sw=2 et:

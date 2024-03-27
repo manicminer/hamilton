@@ -18,7 +18,7 @@ test:
 tools:
 	@echo "==> installing required tooling..."
 	go install mvdan.cc/gofumpt@latest
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$$(go env GOPATH || $$GOPATH)"/bin v1.50.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$$(go env GOPATH || $$GOPATH)"/bin v1.57.1
 
 todo:
 	grep --color=always --exclude=GNUmakefile --exclude-dir=.git --exclude-dir=vendor --recursive TODO "$(CURDIR)"
