@@ -123,5 +123,4 @@ func testRoleManagementPolicyClient_Update(t *testing.T, c *test.Test, policy ms
 	if status < 200 || status >= 300 {
 		t.Fatalf("RoleManagementPolicyClient.Update(): invalid status: %d", status)
 	}
-	return
 }
