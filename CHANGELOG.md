@@ -1,7 +1,14 @@
 ## v0.67.0 (Unreleased)
 
+- Support for PIM Role Management [Policies](https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicy?view=graph-rest-1.0), [Rules](https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicyrule?view=graph-rest-1.0), and [Assignments](https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicyassignment?view=graph-rest-1.0) ([#277](https://github.com/manicminer/hamilton/pull/277))
+- Support for PIM Group Eligibility [Schedules](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedule?view=graph-rest-1.0), [Instances](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityscheduleinstance?view=graph-rest-1.0), and [Requests](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedulerequest?view=graph-rest-1.0) ([#277](https://github.com/manicminer/hamilton/pull/277))
+- Support for PIM Group Assignment [Schedules]([https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedule?view=graph-rest-1.0](https://learn.microsoft.com/en-us/graph/api/resources/privilegedaccessgroupassignmentschedule?view=graph-rest-1.0)), [Instances]([https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityscheduleinstance?view=graph-rest-1.0](https://learn.microsoft.com/en-us/graph/api/resources/privilegedaccessgroupassignmentscheduleinstance?view=graph-rest-1.0)), and [Requests]([https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedulerequest?view=graph-rest-1.0](https://learn.microsoft.com/en-us/graph/api/resources/privilegedaccessgroupassignmentschedulerequest?view=graph-rest-1.0)) ([#277](https://github.com/manicminer/hamilton/pull/277))
 - Support for the `ApplicationFilter` field in the `ConditionalAccessApplications` model ([#268](https://github.com/manicminer/hamilton/pull/268))
 - Added `SkipExchangeInstantOn` to supported `msgraph.GroupResourceBehaviorOption` values ([#275](https://github.com/manicminer/hamilton/pull/275))
+
+⚠️ BREAKING CHANGES:
+
+- `ExpirationPatternDuration` has changed from a `*time.Duration` to a `*string` ([#276](https://github.com/manicminer/hamilton/pull/277))
 
 ## v0.66.0 (January 25, 2024)
 
