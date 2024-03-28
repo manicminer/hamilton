@@ -3,6 +3,7 @@ name: Scheduled cleanup
 on:
   schedule:
     - cron: "58 */6 * * *"
+  workflow_dispatch:
 
 jobs:
   cleanup:
@@ -10,14 +11,11 @@ jobs:
     strategy:
       fail-fast: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - id: go-version
-        run: echo "go_version=$(cat .go-version)" >>$GITHUB_OUTPUT
-
-      - uses: actions/setup-go@v3
+      - uses: actions/setup-go@v5
         with:
-          go-version: '${{ steps.go-version.outputs.go_version }}'
+          go-version-file: ./.go-version
 
       - run: go run ./internal/cmd/test-cleanup
 
