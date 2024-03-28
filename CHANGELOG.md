@@ -1,4 +1,4 @@
-## v0.67.0 (Unreleased)
+## v0.67.0 (March 28, 2024)
 
 - Base Client: improve error visibility by returning the error for failed requests, when the response body is missing ([#280](https://github.com/manicminer/hamilton/pull/280))
 - Support for [listing Access Package Resource Roles](https://learn.microsoft.com/en-us/graph/api/accesspackagecatalog-list-accesspackageresourceroles?view=graph-rest-beta) ([#278](https://github.com/manicminer/hamilton/pull/278))
