@@ -10,7 +10,7 @@
 
 ⚠️ BREAKING CHANGES:
 
-- `ExpirationPatternDuration` has changed from a `*time.Duration` to a `*string` ([#276](https://github.com/manicminer/hamilton/pull/277))
+- `ExpirationPattern.Duration` has changed from a `*time.Duration` to a `*string` ([#276](https://github.com/manicminer/hamilton/pull/277))
 
 ## v0.66.0 (January 25, 2024)
 
