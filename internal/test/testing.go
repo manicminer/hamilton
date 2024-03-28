@@ -97,6 +97,7 @@ type Test struct {
 	AccessPackageClient                                     *msgraph.AccessPackageClient
 	AccessPackageResourceClient                             *msgraph.AccessPackageResourceClient
 	AccessPackageResourceRequestClient                      *msgraph.AccessPackageResourceRequestClient
+	AccessPackageResourceRoleClient                         *msgraph.AccessPackageResourceRoleClient
 	AccessPackageResourceRoleScopeClient                    *msgraph.AccessPackageResourceRoleScopeClient
 	AdministrativeUnitsClient                               *msgraph.AdministrativeUnitsClient
 	ApplicationTemplatesClient                              *msgraph.ApplicationTemplatesClient
@@ -227,6 +228,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AccessPackageResourceRequestClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.AccessPackageResourceRequestClient.BaseClient.Endpoint = *endpoint
 	c.AccessPackageAssignmentPolicyClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.AccessPackageResourceRoleClient = msgraph.NewAccessPackageResourceRoleClient()
+	c.AccessPackageResourceRoleClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.AccessPackageResourceRoleClient.BaseClient.Endpoint = *endpoint
+	c.AccessPackageResourceRoleClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AccessPackageResourceRoleScopeClient = msgraph.NewAccessPackageResourceRoleScopeClient()
 	c.AccessPackageResourceRoleScopeClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
