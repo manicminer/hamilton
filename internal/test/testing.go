@@ -103,6 +103,7 @@ type Test struct {
 	ApplicationTemplatesClient                              *msgraph.ApplicationTemplatesClient
 	ApplicationsClient                                      *msgraph.ApplicationsClient
 	AppRoleAssignedToClient                                 *msgraph.AppRoleAssignedToClient
+	AttributeSetClient                                      *msgraph.AttributeSetClient
 	AuthenticationMethodsClient                             *msgraph.AuthenticationMethodsClient
 	AuthenticationStrengthPoliciesClient                    *msgraph.AuthenticationStrengthPoliciesClient
 	B2CUserFlowClient                                       *msgraph.B2CUserFlowClient
@@ -259,6 +260,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AppRoleAssignedToClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.AppRoleAssignedToClient.BaseClient.Endpoint = *endpoint
 	c.AppRoleAssignedToClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.AttributeSetClient = msgraph.NewAttributeSetClient()
+	c.AttributeSetClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.AttributeSetClient.BaseClient.Endpoint = *endpoint
+	c.AttributeSetClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.AuthenticationMethodsClient = msgraph.NewAuthenticationMethodsClient()
 	c.AuthenticationMethodsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer

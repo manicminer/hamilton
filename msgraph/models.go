@@ -2242,3 +2242,8 @@ type UserFlowAttribute struct {
 	UserFlowAttributeType *string                    `json:"userFlowAttributeType,omitempty"`
 	DataType              *UserflowAttributeDataType `json:"dataType,omitempty"`
 }
+type AttributeSet struct {
+	ID                  *string `json:"id,omitempty"`
+	Description         *string `json:"description,omitempty"`
+	MaxAttributesPerSet *int32  `json:"maxAttributesPerSet,omitempty"`
+}
