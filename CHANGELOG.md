@@ -1,4 +1,4 @@
-## v0.68.0 (Unreleased)
+## v0.68.0 (May 16, 2024)
 
 - Removed `omitempty` from struct tags for `ApplicationEnforcedRestrictions`, `CloudAppSecurity`, `PersistentBrowser`, and `SignInFrequency` fields in the `ConditionalAccessSessionControls` model ([#282](https://github.com/manicminer/hamilton/pull/282))
 
