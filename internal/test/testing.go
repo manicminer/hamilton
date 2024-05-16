@@ -110,6 +110,7 @@ type Test struct {
 	ClaimsMappingPolicyClient                               *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient                         *msgraph.ConditionalAccessPoliciesClient
 	ConnectedOrganizationClient                             *msgraph.ConnectedOrganizationClient
+	CustomSecurityAttributeDefinitionClient                 *msgraph.CustomSecurityAttributeDefinitionClient
 	DelegatedPermissionGrantsClient                         *msgraph.DelegatedPermissionGrantsClient
 	DirectoryAuditReportsClient                             *msgraph.DirectoryAuditReportsClient
 	DirectoryObjectsClient                                  *msgraph.DirectoryObjectsClient
@@ -295,6 +296,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ConnectedOrganizationClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.ConnectedOrganizationClient.BaseClient.Endpoint = *endpoint
 	c.ConnectedOrganizationClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.CustomSecurityAttributeDefinitionClient = msgraph.NewCustomSecurityAttributeDefinitionClient()
+	c.CustomSecurityAttributeDefinitionClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.CustomSecurityAttributeDefinitionClient.BaseClient.Endpoint = *endpoint
+	c.CustomSecurityAttributeDefinitionClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DelegatedPermissionGrantsClient = msgraph.NewDelegatedPermissionGrantsClient()
 	c.DelegatedPermissionGrantsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
