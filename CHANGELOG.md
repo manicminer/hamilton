@@ -1,3 +1,7 @@
+## v0.68.0 (Unreleased)
+
+- Removed `omitempty` from struct tags for `ApplicationEnforcedRestrictions`, `CloudAppSecurity`, `PersistentBrowser`, and `SignInFrequency` fields in the `ConditionalAccessSessionControls` model ([#282](https://github.com/manicminer/hamilton/pull/282))
+
 ## v0.67.0 (March 28, 2024)
 
 - Base Client: improve error visibility by returning the error for failed requests, when the response body is missing ([#280](https://github.com/manicminer/hamilton/pull/280))
