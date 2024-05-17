@@ -1,3 +1,7 @@
+## v0.69.0 (Unreleased)
+
+- Support for [Attribute Sets](https://learn.microsoft.com/en-us/graph/api/resources/attributeset?view=graph-rest-1.0) and [Custom Security Attribute Definitions](https://learn.microsoft.com/en-us/graph/api/resources/customsecurityattributedefinition?view=graph-rest-1.0) ([#281](https://github.com/manicminer/hamilton/pull/281))
+
 ## v0.68.0 (May 16, 2024)
 
 - Removed `omitempty` from struct tags for `ApplicationEnforcedRestrictions`, `CloudAppSecurity`, `PersistentBrowser`, and `SignInFrequency` fields in the `ConditionalAccessSessionControls` model ([#282](https://github.com/manicminer/hamilton/pull/282))
