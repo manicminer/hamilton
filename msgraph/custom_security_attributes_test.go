@@ -10,8 +10,6 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
-const attributeSetId = "test"
-
 func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()

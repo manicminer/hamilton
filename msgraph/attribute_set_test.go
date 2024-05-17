@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
@@ -9,25 +10,36 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
+const attributeSetId = "test"
+
 func TestAttributeSetClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	attributeSet := testAttributeSetClientCreate(
-		t,
-		c,
-		msgraph.AttributeSet{
-			Description: utils.StringPtr("test attribute set"),
-			ID:          utils.StringPtr(c.RandomString),
-		},
-	)
+	c.AttributeSetClient.BaseClient.DisableRetries = true
+	_, status, err := c.AttributeSetClient.Get(c.Context, attributeSetId, odata.Query{})
+	c.AttributeSetClient.BaseClient.DisableRetries = false
+	if err != nil {
+		if status != http.StatusNotFound {
+			t.Fatalf("AttributeSetClient.Get(): unable to retrieve attribute set for testing: %v", err)
+		}
 
-	testAttributeSetClientGet(t, c, *attributeSet.ID)
+		testAttributeSetClientCreate(
+			t,
+			c,
+			msgraph.AttributeSet{
+				Description: utils.StringPtr("test attribute set"),
+				ID:          utils.StringPtr(attributeSetId),
+			},
+		)
+	}
+
+	testAttributeSetClientGet(t, c, attributeSetId)
 	testAttributeSetClientUpdate(
 		t,
 		c,
 		msgraph.AttributeSet{
-			ID:          attributeSet.ID,
+			ID:          utils.StringPtr(attributeSetId),
 			Description: utils.StringPtr("updated test description"),
 		},
 	)
