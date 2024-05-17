@@ -22,8 +22,6 @@ func TestAttributeSetClient(t *testing.T) {
 		},
 	)
 
-	t.Logf("%s", *attributeSet.ID)
-
 	testAttributeSetClientGet(t, c, *attributeSet.ID)
 	testAttributeSetClientUpdate(
 		t,
