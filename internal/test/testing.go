@@ -39,6 +39,8 @@ var (
 	clientSecret          = os.Getenv("CLIENT_SECRET")
 	environment           = envDefault("AZURE_ENVIRONMENT", "global")
 	retryMax              = envDefault("RETRY_MAX", "14")
+
+	createAttributeSet = envDefault("CREATE_ATTRIBUTE_SET", "false")
 )
 
 type Connection struct {
@@ -83,10 +85,11 @@ func (c *Connection) Authorize(ctx context.Context, api environments.Api) {
 }
 
 type Test struct {
-	Context      context.Context
-	CancelFunc   context.CancelFunc
-	Connections  map[string]*Connection
-	RandomString string
+	Context            context.Context
+	CancelFunc         context.CancelFunc
+	Connections        map[string]*Connection
+	RandomString       string
+	CreateAtrributeSet bool
 
 	Claims *claims.Claims
 	Token  *oauth2.Token
@@ -152,8 +155,10 @@ type Test struct {
 }
 
 func NewTest(t *testing.T) (c *Test) {
-	ctx := context.Background()
 	var cancel context.CancelFunc
+	var ctx context.Context = context.Background()
+	var err error
+	var parsedCreateAttributeSet bool
 
 	if deadline, ok := t.Deadline(); ok {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
@@ -161,11 +166,17 @@ func NewTest(t *testing.T) (c *Test) {
 		ctx, cancel = context.WithTimeout(ctx, 5*time.Minute)
 	}
 
+	parsedCreateAttributeSet, err = strconv.ParseBool(createAttributeSet)
+	if err != nil {
+		t.Fatalf("could not parse 'CREATE_ATTRIBUTE_SET' to bool: %v", err)
+	}
+
 	c = &Test{
-		Context:      ctx,
-		CancelFunc:   cancel,
-		Connections:  make(map[string]*Connection),
-		RandomString: RandomString(),
+		Context:            ctx,
+		CancelFunc:         cancel,
+		Connections:        make(map[string]*Connection),
+		RandomString:       RandomString(),
+		CreateAtrributeSet: parsedCreateAttributeSet,
 	}
 
 	conn := NewConnection(defaultTenantId, defaultTenantDomain)
@@ -180,7 +191,6 @@ func NewTest(t *testing.T) (c *Test) {
 	conn3.Authorize(ctx, conn.AuthConfig.Environment.MicrosoftGraph)
 	c.Connections["connected"] = conn3
 
-	var err error
 	c.Token, err = conn.Authorizer.Token(ctx, &http.Request{})
 	if err != nil {
 		t.Fatalf("could not acquire access token: %v", err)
