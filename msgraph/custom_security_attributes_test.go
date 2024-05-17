@@ -10,25 +10,31 @@ import (
 )
 
 func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
+	var attributeSetID *string = utils.StringPtr("hamilton")
+
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	attributeSet, _, err := c.AttributeSetClient.Create(
-		c.Context,
-		msgraph.AttributeSet{
-			Description: utils.StringPtr("custom_security_attributes test"),
-			ID:          utils.StringPtr(c.RandomString),
-		},
-	)
-	if err != nil {
-		t.Fatalf("AttributeSetClient.Create(): %v", err)
+	if c.CreateAtrributeSet {
+		attributeSet, _, err := c.AttributeSetClient.Create(
+			c.Context,
+			msgraph.AttributeSet{
+				Description: utils.StringPtr("custom_security_attributes test"),
+				ID:          utils.StringPtr(c.RandomString),
+			},
+		)
+		if err != nil {
+			t.Fatalf("AttributeSetClient.Create(): %v", err)
+		}
+
+		attributeSetID = attributeSet.ID
 	}
 
 	customSecurityAttributeDefinition := testCustomSecurityAttributeDefinitionClientCreate(
 		t,
 		c,
 		msgraph.CustomSecurityAttributeDefinition{
-			AttributeSet:            attributeSet.ID,
+			AttributeSet:            attributeSetID,
 			Description:             utils.StringPtr("test description"),
 			IsCollection:            utils.BoolPtr(false),
 			IsSearchable:            utils.BoolPtr(false),
