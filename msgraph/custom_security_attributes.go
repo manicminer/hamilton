@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
+	"github.com/manicminer/hamilton/internal/utils"
 )
 
 const (
@@ -187,6 +188,38 @@ func (c *CustomSecurityAttributeDefinitionClient) Delete(ctx context.Context, id
 	)
 	if err != nil {
 		return status, fmt.Errorf("CustomSecurityAttributeDefinitionClient.BaseClient.Delete(): %v", err)
+	}
+
+	return status, nil
+}
+
+func (c *CustomSecurityAttributeDefinitionClient) Deactivate(ctx context.Context, id string) (int, error) {
+	var status int
+	var customSecurityAttributeDefinition CustomSecurityAttributeDefinition
+
+	customSecurityAttributeDefinition.Status = utils.StringPtr("Deprecated")
+
+	body, err := json.Marshal(customSecurityAttributeDefinition)
+	if err != nil {
+		return status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	_, status, _, err = c.BaseClient.Patch(
+		ctx,
+		PatchHttpRequestInput{
+			Body:                   body,
+			ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+			ValidStatusCodes: []int{
+				http.StatusOK,
+				http.StatusNoContent,
+			},
+			Uri: Uri{
+				Entity: fmt.Sprintf("%s/%s", customSecurityAttributeDefinitionEntity, id),
+			},
+		},
+	)
+	if err != nil {
+		return status, fmt.Errorf("customSecurityAttributeDefinitionClient.BaseClient.Patch(): %v", err)
 	}
 
 	return status, nil
