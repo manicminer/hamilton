@@ -39,6 +39,13 @@ func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
 		},
 	)
 
+	defer func() {
+		_, err := c.CustomSecurityAttributeDefinitionClient.Deactivate(c.Context, *customSecurityAttributeDefinition.ID)
+		if err != nil {
+			t.Fatalf("CustomSecurityAttributeDefinitionClient.Deactivate(): %v", err)
+		}
+	}()
+
 	testCustomSecurityAttributeDefinitionClientGet(t, c, *customSecurityAttributeDefinition.ID)
 	testCustomSecurityAttributeDefinitionClientUpdate(
 		t,
