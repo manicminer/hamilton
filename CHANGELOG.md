@@ -1,4 +1,4 @@
-## v0.69.0 (Unreleased)
+## v0.69.0 (May 17, 2024)
 
 - Support for [Attribute Sets](https://learn.microsoft.com/en-us/graph/api/resources/attributeset?view=graph-rest-1.0) and [Custom Security Attribute Definitions](https://learn.microsoft.com/en-us/graph/api/resources/customsecurityattributedefinition?view=graph-rest-1.0) ([#281](https://github.com/manicminer/hamilton/pull/281))
 
