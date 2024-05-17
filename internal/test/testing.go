@@ -103,12 +103,14 @@ type Test struct {
 	ApplicationTemplatesClient                              *msgraph.ApplicationTemplatesClient
 	ApplicationsClient                                      *msgraph.ApplicationsClient
 	AppRoleAssignedToClient                                 *msgraph.AppRoleAssignedToClient
+	AttributeSetClient                                      *msgraph.AttributeSetClient
 	AuthenticationMethodsClient                             *msgraph.AuthenticationMethodsClient
 	AuthenticationStrengthPoliciesClient                    *msgraph.AuthenticationStrengthPoliciesClient
 	B2CUserFlowClient                                       *msgraph.B2CUserFlowClient
 	ClaimsMappingPolicyClient                               *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient                         *msgraph.ConditionalAccessPoliciesClient
 	ConnectedOrganizationClient                             *msgraph.ConnectedOrganizationClient
+	CustomSecurityAttributeDefinitionClient                 *msgraph.CustomSecurityAttributeDefinitionClient
 	DelegatedPermissionGrantsClient                         *msgraph.DelegatedPermissionGrantsClient
 	DirectoryAuditReportsClient                             *msgraph.DirectoryAuditReportsClient
 	DirectoryObjectsClient                                  *msgraph.DirectoryObjectsClient
@@ -150,8 +152,9 @@ type Test struct {
 }
 
 func NewTest(t *testing.T) (c *Test) {
-	ctx := context.Background()
 	var cancel context.CancelFunc
+	var ctx context.Context = context.Background()
+	var err error
 
 	if deadline, ok := t.Deadline(); ok {
 		ctx, cancel = context.WithDeadline(ctx, deadline)
@@ -178,7 +181,6 @@ func NewTest(t *testing.T) (c *Test) {
 	conn3.Authorize(ctx, conn.AuthConfig.Environment.MicrosoftGraph)
 	c.Connections["connected"] = conn3
 
-	var err error
 	c.Token, err = conn.Authorizer.Token(ctx, &http.Request{})
 	if err != nil {
 		t.Fatalf("could not acquire access token: %v", err)
@@ -260,6 +262,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.AppRoleAssignedToClient.BaseClient.Endpoint = *endpoint
 	c.AppRoleAssignedToClient.BaseClient.RetryableClient.RetryMax = retry
 
+	c.AttributeSetClient = msgraph.NewAttributeSetClient()
+	c.AttributeSetClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.AttributeSetClient.BaseClient.Endpoint = *endpoint
+	c.AttributeSetClient.BaseClient.RetryableClient.RetryMax = retry
+
 	c.AuthenticationMethodsClient = msgraph.NewAuthenticationMethodsClient()
 	c.AuthenticationMethodsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.AuthenticationMethodsClient.BaseClient.Endpoint = *endpoint
@@ -289,6 +296,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.ConnectedOrganizationClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
 	c.ConnectedOrganizationClient.BaseClient.Endpoint = *endpoint
 	c.ConnectedOrganizationClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.CustomSecurityAttributeDefinitionClient = msgraph.NewCustomSecurityAttributeDefinitionClient()
+	c.CustomSecurityAttributeDefinitionClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.CustomSecurityAttributeDefinitionClient.BaseClient.Endpoint = *endpoint
+	c.CustomSecurityAttributeDefinitionClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.DelegatedPermissionGrantsClient = msgraph.NewDelegatedPermissionGrantsClient()
 	c.DelegatedPermissionGrantsClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
