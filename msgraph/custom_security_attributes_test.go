@@ -16,8 +16,8 @@ func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
 	attributeSet, _, err := c.AttributeSetClient.Create(
 		c.Context,
 		msgraph.AttributeSet{
-      Description: utils.StringPtr("custom_security_attributes test"),
-			ID: utils.StringPtr(c.RandomString),
+			Description: utils.StringPtr("custom_security_attributes test"),
+			ID:          utils.StringPtr(c.RandomString),
 		},
 	)
 	if err != nil {
@@ -51,7 +51,7 @@ func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
 		t,
 		c,
 		msgraph.CustomSecurityAttributeDefinition{
-      ID: customSecurityAttributeDefinition.ID,
+			ID:          customSecurityAttributeDefinition.ID,
 			Description: utils.StringPtr("updated test description"),
 		},
 	)
@@ -117,4 +117,3 @@ func testCustomSecurityAttributeDefinitionClientUpdate(t *testing.T, c *test.Tes
 		t.Fatalf("CustomSecurityAttributeDefinitionClient.Update(): invalid status: %d", status)
 	}
 }
-
