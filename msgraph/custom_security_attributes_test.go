@@ -1,6 +1,7 @@
 package msgraph_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
@@ -9,32 +10,37 @@ import (
 	"github.com/manicminer/hamilton/msgraph"
 )
 
-func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
-	var attributeSetID *string = utils.StringPtr("hamilton")
+const attributeSetId = "test"
 
+func TestCustomSecurityAttributeDefinitionClient(t *testing.T) {
 	c := test.NewTest(t)
 	defer c.CancelFunc()
 
-	if c.CreateAtrributeSet {
-		attributeSet, _, err := c.AttributeSetClient.Create(
+	c.AttributeSetClient.BaseClient.DisableRetries = true
+	_, status, err := c.AttributeSetClient.Get(c.Context, attributeSetId, odata.Query{})
+	c.AttributeSetClient.BaseClient.DisableRetries = false
+	if err != nil {
+		if status != http.StatusNotFound {
+			t.Fatalf("AttributeSetClient.Get(): unable to retrieve attribute set for testing: %v", err)
+		}
+
+		_, _, err = c.AttributeSetClient.Create(
 			c.Context,
 			msgraph.AttributeSet{
 				Description: utils.StringPtr("custom_security_attributes test"),
-				ID:          utils.StringPtr(c.RandomString),
+				ID:          utils.StringPtr(attributeSetId),
 			},
 		)
 		if err != nil {
 			t.Fatalf("AttributeSetClient.Create(): %v", err)
 		}
-
-		attributeSetID = attributeSet.ID
 	}
 
 	customSecurityAttributeDefinition := testCustomSecurityAttributeDefinitionClientCreate(
 		t,
 		c,
 		msgraph.CustomSecurityAttributeDefinition{
-			AttributeSet:            attributeSetID,
+			AttributeSet:            utils.StringPtr(attributeSetId),
 			Description:             utils.StringPtr("test description"),
 			IsCollection:            utils.BoolPtr(false),
 			IsSearchable:            utils.BoolPtr(false),
