@@ -64,7 +64,7 @@ type AccessPackageAssignmentRequest struct {
 
 type AccessPackageAssignmentPolicy struct {
 	AccessPackageId         *string                   `json:"accessPackageId,omitempty"`
-	AccessReviewSettings    *AssignmentReviewSettings `json:"accessReviewSettings,omitempty"`
+	AccessReviewSettings    *AssignmentReviewSettings `json:"accessReviewSettings"`
 	CanExtend               *bool                     `json:"canExtend,omitempty"`
 	CreatedBy               *string                   `json:"createdBy,omitempty"`
 	CreatedDateTime         *time.Time                `json:"createdDateTime,omitempty"`
