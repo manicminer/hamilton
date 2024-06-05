@@ -1,0 +1,24 @@
+---
+name: GoLang Linting
+on:
+  pull_request:
+    types: ["opened", "synchronize"]
+    paths:
+      - "**.go"
+      - ".github/workflows/golint.yml"
+
+jobs:
+  golint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ./.go-version
+
+      - uses: golangci/golangci-lint-action@v4
+        with:
+          version: 'v1.57.1'
+
+# vim: set ts=2 sts=2 sw=2 et:

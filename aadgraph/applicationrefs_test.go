@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/manicminer/hamilton/aadgraph"
-	"github.com/manicminer/hamilton/auth"
 	"github.com/manicminer/hamilton/internal/test"
 )
 
@@ -30,10 +29,10 @@ func TestApplicationRefsClient(t *testing.T) {
 	}
 
 	c := ApplicationRefsClientTest{
-		connection:   test.NewConnection(auth.TokenVersion1, tenantId, tenantDomain),
+		connection:   test.NewConnection(tenantId, tenantDomain),
 		randomString: test.RandomString(),
 	}
-	c.connection.Authorize(ctx, c.connection.AuthConfig.Environment.MsGraph)
+	c.connection.Authorize(ctx, c.connection.AuthConfig.Environment.MicrosoftGraph)
 	c.client = aadgraph.NewApplicationRefsClient(c.connection.AuthConfig.TenantID)
 	c.client.BaseClient.Authorizer = c.connection.Authorizer
 

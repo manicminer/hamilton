@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestGroupsClient(t *testing.T) {
@@ -27,6 +27,14 @@ func TestGroupsClient(t *testing.T) {
 	group := testGroupsClient_Create(t, c, newGroup)
 	testGroupsClient_Get(t, c, *group.ID())
 
+	administrativeUnit := testAdministrativeUnitsClient_Create(t, c, msgraph.AdministrativeUnit{
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-administrative-unit-%s", c.RandomString)),
+	})
+	testAdministrativeUnitsClient_AddMembers(t, c, *administrativeUnit.ID, &msgraph.Members{group.DirectoryObject})
+	testGroupsClient_ListAdministrativeUnitMemberships(t, c, *group.ID())
+	testAdministrativeUnitsClient_RemoveMembers(t, c, *administrativeUnit.ID, &[]string{*group.DirectoryObject.Id})
+	testAdministrativeUnitsClient_Delete(t, c, *administrativeUnit.ID)
+
 	owners := testGroupsClient_ListOwners(t, c, *group.ID())
 	testGroupsClient_GetOwner(t, c, *group.ID(), (*owners)[0])
 
@@ -34,6 +42,7 @@ func TestGroupsClient(t *testing.T) {
 	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID())
 	testGroupsClient_GetMember(t, c, *group.ID(), (*members)[0])
 	testGroupsClient_GetMember(t, c, *group.ID(), (*transitiveMembers)[0])
+	testGroupsClient_GetMembers(t, c, *group.ID(), odata.Query{})
 
 	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.RandomString))
 	testGroupsClient_Update(t, c, *group)
@@ -165,6 +174,23 @@ func testGroupsClient_ListOwners(t *testing.T, c *test.Test, id string) (owners 
 	return
 }
 
+func testGroupsClient_ListAdministrativeUnitMemberships(t *testing.T, c *test.Test, id string) (administrativeUnitMemberships *[]msgraph.AdministrativeUnit) {
+	administrativeUnitMemberships, status, err := c.GroupsClient.ListAdministrativeUnitMemberships(c.Context, id)
+	if err != nil {
+		t.Fatalf("GroupsClient.ListAdministrativeUnitMemberships(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.ListAdministrativeUnitMemberships(): invalid status: %d", status)
+	}
+	if administrativeUnitMemberships == nil {
+		t.Fatal("GroupsClient.ListAdministrativeUnitMemberships(): administrativeUnitMemberships was nil")
+	}
+	if len(*administrativeUnitMemberships) == 0 {
+		t.Fatal("GroupsClient.ListAdministrativeUnitMemberships(): administrativeUnitMemberships was empty")
+	}
+	return
+}
+
 func testGroupsClient_GetOwner(t *testing.T, c *test.Test, groupId string, ownerId string) (owner *string) {
 	owner, status, err := c.GroupsClient.GetOwner(c.Context, groupId, ownerId)
 	if err != nil {
@@ -243,6 +269,20 @@ func testGroupsClient_GetMember(t *testing.T, c *test.Test, groupId string, memb
 	}
 	if member == nil {
 		t.Fatal("GroupsClient.GetMember(): member was nil")
+	}
+	return
+}
+
+func testGroupsClient_GetMembers(t *testing.T, c *test.Test, groupId string, query odata.Query) (members *[]msgraph.User) {
+	members, status, err := c.GroupsClient.GetMembers(c.Context, groupId, query)
+	if err != nil {
+		t.Fatalf("GroupsClient.GetMembers(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.GetMembesr(): invalid status: %d", status)
+	}
+	if members == nil {
+		t.Fatal("GroupsClient.GetMembers(): members was nil")
 	}
 	return
 }

@@ -7,16 +7,16 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/manicminer/hamilton/odata"
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
 
 type ChatClient struct {
 	BaseClient Client
 }
 
-func NewChatClient(tenantId string) *ChatClient {
+func NewChatClient() *ChatClient {
 	return &ChatClient{
-		BaseClient: NewClient(VersionBeta, tenantId),
+		BaseClient: NewClient(Version10),
 	}
 }
 
@@ -36,8 +36,7 @@ func (c *ChatClient) Create(ctx context.Context, chat Chat) (*Chat, int, error) 
 		},
 		ValidStatusCodes: []int{http.StatusCreated},
 		Uri: Uri{
-			Entity:      "/chats",
-			HasTenantId: true,
+			Entity: "/chats",
 		},
 	})
 
@@ -68,8 +67,7 @@ func (c *ChatClient) Get(ctx context.Context, id string, query odata.Query) (*Ch
 		OData:                  query,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/chats/%s", id),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/chats/%s", id),
 		},
 	})
 	if err != nil {
@@ -102,8 +100,7 @@ func (c *ChatClient) List(ctx context.Context, userID string, query odata.Query)
 		OData:                  query,
 		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/users/%s/chats", userID),
-			HasTenantId: false,
+			Entity: fmt.Sprintf("/users/%s/chats", userID),
 		},
 	})
 	if err != nil {
@@ -141,8 +138,7 @@ func (c *ChatClient) Update(ctx context.Context, chat Chat) (int, error) {
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ValidStatusCodes:       []int{http.StatusNoContent},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/chats/%s", *chat.ID),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/chats/%s", *chat.ID),
 		},
 	})
 	if err != nil {

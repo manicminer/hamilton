@@ -1,0 +1,22 @@
+---
+name: Scheduled cleanup
+on:
+  schedule:
+    - cron: "58 */6 * * *"
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: self-hosted
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: ./.go-version
+
+      - run: go run ./internal/cmd/test-cleanup
+
+# vim: set ts=2 sts=2 sw=2 et:

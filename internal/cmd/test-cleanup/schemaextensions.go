@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func cleanupSchemaExtensions() {
-	schemaExtensionsClient := msgraph.NewSchemaExtensionsClient(tenantId)
+	schemaExtensionsClient := msgraph.NewSchemaExtensionsClient()
 	schemaExtensionsClient.BaseClient.Authorizer = authorizer
 
 	schemaExtensions, _, err := schemaExtensionsClient.List(ctx, odata.Query{Filter: fmt.Sprintf("status eq '%s'", msgraph.SchemaExtensionStatusInDevelopment)})

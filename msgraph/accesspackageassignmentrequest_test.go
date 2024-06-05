@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestAccessPackageAssignmentRequestClient(t *testing.T) {
@@ -65,7 +65,7 @@ func TestAccessPackageAssignmentRequestClient(t *testing.T) {
 			IsEnabled:                       utils.BoolPtr(true),
 			StartDateTime:                   &currentTime,
 			DurationInDays:                  utils.Int32Ptr(5),
-			RecurrenceType:                  msgraph.AccessReviewRecurranceTypeMonthly,
+			RecurrenceType:                  msgraph.AccessReviewRecurrenceTypeMonthly,
 			ReviewerType:                    msgraph.AccessReviewReviewerTypeSelf,
 			IsAccessRecommendationEnabled:   utils.BoolPtr(true),
 			IsApprovalJustificationRequired: utils.BoolPtr(true),

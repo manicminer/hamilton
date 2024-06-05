@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/manicminer/hamilton/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestConditionalAccessPolicyClient(t *testing.T) {
@@ -20,11 +20,58 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 	testExcGroup := testGroup_Create(t, c, "test-conditionalAccessPolicy-exc")
 	testUser := testUser_Create(t, c)
 
+	authStrengthPolicy := testAuthenticationStrengthPoliciesClient_Create(t, c, msgraph.AuthenticationStrengthPolicy{
+		DisplayName:         utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
+		Description:         utils.StringPtr("Password and Hardware OATH token"),
+		AllowedCombinations: &[]string{"password, hardwareOath"},
+	},
+	)
+
 	policy := testConditionalAccessPolicysClient_Create(t, c, msgraph.ConditionalAccessPolicy{
 		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-%s", c.RandomString)),
 		State:       utils.StringPtr("enabled"),
 		Conditions: &msgraph.ConditionalAccessConditionSet{
 			ClientAppTypes: &[]string{"mobileAppsAndDesktopClients", "browser"},
+			Applications: &msgraph.ConditionalAccessApplications{
+				IncludeApplications: &[]string{testAppId},
+			},
+			Users: &msgraph.ConditionalAccessUsers{
+				ExcludeUsers:  &[]string{*testUser.ID()},
+				IncludeGroups: &[]string{*testIncGroup.ID()},
+				ExcludeGroups: &[]string{*testExcGroup.ID()},
+				IncludeGuestsOrExternalUsers: &msgraph.ConditionalAccessGuestsOrExternalUsers{
+					GuestOrExternalUserTypes: &[]msgraph.ConditionalAccessGuestOrExternalUserType{
+						msgraph.ConditionalAccessGuestOrExternalUserTypeB2bCollaborationGuest,
+						msgraph.ConditionalAccessGuestOrExternalUserTypeB2bCollaborationMember,
+						msgraph.ConditionalAccessGuestOrExternalUserTypeB2bDirectConnectUser,
+					},
+					ExternalTenants: &msgraph.ConditionalAccessExternalTenants{
+						MembershipKind: utils.StringPtr(msgraph.ConditionalAccessExternalTenantsMembershipKindAll),
+						Members:        nil,
+					},
+				},
+			},
+			Locations: &msgraph.ConditionalAccessLocations{
+				IncludeLocations: &[]string{"All"},
+				ExcludeLocations: &[]string{"AllTrusted"},
+			},
+		},
+		GrantControls: &msgraph.ConditionalAccessGrantControls{
+			Operator:        utils.StringPtr("OR"),
+			BuiltInControls: &[]string{"block"},
+			AuthenticationStrength: &msgraph.AuthenticationStrengthPolicy{
+				ID: authStrengthPolicy.ID,
+			},
+		},
+	})
+
+	testConditionalAccessPolicysClient_Get(t, c, *policy.ID)
+
+	testConditionalAccessPolicysClient_Update(t, c, msgraph.ConditionalAccessPolicy{
+		ID:          policy.ID,
+		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.RandomString)),
+		Conditions: &msgraph.ConditionalAccessConditionSet{
+			ClientAppTypes: &[]string{"all"},
 			Applications: &msgraph.ConditionalAccessApplications{
 				IncludeApplications: &[]string{testAppId},
 			},
@@ -43,21 +90,26 @@ func TestConditionalAccessPolicyClient(t *testing.T) {
 			Operator:        utils.StringPtr("OR"),
 			BuiltInControls: &[]string{"block"},
 		},
+		SessionControls: &msgraph.ConditionalAccessSessionControls{
+			SignInFrequency: &msgraph.SignInFrequencySessionControl{
+				AuthenticationType: utils.StringPtr(msgraph.ConditionalAccessAuthenticationTypePrimaryAndSecondaryAuthentication),
+				FrequencyInterval:  utils.StringPtr(msgraph.ConditionalAccessFrequencyIntervalTimeBased),
+				IsEnabled:          utils.BoolPtr(true),
+				Type:               utils.StringPtr(msgraph.ConditionalAccessFrequencyTypeHours),
+				Value:              utils.Int32Ptr(6),
+			},
+		},
 	})
 
-	updatePolicy := msgraph.ConditionalAccessPolicy{
-		ID:          policy.ID,
-		DisplayName: utils.StringPtr(fmt.Sprintf("test-policy-updated-%s", c.RandomString)),
-	}
-	testConditionalAccessPolicysClient_Update(t, c, updatePolicy)
-
-	testConditionalAccessPolicysClient_List(t, c)
 	testConditionalAccessPolicysClient_Get(t, c, *policy.ID)
+	testConditionalAccessPolicysClient_List(t, c)
 	testConditionalAccessPolicysClient_Delete(t, c, *policy.ID)
 
 	testGroup_Delete(t, c, testIncGroup)
 	testGroup_Delete(t, c, testExcGroup)
 	testUser_Delete(t, c, testUser)
+	testAuthenticationStrengthPoliciesClient_Delete(t, c, *authStrengthPolicy.ID)
+
 }
 
 func testConditionalAccessPolicysClient_Create(t *testing.T, c *test.Test, a msgraph.ConditionalAccessPolicy) (conditionalAccessPolicy *msgraph.ConditionalAccessPolicy) {
@@ -164,5 +216,75 @@ func testUser_Delete(t *testing.T, c *test.Test, user *msgraph.User) {
 	_, err := c.UsersClient.Delete(c.Context, *user.ID())
 	if err != nil {
 		t.Fatalf("UsersClient.Delete() - Could not delete test user: %v", err)
+	}
+}
+
+func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersNull(t *testing.T) {
+	usersCondition := &msgraph.ConditionalAccessUsers{}
+	expected := `{
+  "includeGuestsOrExternalUsers": null,
+  "excludeGuestsOrExternalUsers": null
+}`
+	if err := test.AssertJsonMarshalEquals(usersCondition, expected); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersAll(t *testing.T) {
+	usersCondition := &msgraph.ConditionalAccessUsers{
+		IncludeGuestsOrExternalUsers: &msgraph.ConditionalAccessGuestsOrExternalUsers{
+			GuestOrExternalUserTypes: &[]string{
+				msgraph.ConditionalAccessGuestOrExternalUserTypeInternalGuest,
+				msgraph.ConditionalAccessGuestOrExternalUserTypeServiceProvider,
+			},
+			ExternalTenants: &msgraph.ConditionalAccessExternalTenants{
+				MembershipKind: utils.StringPtr(msgraph.ConditionalAccessExternalTenantsMembershipKindAll),
+			},
+		},
+	}
+	expected := `{
+  "includeGuestsOrExternalUsers": {
+    "guestOrExternalUserTypes": "internalGuest,serviceProvider",
+    "externalTenants": {
+      "@odata.type": "#microsoft.graph.conditionalAccessAllExternalTenants",
+      "membershipKind": "all"
+    }
+  },
+  "excludeGuestsOrExternalUsers": null
+}`
+	if err := test.AssertJsonMarshalEquals(usersCondition, expected); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestConditionalAccessPolicy_MarshalConditionsUsersGuestsOrExternalUsersEnumerated(t *testing.T) {
+	usersCondition := &msgraph.ConditionalAccessUsers{
+		IncludeGuestsOrExternalUsers: &msgraph.ConditionalAccessGuestsOrExternalUsers{
+			GuestOrExternalUserTypes: &[]string{
+				msgraph.ConditionalAccessGuestOrExternalUserTypeInternalGuest,
+				msgraph.ConditionalAccessGuestOrExternalUserTypeServiceProvider,
+			},
+			ExternalTenants: &msgraph.ConditionalAccessExternalTenants{
+				MembershipKind: utils.StringPtr(msgraph.ConditionalAccessExternalTenantsMembershipKindEnumerated),
+				Members:        &[]string{"member-a", "member-b"},
+			},
+		},
+	}
+	expected := `{
+  "includeGuestsOrExternalUsers": {
+    "guestOrExternalUserTypes": "internalGuest,serviceProvider",
+    "externalTenants": {
+      "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
+      "membershipKind": "enumerated",
+      "members": [
+        "member-a",
+        "member-b"
+      ]
+    }
+  },
+  "excludeGuestsOrExternalUsers": null
+}`
+	if err := test.AssertJsonMarshalEquals(usersCondition, expected); err != nil {
+		t.Fatal(err)
 	}
 }
