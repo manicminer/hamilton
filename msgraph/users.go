@@ -431,10 +431,9 @@ func (c *UsersClient) UploadThumbnailPhoto(ctx context.Context, userId, contentT
 		Body:                   thumbnailData,
 		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
 		ContentType:            contentType,
-		ValidStatusCodes:       []int{http.StatusNoContent},
+		ValidStatusCodes:       []int{http.StatusOK},
 		Uri: Uri{
-			Entity:      fmt.Sprintf("/users/%s/thumbnailPhoto", userId),
-			HasTenantId: true,
+			Entity: fmt.Sprintf("/users/%s/photo/$value", userId),
 		},
 	})
 	if err != nil {
