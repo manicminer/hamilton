@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestRoleAssignmentsClient(t *testing.T) {
@@ -16,7 +16,7 @@ func TestRoleAssignmentsClient(t *testing.T) {
 
 	roleDefinition := testRoleDefinitionsClient_Create(t, c, msgraph.UnifiedRoleDefinition{
 		Description: msgraph.NullableString("testing custom role assignment"),
-		DisplayName: utils.StringPtr("Test Assignor"),
+		DisplayName: utils.StringPtr("test-assignor"),
 		IsEnabled:   utils.BoolPtr(true),
 		RolePermissions: &[]msgraph.UnifiedRolePermission{
 			{

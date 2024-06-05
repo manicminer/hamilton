@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 type MyExtensionProperties struct {
@@ -60,7 +60,7 @@ func TestSchemaExtensionsClient(t *testing.T) {
 	testSchemaExtensionsClient_Update(t, c, updateExtension)
 
 	// Replication seems to be a problem with schema extensions, no viable workaround as yet
-	time.Sleep(10 * time.Second)
+	time.Sleep(30 * time.Second)
 
 	testSchemaExtensionsGroup(t, c, schema)
 	testSchemaExtensionsUser(t, c, schema)
@@ -193,6 +193,9 @@ func testSchemaExtensionsUser(t *testing.T, c *test.Test, schema *msgraph.Schema
 	if val, ok := m["property2"].(bool); !ok || !val {
 		t.Fatalf("Unexpected value for property2 returned: %+v", val)
 	}
+
+	// sleep to defeat eventual consistency
+	time.Sleep(30 * time.Second)
 
 	// Next, update the user with schema extension data expressed using MyExtensionProperties
 	user.SchemaExtensions = &[]msgraph.SchemaExtensionData{

@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/manicminer/hamilton/auth"
-	"github.com/manicminer/hamilton/environments"
-	"github.com/manicminer/hamilton/odata"
+	"github.com/hashicorp/go-azure-sdk/sdk/auth"
+	"github.com/hashicorp/go-azure-sdk/sdk/environments"
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
 
 type ApiVersion string
@@ -52,7 +52,7 @@ type GraphClient = *http.Client
 // It can send GET, POST, PUT, PATCH and DELETE requests to Azure Active Directory Graph and is API version and tenant aware.
 type Client struct {
 	// Endpoint is the base endpoint for Azure Active Directory Graph, usually "https://graph.windows.net".
-	Endpoint environments.ApiEndpoint
+	Endpoint string
 
 	// ApiVersion is the Azure Active Directory Graph API version to use.
 	ApiVersion ApiVersion
@@ -71,8 +71,13 @@ type Client struct {
 
 // NewClient returns a new Client configured with the specified API version and tenant ID.
 func NewClient(apiVersion ApiVersion, tenantId string) Client {
+	var endpoint string
+	if defaultEndpoint, _ := environments.AzurePublic().MicrosoftGraph.Endpoint(); defaultEndpoint != nil {
+		endpoint = *defaultEndpoint
+	}
+
 	return Client{
-		Endpoint:   environments.AadGraphGlobal.Endpoint,
+		Endpoint:   endpoint,
 		ApiVersion: apiVersion,
 		TenantId:   tenantId,
 		httpClient: http.DefaultClient,
@@ -81,7 +86,7 @@ func NewClient(apiVersion ApiVersion, tenantId string) Client {
 
 // buildUri is used by the package to build a complete URI string for API requests.
 func (c Client) buildUri(uri Uri) (string, error) {
-	newUrl, err := url.Parse(string(c.Endpoint))
+	newUrl, err := url.Parse(c.Endpoint)
 	if err != nil {
 		return "", err
 	}
@@ -99,7 +104,7 @@ func (c Client) performRequest(req *http.Request, input HttpRequestInput) (*http
 	var status int
 
 	if c.Authorizer != nil {
-		token, err := c.Authorizer.Token()
+		token, err := c.Authorizer.Token(req.Context(), req)
 		if err != nil {
 			return nil, status, nil, err
 		}
@@ -304,7 +309,7 @@ func (c Client) Get(ctx context.Context, input GetHttpRequestInput) (*http.Respo
 
 		// Get the next page, recursively
 		nextInput := input
-		nextInput.rawUri = *firstOdata.NextLink
+		nextInput.rawUri = string(*firstOdata.NextLink)
 		nextResp, status, o, err := c.Get(ctx, nextInput)
 		if err != nil {
 			return resp, status, o, err

@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/manicminer/hamilton/environments"
 )
 
 // ApplicationRefsClient performs operations on Applications.
@@ -23,11 +21,11 @@ func NewApplicationRefsClient(tenantId string) *ApplicationRefsClient {
 }
 
 // Get retrieves an Application manifest.
-func (c *ApplicationRefsClient) Get(ctx context.Context, id environments.ApiAppId) (*ApplicationRef, int, error) {
+func (c *ApplicationRefsClient) Get(ctx context.Context, appId string) (*ApplicationRef, int, error) {
 	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
 		ValidStatusCodes: []int{http.StatusOK},
 		Uri: Uri{
-			Entity: fmt.Sprintf("/applicationRefs/%s", id),
+			Entity: fmt.Sprintf("/applicationRefs/%s", appId),
 		},
 	})
 	if err != nil {

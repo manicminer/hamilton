@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func cleanupServicePrincipals() {
-	servicePrincipalsClient := msgraph.NewServicePrincipalsClient(tenantId)
+	servicePrincipalsClient := msgraph.NewServicePrincipalsClient()
 	servicePrincipalsClient.BaseClient.Authorizer = authorizer
 
 	servicePrincipals, _, err := servicePrincipalsClient.List(ctx, odata.Query{Filter: fmt.Sprintf("startsWith(displayName, '%s')", displayNamePrefix)})

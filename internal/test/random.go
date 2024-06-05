@@ -5,16 +5,25 @@ import (
 	"time"
 )
 
+var source *rand.Rand
+
 func init() {
-	rand.Seed(time.Now().UnixNano())
+	source = rand.New(rand.NewSource(time.Now().UnixNano()))
 }
 
 // RandomString returns a random alphanumeric string useful for testing purposes.
 func RandomString() string {
-	chars := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	alpha := []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	numeric := []rune("0123456789")
+	chars := append(alpha, numeric...)
+
 	s := make([]rune, 8)
 	for i := range s {
-		s[i] = chars[rand.Intn(len(chars))]
+		if i == 0 {
+			s[i] = alpha[source.Intn(len(alpha))]
+		}
+
+		s[i] = chars[source.Intn(len(chars))]
 	}
 	return string(s)
 }

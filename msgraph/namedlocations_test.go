@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestNamedLocationsClient(t *testing.T) {
@@ -55,6 +55,12 @@ func TestNamedLocationsClient(t *testing.T) {
 	testNamedLocationsClient_GetCountry(t, c, *countryNamedLocation.ID)
 	testNamedLocationsClient_Get(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_Get(t, c, *countryNamedLocation.ID)
+
+	ipNamedLocation.IsTrusted = utils.BoolPtr(false)
+	testNamedLocationsClient_UpdateIP(t, c, *ipNamedLocation)
+
+	countryNamedLocation.IncludeUnknownCountriesAndRegions = utils.BoolPtr(true)
+	testNamedLocationsClient_UpdateCountry(t, c, *countryNamedLocation)
 
 	testNamedLocationsClient_Delete(t, c, *ipNamedLocation.ID)
 	testNamedLocationsClient_Delete(t, c, *countryNamedLocation.ID)

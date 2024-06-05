@@ -1,3 +1,98 @@
+## v0.70 (Unreleased)
+
+- Bugfix: the `AccessReviewSettings` field in the `AccessPackageAssignmentPolicy` model is nullable ([#284](https://github.com/manicminer/hamilton/pull/284))
+
+## v0.69.0 (May 17, 2024)
+
+- Support for [Attribute Sets](https://learn.microsoft.com/en-us/graph/api/resources/attributeset?view=graph-rest-1.0) and [Custom Security Attribute Definitions](https://learn.microsoft.com/en-us/graph/api/resources/customsecurityattributedefinition?view=graph-rest-1.0) ([#281](https://github.com/manicminer/hamilton/pull/281))
+
+## v0.68.0 (May 16, 2024)
+
+- Removed `omitempty` from struct tags for `ApplicationEnforcedRestrictions`, `CloudAppSecurity`, `PersistentBrowser`, and `SignInFrequency` fields in the `ConditionalAccessSessionControls` model ([#282](https://github.com/manicminer/hamilton/pull/282))
+
+## v0.67.0 (March 28, 2024)
+
+- Base Client: improve error visibility by returning the error for failed requests, when the response body is missing ([#280](https://github.com/manicminer/hamilton/pull/280))
+- Support for [listing Access Package Resource Roles](https://learn.microsoft.com/en-us/graph/api/accesspackagecatalog-list-accesspackageresourceroles?view=graph-rest-beta) ([#278](https://github.com/manicminer/hamilton/pull/278))
+- Support for PIM Role Management [Policies](https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicy?view=graph-rest-1.0), [Rules](https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicyrule?view=graph-rest-1.0), and [Assignments](https://learn.microsoft.com/en-us/graph/api/resources/unifiedrolemanagementpolicyassignment?view=graph-rest-1.0) ([#277](https://github.com/manicminer/hamilton/pull/277))
+- Support for PIM Group Eligibility [Schedules](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedule?view=graph-rest-1.0), [Instances](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityscheduleinstance?view=graph-rest-1.0), and [Requests](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedulerequest?view=graph-rest-1.0) ([#277](https://github.com/manicminer/hamilton/pull/277))
+- Support for PIM Group Assignment [Schedules]([https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedule?view=graph-rest-1.0](https://learn.microsoft.com/en-us/graph/api/resources/privilegedaccessgroupassignmentschedule?view=graph-rest-1.0)), [Instances]([https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityscheduleinstance?view=graph-rest-1.0](https://learn.microsoft.com/en-us/graph/api/resources/privilegedaccessgroupassignmentscheduleinstance?view=graph-rest-1.0)), and [Requests]([https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedulerequest?view=graph-rest-1.0](https://learn.microsoft.com/en-us/graph/api/resources/privilegedaccessgroupassignmentschedulerequest?view=graph-rest-1.0)) ([#277](https://github.com/manicminer/hamilton/pull/277))
+- Support for the `ApplicationFilter` field in the `ConditionalAccessApplications` model ([#268](https://github.com/manicminer/hamilton/pull/268))
+- Added `SkipExchangeInstantOn` to supported `msgraph.GroupResourceBehaviorOption` values ([#275](https://github.com/manicminer/hamilton/pull/275))
+
+⚠️ BREAKING CHANGES:
+
+- `ExpirationPattern.Duration` has changed from a `*time.Duration` to a `*string` ([#276](https://github.com/manicminer/hamilton/pull/277))
+
+## v0.66.0 (January 25, 2024)
+
+- This is a maintenance release to update to the latest published module for `github.com/hashicorp/go-azure-sdk/sdk` ([#272](https://github.com/manicminer/hamilton/pull/272))
+
+## 0.65.0 (October 26, 2023)
+
+- Support for configuring [GuestsOrExternalUsers](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccessusers?view=graph-rest-1.0) for Conditional Access Policies ([#262](https://github.com/manicminer/hamilton/pull/262))
+- Support for the `AuthenticationType` and `FrequencyInterval` fields in the `SignInFrequencySessionControl` model ([#263](https://github.com/manicminer/hamilton/pull/263))
+
+## 0.64.0 (October 18, 2023)
+
+- Add the `UpdateAllowedCombinations()` method to `AuthenticationStrengthPoliciesClient` ([#257](https://github.com/manicminer/hamilton/pull/257))
+- Support for the `AppMetadata` field in the `ServicePrincipal` model ([#259](https://github.com/manicminer/hamilton/pull/259))
+- Add the `SetFallbackPublicClient()` method to `ApplicationsClient` ([#260](https://github.com/manicminer/hamilton/pull/260))
+
+⚠️ BREAKING CHANGES:
+
+- `InformationalUrl.LogoUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.MarketingUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.PrivacyStatementUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.SupportUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+- `InformationalUrl.TermsOfServiceUrl` has changed from a `*string` to a `*StringNullWhenEmpty` ([#260](https://github.com/manicminer/hamilton/pull/260))
+
+## 0.63.0 (July 27, 2023)
+
+- Support for [Authentication Strength Policies](https://learn.microsoft.com/en-us/graph/api/resources/authenticationstrengthpolicy?view=graph-rest-1.0) ([#249](https://github.com/manicminer/hamilton/pull/249))
+- Support `Manager` value for `AccessReviewReviewerType` ([#251](https://github.com/manicminer/hamilton/pull/251))
+- Bugfix: Support for specifying `null` values for `grantControls` or `sessionControls` within [Conditional Access Policies](https://learn.microsoft.com/en-us/graph/api/resources/conditionalaccesspolicy?view=graph-rest-1.0) ([#250](https://github.com/manicminer/hamilton/pull/250))
+- Bugfix: correct typo in names of `AccessReviewRecurrenceType` values, and in value of `AccessPackageRequestStateDelivered` ([#252](https://github.com/manicminer/hamilton/pull/252))
+
+## 0.62.0 (July 14, 2023)
+
+- Support for deleting an `accessPackageResourceRoleScope` ([#245](https://github.com/manicminer/hamilton/pull/245))
+- Support for additional group behaviors `CalendarMemberReadOnly` and `ConnectorsDisabled` ([#247](https://github.com/manicminer/hamilton/pull/247))
+- Support for the `ServicePrincipalRiskLevels` field in the `ConditionalAccessConditionSet` model ([#246](https://github.com/manicminer/hamilton/pull/246))
+- Support for [Role Eligibility Schedule Requests](https://learn.microsoft.com/en-us/graph/api/resources/unifiedroleeligibilityschedulerequest?view=graph-rest-1.0) ([#204](https://github.com/manicminer/hamilton/pull/204))
+- Bugfix: fake a 404 response when an `accessPackageResourceRoleScope` could not be found ([#245](https://github.com/manicminer/hamilton/pull/245))
+- Bugfix: correctly unmarshal the `onPremisesPublishing` field in the `Application` model ([#244](https://github.com/manicminer/hamilton/pull/244))
+
+## 0.61.0 (April 13, 2023)
+
+- Support additional types for UserflowAttributeDataType ([#241](https://github.com/manicminer/hamilton/pull/241))
+- Retry on 404 when creating directory role assignments ([#242](https://github.com/manicminer/hamilton/pull/242))
+
+## 0.60.0 (April 3, 2023)
+
+- dependencies: updating to `v0.20230331.1143618` of `github.com/hashicorp/go-azure-sdk` ([#228](https://github.com/manicminer/hamilton/pull/228))
+- Add the `GetMembers()` method to the `GroupsClient` ([#236](https://github.com/manicminer/hamilton/pull/236))
+- Support for the `ClientApplications` field in the `ConditionalAccessConditionSet` model ([#235](https://github.com/manicminer/hamilton/pull/235))
+- Support for the `ServiceManagementReference` field in the `Application` model ([#233](https://github.com/manicminer/hamilton/pull/233))
+- Support for the `LastNonInteractiveSignInDateTime` and `LastNonInteractiveSignInRequestId` fields in the `SignInActivity` model ([#237](https://github.com/manicminer/hamilton/pull/237))
+- Support for managing [Token Issuance Policies](https://learn.microsoft.com/en-us/graph/api/resources/tokenissuancepolicy?view=graph-rest-1.0) for service principals ([#215](https://github.com/manicminer/hamilton/pull/215))
+- Support for managing [Windows Autopilot Deployment Profiles](https://learn.microsoft.com/en-us/graph/api/resources/intune-enrollment-azureadwindowsautopilotdeploymentprofile?view=graph-rest-beta) ([#228](https://github.com/manicminer/hamilton/pull/228))
+
+## 0.59.0 (March 1, 2023)
+
+- Bugfix: Allow the `SynchronizationJobClient{}.ProvisionOnDemand()` method to recognise HTTP 200 responses ([#226](https://github.com/manicminer/hamilton/pull/226))
+
+⚠️ BREAKING CHANGES:
+
+- This release removes support for specifying the tenant ID as part of the request URL, as this causes some issues with newer APIs and is no longer supported by Microsoft Graph ([#230](https://github.com/manicminer/hamilton/pull/230))
+
+## 0.58.0 (February 23, 2023)
+
+⚠️ BREAKING CHANGES:
+
+- This release removes the `auth`, `environments` and `odata` packages, replacing them with equivalent packages from the `github.com/hashicorp/go-azure-sdk` module.
+- In order to use the `msgraph` clients, you will now need to make use of the newer authorizers from the `github.com/hashicorp/go-azure-sdk/sdk/auth` package. The [example](https://github.com/manicminer/hamilton/blob/main/example/example.go) in this repository have been updated accordingly.
+
 ## 0.57.1 (February 21, 2023)
 
 - Bugfix: `Notes` in the `Application` model has changed from a `*string` to a `*StringNullWhenEmpty` ([#225](https://github.com/manicminer/hamilton/pull/225))

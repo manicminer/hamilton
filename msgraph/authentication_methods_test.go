@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestAuthenticationMethodsClient(t *testing.T) {
@@ -116,8 +116,7 @@ func testAuthMethods_ListWindowsHelloMethods(t *testing.T, c *test.Test, userID 
 }
 
 func testAuthMethods_CreateTemporaryAccessPassMethod(t *testing.T, c *test.Test, userID string) (tempAccessPass *msgraph.TemporaryAccessPassAuthenticationMethod) {
-	startPassTime := time.Now().UTC()
-	startPassTime.AddDate(0, 0, 1)
+	startPassTime := time.Now().UTC().AddDate(0, 0, 1)
 	tempPass := msgraph.TemporaryAccessPassAuthenticationMethod{
 		StartDateTime:     &startPassTime,
 		LifetimeInMinutes: utils.Int32Ptr(60),
