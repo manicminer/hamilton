@@ -2,6 +2,8 @@ package msgraph_test
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
@@ -65,6 +67,8 @@ func TestUsersClient(t *testing.T) {
 	testUsersClient_GetManager(t, c, *user.ID())
 	testUsersClient_DeleteManager(t, c, *user.ID())
 	testUsersClient_Delete(t, c, *manager.ID())
+
+	testUsersClient_UploadThumbnail(t, c, *user)
 
 	testUsersClient_Delete(t, c, *user.ID())
 	testUsersClient_ListDeleted(t, c, *user.ID())
@@ -259,4 +263,18 @@ func testUsersClient_DeleteManager(t *testing.T, c *test.Test, id string) (user 
 		t.Fatalf("UsersClient.DeleteManager(): invalid status: %d", status)
 	}
 	return
+}
+
+func testUsersClient_UploadThumbnail(t *testing.T, c *test.Test, a msgraph.User) {
+	b, err := os.ReadFile(filepath.Join("..", "internal", "test", "testlogo.png"))
+	if err != nil {
+		t.Fatalf("reading testlogo.png: %v", err)
+	}
+	status, err := c.UsersClient.UploadThumbnailPhoto(c.Context, *a.ID(), "image/png", b)
+	if err != nil {
+		t.Fatalf("UsersClient.UploadThumbnailPhoto(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("UsersClient.UploadThumbnailPhoto(): invalid status: %d", status)
+	}
 }
