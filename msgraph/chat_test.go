@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 	"github.com/manicminer/hamilton/internal/test"
 	"github.com/manicminer/hamilton/internal/utils"
 	"github.com/manicminer/hamilton/msgraph"
-	"github.com/manicminer/hamilton/odata"
 )
 
 func TestChatClient(t *testing.T) {
@@ -21,21 +21,24 @@ func TestChatClient(t *testing.T) {
 	user1 := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user1"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.RandomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user1-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user1-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
+	defer testUsersClient_Delete(t, c, *user1.ID())
+
 	user2 := testUsersClient_Create(t, c, msgraph.User{
 		AccountEnabled:    utils.BoolPtr(true),
 		DisplayName:       utils.StringPtr("test-user2"),
-		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user-%s", c.RandomString)),
-		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
+		MailNickname:      utils.StringPtr(fmt.Sprintf("test-user2-%s", c.RandomString)),
+		UserPrincipalName: utils.StringPtr(fmt.Sprintf("test-user2-%s@%s", c.RandomString, c.Connections["default"].DomainName)),
 		PasswordProfile: &msgraph.UserPasswordProfile{
 			Password: utils.StringPtr(fmt.Sprintf("IrPa55w0rd%s", c.RandomString)),
 		},
 	})
+	defer testUsersClient_Delete(t, c, *user2.ID())
 
 	// Check that a group chat and a OneOnOne chat can be created
 	newChat := msgraph.Chat{
@@ -43,17 +46,17 @@ func TestChatClient(t *testing.T) {
 		ChatType: utils.StringPtr(msgraph.ChatTypeGroup),
 		Members: &[]msgraph.ConversationMember{
 			{
-				ODataType: utils.StringPtr(odata.TypeConversationMember),
+				ODataType: utils.StringPtr(msgraph.TypeConversationMember),
 				User:      utils.StringPtr(fmt.Sprintf("https://graph.microsoft.com/v1.0/users('%s')", *user1.Id)),
 				Roles:     &[]string{"owner"},
 			},
 			{
-				ODataType: utils.StringPtr(odata.TypeConversationMember),
+				ODataType: utils.StringPtr(msgraph.TypeConversationMember),
 				User:      utils.StringPtr(fmt.Sprintf("https://graph.microsoft.com/v1.0/users('%s')", *user2.Id)),
 				Roles:     &[]string{"owner"},
 			},
 			{
-				ODataType: utils.StringPtr(odata.TypeConversationMember),
+				ODataType: utils.StringPtr(msgraph.TypeConversationMember),
 				User:      utils.StringPtr(fmt.Sprintf("https://graph.microsoft.com/v1.0/users('%s')", *self.Id)),
 				Roles:     &[]string{"owner"},
 			},
@@ -61,13 +64,13 @@ func TestChatClient(t *testing.T) {
 	}
 
 	chat := testChatClient_Create(t, c, newChat)
+	defer testChatClient_Delete(t, c, *chat.ID)
 	testChatClient_Get(t, c, *chat.ID)
 	testChatClient_List(t, c, *self.Id)
 
 	chat.Topic = utils.StringPtr(fmt.Sprintf("test-chat-archived-%s", c.RandomString))
 	chat.Viewpoint.IsHidden = utils.BoolPtr(true)
 	testChatClient_Update(t, c, *chat)
-
 }
 
 func testChatClient_Create(t *testing.T, c *test.Test, newChat msgraph.Chat) (chat *msgraph.Chat) {
@@ -117,6 +120,17 @@ func testChatClient_Update(t *testing.T, c *test.Test, chat msgraph.Chat) (updat
 	}
 	if status < 200 || status >= 300 {
 		t.Fatalf("ChatClient.Update(): invalid status: %d", status)
+	}
+	return
+}
+
+func testChatClient_Delete(t *testing.T, c *test.Test, chatId string) {
+	status, err := c.ChatClient.Delete(c.Context, chatId)
+	if err != nil {
+		t.Fatalf("ChatClient.Delete(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("ChatClient.Delete(): invalid status: %d", status)
 	}
 	return
 }
