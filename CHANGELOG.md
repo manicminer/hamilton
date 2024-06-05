@@ -1,6 +1,7 @@
 ## v0.70 (Unreleased)
 
 - Support for [updating a user photo](https://learn.microsoft.com/en-us/graph/api/profilephoto-update?view=graph-rest-1.0) ([#227](https://github.com/manicminer/hamilton/pull/227))
+- Enable `RetryOn404ConsistencyFailureFunc` in the `Instantiate()` method for the `ApplicationTemplatesClient` ([#283](https://github.com/manicminer/hamilton/pull/283))
 - Bugfix: the `AccessReviewSettings` field in the `AccessPackageAssignmentPolicy` model is nullable ([#284](https://github.com/manicminer/hamilton/pull/284))
 
 ## v0.69.0 (May 17, 2024)
