@@ -1,4 +1,4 @@
-## v0.70 (Unreleased)
+## v0.70.0 (June 6, 2024)
 
 - Support for [updating a user photo](https://learn.microsoft.com/en-us/graph/api/profilephoto-update?view=graph-rest-1.0) ([#227](https://github.com/manicminer/hamilton/pull/227))
 - Enable `RetryOn404ConsistencyFailureFunc` in the `Instantiate()` method for the `ApplicationTemplatesClient` ([#283](https://github.com/manicminer/hamilton/pull/283))
