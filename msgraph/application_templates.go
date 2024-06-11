@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"time"
 
 	"github.com/hashicorp/go-azure-sdk/sdk/odata"
 )
@@ -94,11 +93,6 @@ func (c *ApplicationTemplatesClient) Instantiate(ctx context.Context, applicatio
 	if err != nil {
 		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
 	}
-
-	// This post call can often timeout and return a 404, particularly against US Gov cloud. The aim here is to give it longer to complete on azure's backend
-	// before timeout occurs
-	ctx, cancel := context.WithTimeout(ctx, 45*time.Second)
-	defer cancel()
 
 	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
 		Body:             body,
