@@ -1,6 +1,6 @@
 ## v0.71.0 (June 19, 2024)
 
-- Bug fix: Remove the `ConsistencyFailureFunc` when calling the `Instantiate()` method of the `ApplicatoinTemplatesClient` ([#285](https://github.com/manicminer/hamilton/pull/285))
+- Bug fix: Remove the `ConsistencyFailureFunc` when calling the `Instantiate()` method of the `ApplicationTemplatesClient` ([#285](https://github.com/manicminer/hamilton/pull/285))
 
 ## v0.70.0 (June 6, 2024)
 
