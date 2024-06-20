@@ -100,13 +100,14 @@ type Test struct {
 	AccessPackageResourceRoleClient                         *msgraph.AccessPackageResourceRoleClient
 	AccessPackageResourceRoleScopeClient                    *msgraph.AccessPackageResourceRoleScopeClient
 	AdministrativeUnitsClient                               *msgraph.AdministrativeUnitsClient
+	AppRoleAssignedToClient                                 *msgraph.AppRoleAssignedToClient
 	ApplicationTemplatesClient                              *msgraph.ApplicationTemplatesClient
 	ApplicationsClient                                      *msgraph.ApplicationsClient
-	AppRoleAssignedToClient                                 *msgraph.AppRoleAssignedToClient
 	AttributeSetClient                                      *msgraph.AttributeSetClient
 	AuthenticationMethodsClient                             *msgraph.AuthenticationMethodsClient
 	AuthenticationStrengthPoliciesClient                    *msgraph.AuthenticationStrengthPoliciesClient
 	B2CUserFlowClient                                       *msgraph.B2CUserFlowClient
+	ChatClient                                              *msgraph.ChatClient
 	ClaimsMappingPolicyClient                               *msgraph.ClaimsMappingPolicyClient
 	ConditionalAccessPoliciesClient                         *msgraph.ConditionalAccessPoliciesClient
 	ConnectedOrganizationClient                             *msgraph.ConnectedOrganizationClient
@@ -135,8 +136,8 @@ type Test struct {
 	RoleAssignmentsClient                                   *msgraph.RoleAssignmentsClient
 	RoleDefinitionsClient                                   *msgraph.RoleDefinitionsClient
 	RoleEligibilityScheduleRequestClient                    *msgraph.RoleEligibilityScheduleRequestClient
-	RoleManagementPolicyClient                              *msgraph.RoleManagementPolicyClient
 	RoleManagementPolicyAssignmentClient                    *msgraph.RoleManagementPolicyAssignmentClient
+	RoleManagementPolicyClient                              *msgraph.RoleManagementPolicyClient
 	RoleManagementPolicyRuleClient                          *msgraph.RoleManagementPolicyRuleClient
 	SchemaExtensionsClient                                  *msgraph.SchemaExtensionsClient
 	ServicePrincipalsAppRoleAssignmentsClient               *msgraph.AppRoleAssignmentsClient
@@ -281,6 +282,11 @@ func NewTest(t *testing.T) (c *Test) {
 	c.B2CUserFlowClient.BaseClient.Authorizer = c.Connections["b2c"].Authorizer
 	c.B2CUserFlowClient.BaseClient.Endpoint = *endpoint
 	c.B2CUserFlowClient.BaseClient.RetryableClient.RetryMax = retry
+
+	c.ChatClient = msgraph.NewChatClient()
+	c.ChatClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
+	c.ChatClient.BaseClient.Endpoint = *endpoint
+	c.ChatClient.BaseClient.RetryableClient.RetryMax = retry
 
 	c.ClaimsMappingPolicyClient = msgraph.NewClaimsMappingPolicyClient()
 	c.ClaimsMappingPolicyClient.BaseClient.Authorizer = c.Connections["default"].Authorizer
