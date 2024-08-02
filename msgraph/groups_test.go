@@ -65,6 +65,16 @@ func TestGroupsClient(t *testing.T) {
 	testGroupsClient_AddMembers(t, c, group)
 	testGroupsClient_RemoveMembers(t, c, *group.ID(), &([]string{c.Claims.ObjectId}))
 
+	testGroupsClient_AssignLicense(t, c, *group.ID(), &[]msgraph.GroupAssignedLicense{
+		{
+			DisabledPlans: &[]string{},
+			SkuId:         utils.StringPtr("90d8b3f8-712e-4f7b-aa1e-62e7ae6cbe96"), // SMB_APPS
+		},
+	}, &[]string{})
+	testGroupsClient_AssignLicense(t, c, *group.ID(), &[]msgraph.GroupAssignedLicense{}, &[]string{
+		"90d8b3f8-712e-4f7b-aa1e-62e7ae6cbe96", // SMB_APPS
+	})
+
 	testGroupsClient_List(t, c)
 	testGroupsClient_Delete(t, c, *group.ID())
 	testUsersClient_Delete(t, c, *user.ID())
@@ -367,5 +377,24 @@ func testGroupsClient_RestoreDeleted(t *testing.T, c *test.Test, id string) {
 	}
 	if *group.ID() != id {
 		t.Fatal("GroupsClient.RestoreDeleted(): group IDs do not match")
+	}
+}
+
+func testGroupsClient_AssignLicense(t *testing.T, c *test.Test, id string, addLicenses *[]msgraph.GroupAssignedLicense, removeLicenses *[]string) {
+	group, status, err := c.GroupsClient.AssignLicense(c.Context, id, addLicenses, removeLicenses)
+	if err != nil {
+		t.Fatalf("GroupsClient.AssignLicense(): %v", err)
+	}
+	if status < 200 || status >= 300 {
+		t.Fatalf("GroupsClient.AssignLicense(): invalid status: %d", status)
+	}
+	if group == nil {
+		t.Fatal("GroupsClient.AssignLicense(): group was nil")
+	}
+	if group.ID() == nil {
+		t.Fatal("GroupsClient.AssignLicense(): group.ID was nil")
+	}
+	if *group.ID() != id {
+		t.Fatal("GroupsClient.AssignLicense(): group IDs do not match")
 	}
 }

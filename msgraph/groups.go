@@ -747,3 +747,41 @@ func (c *GroupsClient) ListAdministrativeUnitMemberships(ctx context.Context, id
 
 	return &data.Members, status, nil
 }
+
+func (c *GroupsClient) AssignLicense(ctx context.Context, groupId string, addLicenses *[]GroupAssignedLicense, removeLicenses *[]string) (*Group, int, error) {
+	var status int
+
+	body, err := json.Marshal(struct {
+		AddLicenses    *[]GroupAssignedLicense `json:"addLicenses"`
+		RemoveLicenses *[]string               `json:"removeLicenses"`
+	}{
+		AddLicenses:    addLicenses,
+		RemoveLicenses: removeLicenses,
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("json.Marshal(): %v", err)
+	}
+
+	resp, status, _, err := c.BaseClient.Post(ctx, PostHttpRequestInput{
+		Body:             body,
+		ValidStatusCodes: []int{http.StatusAccepted},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/groups/%s/assignLicense", groupId),
+		},
+	})
+	if err != nil {
+		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Post(): %v", err)
+	}
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var group Group
+	if err := json.Unmarshal(respBody, &group); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &group, status, nil
+}
