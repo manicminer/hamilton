@@ -358,6 +358,41 @@ func (c *GroupsClient) ListMembers(ctx context.Context, id string) (*[]string, i
 	return &ret, status, nil
 }
 
+// GetTransitiveMembers retrieves all nested members of the specified Group.
+// id is the object ID of the group.
+func (c *GroupsClient) GetTransitiveMembers(ctx context.Context, groupId string, query odata.Query) (*[]User, int, error) {
+	query.Expand = odata.Expand{Relationship: "*"}
+
+	resp, status, _, err := c.BaseClient.Get(ctx, GetHttpRequestInput{
+		ConsistencyFailureFunc: RetryOn404ConsistencyFailureFunc,
+		OData:                  query,
+		ValidStatusCodes:       []int{http.StatusOK},
+		Uri: Uri{
+			Entity: fmt.Sprintf("/groups/%s/transitiveMembers", groupId),
+		},
+	})
+
+	if err != nil {
+		return nil, status, fmt.Errorf("GroupsClient.BaseClient.Get(): %v", err)
+	}
+
+	defer resp.Body.Close()
+	respBody, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, status, fmt.Errorf("io.ReadAll(): %v", err)
+	}
+
+	var data struct {
+		Users []User `json:"value"`
+	}
+
+	if err = json.Unmarshal(respBody, &data); err != nil {
+		return nil, status, fmt.Errorf("json.Unmarshal(): %v", err)
+	}
+
+	return &data.Users, status, nil
+}
+
 // ListTransitiveMembers retrieves a flat list of all nested members of the specified Group.
 // id is the object ID of the group.
 func (c *GroupsClient) ListTransitiveMembers(ctx context.Context, id string) (*[]string, int, error) {

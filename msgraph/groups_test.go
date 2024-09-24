@@ -39,9 +39,11 @@ func TestGroupsClient(t *testing.T) {
 	testGroupsClient_GetOwner(t, c, *group.ID(), (*owners)[0])
 
 	members := testGroupsClient_ListMembers(t, c, *group.ID())
-	transitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID())
+	listedTransitiveMembers := testGroupsClient_ListTransitiveMembers(t, c, *group.ID())
+	transitiveMembers := testGroupsClient_GetTransitiveMembers(t, c, *group.ID())
 	testGroupsClient_GetMember(t, c, *group.ID(), (*members)[0])
-	testGroupsClient_GetMember(t, c, *group.ID(), (*transitiveMembers)[0])
+	testGroupsClient_GetMember(t, c, *group.ID(), (*listedTransitiveMembers)[0])
+	testGroupsClient_GetMember(t, c, *group.ID(), *(*transitiveMembers)[0].ID())
 	testGroupsClient_GetMembers(t, c, *group.ID(), odata.Query{})
 
 	group.DisplayName = utils.StringPtr(fmt.Sprintf("test-updated-group-%s", c.RandomString))
@@ -238,6 +240,23 @@ func testGroupsClient_ListMembers(t *testing.T, c *test.Test, id string) (member
 	}
 	if len(*members) == 0 {
 		t.Fatal("GroupsClient.ListMembers(): members was empty")
+	}
+	return
+}
+
+func testGroupsClient_GetTransitiveMembers(t *testing.T, c *test.Test, id string) (members *[]msgraph.User) {
+	members, status, err := c.GroupsClient.GetTransitiveMembers(c.Context, id, odata.Query{})
+	if err != nil {
+		t.Fatalf("GroupsClient.GetTransitiveMembers(): %v", err)
+	}
+	if status != 200 {
+		t.Fatalf("GroupsClient.GetTransitiveMembers(): invalid status: %d", status)
+	}
+	if members == nil {
+		t.Fatal("GroupsClient.GetTransitiveMembers(): members was nil")
+	}
+	if len(*members) == 0 {
+		t.Fatal("GroupsClient.GetTransitiveMembers(): members was empty")
 	}
 	return
 }
