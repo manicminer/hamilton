@@ -1,3 +1,7 @@
+## v0.72.0 (September 24, 2024)
+
+- Add the `GetTransitiveMembers()` method to `GroupsClient` ([#289](https://github.com/manicminer/hamilton/pull/289))
+
 ## v0.71.0 (June 19, 2024)
 
 - Bug fix: Remove the `ConsistencyFailureFunc` when calling the `Instantiate()` method of the `ApplicationTemplatesClient` ([#285](https://github.com/manicminer/hamilton/pull/285))
