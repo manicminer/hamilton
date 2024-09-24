@@ -1,3 +1,13 @@
+# ⚠️ This project is now deprecated
+
+**Please refer to the [Microsoft Graph SDK](https://github.com/hashicorp/go-azure-sdk/tree/main/microsoft-graph) published by HashiCorp, for a comprehensive replacement to this SDK**
+
+<br>
+
+---
+
+<br>
+
 # Hamilton is a Go SDK for Microsoft Graph
 
 This is a working Go client for the [Microsoft Graph API][ms-graph-docs]. It is actively maintained and has growing
